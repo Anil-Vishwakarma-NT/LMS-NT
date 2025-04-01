@@ -4,30 +4,26 @@ import com.example.course_service_lms.Enum.CourseLevel;
 import jakarta.persistence.*;
 import lombok.*;
 
+import java.util.ArrayList;
+import java.util.List;
+
 @Entity
-@Table(name = "courses")
+@Table(name = "course")
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-@Builder
-
 public class Course {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long courseId;
+    @Column(name = "course_id")
+    private long courseId;
 
     @Column(name="title")
     private String title;
 
     @Column(name="description")
     private String description;
-
-    @Column(name="category")
-    private String category;
-
-    @Column(name="type")
-    private String type;
 
     @Lob
     @Column(name="image")
