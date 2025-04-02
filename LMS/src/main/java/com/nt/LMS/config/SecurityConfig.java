@@ -32,10 +32,11 @@ public class SecurityConfig {
                 .csrf(csrf -> csrf.disable())
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers("/auth/**").permitAll()
-                        .requestMatchers("/admin/**").hasRole("ADMIN")
-                        .requestMatchers("/employee/**").hasAnyRole("EMPLOYEE", "ADMIN")
+                        .requestMatchers("/admin/**").hasAuthority("admin")  // Use "admin" instead of "ROLE_ADMIN"
+                        .requestMatchers("/employee/**").hasAnyAuthority("employee", "admin")  // Adjust for multiple roles
                         .anyRequest().authenticated()
                 )
+
                 .sessionManagement(sess -> sess.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authenticationProvider(authenticationProvider())
                 .addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class);
