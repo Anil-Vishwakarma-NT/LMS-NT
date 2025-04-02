@@ -1,11 +1,9 @@
 package com.example.course_service_lms.serviceImpl;
 
-import com.example.course_service_lms.entity.Course;
-import com.example.course_service_lms.repository.CourseContentRepository;
 import com.example.course_service_lms.service.CourseContentService;
+import org.springframework.stereotype.Service;
 
-import java.util.List;
-
+@Service
 public class CourseContentImpl implements CourseContentService {
 
 }

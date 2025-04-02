@@ -5,5 +5,4 @@ import com.example.course_service_lms.entity.Course;
 import java.util.List;
 
 public interface CourseService {
-
 }
