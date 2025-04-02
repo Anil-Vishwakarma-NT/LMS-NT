@@ -15,6 +15,7 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import java.util.Date;
+import java.util.HashSet;
 
 @Service
 public class AuthService {
@@ -54,6 +55,7 @@ public class AuthService {
         user.setRole(role);
         user.setCreatedAt(new Date());
         user.setUpdatedAt(new Date());
+//        user.setGroups(new HashSet<>());
 
         userRepository.save(user);
         return "User registered successfully";

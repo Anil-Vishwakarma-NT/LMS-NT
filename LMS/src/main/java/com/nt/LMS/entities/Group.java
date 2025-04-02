@@ -1,4 +1,4 @@
-package com.nt.LMS.entity;
+package com.nt.LMS.entities;
 
 
 import jakarta.persistence.*;
@@ -8,8 +8,7 @@ import lombok.Setter;
 import lombok.ToString;
 
 
-import com.nt.LMS.entity.User;
-
+import java.util.HashSet;
 import java.util.Set;
 
 
@@ -27,8 +26,8 @@ public class Group {
 
     private String group_name;
 
-    @OneToMany
-    private Set<UserGroupMapping> usergroupmapping;
+//    @ManyToMany(mappedBy = "groups")
+//    private Set<User> users = new HashSet<>();
 
 
 
