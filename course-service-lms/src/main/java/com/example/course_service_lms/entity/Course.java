@@ -26,7 +26,7 @@ public class Course {
     private String description;
 
     @Lob
-    @Column(name="image")
+    @Column(name="image", columnDefinition = "BYTEA")
     private byte[] image;
 
     @Enumerated(EnumType.STRING)
