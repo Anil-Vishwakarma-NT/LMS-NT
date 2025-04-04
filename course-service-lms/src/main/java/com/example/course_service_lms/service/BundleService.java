@@ -8,13 +8,13 @@ import java.util.Optional;
 
 public interface BundleService {
 
-    BundleDTO createBundle(BundleDTO bundleDTO);
+    Bundle createBundle(BundleDTO bundleDTO);
 
     List<Bundle> getAllBundles();
 
     Optional<Bundle> getBundleById(Long id);
 
-    BundleDTO updateBundle(Long id, BundleDTO bundleDTO);
+    BundleDTO updateBundle(Long bundleId, BundleDTO bundleDTO);
 
     void deleteBundle(Long id);
 }
