@@ -19,6 +19,7 @@ public class CourseBundle {
 
     @Column(name = "course_id")
     private long courseId;
+
 }
 
 
