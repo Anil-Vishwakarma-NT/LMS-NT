@@ -18,6 +18,9 @@ public class Course {
     @Column(name = "course_id")
     private long courseId;
 
+    @Column(name = "ownerId")
+    private long ownerId;
+
     @Column(name="title")
     private String title;
 

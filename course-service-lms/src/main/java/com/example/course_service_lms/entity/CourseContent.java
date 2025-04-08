@@ -28,4 +28,8 @@ public class CourseContent {
 
     @Column(name = "video_link")
     private String videoLink;
+
+    @Column(name = "resource_link")
+    private String resourceLink;
+
 }
