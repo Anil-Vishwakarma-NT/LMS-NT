@@ -1,8 +1,11 @@
 package com.nt.LMS.service;
 
+import com.nt.LMS.constants.UserConstants;
+import com.nt.LMS.dto.MessageOutDto;
 import com.nt.LMS.dto.RegisterDto;
 import com.nt.LMS.entities.Role;
 import com.nt.LMS.entities.User;
+import com.nt.LMS.exception.ResourceConflictException;
 import com.nt.LMS.repository.RoleRepository;
 import com.nt.LMS.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -10,6 +13,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.util.Date;
+import java.util.Optional;
 
 @Service
 public class AdminService {
@@ -24,9 +28,10 @@ public class AdminService {
      private PasswordEncoder passwordEncoder;
 
 
-    public String register(RegisterDto registerDto) {
-        if (userRepository.findByEmail(registerDto.getEmail()).isPresent()) {
-            throw new RuntimeException("Email already registered");
+    public MessageOutDto register(RegisterDto registerDto) {
+        Optional<User> ExistingUser = userRepository.findByEmail(registerDto.getEmail());
+        if (ExistingUser.isPresent()) {
+            throw new ResourceConflictException(UserConstants.USER_ALREADY_EXISTS);
         }
 
         Role role = roleRepository.findById(registerDto.getRoleId()).orElseThrow(()-> new RuntimeException("Role does not exist"));
@@ -42,7 +47,7 @@ public class AdminService {
         user.setUpdatedAt(new Date());
 
         userRepository.save(user);
-        return "User registered successfully";
+        return new MessageOutDto(UserConstants.USER_REGISTRATION_SUCCESS);
     }
 
 }

@@ -1,8 +1,12 @@
 package com.nt.LMS.controller;
 
+import com.nt.LMS.constants.UserConstants;
 import com.nt.LMS.dto.LoginDto;
+import com.nt.LMS.dto.MessageOutDto;
+import com.nt.LMS.dto.TokenResponseDto;
 import com.nt.LMS.service.AuthService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import java.util.Map;
@@ -15,18 +19,20 @@ public class AuthController {
     private AuthService authService;
 
     @PostMapping("/login")
-    public ResponseEntity<Map<String, String>> login(@RequestBody LoginDto loginDto) {
-        return ResponseEntity.ok(authService.login(loginDto));
+    public ResponseEntity<TokenResponseDto> login(@RequestBody LoginDto loginDto) {
+        TokenResponseDto response = authService.login(loginDto);
+        return new ResponseEntity<>(response, HttpStatus.OK);
     }
 
     @PostMapping("/refresh-token")
-    public ResponseEntity<String> refreshToken(@RequestBody Map<String, String> request) {
-        return ResponseEntity.ok(authService.refreshToken(request.get("refreshToken")));
+    public ResponseEntity<TokenResponseDto> refreshToken(@RequestBody Map<String, String> request) {
+        TokenResponseDto response = authService.refreshToken(request.get("refreshToken"));
+        return new ResponseEntity<>(response, HttpStatus.OK);
     }
 
     @PostMapping("/logout/{email}")
-    public ResponseEntity<String> logout(@PathVariable String email) {
-        authService.logout(email);
-        return ResponseEntity.ok("Logout successful");
+    public ResponseEntity<MessageOutDto> logout(@PathVariable String email) {
+        MessageOutDto response =authService.logout(email);
+        return new ResponseEntity<>(response, HttpStatus.OK);
     }
 }

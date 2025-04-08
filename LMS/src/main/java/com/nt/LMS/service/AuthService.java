@@ -1,22 +1,23 @@
 package com.nt.LMS.service;
 
 import com.nt.LMS.config.JwtUtil;
+import com.nt.LMS.constants.UserConstants;
 import com.nt.LMS.dto.LoginDto;
+import com.nt.LMS.dto.MessageOutDto;
+import com.nt.LMS.dto.TokenResponseDto;
 import com.nt.LMS.entities.RefreshToken;
 import com.nt.LMS.entities.User;
+import com.nt.LMS.exception.InvalidRequestException;
+import com.nt.LMS.exception.ResourceNotFoundException;
 import com.nt.LMS.repository.RefreshTokenRepository;
 import com.nt.LMS.repository.UserRepository;
 import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
-
 import java.time.Instant;
-import java.util.HashMap;
-import java.util.Map;
 import java.util.Optional;
 
 @Service
@@ -37,51 +38,55 @@ public class AuthService {
     @Autowired
     private RefreshTokenRepository refreshTokenRepository;
 
-    private final Map<String, String> refreshTokens = new HashMap<>();
-
-    public Map<String, String> login(LoginDto loginDto) {
-        authenticationManager.authenticate(
-                new UsernamePasswordAuthenticationToken(loginDto.getEmail(), loginDto.getPassword())
-        );
+    public TokenResponseDto login(LoginDto loginDto) {
+        try {
+            authenticationManager.authenticate(
+                    new UsernamePasswordAuthenticationToken(loginDto.getEmail(), loginDto.getPassword())
+            );
+        } catch (InvalidRequestException ex) {
+            throw new InvalidRequestException(UserConstants.INVALID_CREDENTIALS);
+        }
 
         UserDetails userDetails = userDetailsService.loadUserByUsername(loginDto.getEmail());
         String accessToken = jwtUtil.generateAccessToken(userDetails);
         String refreshToken = jwtUtil.generateRefreshToken(userDetails);
 
-        // Get user and store refresh token in the database
+        // Find user by email
         User user = userRepository.findByEmail(loginDto.getEmail())
-                .orElseThrow(() -> new RuntimeException("User not found"));
+                .orElseThrow(() -> new ResourceNotFoundException(UserConstants.USER_NOT_FOUND));
 
+        // Store refresh token in the database
         RefreshToken refreshTokenEntity = new RefreshToken();
         refreshTokenEntity.setUser(user);
         refreshTokenEntity.setToken(refreshToken);
-        refreshTokenEntity.setExpiryDate(Instant.now().plusSeconds(7 * 24 * 60 * 60)); // 7 days validity
+//        refreshTokenEntity.setExpiryDate(Instant.now().plusSeconds(7 * 24 * 60 * 60)); // 7 days validity
         refreshTokenRepository.save(refreshTokenEntity);
 
-        Map<String, String> tokens = new HashMap<>();
-        tokens.put("accessToken", accessToken);
-        tokens.put("refreshToken", refreshToken);
-        return tokens;
+        return new TokenResponseDto(accessToken, refreshToken, "Bearer");
     }
 
-    public String refreshToken(String refreshToken) {
+
+    public TokenResponseDto  refreshToken(String refreshToken) {
         Optional<RefreshToken> refreshTokenEntity = refreshTokenRepository.findByToken(refreshToken);
 
         if (refreshTokenEntity.isPresent() && refreshTokenEntity.get().getExpiryDate().isAfter(Instant.now())) {
             User user = refreshTokenEntity.get().getUser();
             UserDetails userDetails = userDetailsService.loadUserByUsername(user.getEmail());
-            return jwtUtil.generateAccessToken(userDetails);
+            String newAccessToken =  jwtUtil.generateAccessToken(userDetails);
+
+            return new TokenResponseDto(newAccessToken, refreshToken,"Bearer");
         }
         throw new RuntimeException("Invalid or expired refresh token");
     }
 
     @Transactional
-    public void logout(String email) {
+    public MessageOutDto logout(String email) {
 
         User user = userRepository.findByEmail(email)
                 .orElseThrow(() -> new RuntimeException("User not found"));
 
         // Remove refresh token from the database
         refreshTokenRepository.deleteByUser(user);
+        return new MessageOutDto(UserConstants.USER_LOGOUT_MESSAGE);
     }
 }
