@@ -18,9 +18,9 @@ public class CourseDTO {
     @Size(min = 3, message = "Title must be at least 3 characters long")
     private String title;
 
-    @NotBlank(message = "OwnerId cannot be blank")
+    @NotNull(message = "OwnerId cannot be blank")
     @Min(value = 0, message = "Valid Owner ID required")
-    private long ownerId;
+    private Long ownerId;
 
     @NotBlank(message = "Description cannot be blank")
     @Size(min = 3, message = "Description must be at least 3 characters long")

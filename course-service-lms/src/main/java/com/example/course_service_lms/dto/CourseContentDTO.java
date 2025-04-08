@@ -1,17 +1,14 @@
 package com.example.course_service_lms.dto;
 
 import jakarta.persistence.Column;
-import jakarta.validation.constraints.Min;
-import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.Size;
-import jakarta.validation.constraints.Pattern;
+import jakarta.validation.constraints.*;
 import lombok.Data;
 
 @Data
 public class CourseContentDTO {
 
-    @NotBlank(message = "Course ID cannot be blank")
-    @Min(value = 0)
+    @NotNull(message = "Course ID cannot be blank")
+    @Min(value = 0, message = "Valid Course ID required")
     private long courseId;
 
     @NotBlank(message = "Title cannot be blank")
@@ -30,8 +27,9 @@ public class CourseContentDTO {
     private String videoLink;
 
     @Pattern(
-            regexp = "^(https?|ftp)://.*$",
+            regexp = "^$|^(https?|ftp)://.*$",
             message = "Resource link must be a valid URL"
     )
     private String resourceLink;
+
 }
