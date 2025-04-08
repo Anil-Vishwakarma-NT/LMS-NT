@@ -1,8 +1,10 @@
 package com.example.course_service_lms.serviceImpl;
 
+import com.example.course_service_lms.converters.CourseContentConverters;
 import com.example.course_service_lms.dto.CourseContentDTO;
 import com.example.course_service_lms.entity.Course;
 import com.example.course_service_lms.entity.CourseContent;
+import com.example.course_service_lms.exception.ResourceAlreadyExistsException;
 import com.example.course_service_lms.exception.ResourceNotFoundException;
 import com.example.course_service_lms.repository.CourseContentRepository;
 import com.example.course_service_lms.repository.CourseRepository;
@@ -25,7 +27,18 @@ public class CourseContentImpl implements CourseContentService {
 
     @Override
     public CourseContent createCourseContent(CourseContentDTO courseContentDTO) {
-        CourseContent existing
+        try {
+            Optional<CourseContent> existingCourse = courseContentRepository.findByTitleIgnoreCaseAndCourseId(courseContentDTO.getTitle(),courseContentDTO.getCourseId());
+            if(existingCourse.isPresent()) {
+                throw new ResourceAlreadyExistsException("Course Content Already Present");
+            }
+            CourseContent courseContent = CourseContentConverters.courseContentDtoToCourseContent(courseContentDTO);
+            return courseContentRepository.save(courseContent);
+        } catch (ResourceAlreadyExistsException e) {
+            throw e;
+        } catch (Exception e) {
+            throw new RuntimeException("Something went wrong");
+        }
     }
 
     @Override
