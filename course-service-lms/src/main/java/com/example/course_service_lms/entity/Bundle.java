@@ -6,8 +6,6 @@ import lombok.*;
 @Entity
 @Table(name = "bundle")
 @Data
-@NoArgsConstructor
-@AllArgsConstructor
 public class Bundle {
 
     @Id
@@ -17,4 +15,13 @@ public class Bundle {
 
     @Column(name = "bundle_name")
     private String bundleName;
+
+
+    public Bundle(long bundleId, String bundleName) {
+        this.bundleId = bundleId;
+        this.bundleName = bundleName;
+    }
+
+    public Bundle() {
+    }
 }

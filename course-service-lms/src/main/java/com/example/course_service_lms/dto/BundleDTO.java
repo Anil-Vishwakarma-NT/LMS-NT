@@ -7,8 +7,7 @@ import jakarta.validation.constraints.Size;
 import lombok.*;
 
 @Data
-@NoArgsConstructor
-@AllArgsConstructor
+
 
 public class BundleDTO {
     @NotBlank(message = "Bundle Name cannot be empty")
@@ -17,8 +16,14 @@ public class BundleDTO {
             regexp = "^(?!\\d)(?!\\s)[A-Za-z][A-Za-z0-9]*(?<!\\s)$",
             message = "Bundle Name invalid"
     )
-
     private String bundleName;
+
+    public BundleDTO(String bundleName) {
+        this.bundleName = bundleName;
+    }
+
+    public BundleDTO() {
+    }
 }
 
 
