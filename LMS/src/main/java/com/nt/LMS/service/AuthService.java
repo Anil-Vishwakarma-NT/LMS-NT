@@ -1,12 +1,16 @@
 package com.nt.LMS.service;
 
 import com.nt.LMS.config.JwtUtil;
+import com.nt.LMS.config.SecurityConfig;
 import com.nt.LMS.dto.LoginDto;
 import com.nt.LMS.dto.RegisterDto;
+import com.nt.LMS.entities.RefreshToken;
 import com.nt.LMS.entities.Role;
 import com.nt.LMS.entities.User;
+import com.nt.LMS.repository.RefreshTokenRepository;
 import com.nt.LMS.repository.RoleRepository;
 import com.nt.LMS.repository.UserRepository;
+import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -16,27 +20,37 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import java.util.Date;
 import java.util.HashSet;
+import java.time.Instant;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Optional;
+
 
 @Service
 public class AuthService {
 
     @Autowired
-    private  UserRepository userRepository;
+    private AuthenticationManager authenticationManager;
 
     @Autowired
-    private  PasswordEncoder passwordEncoder;
+    private JwtUtil jwtUtil;
 
     @Autowired
-    private  AuthenticationManager authenticationManager;
+    private UserService userDetailsService;
 
     @Autowired
-    private  JwtUtil jwtUtil;
+    private UserRepository userRepository;
 
     @Autowired
-    private  UserService userDetailsService;
+    private RefreshTokenRepository refreshTokenRepository;
 
     @Autowired
-    private  RoleRepository roleRepository;
+    private RoleRepository roleRepository;
+
+    @Autowired
+    private PasswordEncoder passwordEncoder;
+
+    private final Map<String, String> refreshTokens = new HashMap<>();
 
 
     public String register(RegisterDto registerDto) {
@@ -74,23 +88,52 @@ public class AuthService {
 //
 //        return jwtUtil.generateToken(userDetails);
 //    }
-public String login(LoginDto loginDto) {
-    try {
+
+
+
+    public Map<String, String> login(LoginDto loginDto) {
         authenticationManager.authenticate(
                 new UsernamePasswordAuthenticationToken(loginDto.getEmail(), loginDto.getPassword())
         );
 
         UserDetails userDetails = userDetailsService.loadUserByUsername(loginDto.getEmail());
+        String accessToken = jwtUtil.generateAccessToken(userDetails);
+        String refreshToken = jwtUtil.generateRefreshToken(userDetails);
 
-        UsernamePasswordAuthenticationToken authenticationToken =
-                new UsernamePasswordAuthenticationToken(userDetails, null, userDetails.getAuthorities());
-        SecurityContextHolder.getContext().setAuthentication(authenticationToken);
+        // Get user and store refresh token in the database
+        User user = userRepository.findByEmail(loginDto.getEmail())
+                .orElseThrow(() -> new RuntimeException("User not found"));
 
-        return jwtUtil.generateToken(userDetails);
-    } catch (Exception e) {
-        e.printStackTrace();
-        return "Authentication failed: " + e.getMessage();
+        RefreshToken refreshTokenEntity = new RefreshToken();
+        refreshTokenEntity.setUser(user);
+        refreshTokenEntity.setToken(refreshToken);
+        refreshTokenEntity.setExpiryDate(Instant.now().plusSeconds(7 * 24 * 60 * 60)); // 7 days validity
+        refreshTokenRepository.save(refreshTokenEntity);
+
+        Map<String, String> tokens = new HashMap<>();
+        tokens.put("accessToken", accessToken);
+        tokens.put("refreshToken", refreshToken);
+        return tokens;
     }
-}
 
+    public String refreshToken(String refreshToken) {
+        Optional<RefreshToken> refreshTokenEntity = refreshTokenRepository.findByToken(refreshToken);
+
+        if (refreshTokenEntity.isPresent() && refreshTokenEntity.get().getExpiryDate().isAfter(Instant.now())) {
+            User user = refreshTokenEntity.get().getUser();
+            UserDetails userDetails = userDetailsService.loadUserByUsername(user.getEmail());
+            return jwtUtil.generateAccessToken(userDetails);
+        }
+        throw new RuntimeException("Invalid or expired refresh token");
+    }
+
+    @Transactional
+    public void logout(String email) {
+
+        User user = userRepository.findByEmail(email)
+                .orElseThrow(() -> new RuntimeException("User not found"));
+
+        // Remove refresh token from the database
+        refreshTokenRepository.deleteByUser(user);
+    }
 }

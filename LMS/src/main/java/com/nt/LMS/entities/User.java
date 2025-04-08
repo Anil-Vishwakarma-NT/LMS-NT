@@ -5,6 +5,7 @@ import lombok.*;
 
 import java.util.Date;
 import java.util.Set;
+import java.util.HashSet;
 
 @Entity
 @Table(name = "users")
@@ -45,11 +46,13 @@ public class User {
 //        this.group.setGroup_id(1L);
     }
 
-//    @OneToMany
-//    private Set<UserGroupMapping> usergroupmapping;
-//@ManyToOne
-//@JoinColumn(name = "group_id" ) // foreign key to 'groups' table
-//private Group group;
+    @ManyToMany
+    @JoinTable(
+            name = "user_groups",
+            joinColumns = @JoinColumn(name = "user_id"),
+            inverseJoinColumns = @JoinColumn(name="group_id")
+    )
+    private Set<Group>groups = new HashSet<>();
 
     @Temporal(TemporalType.TIMESTAMP)
     private Date createdAt;

@@ -12,14 +12,8 @@ public class LmsApplication {
 
 		SpringApplication.run(LmsApplication.class, args);
 		System.out.println("welcome.................");
-//
-//		UserService userService = new UserService();
-//		userService.empDel(1L);
-//		System.out.println("User deleted !!!!");
-
-
-
-
+//when two concurrent users are using the portal if one deletes a group and at the same time other user access its users what will happen ?
+		//
 
 	}
 

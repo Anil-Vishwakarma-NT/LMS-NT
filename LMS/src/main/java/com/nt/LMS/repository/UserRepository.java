@@ -17,6 +17,11 @@ import java.util.Optional;
 public interface UserRepository extends JpaRepository<User,Long> {
     Optional<User> findByEmail(String email);
 
+
+//    @Query("Select u from User u where u.user_id = :user_id")
+    User findById(long user_id);
+
+
     @Modifying
     @Transactional
     @Query("Update User u Set u.manager_id = :new_id where u.manager_id = :current_id")
@@ -26,5 +31,12 @@ public interface UserRepository extends JpaRepository<User,Long> {
     @Modifying
     @Query("Update User u Set u.role.role_id =:new_role where u.userId = :userId")
     long updateRole(@Param("new_role") long newrole , @Param("userId") long userId);
+
+
+    @Query("Select u from User u where u.userId != 1")
+    List<User> getAllEmployees();
+
+    @Query("Select u from User u where u.manager_id = :manager_id")
+    List<User> getEmployeesUnderManager(long manager_id);
 
 }
