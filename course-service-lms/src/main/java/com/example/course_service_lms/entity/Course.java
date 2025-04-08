@@ -11,7 +11,6 @@ import java.util.List;
 @Table(name = "course")
 @Data
 @NoArgsConstructor
-@AllArgsConstructor
 public class Course {
 
     @Id
@@ -25,9 +24,8 @@ public class Course {
     @Column(name="description")
     private String description;
 
-    @Lob
-    @Column(name="image", columnDefinition = "BYTEA")
-    private byte[] image;
+    @Column(name="image")
+    private String image;
 
     @Enumerated(EnumType.STRING)
     @Column(name="level")
