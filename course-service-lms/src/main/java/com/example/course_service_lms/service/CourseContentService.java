@@ -14,5 +14,5 @@ public interface CourseContentService {
     Optional<CourseContent> getCourseContentById(Long courseContentId);
     String deleteCourseContent(Long courseContentId);
     String updateCourseContent(Long courseId, CourseContentDTO courseContentDTO);
-
+    List<CourseContent> getAllCourseContentByCourseId(Long courseId);
 }

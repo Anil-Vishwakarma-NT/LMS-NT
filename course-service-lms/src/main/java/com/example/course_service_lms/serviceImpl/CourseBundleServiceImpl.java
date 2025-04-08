@@ -1,6 +1,8 @@
 package com.example.course_service_lms.serviceImpl;
 
 import com.example.course_service_lms.dto.CourseBundleDTO;
+import com.example.course_service_lms.entity.Bundle;
+import com.example.course_service_lms.entity.Course;
 import com.example.course_service_lms.entity.CourseBundle;
 import com.example.course_service_lms.exception.ResourceAlreadyExistsException;
 import com.example.course_service_lms.exception.ResourceNotFoundException;
@@ -16,6 +18,10 @@ import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
+
+import static com.example.course_service_lms.converters.CourseBundleConvertor.convertDTOToEntity;
+import static com.example.course_service_lms.converters.CourseBundleConvertor.convertEntityToDTO;
 
 @Service
 @RequiredArgsConstructor
@@ -46,11 +52,30 @@ public class CourseBundleServiceImpl implements CourseBundleService {
             // Convert entities to DTOs using the helper method
             List<CourseBundleDTO> courseBundleDTOs = new ArrayList<>();
             for (CourseBundle courseBundle : courseBundles) {
-                courseBundleDTOs.add(convertEntityToDTO(courseBundle));
+                CourseBundleDTO courseBundleDTO = convertEntityToDTO(courseBundle);
+                Optional<Bundle> bundle = bundleRepository.findById(courseBundle.getBundleId());
+                if(bundle.isEmpty()){
+                    throw new ResourceNotFoundException("Bundle not found");
+                }
+                String bundleName = bundle.get().getBundleName();
+                courseBundleDTO.setBundleName(bundleName);
+
+
+                Optional<Course> course  = courseRepository.findById(courseBundle.getBundleId());
+                if(course.isEmpty()){
+                    throw new ResourceNotFoundException("Course not found");
+                }
+                String courseName = course.get().getTitle();
+                courseBundleDTO.setCourseName(courseName);
+
+                courseBundleDTOs.add(courseBundleDTO);
             }
 
             log.info("Successfully retrieved {} course-bundle records", courseBundleDTOs.size());
             return courseBundleDTOs;
+
+        } catch(ResourceNotFoundException e){
+            throw e;
 
         } catch (Exception ex) {
             log.error("Unexpected error occurred while fetching all records: {}", ex.getMessage());
@@ -70,8 +95,27 @@ public class CourseBundleServiceImpl implements CourseBundleService {
 
             // Convert entity to DTO
             CourseBundleDTO courseBundleDTO = convertEntityToDTO(courseBundle);
+
+            Optional<Bundle> bundle = bundleRepository.findById(courseBundle.getBundleId());
+            if(bundle.isEmpty()){
+                throw new ResourceNotFoundException("Bundle not found");
+            }
+            String bundleName = bundle.get().getBundleName();
+            courseBundleDTO.setBundleName(bundleName);
+
+
+            Optional<Course> course  = courseRepository.findById(courseBundle.getBundleId());
+            if(course.isEmpty()){
+                throw new ResourceNotFoundException("Course not found");
+            }
+            String courseName = course.get().getTitle();
+            courseBundleDTO.setCourseName(courseName);
+
             log.info("Successfully retrieved course-bundle record: {}", courseBundleDTO);
             return courseBundleDTO;
+
+        }  catch(ResourceNotFoundException e){
+            throw e;
 
         } catch (Exception ex) {
             log.error("Unexpected error occurred while fetching record with ID {}: {}", courseBundleId, ex.getMessage());
@@ -92,6 +136,9 @@ public class CourseBundleServiceImpl implements CourseBundleService {
 
             courseBundleRepository.delete(courseBundle);
             log.info("Successfully deleted course-bundle record with ID: {}", courseBundleId);
+
+        }  catch(ResourceNotFoundException e){
+            throw e;
 
         } catch (Exception e) {
             log.error("Unexpected error occurred while deleting record with ID {}: {}", courseBundleId, e.getMessage());
@@ -120,6 +167,9 @@ public class CourseBundleServiceImpl implements CourseBundleService {
 
             // Convert updated entity to DTO
             return convertEntityToDTO(updatedBundle);
+
+        }  catch(ResourceNotFoundException e){
+            throw e;
 
         } catch (Exception e) {
             log.error("Unexpected error occurred while updating record with ID {}: {}", courseBundleId, e.getMessage());
@@ -161,7 +211,7 @@ public class CourseBundleServiceImpl implements CourseBundleService {
             // Convert saved entity to DTO
             return convertEntityToDTO(savedBundle);
 
-        } catch(ResourceNotValidException e){
+        }  catch(ResourceAlreadyExistsException | ResourceNotValidException e){
             throw e;
 
         } catch (Exception e) {
@@ -170,32 +220,4 @@ public class CourseBundleServiceImpl implements CourseBundleService {
         }
     }
 
-    // Helper Method: DTO to Entity
-    private CourseBundle convertDTOToEntity(CourseBundleDTO courseBundleDTO) {
-        CourseBundle courseBundle = new CourseBundle();
-        courseBundle.setCourseBundleId(courseBundleDTO.getCourseBundleId());
-        courseBundle.setBundleId(courseBundleDTO.getBundleId());
-        courseBundle.setCourseId(courseBundleDTO.getCourseId());
-        return courseBundle;
-    }
-
-    // Helper Method: Entity to DTO
-    private CourseBundleDTO convertEntityToDTO(CourseBundle courseBundle) {
-        CourseBundleDTO courseBundleDTO = new CourseBundleDTO();
-        courseBundleDTO.setCourseBundleId(courseBundle.getCourseBundleId());
-        courseBundleDTO.setBundleId(courseBundle.getBundleId());
-        courseBundleDTO.setCourseId(courseBundle.getCourseId());
-
-        String bundleName = bundleRepository.findById(courseBundle.getBundleId())
-                .get()
-                .getBundleName();
-        courseBundleDTO.setBundleName(bundleName);
-
-        String courseName = courseRepository.findById(courseBundle.getCourseId())
-                .get()
-                .getTitle();
-        courseBundleDTO.setCourseName(courseName);
-
-        return courseBundleDTO;
-    }
 }

@@ -6,9 +6,9 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.util.Objects;
+
 @Data
-@NoArgsConstructor
-@AllArgsConstructor
 public class CourseBundleDTO {
     private long courseBundleId;
 
@@ -26,4 +26,26 @@ public class CourseBundleDTO {
     @NotNull
     private String courseName;
 
+    @Override
+    public boolean equals(Object o) {
+        if (o == null || getClass() != o.getClass()) return false;
+        CourseBundleDTO that = (CourseBundleDTO) o;
+        return courseBundleId == that.courseBundleId && Objects.equals(bundleId, that.bundleId) && Objects.equals(bundleName, that.bundleName) && Objects.equals(courseId, that.courseId) && Objects.equals(courseName, that.courseName);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(courseBundleId, bundleId, bundleName, courseId, courseName);
+    }
+
+    public CourseBundleDTO() {
+    }
+
+    public CourseBundleDTO(long courseBundleId, Long bundleId, String bundleName, Long courseId, String courseName) {
+        this.courseBundleId = courseBundleId;
+        this.bundleId = bundleId;
+        this.bundleName = bundleName;
+        this.courseId = courseId;
+        this.courseName = courseName;
+    }
 }
