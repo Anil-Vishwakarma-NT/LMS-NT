@@ -18,15 +18,13 @@ import java.util.Optional;
 
 @Service
 @Slf4j
-@RequiredArgsConstructor
 public class BundleServiceImpl implements BundleService {
-
-
+    @Autowired
     private BundleRepository bundleRepository;
 
 
     @Override
-    public BundleDTO createBundle(BundleDTO bundleDTO) {
+    public Bundle createBundle(BundleDTO bundleDTO) {
         try {
             log.info("Attempting to create a new bundle: {}", bundleDTO.getBundleName());
 
@@ -44,11 +42,11 @@ public class BundleServiceImpl implements BundleService {
             log.info("Bundle '{}' created successfully with ID: {}", savedBundle.getBundleName(), savedBundle.getBundleId());
 
             // Convert Entity to DTO before returning
-            return new BundleDTO(savedBundle.getBundleName());
+            return savedBundle;
         } catch (ResourceAlreadyExistsException e) {
             throw e;
         } catch (Exception e) {
-            throw new RuntimeException("Something went wrong");
+            throw new RuntimeException("Something went wrong",e);
         }
     }
 
@@ -56,7 +54,17 @@ public class BundleServiceImpl implements BundleService {
 
     @Override
     public List<Bundle> getAllBundles() {
-        return Collections.emptyList();
+        log.info("Fetching all bundles");
+
+        List<Bundle> bundles = bundleRepository.findAll();
+
+        if (bundles.isEmpty()) {
+            log.warn("No bundles found in the system");
+            throw new ResourceNotFoundException("No bundles found");
+        }
+
+        log.info("Successfully retrieved {} bundles", bundles.size());
+        return bundles;
     }
 
     @Override
@@ -67,7 +75,7 @@ public class BundleServiceImpl implements BundleService {
 
         Optional<Bundle> optionalBundle = bundleRepository.findById(bundleId);
 
-        if (optionalBundle.isPresent()) {
+        if (!optionalBundle.isPresent()) {
             log.error("Bundle with ID {} not found", bundleId);
             throw new ResourceNotFoundException("Bundle with ID " + bundleId + " not found");
         }
@@ -84,12 +92,59 @@ public class BundleServiceImpl implements BundleService {
     }
 
     @Override
-    public BundleDTO updateBundle(Long id, BundleDTO bundleDTO) {
-        return null;
+    public BundleDTO updateBundle(Long bundleId, BundleDTO bundleDTO) {
+        try {
+            log.info("Attempting to update bundle with ID: {}", bundleId);
+            // Check if the bundle exists
+            Bundle existingBundle = bundleRepository.findById(bundleId).orElseThrow(() -> {
+                log.error("Bundle with ID {} not found", bundleId);
+                return new ResourceNotFoundException("Bundle with ID " + bundleId + " not found");
+            });
+
+            // Validate if the updated name is unique (excluding the same bundle)
+            if (bundleRepository.existsByBundleName(bundleDTO.getBundleName()) && !existingBundle.getBundleName().equalsIgnoreCase(bundleDTO.getBundleName())) {
+                log.error("Bundle with name '{}' already exists", bundleDTO.getBundleName());
+                throw new ResourceAlreadyExistsException("A bundle with the name '" + bundleDTO.getBundleName() + "' already exists.");
+            }
+            // Update the bundle entity
+            existingBundle.setBundleName(bundleDTO.getBundleName());
+            Bundle updatedBundle = bundleRepository.save(existingBundle);
+            log.info("Successfully updated bundle with ID: {}", updatedBundle.getBundleId());
+
+            // Convert to DTO before returning
+            return new BundleDTO(updatedBundle.getBundleName());
+        }
+        catch(ResourceNotFoundException e){
+            throw e;
+        }
+        catch(ResourceAlreadyExistsException e){
+            throw e;
+        }
+        catch (Exception e) {
+            throw new RuntimeException("Something went wrong");
+        }
     }
 
     @Override
     public void deleteBundle(Long id) {
+        try {
+            log.info("Attempting to delete bundle with ID: {}", id);
+
+            // Check if the bundle exists
+            Bundle existingBundle = bundleRepository.findById(id).orElseThrow(() -> {
+                log.error("Bundle with ID {} not found", id);
+                return new ResourceNotFoundException("Bundle with ID " + id + " not found");
+            });
+            // Delete the bundle
+            bundleRepository.delete(existingBundle);
+            log.info("Successfully deleted bundle with ID: {}", id);
+        }
+        catch(ResourceNotFoundException e){
+            throw e;
+        }
+        catch (Exception e) {
+            throw new RuntimeException("Something went wrong");
+        }
 
     }
 }
