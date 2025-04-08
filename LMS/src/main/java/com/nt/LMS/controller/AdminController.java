@@ -11,6 +11,12 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import com.nt.LMS.dto.RegisterDto;
 import com.nt.LMS.service.AdminService;
+import com.nt.LMS.dto.MessageOutDto;
+import com.nt.LMS.dto.RegisterDto;
+import com.nt.LMS.service.AdminService;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 
 import java.util.List;
@@ -30,33 +36,34 @@ public class AdminController {
     private GroupService groupService;
 
 
+    @PostMapping("/register")
+    @PreAuthorize("hasAuthority('admin')")
+    public ResponseEntity<MessageOutDto> register(@RequestBody RegisterDto registerDto) {
+        MessageOutDto response = adminService.register(registerDto);
+        return new ResponseEntity<>(response, HttpStatus.CREATED);
 
-        @PostMapping("/register")
-        @PreAuthorize("hasAuthority('admin')")
-        public ResponseEntity<String> register(@RequestBody RegisterDto registerDto){
-            return ResponseEntity.ok(adminService.register(registerDto));
-        }
-
-
+    }
     @DeleteMapping("/deletion-user")
     public ResponseEntity<String> delEmp(@RequestBody Admindto admindto) {
         String role = admindto.getRole();
         try {
-               if (role.equals("manager") ) {
-                   adminService.deleteManager(admindto.getUserId());
-                   return ResponseEntity.ok("Deletion successful");
-             } else if (role.equals("employee")) {
-                   adminService.deleteEmployee(admindto.getUserId());
-                   return ResponseEntity.ok("Deletion successful");
+            if (role.equals("manager")) {
+                adminService.deleteManager(admindto.getUserId());
+                return ResponseEntity.ok("Deletion successful");
+            } else if (role.equals("employee")) {
+                adminService.deleteEmployee(admindto.getUserId());
+                return ResponseEntity.ok("Deletion successful");
             } else {
-                   return ResponseEntity.badRequest().body("Invalid role provided.");
+                return ResponseEntity.badRequest().body("Invalid role provided.");
             }
         } catch (ManagerNotFoundException e) {
-                   return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("An error occurred while processing the request.");
         }
     }
+
+
 
 
     @GetMapping("/employees")
