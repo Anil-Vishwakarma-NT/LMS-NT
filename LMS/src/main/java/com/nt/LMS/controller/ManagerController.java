@@ -26,16 +26,12 @@ public class ManagerController {
     @Autowired
     private GroupService groupService;
 
-    @GetMapping("/manageremp")
+    @GetMapping("/manager-employees")
     public ResponseEntity<List<UserOutDTO>> getManagerEmp(){
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        String username = authentication.getName();
-
-        List<User> employees = adminService.getEmps(username);
-        List<UserOutDTO> response = employees.stream()
-                .map(user -> new UserOutDTO(user.getUserId(), user.getUserName())) // Create UserOutDTO from User
-                .collect(Collectors.toList()); // Collect the results into a List
-        return ResponseEntity.ok(response);
+        String email = authentication.getName();
+        System.out.println(email + ".................................................");
+        return ResponseEntity.ok(adminService.getEmps(email));
     }
 
 

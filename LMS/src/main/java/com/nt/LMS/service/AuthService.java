@@ -60,46 +60,6 @@ public class AuthService {
     @Autowired
     private PasswordEncoder passwordEncoder;
 
-    private final Map<String, String> refreshTokens = new HashMap<>();
-
-
-    public String register(RegisterDto registerDto) {
-        if (userRepository.findByEmail(registerDto.getEmail()).isPresent()) {
-            throw new RuntimeException("Email already registered");
-        }
-
-        Role role = roleRepository.findById(registerDto.getRoleId()).orElseThrow(()-> new RuntimeException("Role does not exist"));
-
-        User user = new User();
-        user.setFirstName(registerDto.getFirstName());
-        user.setLastName(registerDto.getLastName());
-        user.setUserName(registerDto.getUserName());
-        user.setEmail(registerDto.getEmail());
-        user.setPassword(passwordEncoder.encode(registerDto.getPassword()));
-        user.setRole(role);
-        user.setCreatedAt(new Date());
-        user.setUpdatedAt(new Date());
-//        user.setGroups(new HashSet<>());
-
-        userRepository.save(user);
-        return "User registered successfully";
-    }
-
-//    public String login(LoginDto loginDto) {
-//        authenticationManager.authenticate(
-//                new UsernamePasswordAuthenticationToken(loginDto.getEmail(), loginDto.getPassword())
-//        );
-//
-//        UserDetails userDetails = userDetailsService.loadUserByUsername(loginDto.getEmail());
-//
-//        UsernamePasswordAuthenticationToken authenticationToken =
-//                new UsernamePasswordAuthenticationToken(userDetails, null, userDetails.getAuthorities());
-//        SecurityContextHolder.getContext().setAuthentication(authenticationToken);
-//
-//        return jwtUtil.generateToken(userDetails);
-//    }
-
-
     public TokenResponseDto login(LoginDto loginDto) {
         log.info("Attempting login for email: {}", loginDto.getEmail());
 

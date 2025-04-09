@@ -21,16 +21,13 @@ public class GroupService {
     private UserRepository userRepository;
 
     public void addUserToGroup(long user_id , long group_id){
-
         Group group = groupRepository.findById(group_id);
         Set<User> users = group.getUsers();
         Optional<User> userOpt = userRepository.findById(user_id);
-
         User user = userOpt.orElseThrow(() -> new UserNotFoundException("User with ID " +  " not found"));
         users.add(user);
         group.setUsers(users);
         groupRepository.save(group);
-
     }
 
     public Set<User> getUsersInGroup(long group_id){

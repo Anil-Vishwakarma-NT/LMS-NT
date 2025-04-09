@@ -47,80 +47,41 @@ public class AdminController {
     @PreAuthorize("hasAuthority('admin')")
     public ResponseEntity<MessageOutDto> register(@RequestBody RegisterDto registerDto) {
         log.info("Admin registration request received for: {}", registerDto.getEmail());
-
         MessageOutDto response = adminService.register(registerDto);
-
         log.info("Admin registered successfully: {}", registerDto.getEmail());
         return new ResponseEntity<>(response, HttpStatus.CREATED);
-
     }
 
 
     @DeleteMapping("/deletion-user")
-    public ResponseEntity<String> delEmp(@RequestBody UserDTO admindto) {
-        try {
-            adminService.empDeletion(admindto.getUserId());
+    public ResponseEntity<String> delEmp(@RequestBody UserDTO userdto) {
+            adminService.empDeletion(userdto.getUserId());
             return ResponseEntity.ok("Employee deleted successfully");
-        } catch (UserNotFoundException e) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
-        } catch (IllegalStateException e) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
-        } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                    .body("An unexpected error occurred: " + e.getMessage());
-        }
+
     }
     //Needs user object complete
     @GetMapping("/get-employees")
     public ResponseEntity<List<UserOutDTO>> getAllEmployees(){
-        try {List<User> employees = adminService.getAllUsers();
-            if (employees.isEmpty()) {
-                return ResponseEntity.noContent().build(); // HTTP 204 No Content
-            }
-            List<UserOutDTO> response = employees.stream()
-                    .map(user -> new UserOutDTO(user.getUserId(), user.getUserName())) // Create UserOutDTO from User
-                    .collect(Collectors.toList()); // Collect the results into a List
-            return ResponseEntity.ok(response);  // HTTP 200 OK
-        }
-        catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                    .body(null);
-        }
-    }
-//
+         return ResponseEntity.ok(adminService.getAllUsers());  // HTTP 200 OK
+       }
+
 //    @GetMapping("/get-user-detail")
 //    public ResponseEntity<User> getUserDetail(@RequestBody UserDTO userdto){
-//
-//    }
+//            User user = adminService.getUserDetail(userdto.getUserId());
+//            return ResponseEntity.ok(user);
+//    } Add all managers api instead
 
 
     @GetMapping("/manager-emp")
-    public ResponseEntity<List<UserOutDTO>> getManagerEmp(@RequestBody UserDTO groupdto) {
-        try {
-            List<User> employees = adminService.getManEmp(groupdto.getUserId());
-                if (employees.isEmpty()) {
-                   return ResponseEntity.noContent().build();  // HTTP 204 No Content
-            }
-            List<UserOutDTO> response = employees.stream()
-                    .map(user -> new UserOutDTO(user.getUserId(), user.getUserName())) // Create UserOutDTO from User
-                    .collect(Collectors.toList()); // Collect the results into a List
-            return ResponseEntity.ok(response);  // HTTP 200 OK
-        } catch (Exception e) {
-            // Log the exception here for better debugging (optional)
-                return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                    .body(null);  // HTTP 500 Internal Server Error
-        }
+    public ResponseEntity<List<UserOutDTO>> getManagerEmp(@RequestBody UserDTO userdto) {
+        return ResponseEntity.ok(adminService.getManEmp(userdto.getUserId()));  // HTTP 200 OK
     }
 
 
     @PostMapping("/change-role")
     public ResponseEntity<String> changeManager( @RequestBody UserDTO userdto ){
-        try{
             boolean deleted = adminService.changeRole(userdto.getUserId(), userdto.getChangeRole());
             return ResponseEntity.ok("User role changed");
-        } catch (RuntimeException e) {
-            throw new RuntimeException(e);
-        }
     }
 
 
