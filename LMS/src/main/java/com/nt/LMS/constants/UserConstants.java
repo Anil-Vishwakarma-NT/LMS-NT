@@ -16,5 +16,14 @@ public final class UserConstants {
 
     public static final String USER_LOGOUT_MESSAGE = "User logout successfully";
 
+    public static final String EMAIL_NOT_NULL_MESSAGE = "Email and password must not be null";
+
+    public static final String REFRESH_TOKEN_CREDENTIALS = "Invalid refresh token";
+
+    public static final String INVALID_REFRESH_TOKEN_MESSAGE = "Invalid refresh token";
+
+    public static final String REFRESH_TOKEN_EXPIRE_MASSAGE = "Refresh token expired";
+
+
 
 }
