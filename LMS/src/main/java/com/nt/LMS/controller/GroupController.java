@@ -5,8 +5,8 @@ import com.nt.LMS.dto.UserOutDTO;
 import com.nt.LMS.entities.Group;
 import com.nt.LMS.entities.User;
 import com.nt.LMS.exception.UserNotFoundException;
-import com.nt.LMS.exceptions.GroupNotFoundException;
-import com.nt.LMS.exceptions.InvalidGroupException;
+//import com.nt.LMS.exceptions.GroupNotFoundException;
+//import com.nt.LMS.exceptions.InvalidGroupException;
 import com.nt.LMS.repository.UserRepository;
 import com.nt.LMS.service.GroupService;
 import jakarta.validation.Valid;
@@ -42,8 +42,6 @@ public class GroupController {
                     .orElseThrow(() -> new RuntimeException("User not found"));
             groupService.createGroup(groupDTO.getGroupName(), user.getUserId());
             return ResponseEntity.status(HttpStatus.CREATED).body("Group successfully created");
-        } catch (InvalidGroupException e) {
-            return ResponseEntity.badRequest().body("Invalid group data: " + e.getMessage());
         } catch (Exception e) {
             // General exception handler
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("An error occurred while creating the group");
@@ -55,9 +53,7 @@ public class GroupController {
         try {
             groupService.delGroup(groupId);
             return ResponseEntity.ok("Group deleted successfully.");
-        } catch (GroupNotFoundException e) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Group not found.");
-        } catch (Exception e) {
+        }  catch (Exception e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Error deleting group.");
         }
     }
@@ -67,8 +63,6 @@ public class GroupController {
         try {
             groupService.addUserToGroup(groupDTO.getUserId(), groupDTO.getGroupId());
             return ResponseEntity.ok("User added to group.");
-        } catch (GroupNotFoundException e) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Group not found.");
         } catch (UserNotFoundException e) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body("User not found.");
         } catch (Exception e) {
@@ -81,8 +75,6 @@ public class GroupController {
         try {
             groupService.removeUserInGroup(groupdto.getUserId(), groupdto.getGroupId());
             return ResponseEntity.ok("User removed successfully.");
-        } catch (GroupNotFoundException e) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Group not found.");
         } catch (UserNotFoundException e) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body("User not found.");
         } catch (Exception e) {
@@ -101,8 +93,6 @@ public class GroupController {
                     .map(user -> new UserOutDTO(user.getUserId(), user.getUserName())) // Create UserOutDTO from User
                     .collect(Collectors.toList()); // Collect the results into a List
             return ResponseEntity.ok(response); // HTTP 200 OK
-        } catch (GroupNotFoundException e) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(null);  // HTTP 404 Not Found if group doesn't exist
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(null);  // HTTP 500 Internal Server Error for any other issue
         }

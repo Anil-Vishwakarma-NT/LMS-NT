@@ -2,7 +2,7 @@ package com.nt.LMS.service;
 
 
 import com.nt.LMS.exception.UserNotFoundException;
-import com.nt.LMS.exceptions.ManagerNotFoundException;
+//import com.nt.LMS.exceptions.ManagerNotFoundException;
 import com.nt.LMS.constants.UserConstants;
 import com.nt.LMS.dto.MessageOutDto;
 import com.nt.LMS.dto.RegisterDto;
@@ -116,13 +116,13 @@ public class AdminService {
             Optional<User> managerOpt = userRepository.findById(userId);
             if (managerOpt.isEmpty()) {
                 // If manager doesn't exist, throw a custom exception
-                throw new ManagerNotFoundException("Manager with ID " + userId + " not found.");
+                throw new RuntimeException("Manager with ID " + userId + " not found.");
             }
             List<User> users = userRepository.getEmployeesUnderManager(userId);
             if (users.isEmpty()) {
                 // You can either return an empty list or throw an exception if you want
                 // to signal no employees found.
-                throw new ManagerNotFoundException("Manager with ID " + userId + " has no employees.");
+                throw new RuntimeException("Manager with ID " + userId + " has no employees.");
             }
             return users;
         } catch (Exception e) {
@@ -139,7 +139,7 @@ public class AdminService {
         if (users.isEmpty()) {
             // You can either return an empty list or throw an exception if you want
             // to signal no employees found.
-            throw new ManagerNotFoundException("Manager with ID " + user.getUserId() + " has no employees.");
+            throw new RuntimeException("Manager with ID " + user.getUserId() + " has no employees.");
         }
         return users;
 

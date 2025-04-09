@@ -8,6 +8,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import com.nt.LMS.exception.UserNotFoundException;
 import java.util.List;
+import java.util.Optional;
 import java.util.Set;
 
 @Service
@@ -23,7 +24,9 @@ public class GroupService {
 
         Group group = groupRepository.findById(group_id);
         Set<User> users = group.getUsers();
-        User user = userRepository.findById(user_id);
+        Optional<User> userOpt = userRepository.findById(user_id);
+
+        User user = userOpt.orElseThrow(() -> new UserNotFoundException("User with ID " +  " not found"));
         users.add(user);
         group.setUsers(users);
         groupRepository.save(group);
@@ -38,7 +41,9 @@ public class GroupService {
 
     public void removeUserInGroup(long userId , long group_id){
         Group group = groupRepository.findById(group_id);
-        User user = userRepository.findById(userId);
+        Optional<User> userOpt = userRepository.findById(userId);
+
+        User user = userOpt.orElseThrow(() -> new UserNotFoundException("User with ID " + " not found"));
         Set<User> users = group.getUsers();
         if (users.contains(user)) {
             users.remove(user);  // Remove the user from the group

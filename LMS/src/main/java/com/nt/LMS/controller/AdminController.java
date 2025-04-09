@@ -2,7 +2,7 @@ package com.nt.LMS.controller;
 
 import com.nt.LMS.dto.*;
 import com.nt.LMS.exception.UserNotFoundException;
-import com.nt.LMS.exceptions.ManagerNotFoundException;
+//import com.nt.LMS.exceptions.ManagerNotFoundException;
 import com.nt.LMS.entities.User;
 import com.nt.LMS.service.GroupService;
 import com.nt.LMS.service.UserService;
