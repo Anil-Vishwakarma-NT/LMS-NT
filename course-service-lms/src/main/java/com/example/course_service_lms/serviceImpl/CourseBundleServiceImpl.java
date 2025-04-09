@@ -32,10 +32,10 @@ public class CourseBundleServiceImpl implements CourseBundleService {
     private final CourseBundleRepository courseBundleRepository;
 
     @Autowired
-    private CourseRepository courseRepository;
+    private final CourseRepository courseRepository;
 
     @Autowired
-    private BundleRepository bundleRepository;
+    private final BundleRepository bundleRepository;
 
     @Override
     public List<CourseBundleDTO> getAllCourseBundles() {
