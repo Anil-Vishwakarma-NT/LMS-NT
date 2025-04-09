@@ -70,7 +70,7 @@ public class AdminController {
                     .body("An unexpected error occurred: " + e.getMessage());
         }
     }
-
+    //Needs user object complete
     @GetMapping("/get-employees")
     public ResponseEntity<List<UserOutDTO>> getAllEmployees(){
         try {List<User> employees = adminService.getAllUsers();
@@ -87,9 +87,14 @@ public class AdminController {
                     .body(null);
         }
     }
+//
+//    @GetMapping("/get-user-detail")
+//    public ResponseEntity<User> getUserDetail(@RequestBody UserDTO userdto){
+//
+//    }
 
 
-    @GetMapping("/manageremp")
+    @GetMapping("/manager-emp")
     public ResponseEntity<List<UserOutDTO>> getManagerEmp(@RequestBody UserDTO groupdto) {
         try {
             List<User> employees = adminService.getManEmp(groupdto.getUserId());
@@ -108,7 +113,7 @@ public class AdminController {
     }
 
 
-    @PostMapping("/change-manager")
+    @PostMapping("/change-role")
     public ResponseEntity<String> changeManager( @RequestBody UserDTO userdto ){
         try{
             boolean deleted = adminService.changeRole(userdto.getUserId(), userdto.getChangeRole());

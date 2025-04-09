@@ -97,7 +97,11 @@ public class AdminService {
             throw new RuntimeException("An error occurred while fetching users from the database", e);
         }
     }
-
+//
+//    public User getUserDetail(long userId){
+//        Optional<User> user = userRepository.findById(userId);
+//
+//    }
 
     public boolean changeRole(long userId, String role) {
         // Check if the user exists

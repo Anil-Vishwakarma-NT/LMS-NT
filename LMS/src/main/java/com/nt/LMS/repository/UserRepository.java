@@ -42,4 +42,6 @@ public interface UserRepository extends JpaRepository<User,Long> {
     @Query("Select u from User u where u.managerId = :managerId")
     List<User> getEmployeesUnderManager(long managerId);
 
+
+
 }
