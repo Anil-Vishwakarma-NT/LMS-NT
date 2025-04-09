@@ -6,7 +6,7 @@ import com.nt.LMS.repository.GroupRepository;
 import com.nt.LMS.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import com.nt.LMS.exceptions.UserNotFoundException;
+import com.nt.LMS.exception.UserNotFoundException;
 import java.util.List;
 import java.util.Set;
 

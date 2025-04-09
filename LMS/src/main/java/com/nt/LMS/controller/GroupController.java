@@ -1,21 +1,21 @@
 package com.nt.LMS.controller;
 
-
-import com.nt.LMS.dto.Admindto;
 import com.nt.LMS.dto.GroupDTO;
+import com.nt.LMS.dto.UserOutDTO;
 import com.nt.LMS.entities.Group;
 import com.nt.LMS.entities.User;
+import com.nt.LMS.exception.UserNotFoundException;
 import com.nt.LMS.exceptions.GroupNotFoundException;
 import com.nt.LMS.exceptions.InvalidGroupException;
-import com.nt.LMS.exceptions.UserNotFoundException;
+import com.nt.LMS.repository.UserRepository;
 import com.nt.LMS.service.GroupService;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.validation.BindingResult;
-import org.springframework.validation.ObjectError;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -29,18 +29,18 @@ public class GroupController {
     private GroupService groupService;
 
 
+    @Autowired
+    private UserRepository userRepository;
+
     @PostMapping("/create-group")
-    public ResponseEntity<String> createGroup(@RequestBody @Valid GroupDTO groupDTO, BindingResult bindingResult) {
-        // Handle validation errors
-        if (bindingResult.hasErrors()) {
-            String errorMessages = bindingResult.getAllErrors().stream()
-                    .map(ObjectError::getDefaultMessage)
-                    .collect(Collectors.joining(", "));
-            return ResponseEntity.badRequest().body("Validation failed: " + errorMessages);
-        }
+    public ResponseEntity<String> createGroup(@RequestBody @Valid GroupDTO groupDTO) {
 
         try {
-            groupService.createGroup(groupDTO.getGroupName(), groupDTO.getUserId());
+            Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+            String username = authentication.getName();
+            User user = userRepository.findByEmail(username)
+                    .orElseThrow(() -> new RuntimeException("User not found"));
+            groupService.createGroup(groupDTO.getGroupName(), user.getUserId());
             return ResponseEntity.status(HttpStatus.CREATED).body("Group successfully created");
         } catch (InvalidGroupException e) {
             return ResponseEntity.badRequest().body("Invalid group data: " + e.getMessage());
@@ -62,45 +62,45 @@ public class GroupController {
         }
     }
     //avoid Request Param
-//    @PostMapping("/add-user")
-//    public ResponseEntity<String> addUserToGroup(@RequestBody GroupDTO groupDTO) {
-//        try {
-//            groupService.addUserToGroup(groupDTO.getUserId(), groupDTO.getGroupId());
-//            return ResponseEntity.ok("User added to group.");
-//        } catch (GroupNotFoundException e) {
-//            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Group not found.");
-//        } catch (UserNotFoundException e) {
-//            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("User not found.");
-//        } catch (Exception e) {
-//            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Error adding user to group.");
-//        }
-//    }
+    @PostMapping("/add-user")
+    public ResponseEntity<String> addUserToGroup(@RequestBody GroupDTO groupDTO) {
+        try {
+            groupService.addUserToGroup(groupDTO.getUserId(), groupDTO.getGroupId());
+            return ResponseEntity.ok("User added to group.");
+        } catch (GroupNotFoundException e) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Group not found.");
+        } catch (UserNotFoundException e) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("User not found.");
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Error adding user to group.");
+        }
+    }
 
-//    @DeleteMapping("/remove-user")
-//    public ResponseEntity<String> removeUserFromGroup(@RequestParam long group_id, @RequestParam long user_id) {
-//        try {
-//            groupService.removeUserInGroup(user_id, group_id);
-//            return ResponseEntity.ok("User removed successfully.");
-//        } catch (GroupNotFoundException e) {
-//            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Group not found.");
-//        } catch (UserNotFoundException e) {
-//            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("User not found.");
-//        } catch (Exception e) {
-//            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Error removing user from group.");
-//        }
-//    }
+    @DeleteMapping("/remove-user")
+    public ResponseEntity<String> removeUserFromGroup(@RequestParam GroupDTO groupdto) {
+        try {
+            groupService.removeUserInGroup(groupdto.getUserId(), groupdto.getGroupId());
+            return ResponseEntity.ok("User removed successfully.");
+        } catch (GroupNotFoundException e) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Group not found.");
+        } catch (UserNotFoundException e) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("User not found.");
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Error removing user from group.");
+        }
+    }
 
     @GetMapping("/group-emps/{groupId}")
-    public ResponseEntity<List<Admindto>> getUsersInGroup(@PathVariable long groupId) {
+    public ResponseEntity<List<UserOutDTO>> getUsersInGroup(@PathVariable long groupId) {
         try {
             Set<User> users = groupService.getUsersInGroup(groupId);
             if (users.isEmpty()) {
                 return ResponseEntity.noContent().build();  // HTTP 204 No Content if no users
             }
-            List<Admindto> admindtos = users.stream()
-                    .map(Admindto::new)  // Using the constructor to convert User to Admindto
-                    .collect(Collectors.toList());
-            return ResponseEntity.ok(admindtos);  // HTTP 200 OK
+            List<UserOutDTO> response = users.stream()
+                    .map(user -> new UserOutDTO(user.getUserId(), user.getUserName())) // Create UserOutDTO from User
+                    .collect(Collectors.toList()); // Collect the results into a List
+            return ResponseEntity.ok(response); // HTTP 200 OK
         } catch (GroupNotFoundException e) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(null);  // HTTP 404 Not Found if group doesn't exist
         } catch (Exception e) {

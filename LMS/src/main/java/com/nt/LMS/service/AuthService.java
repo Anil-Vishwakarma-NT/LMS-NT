@@ -118,7 +118,7 @@ public class AuthService {
         RefreshToken refreshTokenEntity = new RefreshToken();
         refreshTokenEntity.setUser(user);
         refreshTokenEntity.setToken(refreshToken);
-//        refreshTokenEntity.setExpiryDate(Instant.now().plusSeconds(7 * 24 * 60 * 60)); // 7 days validity
+        refreshTokenEntity.setExpiryDate(Instant.now().plusSeconds(7 * 24 * 60 * 60)); // 7 days validity
         refreshTokenRepository.save(refreshTokenEntity);
 
         return new TokenResponseDto(accessToken, refreshToken, "Bearer");

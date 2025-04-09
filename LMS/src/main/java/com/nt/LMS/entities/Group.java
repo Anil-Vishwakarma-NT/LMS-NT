@@ -17,24 +17,25 @@ import java.util.Set;
 @Getter
 @Setter
 @ToString
+@NoArgsConstructor
 public class Group {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long group_id;
+    private Long groupId;
 
-    private String group_name;
+    private String groupName;
 
     @ManyToMany(mappedBy = "groups")
     private Set<User> users = new HashSet<>();
 
-    private long creator_id;
+    private long creatorId;
 
 
-    public Group(){}
-    public Group(String name  , long creator_id){
-        this.group_name = name;
-        this.creator_id = creator_id;
+
+    public Group(String name  , long creatorId){
+        this.groupName = name;
+        this.creatorId = creatorId;
     }
 
 

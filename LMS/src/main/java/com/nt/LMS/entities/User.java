@@ -34,7 +34,7 @@ public class User {
     private String password;
 
     @Column
-    private Long manager_id ;
+    private Long managerId;
 
     @ManyToOne
     @JoinColumn(name = "role_id", nullable = false)
@@ -42,15 +42,15 @@ public class User {
 
     public User() {
 
-        this.manager_id = 1L ;
+        this.managerId = 1L ;
 //        this.group.setGroup_id(1L);
     }
 
     @ManyToMany
     @JoinTable(
             name = "user_groups",
-            joinColumns = @JoinColumn(name = "user_id"),
-            inverseJoinColumns = @JoinColumn(name="group_id")
+            joinColumns = @JoinColumn(name = "userId"),
+            inverseJoinColumns = @JoinColumn(name="groupId")
     )
     private Set<Group>groups = new HashSet<>();
 

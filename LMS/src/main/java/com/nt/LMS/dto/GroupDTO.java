@@ -17,9 +17,9 @@ public class GroupDTO {
 
 
     public GroupDTO(Group group) {
-        this.groupId= group.getGroup_id();
-        this.groupName = group.getGroup_name();
-        this.userId = group.getCreator_id();
+        this.groupId= group.getGroupId();
+        this.groupName = group.getGroupName();
+        this.userId = group.getCreatorId();
 
     }
 
