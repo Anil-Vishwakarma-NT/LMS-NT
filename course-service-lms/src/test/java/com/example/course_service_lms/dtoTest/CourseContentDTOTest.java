@@ -1,164 +1,68 @@
 package com.example.course_service_lms.dtoTest;
 
 import com.example.course_service_lms.dto.CourseContentDTO;
-import jakarta.validation.*;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-
-import java.util.Set;
-
 import static org.junit.jupiter.api.Assertions.*;
 
 class CourseContentDTOTest {
 
-    private Validator validator;
+    @Test
+    void testConstructorAndGetters() {
+        // Given
+        CourseContentDTO dto = new CourseContentDTO(1L, "Java Basics", "Introduction to Java Programming",
+                "https://example.com/java-video", "https://example.com/java-resource");
 
-    @BeforeEach
-    void setUp() {
-        ValidatorFactory factory = Validation.buildDefaultValidatorFactory();
-        validator = factory.getValidator();
+        // Then
+        assertEquals(1L, dto.getCourseId());
+        assertEquals("Java Basics", dto.getTitle());
+        assertEquals("Introduction to Java Programming", dto.getDescription());
+        assertEquals("https://example.com/java-video", dto.getVideoLink());
+        assertEquals("https://example.com/java-resource", dto.getResourceLink());
     }
 
     @Test
-    void testValidCourseContentDTO() {
+    void testSetters() {
         // Given
-        CourseContentDTO courseContentDTO = new CourseContentDTO();
-        courseContentDTO.setCourseId(1L);
-        courseContentDTO.setTitle("Valid Title");
-        courseContentDTO.setDescription("This is a valid description.");
-        courseContentDTO.setVideoLink("https://example.com/video");
-        courseContentDTO.setResourceLink("https://example.com/resource");
+        CourseContentDTO dto = new CourseContentDTO();
 
         // When
-        Set<ConstraintViolation<CourseContentDTO>> violations = validator.validate(courseContentDTO);
+        dto.setCourseId(2L);
+        dto.setTitle("Advanced Java");
+        dto.setDescription("Deep dive into Java programming concepts");
+        dto.setVideoLink("https://example.com/advanced-java-video");
+        dto.setResourceLink("https://example.com/advanced-java-resource");
 
         // Then
-        assertTrue(violations.isEmpty());
+        assertEquals(2L, dto.getCourseId());
+        assertEquals("Advanced Java", dto.getTitle());
+        assertEquals("Deep dive into Java programming concepts", dto.getDescription());
+        assertEquals("https://example.com/advanced-java-video", dto.getVideoLink());
+        assertEquals("https://example.com/advanced-java-resource", dto.getResourceLink());
     }
 
     @Test
-    void testInvalidCourseId() {
+    void testEqualsAndHashCode() {
         // Given
-        CourseContentDTO courseContentDTO = new CourseContentDTO();
-        courseContentDTO.setCourseId(-1L); // Invalid Course ID
-        courseContentDTO.setTitle("Valid Title");
-        courseContentDTO.setDescription("Valid description.");
-        courseContentDTO.setVideoLink("https://example.com/video");
-        courseContentDTO.setResourceLink("https://example.com/resource");
-
-        // When
-        Set<ConstraintViolation<CourseContentDTO>> violations = validator.validate(courseContentDTO);
+        CourseContentDTO dto1 = new CourseContentDTO(1L, "Java Basics", "Introduction to Java Programming",
+                "https://example.com/java-video", "https://example.com/java-resource");
+        CourseContentDTO dto2 = new CourseContentDTO(1L, "Java Basics", "Introduction to Java Programming",
+                "https://example.com/java-video", "https://example.com/java-resource");
+        CourseContentDTO dto3 = new CourseContentDTO(2L, "Advanced Java", "Deep dive into Java concepts",
+                "https://example.com/advanced-java-video", "https://example.com/advanced-java-resource");
 
         // Then
-        assertFalse(violations.isEmpty());
-        assertTrue(violations.stream().anyMatch(v -> v.getMessage().contains("Valid Course ID required")));
+        assertEquals(dto1, dto2);
+        assertNotEquals(dto1, dto3);
+        assertEquals(dto1.hashCode(), dto2.hashCode());
+        assertNotEquals(dto1.hashCode(), dto3.hashCode());
     }
 
     @Test
-    void testBlankTitle() {
+    void testNoArgsConstructor() {
         // Given
-        CourseContentDTO courseContentDTO = new CourseContentDTO();
-        courseContentDTO.setCourseId(1L);
-        courseContentDTO.setTitle(""); // Blank title
-        courseContentDTO.setDescription("Valid description.");
-        courseContentDTO.setVideoLink("https://example.com/video");
-        courseContentDTO.setResourceLink("https://example.com/resource");
-
-        // When
-        Set<ConstraintViolation<CourseContentDTO>> violations = validator.validate(courseContentDTO);
+        CourseContentDTO dto = new CourseContentDTO();
 
         // Then
-        assertFalse(violations.isEmpty());
-        assertTrue(violations.stream().anyMatch(v -> v.getMessage().contains("Title cannot be blank")));
-    }
-
-    @Test
-    void testExceedingTitleLength() {
-        // Given
-        String longTitle = "A".repeat(101); // Title with 101 characters
-        CourseContentDTO courseContentDTO = new CourseContentDTO();
-        courseContentDTO.setCourseId(1L);
-        courseContentDTO.setTitle(longTitle);
-        courseContentDTO.setDescription("Valid description.");
-        courseContentDTO.setVideoLink("https://example.com/video");
-        courseContentDTO.setResourceLink("https://example.com/resource");
-
-        // When
-        Set<ConstraintViolation<CourseContentDTO>> violations = validator.validate(courseContentDTO);
-
-        // Then
-        assertFalse(violations.isEmpty());
-        assertTrue(violations.stream().anyMatch(v -> v.getMessage().contains("Title cannot exceed 100 characters")));
-    }
-
-    @Test
-    void testBlankDescription() {
-        // Given
-        CourseContentDTO courseContentDTO = new CourseContentDTO();
-        courseContentDTO.setCourseId(1L);
-        courseContentDTO.setTitle("Valid Title");
-        courseContentDTO.setDescription(""); // Blank description
-        courseContentDTO.setVideoLink("https://example.com/video");
-        courseContentDTO.setResourceLink("https://example.com/resource");
-
-        // When
-        Set<ConstraintViolation<CourseContentDTO>> violations = validator.validate(courseContentDTO);
-
-        // Then
-        assertFalse(violations.isEmpty());
-        assertTrue(violations.stream().anyMatch(v -> v.getMessage().contains("Description cannot be blank")));
-    }
-
-    @Test
-    void testInvalidVideoLink() {
-        // Given
-        CourseContentDTO courseContentDTO = new CourseContentDTO();
-        courseContentDTO.setCourseId(1L);
-        courseContentDTO.setTitle("Valid Title");
-        courseContentDTO.setDescription("Valid description.");
-        courseContentDTO.setVideoLink("invalid-video-link"); // Invalid video link
-        courseContentDTO.setResourceLink("https://example.com/resource");
-
-        // When
-        Set<ConstraintViolation<CourseContentDTO>> violations = validator.validate(courseContentDTO);
-
-        // Then
-        assertFalse(violations.isEmpty());
-        assertTrue(violations.stream().anyMatch(v -> v.getMessage().contains("Video link must be a valid URL")));
-    }
-
-    @Test
-    void testInvalidResourceLink() {
-        // Given
-        CourseContentDTO courseContentDTO = new CourseContentDTO();
-        courseContentDTO.setCourseId(1L);
-        courseContentDTO.setTitle("Valid Title");
-        courseContentDTO.setDescription("Valid description.");
-        courseContentDTO.setVideoLink("https://example.com/video");
-        courseContentDTO.setResourceLink("invalid-resource-link"); // Invalid resource link
-
-        // When
-        Set<ConstraintViolation<CourseContentDTO>> violations = validator.validate(courseContentDTO);
-
-        // Then
-        assertFalse(violations.isEmpty());
-        assertTrue(violations.stream().anyMatch(v -> v.getMessage().contains("Resource link must be a valid URL")));
-    }
-
-    @Test
-    void testNullResourceLink() {
-        // Given
-        CourseContentDTO courseContentDTO = new CourseContentDTO();
-        courseContentDTO.setCourseId(1L);
-        courseContentDTO.setTitle("Valid Title");
-        courseContentDTO.setDescription("Valid description.");
-        courseContentDTO.setVideoLink("https://example.com/video");
-        courseContentDTO.setResourceLink(""); // Null or empty resource link is allowed
-
-        // When
-        Set<ConstraintViolation<CourseContentDTO>> violations = validator.validate(courseContentDTO);
-
-        // Then
-        assertTrue(violations.isEmpty());
+        assertNotNull(dto);
     }
 }

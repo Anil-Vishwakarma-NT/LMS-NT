@@ -1,5 +1,4 @@
 package com.example.course_service_lms.entityTest;
-
 import com.example.course_service_lms.entity.CourseContent;
 import org.junit.jupiter.api.Test;
 import static org.assertj.core.api.Assertions.assertThat;

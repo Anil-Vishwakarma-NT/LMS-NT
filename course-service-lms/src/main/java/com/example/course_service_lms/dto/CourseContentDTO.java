@@ -4,6 +4,8 @@ import jakarta.persistence.Column;
 import jakarta.validation.constraints.*;
 import lombok.Data;
 
+import java.util.Objects;
+
 @Data
 public class CourseContentDTO {
 
@@ -32,4 +34,26 @@ public class CourseContentDTO {
     )
     private String resourceLink;
 
+    public CourseContentDTO(long courseId, String title, String description, String videoLink, String resourceLink) {
+        this.courseId = courseId;
+        this.title = title;
+        this.description = description;
+        this.videoLink = videoLink;
+        this.resourceLink = resourceLink;
+    }
+
+    public CourseContentDTO() {
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (o == null || getClass() != o.getClass()) return false;
+        CourseContentDTO that = (CourseContentDTO) o;
+        return courseId == that.courseId && Objects.equals(title, that.title) && Objects.equals(description, that.description) && Objects.equals(videoLink, that.videoLink) && Objects.equals(resourceLink, that.resourceLink);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(courseId, title, description, videoLink, resourceLink);
+    }
 }
