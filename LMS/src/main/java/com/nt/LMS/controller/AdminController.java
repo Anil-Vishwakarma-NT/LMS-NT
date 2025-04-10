@@ -1,7 +1,6 @@
 package com.nt.LMS.controller;
 
 import com.nt.LMS.dto.*;
-//import com.nt.LMS.exceptions.ManagerNotFoundException;
 import com.nt.LMS.service.GroupService;
 import com.nt.LMS.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -12,12 +11,10 @@ import com.nt.LMS.service.AdminService;
 import com.nt.LMS.dto.RegisterDto;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.access.prepost.PreAuthorize;
-
-
 import java.util.List;
 
+import static com.nt.LMS.constants.UserConstants.UPDATED;
 import static com.nt.LMS.constants.UserConstants.USER_DELETION_MESSAGE;
-
 
 @Slf4j
 @RestController
@@ -39,39 +36,74 @@ public class AdminController {
     public ResponseEntity<MessageOutDto> register(@RequestBody RegisterDto registerDto) {
         log.info("Admin registration request received for: {}", registerDto.getEmail());
 
-        MessageOutDto response = adminService.register(registerDto);
-
-        log.info("Admin registered successfully: {}", registerDto.getEmail());
-        return new ResponseEntity<>(response, HttpStatus.CREATED);
+        try {
+            MessageOutDto response = adminService.register(registerDto);
+            log.info("Admin registered successfully: {}", registerDto.getEmail());
+            return new ResponseEntity<>(response, HttpStatus.CREATED);
+        } catch (Exception e) {
+            log.error("Error while registering admin with email: {}", registerDto.getEmail(), e);
+            throw e;  // Rethrow or handle the error as per your error handling strategy
+        }
     }
 
     @DeleteMapping("/deletion-user")
-    public ResponseEntity<String> delEmp(@RequestBody UserInDTO userdto) {
-            adminService.empDeletion(userdto.getUserId());
+    public ResponseEntity<String> deleteEmployee(@RequestBody UserInDTO userdto) {
+        log.info("Received request to delete user with ID: {}", userdto.getUserId());
+
+        try {
+            adminService.employeeDeletion(userdto.getUserId());
+            log.info("User with ID: {} deleted successfully", userdto.getUserId());
             return ResponseEntity.ok(USER_DELETION_MESSAGE);
-
+        } catch (Exception e) {
+            log.error("Error while deleting user with ID: {}", userdto.getUserId(), e);
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Error deleting user");
+        }
     }
 
-    @GetMapping("/get-employees")
+    @GetMapping("/employees")
     public ResponseEntity<List<UserOutDTO>> getAllEmployees() {
-         return ResponseEntity.ok(adminService.getAllUsers());  // HTTP 200 OK
-       }
+        log.info("Fetching all employees");
 
-
-
-    @GetMapping("/manager-emp")
-    public ResponseEntity<List<UserOutDTO>> getManagerEmp(@RequestBody UserInDTO userdto) {
-        return ResponseEntity.ok(adminService.getManEmp(userdto.getUserId()));  // HTTP 200 OK
+        try {
+            List<UserOutDTO> employees = adminService.getAllUsers();
+            log.info("Fetched {} employees", employees.size());
+            return ResponseEntity.ok(employees);  // HTTP 200 OK
+        } catch (Exception e) {
+            log.error("Error while fetching all employees", e);
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+        }
     }
 
+    @GetMapping("/manager-employee")
+    public ResponseEntity<List<UserOutDTO>> getManagerEmployee(@RequestBody UserInDTO userdto) {
+        log.info("Fetching employees for manager with ID: {}", userdto.getUserId());
+
+        try {
+            List<UserOutDTO> employees = adminService.getManagerEmployee(userdto.getUserId());
+            log.info("Fetched {} employees for manager with ID: {}", employees.size(), userdto.getUserId());
+            return ResponseEntity.ok(employees);  // HTTP 200 OK
+        } catch (Exception e) {
+            log.error("Error while fetching employees for manager with ID: {}", userdto.getUserId(), e);
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+        }
+    }
 
     @PostMapping("/change-role")
-    public ResponseEntity<String> changeManager( @RequestBody UserInDTO userdto ){
-            boolean deleted = adminService.changeRole(userdto.getUserId(), userdto.getRole());
-            return ResponseEntity.ok("User role changed");
+    public ResponseEntity<String> changeRole(@RequestBody UserInDTO userdto) {
+        log.info("Received request to change role for user with ID: {}", userdto.getUserId());
+
+        try {
+            boolean roleChanged = adminService.changeUserRole(userdto.getUserId(), userdto.getRole());
+            if (roleChanged) {
+                log.info("Role changed successfully for user with ID: {}", userdto.getUserId());
+                return ResponseEntity.ok(UPDATED);
+            } else {
+                log.warn("Failed to change role for user with ID: {}", userdto.getUserId());
+                return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Failed to change role");
+            }
+        } catch (Exception e) {
+            log.error("Error while changing role for user with ID: {}", userdto.getUserId(), e);
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Error changing role");
+        }
     }
-
-
-
-
 }

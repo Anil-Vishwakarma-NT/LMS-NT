@@ -3,9 +3,11 @@ package com.nt.LMS.dto;
 
 import com.nt.LMS.entities.Group;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 
 @Data
+@NoArgsConstructor
 public class GroupInDTO {
 
 
