@@ -25,7 +25,7 @@ import static com.nt.LMS.constants.UserConstants.USER_DELETION_MESSAGE;
 public class AdminController {
 
     @Autowired
-    UserService userService;
+    private UserService userService;
 
     @Autowired
     private AdminService adminService;
@@ -51,7 +51,7 @@ public class AdminController {
             return ResponseEntity.ok(USER_DELETION_MESSAGE);
 
     }
-    //Needs user object complete
+
     @GetMapping("/get-employees")
     public ResponseEntity<List<UserOutDTO>> getAllEmployees() {
          return ResponseEntity.ok(adminService.getAllUsers());  // HTTP 200 OK

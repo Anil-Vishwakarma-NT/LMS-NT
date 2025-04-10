@@ -4,7 +4,6 @@ package com.nt.LMS.service;
 import com.nt.LMS.converter.UserDTOConverter;
 import com.nt.LMS.dto.UserOutDTO;
 import com.nt.LMS.exception.ResourceNotFoundException;
-//import com.nt.LMS.exceptions.ManagerNotFoundException;
 import com.nt.LMS.constants.UserConstants;
 import com.nt.LMS.dto.MessageOutDto;
 import com.nt.LMS.dto.RegisterDto;
@@ -17,15 +16,12 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
-
 import java.util.ArrayList;
 import java.util.Date;
-
 import java.util.List;
 import java.util.Optional;
-import java.util.stream.Collectors;
-
 import static com.nt.LMS.constants.UserConstants.*;
+
 
 @Slf4j
 @Service
@@ -40,12 +36,8 @@ public class AdminService {
     @Autowired
     private PasswordEncoder passwordEncoder;
 
-
     @Autowired
-    UserDTOConverter userDTOConverter;
-
-
-
+    private UserDTOConverter userDTOConverter;
 
     public MessageOutDto register(RegisterDto registerDto) {
         log.info("Attempting to register user with email: {}", registerDto.getEmail());
@@ -74,7 +66,6 @@ public class AdminService {
     }
 
 
-
     public void empDeletion(long id) {
         Optional<User> userOpt = userRepository.findById(id);
         User user = userOpt.orElseThrow(() -> new ResourceNotFoundException(USER_NOT_FOUND));
@@ -88,7 +79,6 @@ public class AdminService {
             throw new IllegalStateException(INVALID_USER_ROLE);
         }
     }
-
 
 
     public List<UserOutDTO> getAllUsers() {
@@ -112,17 +102,19 @@ public class AdminService {
     }
 
 
-    public boolean changeRole(long userId, String role) {
+    public boolean changeRole(long userId, String newrole) {
         try {
-            Role r = roleRepository.findByRoleName(role);
-            if (r == null) {
+            Role role = roleRepository.findByRoleName(newrole);
+            if (role == null) {
                 throw new IllegalArgumentException(INVALID_USER_ROLE);
             }
             Optional<User> userOpt = userRepository.findById(userId);
-            User user = userOpt.orElseThrow(() -> new ResourceNotFoundException(USER_NOT_FOUND));
-            int rowsAffected = userRepository.updateRole(r.getRoleId(), userId);
+            if(userOpt == null){
+                throw new ResourceNotFoundException(USER_NOT_FOUND);
+            }
+            int rowsAffected = userRepository.updateRole(role.getRoleId(), userId);
             return rowsAffected > 0;
-        }catch (Exception e) { throw new RuntimeException(ERROR  + e); }
+        }catch (Exception e) { throw new  RuntimeException(ERROR  + e); }
     }
 
 
@@ -143,7 +135,6 @@ public class AdminService {
             throw new RuntimeException(ERROR, e);
         }
     }
-
 
 
     public List<UserOutDTO> getEmps(String username) {
