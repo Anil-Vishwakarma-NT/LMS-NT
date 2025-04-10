@@ -6,15 +6,17 @@ import jakarta.validation.constraints.Pattern;
 import jakarta.validation.constraints.Size;
 import lombok.*;
 
+import static com.example.course_service_lms.constants.BundleConstants.*;
+
 @Data
 
 
 public class BundleDTO {
-    @NotBlank(message = "Bundle Name cannot be empty")
-    @Size(min = 3, message = "Bundle Name must be at least 3 characters long")
+    @NotBlank(message =  BUNDLE_NAME_NOT_BLANK)
+    @Size(min = 3, message =  BUNDLE_NAME_MIN_LENGTH)
     @Pattern(
             regexp = "^(?!\\d)(?!\\s)[A-Za-z][A-Za-z0-9]*(?<!\\s)$",
-            message = "Bundle Name invalid"
+            message = BUNDLE_NAME_INVALID
     )
     private String bundleName;
 

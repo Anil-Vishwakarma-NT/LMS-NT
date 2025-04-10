@@ -1,5 +1,6 @@
 package com.example.course_service_lms.serviceImpl;
 
+import com.example.course_service_lms.constants.BundleConstants;
 import com.example.course_service_lms.dto.BundleDTO;
 import com.example.course_service_lms.entity.Bundle;
 import com.example.course_service_lms.exception.ResourceAlreadyExistsException;
@@ -16,6 +17,8 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 
+import static com.example.course_service_lms.constants.BundleConstants.*;
+
 @Service
 @Slf4j
 public class BundleServiceImpl implements BundleService {
@@ -31,7 +34,7 @@ public class BundleServiceImpl implements BundleService {
             // Check for duplicate bundle name
             if (bundleRepository.existsByBundleName(bundleDTO.getBundleName())) {
                 log.error("Bundle with name '{}' already exists", bundleDTO.getBundleName());
-                throw new ResourceAlreadyExistsException("A bundle with the name '" + bundleDTO.getBundleName() + "' already exists.");
+                throw new ResourceAlreadyExistsException(String.format(BUNDLE_ALREADY_EXISTS, bundleDTO.getBundleName()));
             }
             // Convert DTO to Entity
             Bundle bundle = new Bundle();
@@ -46,7 +49,7 @@ public class BundleServiceImpl implements BundleService {
         } catch (ResourceAlreadyExistsException e) {
             throw e;
         } catch (Exception e) {
-            throw new RuntimeException("Something went wrong",e);
+            throw new RuntimeException(GENERAL_ERROR,e);
         }
     }
 
@@ -60,7 +63,7 @@ public class BundleServiceImpl implements BundleService {
 
         if (bundles.isEmpty()) {
             log.warn("No bundles found in the system");
-            throw new ResourceNotFoundException("No bundles found");
+            throw new ResourceNotFoundException(NO_BUNDLES_FOUND);
         }
 
         log.info("Successfully retrieved {} bundles", bundles.size());
@@ -77,7 +80,7 @@ public class BundleServiceImpl implements BundleService {
 
         if (!optionalBundle.isPresent()) {
             log.error("Bundle with ID {} not found", bundleId);
-            throw new ResourceNotFoundException("Bundle with ID " + bundleId + " not found");
+            throw new ResourceNotFoundException(String.format(BUNDLE_NOT_FOUND_BY_ID, bundleId));
         }
 
         log.info("Successfully retrieved bundle: {}", optionalBundle.get().getBundleName());
@@ -86,7 +89,7 @@ public class BundleServiceImpl implements BundleService {
         catch(ResourceNotFoundException e) {
             throw e;
         }catch (Exception e) {
-            throw new RuntimeException("Something went wrong");
+            throw new RuntimeException(GENERAL_ERROR);
         }
 
     }
@@ -98,13 +101,13 @@ public class BundleServiceImpl implements BundleService {
             // Check if the bundle exists
             Bundle existingBundle = bundleRepository.findById(bundleId).orElseThrow(() -> {
                 log.error("Bundle with ID {} not found", bundleId);
-                return new ResourceNotFoundException("Bundle with ID " + bundleId + " not found");
+                return new ResourceNotFoundException(String.format(BUNDLE_NOT_FOUND_BY_ID, bundleId));
             });
 
             // Validate if the updated name is unique (excluding the same bundle)
             if (bundleRepository.existsByBundleName(bundleDTO.getBundleName()) && !existingBundle.getBundleName().equalsIgnoreCase(bundleDTO.getBundleName())) {
                 log.error("Bundle with name '{}' already exists", bundleDTO.getBundleName());
-                throw new ResourceAlreadyExistsException("A bundle with the name '" + bundleDTO.getBundleName() + "' already exists.");
+                throw new ResourceAlreadyExistsException(String.format(BUNDLE_ALREADY_EXISTS, bundleDTO.getBundleName()));
             }
             // Update the bundle entity
             existingBundle.setBundleName(bundleDTO.getBundleName());
@@ -121,7 +124,7 @@ public class BundleServiceImpl implements BundleService {
             throw e;
         }
         catch (Exception e) {
-            throw new RuntimeException("Something went wrong");
+            throw new RuntimeException(GENERAL_ERROR);
         }
     }
 
@@ -133,7 +136,7 @@ public class BundleServiceImpl implements BundleService {
             // Check if the bundle exists
             Bundle existingBundle = bundleRepository.findById(id).orElseThrow(() -> {
                 log.error("Bundle with ID {} not found", id);
-                return new ResourceNotFoundException("Bundle with ID " + id + " not found");
+                return new ResourceNotFoundException(String.format(BUNDLE_NOT_FOUND_BY_ID, id));
             });
             // Delete the bundle
             bundleRepository.delete(existingBundle);
@@ -143,7 +146,7 @@ public class BundleServiceImpl implements BundleService {
             throw e;
         }
         catch (Exception e) {
-            throw new RuntimeException("Something went wrong");
+            throw new RuntimeException(GENERAL_ERROR);
         }
 
     }

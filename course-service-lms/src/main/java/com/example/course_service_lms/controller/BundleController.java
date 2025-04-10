@@ -4,7 +4,6 @@ import com.example.course_service_lms.dto.BundleDTO;
 import com.example.course_service_lms.entity.Bundle;
 import com.example.course_service_lms.service.BundleService;
 import jakarta.validation.Valid;
-import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;

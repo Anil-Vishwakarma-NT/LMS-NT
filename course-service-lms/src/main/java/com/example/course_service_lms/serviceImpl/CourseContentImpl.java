@@ -16,6 +16,9 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
+import static com.example.course_service_lms.constants.BundleConstants.GENERAL_ERROR;
+import static com.example.course_service_lms.constants.CourseContentConstants.*;
+
 @Service
 public class CourseContentImpl implements CourseContentService {
 
@@ -30,18 +33,18 @@ public class CourseContentImpl implements CourseContentService {
         try {
             Optional<CourseContent> existingCourse = courseContentRepository.findByTitleIgnoreCaseAndCourseId(courseContentDTO.getTitle(),courseContentDTO.getCourseId());
             if(existingCourse.isPresent()) {
-                throw new ResourceAlreadyExistsException("Course Content Already Present");
+                throw new ResourceAlreadyExistsException(COURSE_CONTENT_ALREADY_PRESENT);
             }
             boolean courseExists = courseRepository.existsById(courseContentDTO.getCourseId());
             if (!courseExists){
-               throw new ResourceNotFoundException("Course does not exists");
+               throw new ResourceNotFoundException(COURSE_NOT_FOUND);
             }
             CourseContent courseContent = CourseContentConverters.courseContentDtoToCourseContent(courseContentDTO);
             return courseContentRepository.save(courseContent);
         } catch (ResourceAlreadyExistsException | ResourceNotFoundException e) {
             throw e;
         } catch (Exception e) {
-            throw new RuntimeException("Something went wrong");
+            throw new RuntimeException(GENERAL_ERROR);
         }
     }
 
@@ -50,13 +53,13 @@ public class CourseContentImpl implements CourseContentService {
         try {
             List<CourseContent> courseContents = courseContentRepository.findAll();
             if (courseContents.isEmpty()) {
-                throw new ResourceNotFoundException("No Contents Found");
+                throw new ResourceNotFoundException(CONTENT_NOT_FOUND);
             }
             return courseContents;
         } catch (ResourceNotFoundException e) {
             throw e;
         } catch (Exception e) {
-            throw new RuntimeException("Something went wrong");
+            throw new RuntimeException(GENERAL_ERROR);
         }
     }
 
@@ -65,13 +68,13 @@ public class CourseContentImpl implements CourseContentService {
         try {
             Optional<CourseContent> courseContent = courseContentRepository.findById(courseContentId);
             if (courseContent.isEmpty()) {
-                throw new ResourceNotFoundException("Course Content Not Found");
+                throw new ResourceNotFoundException(COURSE_CONTENT_NOT_FOUND);
             }
            return courseContent;
         } catch (ResourceNotFoundException e) {
             throw e;
         } catch (Exception e) {
-            throw new RuntimeException("Something went wrong");
+            throw new RuntimeException(GENERAL_ERROR);
         }
     }
 
@@ -80,14 +83,14 @@ public class CourseContentImpl implements CourseContentService {
         try {
             Optional<CourseContent> courseContent = courseContentRepository.findById(courseContentId);
             if (courseContent.isEmpty()) {
-                throw new ResourceNotFoundException("Course Content Not Found");
+                throw new ResourceNotFoundException(COURSE_CONTENT_NOT_FOUND);
             }
             courseContentRepository.delete(courseContent.get());
-            return "Course Content Deleted Successfully";
+            return COURSE_CONTENT_DELETED;
         } catch (ResourceNotFoundException e) {
             throw e;
         } catch (Exception e) {
-            throw new RuntimeException("Something went wrong");
+            throw new RuntimeException(GENERAL_ERROR);
         }
     }
 
@@ -96,11 +99,11 @@ public class CourseContentImpl implements CourseContentService {
         try {
             Optional<CourseContent> courseContentOptional = courseContentRepository.findById(courseId);
             if (courseContentOptional.isEmpty()) {
-                throw new ResourceNotFoundException("Course Content Not Found");
+                throw new ResourceNotFoundException(COURSE_CONTENT_NOT_FOUND);
             }
             boolean courseExists = courseRepository.existsById(courseContentDTO.getCourseId());
             if (!courseExists){
-                throw new ResourceNotFoundException("Course does not exists");
+                throw new ResourceNotFoundException(COURSE_NOT_FOUND);
             }
             CourseContent existingCourseContent = courseContentOptional.get();
 
@@ -112,7 +115,7 @@ public class CourseContentImpl implements CourseContentService {
                         courseContentDTO.getTitle(), courseContentDTO.getCourseId());
 
                 if (duplicate.isPresent() && !(duplicate.get().getCourseId() == courseId)) {
-                    throw new ResourceAlreadyExistsException("Course content with the same title already exists for this course.");
+                    throw new ResourceAlreadyExistsException(COURSE_CONTENT_DUPLICATE);
                 }
             }
 
@@ -123,12 +126,12 @@ public class CourseContentImpl implements CourseContentService {
             existingCourseContent.setResourceLink(courseContentDTO.getResourceLink());
 
             courseContentRepository.save(existingCourseContent);
-            return "Course content updated successfully";
+            return COURSE_CONTENT_UPDATED;
 
         } catch (ResourceNotFoundException | ResourceAlreadyExistsException e) {
             throw e;
         } catch(Exception e) {
-            throw new RuntimeException("Something went wrong");
+            throw new RuntimeException(GENERAL_ERROR);
         }
     }
 
@@ -137,17 +140,17 @@ public class CourseContentImpl implements CourseContentService {
         try{
             boolean courseExists = courseRepository.existsById(courseId);
             if (!courseExists){
-                throw new ResourceNotFoundException("Course does not exists");
+                throw new ResourceNotFoundException(CONTENT_NOT_FOUND);
             }
             List<CourseContent> courseContents = courseContentRepository.findByCourseId(courseId);
             if(courseContents.isEmpty()) {
-                throw new ResourceNotFoundException("No Course Contents Found");
+                throw new ResourceNotFoundException(NO_COURSE_CONTENTS_FOUND);
             }
             return courseContents;
         } catch (ResourceNotFoundException e) {
             throw e;
         } catch(Exception e) {
-            throw new RuntimeException("Something went wrong");
+            throw new RuntimeException(GENERAL_ERROR);
         }
     }
 
