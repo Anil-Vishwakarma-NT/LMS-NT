@@ -20,7 +20,7 @@ public class CourseContentController {
     @Autowired
     private CourseContentService courseContentService;
 
-    @PostMapping("/create")
+    @PostMapping
     public ResponseEntity<CourseContent> createCourseContent(@Valid @RequestBody CourseContentDTO courseContentDTO) {
         log.info("Received request to create course content: {}", courseContentDTO.getTitle());
         CourseContent courseContent = courseContentService.createCourseContent(courseContentDTO);
@@ -28,7 +28,7 @@ public class CourseContentController {
         return ResponseEntity.ok(courseContent);
     }
 
-    @GetMapping("/all")
+    @GetMapping
     public ResponseEntity<List<CourseContent>> getAllCourseContents() {
         log.info("Received request to fetch all course contents.");
         List<CourseContent> courseContents = courseContentService.getAllCourseContents();
@@ -56,7 +56,7 @@ public class CourseContentController {
         return ResponseEntity.ok(courseContents);
     }
 
-    @DeleteMapping("/delete/{id}")
+    @DeleteMapping("{id}")
     public ResponseEntity<String> deleteCourseContent(@PathVariable Long id) {
         log.info("Received request to delete course content with ID: {}", id);
         String message = courseContentService.deleteCourseContent(id);
@@ -64,7 +64,7 @@ public class CourseContentController {
         return ResponseEntity.ok(message);
     }
 
-    @PutMapping("/update/{id}")
+    @PutMapping("{id}")
     public ResponseEntity<String> updateCourseContent(@PathVariable Long id, @Valid @RequestBody CourseContentDTO courseContentDTO) {
         log.info("Received request to update course content with ID: {}", id);
         String message = courseContentService.updateCourseContent(id, courseContentDTO);

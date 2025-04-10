@@ -31,5 +31,4 @@ public class CourseContent {
 
     @Column(name = "resource_link")
     private String resourceLink;
-
 }

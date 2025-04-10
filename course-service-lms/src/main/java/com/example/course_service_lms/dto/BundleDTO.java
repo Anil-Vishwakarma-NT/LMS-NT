@@ -9,8 +9,6 @@ import lombok.*;
 import static com.example.course_service_lms.constants.BundleConstants.*;
 
 @Data
-
-
 public class BundleDTO {
     @NotBlank(message =  BUNDLE_NAME_NOT_BLANK)
     @Size(min = 3, message =  BUNDLE_NAME_MIN_LENGTH)
@@ -19,11 +17,9 @@ public class BundleDTO {
             message = BUNDLE_NAME_INVALID
     )
     private String bundleName;
-
     public BundleDTO(String bundleName) {
         this.bundleName = bundleName;
     }
-
     public BundleDTO() {
     }
 }

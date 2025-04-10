@@ -21,14 +21,14 @@ public class CourseController {
     @Autowired
     private CourseService courseService;
 
-    @PostMapping("/create")
+    @PostMapping
     public ResponseEntity<Course> createCourse(@Valid @RequestBody CourseDTO courseDTO) {
         log.info("Received request to create course: {}", courseDTO.getTitle());
         Course createdCourse = courseService.createCourse(courseDTO);
         return ResponseEntity.ok(createdCourse);
     }
 
-    @GetMapping("/all")
+    @GetMapping
     public ResponseEntity<List<Course>> getAllCourses() {
         log.info("Received request to get all courses.");
         List<Course> courses = courseService.getAllCourses();
@@ -42,16 +42,15 @@ public class CourseController {
         return ResponseEntity.ok(course);
     }
 
-    @DeleteMapping("/delete/{id}")
+    @DeleteMapping("/{id}")
     public ResponseEntity<String> deleteCourse(@PathVariable Long id) {
         log.info("Received request to delete course with ID: {}", id);
         String response = courseService.deleteCourse(id);
         return ResponseEntity.ok(response);
     }
 
-    @PutMapping("/update/{id}")
-    public ResponseEntity<String> updateCourse(@PathVariable Long id,
-                                               @Valid @RequestBody CourseDTO courseDTO) {
+    @PutMapping("/{id}")
+    public ResponseEntity<String> updateCourse(@PathVariable Long id,@Valid @RequestBody CourseDTO courseDTO) {
         log.info("Received request to update course with ID: {}", id);
         String response = courseService.updateCourse(id, courseDTO);
         return ResponseEntity.ok(response);

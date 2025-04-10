@@ -1,17 +1,13 @@
 package com.example.course_service_lms.entity;
 
-import com.example.course_service_lms.Enum.CourseLevel;
 import jakarta.persistence.*;
 import lombok.*;
 
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Objects;
 
 @Entity
 @Table(name = "course")
 @Data
-
 public class Course {
 
     @Id
@@ -43,17 +39,14 @@ public class Course {
         this.image = image;
         this.level = level;
     }
-
     public Course() {
     }
-
     @Override
     public boolean equals(Object o) {
         if (o == null || getClass() != o.getClass()) return false;
         Course course = (Course) o;
         return courseId == course.courseId && ownerId == course.ownerId && Objects.equals(title, course.title) && Objects.equals(description, course.description) && Objects.equals(image, course.image) && level == course.level;
     }
-
     @Override
     public int hashCode() {
         return Objects.hash(courseId, ownerId, title, description, image, level);

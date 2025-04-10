@@ -39,10 +39,8 @@ public class CourseBundleDTO {
     public int hashCode() {
         return Objects.hash(courseBundleId, bundleId, bundleName, courseId, courseName);
     }
-
     public CourseBundleDTO() {
     }
-
     public CourseBundleDTO(long courseBundleId, Long bundleId, String bundleName, Long courseId, String courseName) {
         this.courseBundleId = courseBundleId;
         this.bundleId = bundleId;

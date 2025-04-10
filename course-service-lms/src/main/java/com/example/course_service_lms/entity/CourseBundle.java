@@ -40,6 +40,7 @@ public class CourseBundle {
         this.bundleId = bundleId;
         this.courseId = courseId;
     }
+
 }
 
 

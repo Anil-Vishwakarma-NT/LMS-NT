@@ -1,9 +1,10 @@
 package com.example.course_service_lms.serviceImpl;
 
-import com.example.course_service_lms.Enum.CourseLevel;
 import com.example.course_service_lms.converters.CourseConvertors;
 import com.example.course_service_lms.dto.CourseDTO;
 import com.example.course_service_lms.entity.Course;
+import com.example.course_service_lms.entity.CourseBundle;
+import com.example.course_service_lms.entity.CourseLevel;
 import com.example.course_service_lms.exception.ResourceAlreadyExistsException;
 import com.example.course_service_lms.exception.ResourceNotFoundException;
 import com.example.course_service_lms.exception.ResourceNotValidException;
@@ -13,9 +14,7 @@ import com.example.course_service_lms.utils.StringUtils;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import org.springframework.web.multipart.MultipartFile;
 
-import java.io.IOException;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
