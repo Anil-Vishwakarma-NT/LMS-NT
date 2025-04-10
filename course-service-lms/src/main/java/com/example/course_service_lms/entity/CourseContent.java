@@ -1,8 +1,9 @@
 package com.example.course_service_lms.entity;
 
 import jakarta.persistence.*;
+import lombok.AllArgsConstructor;
 import lombok.Data;
-
+import lombok.NoArgsConstructor;
 import java.util.Objects;
 
 @Entity

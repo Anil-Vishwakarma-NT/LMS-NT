@@ -1,34 +1,31 @@
 package com.example.course_service_lms.dto;
 
-import com.example.course_service_lms.Enum.CourseLevel;
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
-import lombok.AllArgsConstructor;
 import lombok.Data;
-import lombok.NoArgsConstructor;
 
 import java.util.Objects;
 
+import static com.example.course_service_lms.constants.CourseConstants.*;
+
 @Data
-
-
 public class CourseDTO {
 
-    @NotBlank(message = "Title cannot be blank")
-    @Size(min = 3, message = "Title must be at least 3 characters long")
+    @NotBlank(message = TITLE_BLANK)
+    @Size(min = 3, message = TITLE_MIN_LENGTH)
     private String title;
 
-    @NotNull(message = "OwnerId cannot be blank")
-    @Min(value = 0, message = "Valid Owner ID required")
+    @NotNull(message = OWNER_ID_BLANK)
+    @Min(value = 0, message = OWNER_ID_INVALID)
     private Long ownerId;
 
-    @NotBlank(message = "Description cannot be blank")
-    @Size(min = 3, message = "Description must be at least 3 characters long")
+    @NotBlank(message = DESCRIPTION_BLANK)
+    @Size(min = 3, message = DESCRIPTION_MIN_LENGTH)
     private String description;
 
-    @NotNull(message = "Course level is required")
+    @NotNull(message = COURSE_LEVEL_REQUIRED)
     private String courseLevel;
 
     private String image;
