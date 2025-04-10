@@ -3,11 +3,13 @@ package com.nt.LMS.converter;
 import com.nt.LMS.dto.UserOutDTO;
 import com.nt.LMS.entities.User;
 import com.nt.LMS.exception.ResourceNotFoundException;
+import org.springframework.context.annotation.Bean;
+import org.springframework.stereotype.Component;
 
 import java.util.Optional;
 
 import static com.nt.LMS.constants.UserConstants.USER_NOT_FOUND;
-
+@Component
 public class UserDTOConverter {
 
 

@@ -4,7 +4,9 @@ import com.nt.LMS.dto.GroupOutDTO;
 import com.nt.LMS.dto.UserOutDTO;
 import com.nt.LMS.entities.Group;
 import com.nt.LMS.entities.User;
+import org.springframework.stereotype.Component;
 
+@Component
 public class GroupDTOConverter {
     public GroupOutDTO groupToOutDto(Group group , String creator){
         GroupOutDTO groupout = new GroupOutDTO();
