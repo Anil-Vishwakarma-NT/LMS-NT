@@ -51,14 +51,14 @@ public class JwtUtil {
             throw e;
         }
     }
-public String generateAccessToken(UserDetails userDetails) {
-    Map<String, Object> claims = new HashMap<>();
-    claims.put("roles", userDetails.getAuthorities().stream()
-            .map(authority -> authority.getAuthority())  // Remove "ROLE_" prefix
-            .collect(Collectors.joining(",")));
+    public String generateAccessToken(UserDetails userDetails) {
+        Map<String, Object> claims = new HashMap<>();
+        claims.put("roles", userDetails.getAuthorities().stream()
+                .map(authority -> authority.getAuthority())  // Remove "ROLE_" prefix
+                .collect(Collectors.joining(",")));
 
-    return createToken(claims, userDetails.getUsername(), ACCESS_TOKEN_EXPIRATION);
-}
+        return createToken(claims, userDetails.getUsername(), ACCESS_TOKEN_EXPIRATION);
+    }
 
 
     public String generateRefreshToken(UserDetails userDetails) {

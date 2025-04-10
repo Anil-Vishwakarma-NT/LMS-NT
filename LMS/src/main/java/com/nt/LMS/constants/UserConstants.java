@@ -24,6 +24,11 @@ public final class UserConstants {
 
     public static final String REFRESH_TOKEN_EXPIRE_MASSAGE = "Refresh token expired";
 
+    public static final String USER_DELETION_MESSAGE = "User deleted successfully";
+
+    public static final String DATABASE_ERROR = "Error occurred while fetching entries from database";
+
+    public static final String ERROR = "Error occurred";
 
 
 }

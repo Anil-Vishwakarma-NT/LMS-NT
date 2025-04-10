@@ -1,10 +1,10 @@
 package com.nt.LMS.controller;
 
-import com.nt.LMS.dto.GroupDTO;
+import com.nt.LMS.dto.GroupInDTO;
+import com.nt.LMS.dto.GroupOutDTO;
 import com.nt.LMS.dto.UserOutDTO;
 import com.nt.LMS.entities.Group;
 import com.nt.LMS.entities.User;
-import com.nt.LMS.exception.UserNotFoundException;
 //import com.nt.LMS.exceptions.GroupNotFoundException;
 //import com.nt.LMS.exceptions.InvalidGroupException;
 import com.nt.LMS.repository.UserRepository;
@@ -33,101 +33,55 @@ public class GroupController {
     private UserRepository userRepository;
 
     @PostMapping("/create-group")
-    public ResponseEntity<String> createGroup(@RequestBody @Valid GroupDTO groupDTO) {
-
-        try {
+    public ResponseEntity<String> createGroup(@RequestBody @Valid GroupInDTO groupInDTO) {
             Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
             String username = authentication.getName();
-            User user = userRepository.findByEmail(username)
-                    .orElseThrow(() -> new RuntimeException("User not found"));
-            groupService.createGroup(groupDTO.getGroupName(), user.getUserId());
+            groupService.createGroup(groupInDTO.getGroupName(), username);
             return ResponseEntity.status(HttpStatus.CREATED).body("Group successfully created");
-        } catch (Exception e) {
-            // General exception handler
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("An error occurred while creating the group");
         }
-    }
+
 
     @DeleteMapping("/del-group/{groupId}")
     public ResponseEntity<String> deleteGroup(@PathVariable long groupId) {
-        try {
-            groupService.delGroup(groupId);
-            return ResponseEntity.ok("Group deleted successfully.");
-        }  catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Error deleting group.");
-        }
+            return ResponseEntity.ok(groupService.delGroup(groupId));
     }
-    //avoid Request Param
+
+
     @PostMapping("/add-user")
-    public ResponseEntity<String> addUserToGroup(@RequestBody GroupDTO groupDTO) {
-        try {
-            groupService.addUserToGroup(groupDTO.getUserId(), groupDTO.getGroupId());
-            return ResponseEntity.ok("User added to group.");
-        } catch (UserNotFoundException e) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("User not found.");
-        } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Error adding user to group.");
-        }
+    public ResponseEntity<String> addUserToGroup(@RequestBody GroupInDTO groupInDTO) {
+            return ResponseEntity.ok(groupService.addUserToGroup(groupInDTO.getUserId(), groupInDTO.getGroupId()));
     }
 
     @DeleteMapping("/remove-user")
-    public ResponseEntity<String> removeUserFromGroup(@RequestParam GroupDTO groupdto) {
-        try {
-            groupService.removeUserInGroup(groupdto.getUserId(), groupdto.getGroupId());
-            return ResponseEntity.ok("User removed successfully.");
-        } catch (UserNotFoundException e) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("User not found.");
-        } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Error removing user from group.");
-        }
+    public ResponseEntity<String> removeUserFromGroup(@RequestParam GroupInDTO groupdto) {
+            return ResponseEntity.ok(groupService.removeUserFromGroup(groupdto.getUserId(), groupdto.getGroupId()));
     }
+
 
     @GetMapping("/group-emps/{groupId}")
     public ResponseEntity<List<UserOutDTO>> getUsersInGroup(@PathVariable long groupId) {
-        try {
-            Set<User> users = groupService.getUsersInGroup(groupId);
+            List<UserOutDTO> users = groupService.getUsersInGroup(groupId);
             if (users.isEmpty()) {
                 return ResponseEntity.noContent().build();  // HTTP 204 No Content if no users
             }
-            List<UserOutDTO> response = users.stream()
-                    .map(user -> new UserOutDTO(user.getUserId(), user.getUserName())) // Create UserOutDTO from User
-                    .collect(Collectors.toList()); // Collect the results into a List
-            return ResponseEntity.ok(response); // HTTP 200 OK
-        } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(null);  // HTTP 500 Internal Server Error for any other issue
-        }
+            return ResponseEntity.ok(users); // HTTP 200 OK
     }
 
 
-    @GetMapping("/get-groups")
-    public ResponseEntity<List<GroupDTO>> getGroups(@RequestBody GroupDTO groupdto){
+//review again
+    @GetMapping("/groups")
+    public ResponseEntity<List<GroupOutDTO>> getGroups(@RequestBody GroupInDTO groupdto){
+            List<GroupOutDTO> groups = groupService.getGroups(groupdto.getUserId());
+                return ResponseEntity.ok(groups);
 
-        try{
-            List<Group> groups = groupService.getGroups(groupdto.getUserId());
-
-        List<GroupDTO> group = groups.stream()
-                .map(GroupDTO::new)
-                .collect(Collectors.toList());
-        return ResponseEntity.ok(group);
-    }
-        catch(Exception e){
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(null);
-        }
     }
 
-    @GetMapping("/get-all-groups")
+    @GetMapping("/all-groups")
     @PreAuthorize("hasAuthority('admin')")
-    public ResponseEntity<List<GroupDTO>> getAllGroups(){
-        try{
-             List<Group> groups = groupService.getAllGroups();
-            List<GroupDTO> group = groups.stream()
-                    .map(GroupDTO::new)
-                    .collect(Collectors.toList());
-            return ResponseEntity.ok(group);
-        }
-        catch(Exception e){
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(null);
-        }
+    public ResponseEntity<List<GroupOutDTO>> getAllGroups(){
+             List<GroupOutDTO> groups = groupService.getAllGroups();
+            return ResponseEntity.ok(groups);
     }
+    //
 
 }

@@ -1,8 +1,9 @@
 package com.nt.LMS.service;
 
 
+import com.nt.LMS.converter.UserDTOConverter;
 import com.nt.LMS.dto.UserOutDTO;
-import com.nt.LMS.exception.UserNotFoundException;
+import com.nt.LMS.exception.ResourceNotFoundException;
 //import com.nt.LMS.exceptions.ManagerNotFoundException;
 import com.nt.LMS.constants.UserConstants;
 import com.nt.LMS.dto.MessageOutDto;
@@ -14,16 +15,17 @@ import com.nt.LMS.repository.RoleRepository;
 import com.nt.LMS.repository.UserRepository;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.Date;
 
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
+
+import static com.nt.LMS.constants.UserConstants.*;
 
 @Slf4j
 @Service
@@ -37,6 +39,12 @@ public class AdminService {
 
     @Autowired
     private PasswordEncoder passwordEncoder;
+
+
+    @Autowired
+    UserDTOConverter userDTOConverter;
+
+
 
 
     public MessageOutDto register(RegisterDto registerDto) {
@@ -69,7 +77,7 @@ public class AdminService {
 
     public void empDeletion(long id) {
         Optional<User> userOpt = userRepository.findById(id);
-        User user = userOpt.orElseThrow(() -> new UserNotFoundException("User with ID " + id + " not found"));
+        User user = userOpt.orElseThrow(() -> new ResourceNotFoundException(USER_NOT_FOUND));
         String role = user.getRole().getName();
         if (role.equalsIgnoreCase("employee")) {
             userRepository.deleteById(user.getUserId());
@@ -77,7 +85,7 @@ public class AdminService {
             userRepository.updateManager(1L, user.getUserId()); // Update manager to a default manager or a specific one
             userRepository.deleteById(user.getUserId());
         } else {
-            throw new IllegalStateException("Unexpected role: " + role);
+            throw new IllegalStateException(INVALID_USER_ROLE);
         }
     }
 
@@ -87,70 +95,72 @@ public class AdminService {
         try {
             List<User> employees = userRepository.getEmployees();
             if (employees.isEmpty()) {
-                throw new UserNotFoundException("No users found in the database");
+                throw new ResourceNotFoundException(USER_NOT_FOUND);
             }
-            List<UserOutDTO> res = employees.stream()
-                    .map(user -> new UserOutDTO(user.getUserId(), user.getUserName())) // Create UserOutDTO from User
-                    .collect(Collectors.toList());
+            List<UserOutDTO> res = new ArrayList<>();
+            for(User user : employees){
+                Optional<User> userOpt = userRepository.findById(user.getManagerId());
+                User manager = userOpt.orElseThrow(() -> new ResourceNotFoundException(USER_NOT_FOUND));
+                String managername = manager.getFirstName() + manager.getLastName();
+                UserOutDTO userdto = userDTOConverter.userToOutDto(user , managername);
+                res.add(userdto);
+            }
             return res;
         } catch (Exception e) {
-            throw new RuntimeException("An error occurred while fetching users from the database", e);
+            throw new RuntimeException(DATABASE_ERROR, e);
         }
     }
 
-
-    public User getUserDetail(long userId){
-        Optional<User> userOpt = userRepository.findById(userId);
-        User user = userOpt.orElseThrow(() -> new UserNotFoundException("User with ID " + " not found"));
-        return user;
-    }
 
     public boolean changeRole(long userId, String role) {
         try {
             Role r = roleRepository.findByRoleName(role);
             if (r == null) {
-                throw new IllegalArgumentException("Role " + role + " not found");
+                throw new IllegalArgumentException(INVALID_USER_ROLE);
             }
             Optional<User> userOpt = userRepository.findById(userId);
-            User user = userOpt.orElseThrow(() -> new UserNotFoundException("User with ID " + " not found"));
+            User user = userOpt.orElseThrow(() -> new ResourceNotFoundException(USER_NOT_FOUND));
             int rowsAffected = userRepository.updateRole(r.getRoleId(), userId);
             return rowsAffected > 0;
-        }catch (Exception e) { throw new RuntimeException("An error occurred " + e); }
+        }catch (Exception e) { throw new RuntimeException(ERROR  + e); }
     }
 
 
     public List<UserOutDTO> getManEmp(long userId) {
         try {Optional<User> managerOpt = userRepository.findById(userId);
             if (managerOpt.isEmpty()) {
-                // If manager doesn't exist, throw a custom exception
-                throw new RuntimeException("Manager with ID " + userId + " not found.");
+                throw new ResourceNotFoundException(USER_NOT_FOUND);
             }
             List<User> users = userRepository.getEmployeesUnderManager(userId);
-            if (users.isEmpty()) {
-                throw new RuntimeException("Manager with ID " + userId + " has no employees.");
+            List<UserOutDTO> response = new ArrayList<>();
+            for(User user : users){
+                String managername = "";
+                UserOutDTO userdto = userDTOConverter.userToOutDto(user , managername);
+                response.add(userdto);
             }
-            List<UserOutDTO> response = users.stream()
-                                           .map(user -> new UserOutDTO(user.getUserId(), user.getUserName())) // Create UserOutDTO from User
-                                           .collect(Collectors.toList());
             return response;
         } catch (Exception e) {
-            throw new RuntimeException("An error occurred while fetching employees for manager ID " + userId, e);
+            throw new RuntimeException(ERROR, e);
         }
     }
 
 
 
     public List<UserOutDTO> getEmps(String username) {
-        Optional<User> userOpt = userRepository.findByEmail(username);
-        User user = userOpt.orElseThrow(() -> new UserNotFoundException("User with ID " + " not found"));
-        List<User> users = userRepository.getEmployeesUnderManager(user.getUserId());
-        if (users.isEmpty()) {
-            throw new RuntimeException("Manager with ID " + user.getUserId() + " has no employees.");
+        try {
+            Optional<User> userOpt = userRepository.findByEmail(username);
+            User user = userOpt.orElseThrow(() -> new ResourceNotFoundException(USER_NOT_FOUND));
+            List<User> users = userRepository.getEmployeesUnderManager(user.getUserId());
+            List<UserOutDTO> response = new ArrayList<>();
+            for(User u : users){
+                String managername = "";
+                UserOutDTO userdto = userDTOConverter.userToOutDto(u , managername);
+                response.add(userdto);
+            }
+            return response;
+        }catch (Exception e){
+            throw  new RuntimeException(ERROR + e);
         }
-        List<UserOutDTO> response = users.stream()
-                .map(u -> new UserOutDTO(u.getUserId(), u.getUserName())) // Create UserOutDTO from User
-                .collect(Collectors.toList());
-        return response;
     }
 }
 

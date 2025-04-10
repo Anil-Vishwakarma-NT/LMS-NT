@@ -34,7 +34,6 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
 
-
 @Slf4j
 @Service
 public class AuthService {
@@ -53,12 +52,6 @@ public class AuthService {
 
     @Autowired
     private RefreshTokenRepository refreshTokenRepository;
-
-    @Autowired
-    private RoleRepository roleRepository;
-
-    @Autowired
-    private PasswordEncoder passwordEncoder;
 
     public TokenResponseDto login(LoginDto loginDto) {
         log.info("Attempting login for email: {}", loginDto.getEmail());

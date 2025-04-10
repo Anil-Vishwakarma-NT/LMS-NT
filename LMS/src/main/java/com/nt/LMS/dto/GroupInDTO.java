@@ -6,7 +6,7 @@ import lombok.Data;
 
 
 @Data
-public class GroupDTO {
+public class GroupInDTO {
 
 
 
@@ -16,7 +16,7 @@ public class GroupDTO {
        private long userId;
 
 
-    public GroupDTO(Group group) {
+    public GroupInDTO(Group group) {
         this.groupId= group.getGroupId();
         this.groupName = group.getGroupName();
         this.userId = group.getCreatorId();

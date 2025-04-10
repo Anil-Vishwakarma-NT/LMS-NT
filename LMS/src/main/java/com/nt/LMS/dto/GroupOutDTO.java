@@ -4,13 +4,12 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+@Data
 @AllArgsConstructor
 @NoArgsConstructor
-@Data
-public class UserDTO {
-
-    private long userId;
-    private String changeRole;
-
+public class GroupOutDTO {
+    private String groupName;
+    private long groupId;
+    private String creatorName;
 
 }
