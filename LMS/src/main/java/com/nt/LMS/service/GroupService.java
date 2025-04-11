@@ -17,6 +17,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.*;
 
+import static com.nt.LMS.constants.GroupConstants.*;
 import static com.nt.LMS.constants.UserConstants.UPDATED;
 import static com.nt.LMS.constants.UserConstants.USER_NOT_FOUND;
 
@@ -38,19 +39,20 @@ public class GroupService {
     @Autowired
     private GroupDTOConverter groupDTOConverter;
 
-    public void createGroup(String group_name , String username){
+    public void createGroup(String groupName , String username){
         try {
-            log.info("Attempting to create a group with name: {} by user: {}", group_name, username);
+            log.info("Attempting to create a group with name: {} by user: {}", groupName, username);
             User user = userRepository.findByEmail(username)
                     .orElseThrow(() -> new RuntimeException("User not found"));
-            Group group = new Group(group_name, user.getUserId());
+            Group group = new Group(groupName, user.getUserId());
             groupRepository.save(group);
-            log.info("Group '{}' created successfully with creator '{}'", group_name, username);
+            log.info("Group '{}' created successfully with creator '{}'", groupName, username);
         } catch (Exception e) {
-            log.error("Error while creating group '{}' by user '{}'", group_name, username, e);
+            log.error("Error while creating group '{}' by user '{}'", groupName, username, e);
             throw new RuntimeException(e);
         }
     }
+
 
     public String delGroup(long groupId) {
         try {
@@ -59,10 +61,10 @@ public class GroupService {
             userGroupRepository.deleteByGroupId(groupId);
             groupRepository.delete(group);
             log.info("Group with ID: {} deleted successfully", groupId);
-            return "Group deleted successfully";
+            return GROUP_DELETED;
         } catch (Exception e) {
             log.error("Error while deleting group with ID: {}", groupId, e);
-            throw new RuntimeException("Failed to delete group", e);
+            throw new RuntimeException(GROUP_FAILURE, e);
         }
     }
 
@@ -73,12 +75,13 @@ public class GroupService {
             UserGroup userGroup = new UserGroup(userId,groupId) ;// ← ADD THIS
             userGroupRepository.save(userGroup); // Save user to persist both sides
             log.info("User with ID: {} successfully added to group with ID: {}", userId, groupId);
-            return "User successfully added to group.";
+            return USER_ADDED_TO_GROUP;
         } catch (Exception e) {
             log.error("Error while adding user with ID: {} to group with ID: {}", userId, groupId, e);
-            throw new RuntimeException("Error while adding user to group", e);
+            throw new RuntimeException(GROUP_FAILURE, e);
         }
     }
+
 
     public String removeUserFromGroup(long userId, long groupId) {
         try {
@@ -86,14 +89,14 @@ public class GroupService {
             Optional<UserGroup> userGroupOpt = userGroupRepository.findByUserIdAndGroupId(userId, groupId);
             if (userGroupOpt.isEmpty()) {
                 log.warn("User with ID: {} is not part of group with ID: {}", userId, groupId);
-                throw new ResourceNotFoundException("User is not part of the group.");
+                throw new ResourceNotFoundException(USER_NOT_FOUND_IN_GROUP);
             }
             userGroupRepository.delete(userGroupOpt.get());
             log.info("User with ID: {} successfully removed from group with ID: {}", userId, groupId);
-            return "User removed from the group successfully";
+            return User_REMOVED_SUCCESSFULLY;
         } catch (Exception e) {
             log.error("Error while removing user with ID: {} from group with ID: {}", userId, groupId, e);
-            throw new RuntimeException("Failed to remove user from group", e);
+            throw new RuntimeException(GROUP_FAILURE, e);
         }
     }
 
@@ -103,7 +106,7 @@ public class GroupService {
             log.info("Fetching users in group with ID: {}", groupId);
             Group groupOpt = groupRepository.findById(groupId);
             if (groupOpt ==  null) {
-                throw new ResourceNotFoundException("Group not found with ID: " + groupId);
+                throw new ResourceNotFoundException(GROUP_NOT_FOUND + groupId);
             }
             List<UserGroup> userGroupList = userGroupRepository.findAllByGroupId(groupId);
             if (userGroupList.isEmpty()) {
@@ -124,7 +127,7 @@ public class GroupService {
             return response;
         } catch (Exception e) {
             log.error("Error while fetching users in group with ID: {}", groupId, e);
-            throw new RuntimeException("Failed to fetch users for group " + groupId, e);
+            throw new RuntimeException(GROUP_FAILURE + groupId, e);
         }
     }
 

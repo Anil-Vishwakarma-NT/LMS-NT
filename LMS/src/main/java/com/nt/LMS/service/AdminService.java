@@ -39,13 +39,11 @@ public class AdminService {
 
     public MessageOutDto register(RegisterDto registerDto) {
         log.info("Attempting to register user with email: {}", registerDto.getEmail());
-
         Optional<User> existingUser = userRepository.findByEmail(registerDto.getEmail());
         if (existingUser.isPresent()) {
             log.warn("Registration failed - user with email {} already exists", registerDto.getEmail());
             throw new ResourceConflictException(UserConstants.USER_ALREADY_EXISTS);
         }
-
         Role role = roleRepository.findById(registerDto.getRoleId())
                 .orElseThrow(() -> {
                     log.error("Role with ID {} not found", registerDto.getRoleId());
@@ -66,6 +64,7 @@ public class AdminService {
         log.info("User registered successfully with email: {}", registerDto.getEmail());
         return new MessageOutDto(UserConstants.USER_REGISTRATION_SUCCESS);
     }
+
 
     public void employeeDeletion(long id) {
         log.info("Attempting to delete user with ID: {}", id);
@@ -91,6 +90,7 @@ public class AdminService {
         }
     }
 
+
     public List<UserOutDTO> getAllUsers() {
         log.info("Fetching all users");
 
@@ -107,7 +107,6 @@ public class AdminService {
                     log.error("Manager with ID {} not found", user.getManagerId());
                     return new ResourceNotFoundException(USER_NOT_FOUND);
                 });
-
                 String managerName = manager.getFirstName() + " " + manager.getLastName();
                 UserOutDTO userDto = userDTOConverter.userToOutDto(user, managerName);
                 res.add(userDto);
