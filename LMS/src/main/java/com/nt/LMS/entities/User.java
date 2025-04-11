@@ -46,14 +46,6 @@ public class User {
 //        this.group.setGroup_id(1L);
     }
 
-    @ManyToMany
-    @JoinTable(
-            name = "user_groups",
-            joinColumns = @JoinColumn(name = "userId"),
-            inverseJoinColumns = @JoinColumn(name="groupId")
-    )
-    private Set<Group>groups = new HashSet<>();
-
     @Temporal(TemporalType.TIMESTAMP)
     private Date createdAt;
 
