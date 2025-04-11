@@ -137,7 +137,7 @@ public class GroupService {
             log.info("Fetching groups for user with email: {}", email);
             User user = userRepository.findByEmail(email)
                     .orElseThrow(() -> new ResourceNotFoundException(USER_NOT_FOUND));
-            List<Group> groups = groupRepository.getGroups(user.getUserId());
+            List<Group> groups = groupRepository.findByCreatorId(user.getUserId());
             List<GroupOutDTO> groupout = new ArrayList<>();
             for(Group group : groups){
                 GroupOutDTO gout = groupDTOConverter.groupToOutDto(group , user.getFirstName() + user.getLastName());

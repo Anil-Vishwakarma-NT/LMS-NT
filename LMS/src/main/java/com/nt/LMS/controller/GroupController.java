@@ -41,7 +41,7 @@ public class GroupController {
         return ResponseEntity.status(HttpStatus.CREATED).body("Group successfully created");
     }
 
-    @DeleteMapping("/del-group/{groupId}")
+    @DeleteMapping("/{groupId}")
     public ResponseEntity<String> deleteGroup(@PathVariable long groupId) {
         log.info("Attempting to delete group with ID: {}", groupId);
 
@@ -79,7 +79,7 @@ public class GroupController {
 
         if (users.isEmpty()) {
             log.warn("No users found in group with ID: {}", groupId);
-            return ResponseEntity.noContent().build();  // HTTP 204 No Content if no users
+            return ResponseEntity.noContent().build();
         }
 
         log.info("Users found in group with ID: {}: {}", groupId, users.size());
