@@ -5,6 +5,7 @@ import com.nt.LMS.dto.LoginDto;
 import com.nt.LMS.dto.MessageOutDto;
 import com.nt.LMS.dto.TokenResponseDto;
 import com.nt.LMS.service.AuthService;
+import jakarta.validation.Valid;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -22,7 +23,7 @@ public class AuthController {
     private AuthService authService;
 
     @PostMapping("/login")
-    public ResponseEntity<TokenResponseDto> login(@RequestBody LoginDto loginDto) {
+    public ResponseEntity<TokenResponseDto> login(@Valid @RequestBody LoginDto loginDto) {
         log.info("Login attempt for email: {}", loginDto.getEmail());
         TokenResponseDto response = authService.login(loginDto);
         log.info("Login successful for email: {}", loginDto.getEmail());
@@ -30,7 +31,7 @@ public class AuthController {
     }
 
     @PostMapping("/refresh-token")
-    public ResponseEntity<TokenResponseDto> refreshToken(@RequestBody Map<String, String> request) {
+    public ResponseEntity<TokenResponseDto> refreshToken(@Valid @RequestBody Map<String, String> request) {
         String refreshToken = request.get("refreshToken");
         log.info("Refresh token attempt: {}", refreshToken);
         TokenResponseDto response = authService.refreshToken(refreshToken);

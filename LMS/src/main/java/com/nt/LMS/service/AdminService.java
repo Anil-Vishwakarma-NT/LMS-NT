@@ -32,12 +32,18 @@ public class AdminService {
     public MessageOutDto register(RegisterDto registerDto) {
         log.info("Attempting to register user with email: {}", registerDto.getEmail());
 
-        Optional<User> existingUser = userRepository.findByEmail(registerDto.getEmail());
-        if (existingUser.isPresent()) {
+//        Optional<User> existingUser = userRepository.findByEmail(registerDto.getEmail());
+        // Check if email already exists
+        if (userRepository.findByEmail(registerDto.getEmail()).isPresent()) {
             log.warn("Registration failed - user with email {} already exists", registerDto.getEmail());
             throw new ResourceConflictException(UserConstants.USER_ALREADY_EXISTS);
         }
 
+        // Check if username already exists (case-insensitive)
+        if (userRepository.findByUserNameIgnoreCase(registerDto.getUserName()).isPresent()) {
+            log.warn("Registration failed - username {} already exists", registerDto.getUserName());
+            throw new ResourceConflictException(UserConstants.USERNAME_ALREADY_EXISTS);
+        }
         Role role = roleRepository.findById(registerDto.getRoleId())
                 .orElseThrow(() -> {
                     log.error("Role with ID {} not found", registerDto.getRoleId());

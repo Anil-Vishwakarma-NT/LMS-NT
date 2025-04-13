@@ -3,6 +3,7 @@ package com.nt.LMS.controller;
 import com.nt.LMS.dto.MessageOutDto;
 import com.nt.LMS.dto.RegisterDto;
 import com.nt.LMS.service.AdminService;
+import jakarta.validation.Valid;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -20,7 +21,7 @@ public class AdminController {
 
     @PostMapping("/register")
     @PreAuthorize("hasAuthority('admin')")
-    public ResponseEntity<MessageOutDto> register(@RequestBody RegisterDto registerDto) {
+    public ResponseEntity<MessageOutDto> register(@Valid @RequestBody RegisterDto registerDto) {
         log.info("Admin registration request received for: {}", registerDto.getEmail());
 
         MessageOutDto response = adminService.register(registerDto);

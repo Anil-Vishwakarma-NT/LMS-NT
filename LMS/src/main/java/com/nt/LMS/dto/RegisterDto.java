@@ -23,6 +23,12 @@ public class RegisterDto {
     )
     private String lastName;
 
+    @NotBlank(message = "Username is required")
+    @Size(min = 4, message = "Username must be at least 4 characters long")
+    @Pattern(
+            regexp = "^[a-zA-Z0-9._-]+$",
+            message = "Username must not contain spaces and can only include letters, numbers, dots, underscores, and hyphens."
+    )
     private String userName;
 
     @NotBlank(message = "Email is required")

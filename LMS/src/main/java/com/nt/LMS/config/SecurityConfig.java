@@ -33,7 +33,7 @@ public class SecurityConfig {
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers("/auth/**").permitAll()
                         .requestMatchers("/admin/**").hasAuthority("admin")  // Use "admin" instead of "ROLE_ADMIN"
-                        .requestMatchers("/employee/**").hasAnyAuthority("employee", "admin")  // Adjust for multiple roles
+                        .requestMatchers("/employee/**").hasAnyAuthority("employee", "admin")
                         .anyRequest().authenticated()
                 )
 

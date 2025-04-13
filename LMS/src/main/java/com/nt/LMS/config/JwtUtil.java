@@ -38,14 +38,14 @@ public class JwtUtil {
         try {
             Claims claims = Jwts.parserBuilder()
                     .setSigningKey(SECRET_KEY)
-                    .setAllowedClockSkewSeconds(300) // Increase allowed skew
+                    .setAllowedClockSkewSeconds(300)
                     .build()
                     .parseClaimsJws(token)
                     .getBody();
 
             return claims;
         } catch (ExpiredJwtException e) {
-            throw e; // Re-throw or handle it based on your use case
+            throw e;
         } catch (JwtException e) {
             System.out.println("Invalid token: " + e.getMessage());
             throw e;
@@ -54,7 +54,7 @@ public class JwtUtil {
 public String generateAccessToken(UserDetails userDetails) {
     Map<String, Object> claims = new HashMap<>();
     claims.put("roles", userDetails.getAuthorities().stream()
-            .map(authority -> authority.getAuthority())  // Remove "ROLE_" prefix
+            .map(authority -> authority.getAuthority())
             .collect(Collectors.joining(",")));
 
     return createToken(claims, userDetails.getUsername(), ACCESS_TOKEN_EXPIRATION);
