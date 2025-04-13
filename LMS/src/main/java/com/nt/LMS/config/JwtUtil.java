@@ -45,7 +45,7 @@ public class JwtUtil {
 
             return claims;
         } catch (ExpiredJwtException e) {
-            throw e;
+            throw e; // Re-throw or handle it based on your use case
         } catch (JwtException e) {
             System.out.println("Invalid token: " + e.getMessage());
             throw e;

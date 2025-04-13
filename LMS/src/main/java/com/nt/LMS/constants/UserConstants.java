@@ -20,6 +20,15 @@ public final class UserConstants {
 
     public static final String USERNAME_ALREADY_EXISTS = "Username already exists";
 
+    public static final String USER_DELETION_MESSAGE = "User deleted successfully";
+
+    public static final String DATABASE_ERROR = "Error occurred while fetching entries from database";
+
+    public static final String ERROR = "Error occurred";
+
+    public static final String UPDATED = "Updation complete";
+
+    public static Long MANAGER_ID = 1L;
 
 
 }

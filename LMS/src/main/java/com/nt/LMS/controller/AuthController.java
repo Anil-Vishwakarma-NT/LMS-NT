@@ -1,6 +1,4 @@
 package com.nt.LMS.controller;
-
-import com.nt.LMS.constants.UserConstants;
 import com.nt.LMS.dto.LoginDto;
 import com.nt.LMS.dto.MessageOutDto;
 import com.nt.LMS.dto.TokenResponseDto;

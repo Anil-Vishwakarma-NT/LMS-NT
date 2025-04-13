@@ -34,6 +34,11 @@ public class SecurityConfig {
                         .requestMatchers("/auth/**").permitAll()
                         .requestMatchers("/admin/**").hasAuthority("admin")  // Use "admin" instead of "ROLE_ADMIN"
                         .requestMatchers("/employee/**").hasAnyAuthority("employee", "admin")
+                        .requestMatchers("/admin/**").hasAuthority("admin")
+                        .requestMatchers("/manager/**").hasAnyAuthority("manager" ,"admin")
+                        .requestMatchers("/group/all-groups").hasAuthority("admin")
+                        .requestMatchers("/group/**").hasAnyAuthority("manager","admin")// Use "admin" instead of "ROLE_ADMIN"
+                        .requestMatchers("/employee/**").hasAnyAuthority("employee", "admin" , "manager")  // Adjust for multiple roles
                         .anyRequest().authenticated()
                 )
 

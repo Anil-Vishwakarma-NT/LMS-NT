@@ -4,6 +4,8 @@ import jakarta.persistence.*;
 import lombok.*;
 
 import java.util.Date;
+import java.util.Set;
+import java.util.HashSet;
 
 @Entity
 @Table(name = "users")
@@ -30,8 +32,17 @@ public class User {
     @Column(nullable = false)
     private String password;
 
+    @Column
+    private Long managerId;
+
     @JoinColumn(name = "role_id", nullable = false)
     private Long roleId;
+
+    public User() {
+
+        this.managerId = 1L ;
+//        this.group.setGroup_id(1L);
+    }
 
     @Temporal(TemporalType.TIMESTAMP)
     private Date createdAt;

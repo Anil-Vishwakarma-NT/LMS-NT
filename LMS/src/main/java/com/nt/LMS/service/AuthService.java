@@ -1,8 +1,8 @@
 package com.nt.LMS.service;
 
 import com.nt.LMS.config.JwtUtil;
-import com.nt.LMS.constants.UserConstants;
 import com.nt.LMS.dto.LoginDto;
+import com.nt.LMS.constants.UserConstants;
 import com.nt.LMS.dto.MessageOutDto;
 import com.nt.LMS.dto.TokenResponseDto;
 import com.nt.LMS.entities.RefreshToken;
@@ -14,11 +14,11 @@ import com.nt.LMS.repository.UserRepository;
 import jakarta.transaction.Transactional;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.autoconfigure.data.redis.RedisProperties;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
-
 import java.time.Instant;
 import java.util.Optional;
 
