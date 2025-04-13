@@ -30,9 +30,8 @@ public class User {
     @Column(nullable = false)
     private String password;
 
-    @ManyToOne
     @JoinColumn(name = "role_id", nullable = false)
-    private Role role;
+    private Long roleId;
 
     @Temporal(TemporalType.TIMESTAMP)
     private Date createdAt;

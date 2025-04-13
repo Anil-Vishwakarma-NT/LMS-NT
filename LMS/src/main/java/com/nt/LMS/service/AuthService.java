@@ -69,12 +69,12 @@ public class AuthService {
                 });
 
         // Remove any existing refresh tokens
-        refreshTokenRepository.deleteByUser(user);
+        refreshTokenRepository.deleteByUserId(user.getUserId());
         log.debug("Old refresh token removed for user: {}", user.getEmail());
 
         // Store new refresh token
         RefreshToken refreshTokenEntity = new RefreshToken();
-        refreshTokenEntity.setUser(user);
+        refreshTokenEntity.setUserId(user.getUserId());
         refreshTokenEntity.setToken(refreshToken);
         refreshTokenEntity.setExpiryDate(Instant.now().plusSeconds(7 * 24 * 60 * 60)); // 7 days validity
         refreshTokenRepository.save(refreshTokenEntity);
@@ -102,7 +102,8 @@ public class AuthService {
             throw new InvalidRequestException(UserConstants.REFRESH_TOKEN_EXPIRE_MASSAGE);
         }
 
-        User user = refreshTokenEntity.get().getUser();
+        User user = userRepository.findById(refreshTokenEntity.get().getUserId())
+                    .orElseThrow(() -> new InvalidRequestException(UserConstants.USER_NOT_FOUND));
         log.debug("Found valid refresh token for user: {}", user.getEmail());
 
         UserDetails userDetails = userDetailsService.loadUserByUsername(user.getEmail());
@@ -123,7 +124,7 @@ public class AuthService {
                     return new RuntimeException("User not found");
                 });
 
-        refreshTokenRepository.deleteByUser(user);
+        refreshTokenRepository.deleteByUserId(user.getUserId());
         log.info("Refresh token deleted for user: {}", email);
 
         return new MessageOutDto(UserConstants.USER_LOGOUT_MESSAGE);

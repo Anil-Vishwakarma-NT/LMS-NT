@@ -3,7 +3,6 @@ package com.nt.LMS.service;
 import com.nt.LMS.constants.UserConstants;
 import com.nt.LMS.dto.MessageOutDto;
 import com.nt.LMS.dto.RegisterDto;
-import com.nt.LMS.entities.Role;
 import com.nt.LMS.entities.User;
 import com.nt.LMS.exception.ResourceConflictException;
 import com.nt.LMS.repository.RoleRepository;
@@ -14,7 +13,6 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.util.Date;
-import java.util.Optional;
 
 @Slf4j
 @Service
@@ -44,11 +42,6 @@ public class AdminService {
             log.warn("Registration failed - username {} already exists", registerDto.getUserName());
             throw new ResourceConflictException(UserConstants.USERNAME_ALREADY_EXISTS);
         }
-        Role role = roleRepository.findById(registerDto.getRoleId())
-                .orElseThrow(() -> {
-                    log.error("Role with ID {} not found", registerDto.getRoleId());
-                    return new RuntimeException("Role does not exist");
-                });
 
         User user = new User();
         user.setFirstName(registerDto.getFirstName());
@@ -56,7 +49,7 @@ public class AdminService {
         user.setUserName(registerDto.getUserName());
         user.setEmail(registerDto.getEmail());
         user.setPassword(passwordEncoder.encode(registerDto.getPassword()));
-        user.setRole(role);
+        user.setRoleId(registerDto.getRoleId());
         user.setCreatedAt(new Date());
         user.setUpdatedAt(new Date());
 

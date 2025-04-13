@@ -1,9 +1,6 @@
 package com.nt.LMS.dto;
 
-import jakarta.validation.constraints.Email;
-import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.Pattern;
-import jakarta.validation.constraints.Size;
+import jakarta.validation.constraints.*;
 import lombok.Data;
 
 @Data
@@ -47,5 +44,6 @@ public class RegisterDto {
     )
     private String password;
 
+    @NotNull(message = "Role is required")
     private Long roleId;
 }
