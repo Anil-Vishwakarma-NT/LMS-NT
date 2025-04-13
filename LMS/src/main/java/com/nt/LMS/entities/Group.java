@@ -23,9 +23,9 @@ public class Group {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long groupId;
-
     private String groupName;
     private long creatorId;
+
     public Group(String name  , long creatorId){
         this.groupName = name;
         this.creatorId = creatorId;

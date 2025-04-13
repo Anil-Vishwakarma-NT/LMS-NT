@@ -28,6 +28,8 @@ public final class UserConstants {
 
     public static final String UPDATED = "Updation complete";
 
+    public static final String INVALID_USER_ROLE = "User Role is not valid";
+
     public static Long MANAGER_ID = 1L;
 
 

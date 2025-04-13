@@ -11,7 +11,6 @@ import java.util.HashSet;
 @Table(name = "users")
 @Data
 @AllArgsConstructor
-@NoArgsConstructor
 public class User {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -38,17 +37,14 @@ public class User {
     @JoinColumn(name = "role_id", nullable = false)
     private Long roleId;
 
-    public User() {
-
-        this.managerId = 1L ;
-//        this.group.setGroup_id(1L);
-    }
-
     @Temporal(TemporalType.TIMESTAMP)
     private Date createdAt;
 
     @Temporal(TemporalType.TIMESTAMP)
     private Date updatedAt;
 
+    public User() {
+        this.managerId = 1L ;
+    }
 
 }

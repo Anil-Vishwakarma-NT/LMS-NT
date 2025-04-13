@@ -59,7 +59,7 @@ public class AdminService {
         user.setUserName(registerDto.getUserName());
         user.setEmail(registerDto.getEmail());
         user.setPassword(passwordEncoder.encode(registerDto.getPassword()));
-        user.setRole(role);
+        user.setRoleId(registerDto.getRoleId());
         user.setCreatedAt(new Date());
         user.setUpdatedAt(new Date());
 
@@ -72,26 +72,43 @@ public class AdminService {
 
     public void employeeDeletion(long id) {
         log.info("Attempting to delete user with ID: {}", id);
+
         User user = userRepository.findById(id)
-                .orElseThrow(() -> {log.error("User with ID {} not found", id);
-                    return new ResourceNotFoundException(USER_NOT_FOUND);   });
-        String role = user.getRole().getName();
-        if (role.equalsIgnoreCase("employee")) {
+                .orElseThrow(() -> {
+                    log.error("User with ID {} not found", id);
+                    return new ResourceNotFoundException(USER_NOT_FOUND);
+                });
+
+        // Fetch role name using roleId
+        Role role = roleRepository.findById(user.getRoleId())
+                .orElseThrow(() -> {
+                    log.error("Role with ID {} not found for user ID {}", user.getRoleId(), id);
+                    return new IllegalStateException(INVALID_USER_ROLE);
+                });
+
+        String roleName = role.getName();
+
+        if ("employee".equalsIgnoreCase(roleName)) {
             userRepository.deleteById(user.getUserId());
-            log.info("Employee with ID {} deleted successfully", id);}
-        else if (role.equalsIgnoreCase("manager")) {
+            log.info("Employee with ID {} deleted successfully", id);
+
+        } else if ("manager".equalsIgnoreCase(roleName)) {
             log.info("Changing manager for the deleted manager with ID: {}", id);
+
             List<User> subordinates = userRepository.findByManagerId(user.getUserId());
             for (User u : subordinates) {
-                u.setManagerId(1L);      }
+                u.setManagerId(1L);  // Assigning to default manager
+            }
             userRepository.saveAll(subordinates);
             userRepository.deleteById(user.getUserId());
             log.info("Manager with ID {} deleted successfully", id);
+
         } else {
-            log.error("Invalid role for user with ID {}: {}", id, role);
+            log.error("Invalid role for user with ID {}: {}", id, roleName);
             throw new IllegalStateException(INVALID_USER_ROLE);
         }
     }
+
 
 
     public List<UserOutDTO> getAllUsers() {
@@ -140,7 +157,7 @@ public class AdminService {
                         log.error("User with ID {} not found", userId);
                         return new ResourceNotFoundException(USER_NOT_FOUND);
                     });
-            user.setRole(role);
+            user.setRoleId(role.getRoleId());
             user.setUpdatedAt(new Date());
             userRepository.save(user);
             log.info("Successfully changed role for user with ID: {} to {}", userId, newRoleName);

@@ -15,12 +15,8 @@ public class UserGroup {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-
-    // Just raw IDs, no JPA relationships
     private Long userId;
     private Long groupId;
-
-
 
     public UserGroup(Long userId, Long groupId) {
         this.userId = userId;
