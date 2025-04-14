@@ -23,15 +23,8 @@ public class Group {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long groupId;
-
     private String groupName;
-
-    @ManyToMany(mappedBy = "groups")
-    private Set<User> users = new HashSet<>();
-
     private long creatorId;
-
-
 
     public Group(String name  , long creatorId){
         this.groupName = name;

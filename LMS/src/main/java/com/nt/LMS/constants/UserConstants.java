@@ -8,11 +8,7 @@ public final class UserConstants {
 
     public static final String USER_NOT_FOUND = "User does not exist";
 
-    public static final String INVALID_USER_ROLE = "Invalid user role. Must be either CUSTOMER or RESTAURANT_OWNER.";
-
     public static final String USER_REGISTRATION_SUCCESS = "User registered successfully.";
-
-    public static final String USER_PROFILE_UPDATE_SUCCESS = "User profile updated successfully.";
 
     public static final String USER_LOGOUT_MESSAGE = "User logout successfully";
 
@@ -20,15 +16,21 @@ public final class UserConstants {
 
     public static final String REFRESH_TOKEN_CREDENTIALS = "Invalid refresh token";
 
-    public static final String INVALID_REFRESH_TOKEN_MESSAGE = "Invalid refresh token";
-
     public static final String REFRESH_TOKEN_EXPIRE_MASSAGE = "Refresh token expired";
+
+    public static final String USERNAME_ALREADY_EXISTS = "Username already exists";
 
     public static final String USER_DELETION_MESSAGE = "User deleted successfully";
 
     public static final String DATABASE_ERROR = "Error occurred while fetching entries from database";
 
     public static final String ERROR = "Error occurred";
+
+    public static final String UPDATED = "Updation complete";
+
+    public static final String INVALID_USER_ROLE = "User Role is not valid";
+
+    public static Long MANAGER_ID = 1L;
 
 
 }

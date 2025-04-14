@@ -12,9 +12,7 @@ public interface GroupRepository extends JpaRepository<Group , Long> {
 
     Group findById(long groupId);
 
-
-    @Query("Select u from Group u where creatorId = :creatorId or creatorId = 1")
-    List<Group> getGroups(long creatorId);
+    List<Group> findByCreatorId(long creatorId);
 
 
 }

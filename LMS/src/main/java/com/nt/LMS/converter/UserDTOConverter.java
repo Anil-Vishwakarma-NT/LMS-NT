@@ -11,9 +11,6 @@ import java.util.Optional;
 import static com.nt.LMS.constants.UserConstants.USER_NOT_FOUND;
 @Component
 public class UserDTOConverter {
-
-
-
     public UserOutDTO userToOutDto(User user , String manager){
         UserOutDTO userout = new UserOutDTO();
         userout.setUserId(user.getUserId());
