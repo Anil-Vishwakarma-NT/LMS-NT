@@ -1,7 +1,7 @@
 package com.example.course_service_lms.serviceImpl;
 
 import com.example.course_service_lms.dto.CourseBundleDTO;
-import com.example.course_service_lms.dto.CreateCourseBundleDTO;
+import com.example.course_service_lms.dto.CourseBundlePostDTO;
 import com.example.course_service_lms.entity.Bundle;
 import com.example.course_service_lms.entity.Course;
 import com.example.course_service_lms.entity.CourseBundle;
@@ -22,7 +22,7 @@ import java.util.List;
 import java.util.Optional;
 
 import static com.example.course_service_lms.constants.CourseBundleConstants.*;
-import static com.example.course_service_lms.converters.CourseBundleConvertor.convertEntityToDTO;
+import static com.example.course_service_lms.converters.CourseBundleConvertor.*;
 
 @Service
 @RequiredArgsConstructor
@@ -148,7 +148,7 @@ public class CourseBundleServiceImpl implements CourseBundleService {
     }
 
     @Override
-    public String updateCourseBundle(Long courseBundleId, CreateCourseBundleDTO createCourseBundleDTO) {
+    public CourseBundlePostDTO updateCourseBundle(Long courseBundleId, CourseBundlePostDTO courseBundlePostDTO) {
         try {
             log.info("Starting process to update course-bundle record with ID: {}", courseBundleId);
 
@@ -159,15 +159,15 @@ public class CourseBundleServiceImpl implements CourseBundleService {
                     });
 
             // Update entity fields using the DTO
-            existingBundle.setBundleId(createCourseBundleDTO.getBundleId());
-            existingBundle.setCourseId(createCourseBundleDTO.getCourseId());
+            existingBundle.setBundleId(courseBundlePostDTO.getBundleId());
+            existingBundle.setCourseId(courseBundlePostDTO.getCourseId());
 
             // Save updated entity to the database
             CourseBundle updatedBundle = courseBundleRepository.save(existingBundle);
             log.info("Successfully updated course-bundle record with ID: {}", updatedBundle.getCourseBundleId());
 
             // Convert updated entity to DTO
-            return "Course Bundle Updated Successfully";
+            return convertEntityToDTOPost(updatedBundle);
 
         }  catch(ResourceNotFoundException e){
             throw e;
@@ -179,40 +179,38 @@ public class CourseBundleServiceImpl implements CourseBundleService {
     }
 
     @Override
-    public CourseBundle createCourseBundle(CreateCourseBundleDTO createCourseBundleDTO) {
+    public CourseBundlePostDTO createCourseBundle(CourseBundlePostDTO courseBundlePostDTO) {
         try {
             log.info("Starting process to create a new course-bundle mapping");
 
             // Check if the resource already exists
-            if (courseBundleRepository.existsByBundleIdAndCourseId(createCourseBundleDTO.getBundleId(), createCourseBundleDTO.getCourseId())) {
+            if (courseBundleRepository.existsByBundleIdAndCourseId(courseBundlePostDTO.getBundleId(), courseBundlePostDTO.getCourseId())) {
                 log.error("Course-bundle mapping already exists for Bundle ID: {} and Course ID: {}",
-                        createCourseBundleDTO.getBundleId(), createCourseBundleDTO.getCourseId());
+                        courseBundlePostDTO.getBundleId(), courseBundlePostDTO.getCourseId());
                 throw new ResourceAlreadyExistsException(COURSE_BUNDLE_ALREADY_EXISTS);
             }
 
             // Validate Bundle ID
-            if (!bundleRepository.existsById(createCourseBundleDTO.getBundleId())) {
-                log.error("Invalid Bundle ID: {}", createCourseBundleDTO.getBundleId());
-                throw new ResourceNotValidException(INVALID_BUNDLE_ID + createCourseBundleDTO.getBundleId());
+            if (!bundleRepository.existsById(courseBundlePostDTO.getBundleId())) {
+                log.error("Invalid Bundle ID: {}", courseBundlePostDTO.getBundleId());
+                throw new ResourceNotValidException(INVALID_BUNDLE_ID + courseBundlePostDTO.getBundleId());
             }
 
             // Validate Course ID
-            if (!courseRepository.existsById(createCourseBundleDTO.getCourseId())) {
-                log.error("Invalid Course ID: {}", createCourseBundleDTO.getCourseId());
-                throw new ResourceNotValidException(INVALID_COURSE_ID + createCourseBundleDTO.getCourseId());
+            if (!courseRepository.existsById(courseBundlePostDTO.getCourseId())) {
+                log.error("Invalid Course ID: {}", courseBundlePostDTO.getCourseId());
+                throw new ResourceNotValidException(INVALID_COURSE_ID + courseBundlePostDTO.getCourseId());
             }
 
             // Convert DTO to Entity
-            CourseBundle courseBundle = new CourseBundle();
-            courseBundle.setCourseId(createCourseBundleDTO.getCourseId());
-            courseBundle.setBundleId(createCourseBundleDTO.getBundleId());
+            CourseBundle courseBundle = convertDTOToEntityPost(courseBundlePostDTO);
 
             // Save entity to the database
             CourseBundle savedBundle = courseBundleRepository.save(courseBundle);
             log.info("Successfully created a new course-bundle mapping with ID: {}", savedBundle.getCourseBundleId());
 
             // Convert saved entity to DTO
-            return savedBundle;
+            return convertEntityToDTOPost(savedBundle);
 
         }  catch(ResourceAlreadyExistsException | ResourceNotValidException e){
             throw e;

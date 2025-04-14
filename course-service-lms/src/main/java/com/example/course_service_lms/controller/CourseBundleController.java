@@ -1,8 +1,7 @@
 package com.example.course_service_lms.controller;
 
 import com.example.course_service_lms.dto.CourseBundleDTO;
-import com.example.course_service_lms.dto.CreateCourseBundleDTO;
-import com.example.course_service_lms.entity.CourseBundle;
+import com.example.course_service_lms.dto.CourseBundlePostDTO;
 import com.example.course_service_lms.service.CourseBundleService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -12,15 +11,15 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
-@RequestMapping("/api/bundles/course-bundles")
+@RequestMapping("/api/bundles/course_bundles")
 @RequiredArgsConstructor
 public class CourseBundleController {
 
     private final CourseBundleService courseBundleService;
 
     @PostMapping
-    public ResponseEntity<CourseBundle> createCourseBundle(@RequestBody CreateCourseBundleDTO createCourseBundleDTO) {
-        CourseBundle createdBundle = courseBundleService.createCourseBundle(createCourseBundleDTO);
+    public ResponseEntity<CourseBundlePostDTO> createCourseBundle(@RequestBody CourseBundlePostDTO courseBundlePostDTO) {
+        CourseBundlePostDTO createdBundle = courseBundleService.createCourseBundle(courseBundlePostDTO);
         return ResponseEntity.status(HttpStatus.CREATED).body(createdBundle);
     }
 
@@ -47,10 +46,10 @@ public class CourseBundleController {
 
     // UPDATE CourseBundle by ID
     @PutMapping("/{id}")
-    public ResponseEntity<String> updateCourseBundle(
+    public ResponseEntity<CourseBundlePostDTO> updateCourseBundle(
             @PathVariable("id") Long courseBundleId,
-            @RequestBody CreateCourseBundleDTO createCourseBundleDTO) {
-        String updatedCourseBundle = courseBundleService.updateCourseBundle(courseBundleId, createCourseBundleDTO);
+            @RequestBody CourseBundlePostDTO courseBundlePostDTO) {
+        CourseBundlePostDTO updatedCourseBundle = courseBundleService.updateCourseBundle(courseBundleId, courseBundlePostDTO);
         return ResponseEntity.ok(updatedCourseBundle);
     }
 

@@ -2,6 +2,7 @@ package com.example.course_service_lms.controllerTest;
 
 import com.example.course_service_lms.controller.CourseBundleController;
 import com.example.course_service_lms.dto.CourseBundleDTO;
+import com.example.course_service_lms.dto.CourseBundlePostDTO;
 import com.example.course_service_lms.service.CourseBundleService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -36,17 +37,15 @@ class CourseBundleControllerTest {
     @Test
     void testCreateCourseBundle() throws Exception {
         // Mock service response
-        CourseBundleDTO mockCourseBundleDTO = new CourseBundleDTO(1L, 101L, "MockBundle", 201L, "MockCourse");
-        when(courseBundleService.createCourseBundle(any(CourseBundleDTO.class))).thenReturn(mockCourseBundleDTO);
+        CourseBundlePostDTO mockCourseBundlePostDTO = new CourseBundlePostDTO(1L, 101L, 201L);
+        when(courseBundleService.createCourseBundle(any(CourseBundlePostDTO.class))).thenReturn(mockCourseBundlePostDTO);
 
         // Perform POST request
         mockMvc.perform(post("/api/bundles/course_bundles")
                         .contentType(MediaType.APPLICATION_JSON)
-                        .content("{\"courseBundleId\": 1, \"bundleId\": 101, \"bundleName\": \"MockBundle\", \"courseId\": 201, \"courseName\": \"MockCourse\"}"))
+                        .content("{\"courseBundleId\": 1, \"bundleId\": 101, \"courseId\": 201}"))
                 .andExpect(status().isCreated())
-                .andExpect(jsonPath("$.courseBundleId").value(1L))
-                .andExpect(jsonPath("$.bundleName").value("MockBundle"))
-                .andExpect(jsonPath("$.courseName").value("MockCourse"));
+                .andExpect(jsonPath("$.courseBundleId").value(1L));
     }
 
     @Test
@@ -94,15 +93,13 @@ class CourseBundleControllerTest {
     @Test
     void testUpdateCourseBundle() throws Exception {
         // Mock service response
-        CourseBundleDTO mockUpdatedCourseBundleDTO = new CourseBundleDTO(1L, 102L, "UpdatedBundle", 202L, "UpdatedCourse");
-        when(courseBundleService.updateCourseBundle(eq(1L), any(CourseBundleDTO.class))).thenReturn(mockUpdatedCourseBundleDTO);
+        CourseBundlePostDTO mockUpdatedCourseBundlePostDTO = new CourseBundlePostDTO(1L, 102L,  202L);
+        when(courseBundleService.updateCourseBundle(eq(1L), any(CourseBundlePostDTO.class))).thenReturn(mockUpdatedCourseBundlePostDTO);
 
         // Perform PUT request
         mockMvc.perform(put("/api/bundles/course_bundles/1")
                         .contentType(MediaType.APPLICATION_JSON)
-                        .content("{\"courseBundleId\": 1, \"bundleId\": 102, \"bundleName\": \"UpdatedBundle\", \"courseId\": 202, \"courseName\": \"UpdatedCourse\"}"))
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$.bundleName").value("UpdatedBundle"))
-                .andExpect(jsonPath("$.courseName").value("UpdatedCourse"));
+                        .content("{\"courseBundleId\": 1, \"bundleId\": 102, \"courseId\": 202}"))
+                .andExpect(status().isOk());
     }
 }
