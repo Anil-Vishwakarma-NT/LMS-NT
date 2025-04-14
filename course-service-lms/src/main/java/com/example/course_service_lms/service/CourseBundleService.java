@@ -1,8 +1,7 @@
 package com.example.course_service_lms.service;
 
 import com.example.course_service_lms.dto.CourseBundleDTO;
-import com.example.course_service_lms.dto.CreateCourseBundleDTO;
-import com.example.course_service_lms.entity.CourseBundle;
+import com.example.course_service_lms.dto.CourseBundlePostDTO;
 
 import java.util.List;
 
@@ -13,7 +12,7 @@ public interface CourseBundleService {
 
     void deleteCourseBundle(Long courseBundleId);
 
-    String updateCourseBundle(Long courseBundleId, CreateCourseBundleDTO createCourseBundleDTO);
+    CourseBundlePostDTO updateCourseBundle(Long courseBundleId, CourseBundlePostDTO courseBundlePostDTO);
 
-    CourseBundle createCourseBundle(CreateCourseBundleDTO createCourseBundleDTO);
+    CourseBundlePostDTO createCourseBundle(CourseBundlePostDTO courseBundlePostDTO);
 }

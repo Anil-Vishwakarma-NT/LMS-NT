@@ -1,9 +1,10 @@
 package com.example.course_service_lms.serviceImplTest;
 
-import com.example.course_service_lms.Enum.CourseLevel;
 import com.example.course_service_lms.dto.CourseBundleDTO;
+import com.example.course_service_lms.dto.CourseBundlePostDTO;
 import com.example.course_service_lms.entity.Bundle;
 import com.example.course_service_lms.entity.Course;
+import com.example.course_service_lms.entity.CourseLevel;
 import com.example.course_service_lms.entity.CourseBundle;
 import com.example.course_service_lms.exception.ResourceAlreadyExistsException;
 import com.example.course_service_lms.exception.ResourceNotFoundException;
@@ -141,7 +142,7 @@ class CourseBundleServiceImplTest {
     // Test for createCourseBundle()
     @Test
     void testCreateCourseBundleSuccess() {
-        CourseBundleDTO dto = new CourseBundleDTO(1L, 2L, null, 3L, null);
+        CourseBundlePostDTO dto = new CourseBundlePostDTO(1L, 2L, 3L);
         CourseBundle mockEntity = new CourseBundle(1L, 2L, 3L);
 
         when(bundleRepository.existsById(anyLong())).thenReturn(true);
@@ -149,7 +150,7 @@ class CourseBundleServiceImplTest {
         when(courseBundleRepository.existsByBundleIdAndCourseId(anyLong(), anyLong())).thenReturn(false);
         when(courseBundleRepository.save(any())).thenReturn(mockEntity);
 
-        CourseBundleDTO result = service.createCourseBundle(dto);
+        CourseBundlePostDTO result = service.createCourseBundle(dto);
 
         assertNotNull(result);
         assertEquals(2L, result.getBundleId());
@@ -159,14 +160,14 @@ class CourseBundleServiceImplTest {
     @Test
     void testCreateCourseBundleAlreadyExists() {
         when(courseBundleRepository.existsByBundleIdAndCourseId(anyLong(), anyLong())).thenReturn(true);
-        CourseBundleDTO dto = new CourseBundleDTO(1L, 2L, null, 3L, null);
+        CourseBundlePostDTO dto = new CourseBundlePostDTO(1L, 2L, 3L);
 
         assertThrows(ResourceAlreadyExistsException.class, () -> service.createCourseBundle(dto));
     }
 
     @Test
     void testCreateCourseBundleInvalidBundleId() {
-        CourseBundleDTO dto = new CourseBundleDTO(1L, 2L, null, 3L, null);
+        CourseBundlePostDTO dto = new CourseBundlePostDTO(1L, 2L, 3L);
         when(bundleRepository.existsById(anyLong())).thenReturn(false); // Simulate invalid Bundle ID
 
         assertThrows(ResourceNotValidException.class, () -> service.createCourseBundle(dto));
@@ -174,7 +175,7 @@ class CourseBundleServiceImplTest {
 
     @Test
     void testCreateCourseBundleInvalidCourseId() {
-        CourseBundleDTO dto = new CourseBundleDTO(1L, 2L, null, 3L, null);
+        CourseBundlePostDTO dto = new CourseBundlePostDTO(1L, 2L, 3L);
         when(bundleRepository.existsById(anyLong())).thenReturn(true);
         when(courseRepository.existsById(anyLong())).thenReturn(false); // Simulate invalid Course ID
 
@@ -185,12 +186,12 @@ class CourseBundleServiceImplTest {
     void testCreateCourseBundleUnexpectedException() {
         when(bundleRepository.existsById(anyLong())).thenThrow(new RuntimeException("Unexpected error"));
 
-        RuntimeException thrown = assertThrows(RuntimeException.class, () -> service.createCourseBundle(new CourseBundleDTO(1L, 2L, null, 3L, null)));
+        RuntimeException thrown = assertThrows(RuntimeException.class, () -> service.createCourseBundle(new CourseBundlePostDTO(1L, 2L,  3L)));
         assertEquals("Something went wrong while creating course-bundle mapping", thrown.getMessage());
     }
 
 
-//     Test for deleteCourseBundle()
+    //     Test for deleteCourseBundle()
     @Test
     void testDeleteCourseBundleSuccess() {
         CourseBundle mockBundle = new CourseBundle(1L, 2L, 3L);
@@ -218,13 +219,13 @@ class CourseBundleServiceImplTest {
     // Test for updateCourseBundle()
     @Test
     void testUpdateCourseBundleSuccess() {
-        CourseBundleDTO dto = new CourseBundleDTO(1L, 2L, null, 3L, null);
+        CourseBundlePostDTO dto = new CourseBundlePostDTO(1L, 2L, 3L);
         CourseBundle mockEntity = new CourseBundle(1L, 2L, 3L);
 
         when(courseBundleRepository.findById(anyLong())).thenReturn(Optional.of(mockEntity));
         when(courseBundleRepository.save(any())).thenReturn(mockEntity);
 
-        CourseBundleDTO result = service.updateCourseBundle(1L, dto);
+        CourseBundlePostDTO result = service.updateCourseBundle(1L, dto);
 
         assertNotNull(result);
         assertEquals(2L, result.getBundleId());
@@ -235,7 +236,7 @@ class CourseBundleServiceImplTest {
     void testUpdateCourseBundleNotFound() {
         when(courseBundleRepository.findById(anyLong())).thenReturn(Optional.empty());
 
-        CourseBundleDTO dto = new CourseBundleDTO(1L, 2L, null, 3L, null);
+        CourseBundlePostDTO dto = new CourseBundlePostDTO(1L, 2L, 3L);
         assertThrows(ResourceNotFoundException.class, () -> service.updateCourseBundle(1L, dto));
     }
 
@@ -243,7 +244,7 @@ class CourseBundleServiceImplTest {
     void testUpdateCourseBundleUnexpectedException() {
         when(courseBundleRepository.findById(anyLong())).thenThrow(new RuntimeException("Update error"));
 
-        RuntimeException thrown = assertThrows(RuntimeException.class, () -> service.updateCourseBundle(1L, new CourseBundleDTO(1L, 2L, null, 3L, null)));
+        RuntimeException thrown = assertThrows(RuntimeException.class, () -> service.updateCourseBundle(1L, new CourseBundlePostDTO(1L, 2L,  3L)));
         assertEquals("Something went wrong while updating course-bundle record with ID: 1", thrown.getMessage());
     }
 }
