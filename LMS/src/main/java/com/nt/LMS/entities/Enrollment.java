@@ -23,7 +23,7 @@ public class Enrollment {
     private long courseId;
 
     @Column(name = "bundle_id")
-    private long bundleId;
+    private Long bundleId;
 
     @Column(name = "assigned_by")
     private long assignedBy;

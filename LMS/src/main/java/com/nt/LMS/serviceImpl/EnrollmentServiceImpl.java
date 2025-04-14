@@ -4,6 +4,8 @@ import com.nt.LMS.converter.EnrollmentConverter;
 import com.nt.LMS.dto.CourseBundleDTO;
 import com.nt.LMS.dto.EnrollmentDTO;
 import com.nt.LMS.entities.Enrollment;
+import com.nt.LMS.entities.User;
+import com.nt.LMS.exception.InvalidRequestException;
 import com.nt.LMS.exception.ResourceConflictException;
 import com.nt.LMS.exception.ResourceNotFoundException;
 import com.nt.LMS.feignClient.CourseMicroserviceClient;
@@ -12,9 +14,13 @@ import com.nt.LMS.repository.UserGroupRepository;
 import com.nt.LMS.repository.UserRepository;
 import com.nt.LMS.service.EnrollmentService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Objects;
+import java.util.Optional;
 
+@Service
 public class EnrollmentServiceImpl implements EnrollmentService {
 
     @Autowired
@@ -42,10 +48,18 @@ public class EnrollmentServiceImpl implements EnrollmentService {
             if (!userRepository.existsById(enrollmentDTO.getAssignedBy())) {
                 throw new ResourceNotFoundException("Course assigner not found");
             }
-
-            if (enrollmentDTO.getBundleId() == 0 || enrollmentDTO.getBundleId() == null) {
-               Enrollment enrollment = EnrollmentConverter.enrollmentDtoToEnrollment(enrollmentDTO);
-               enrollmentRepository.save(enrollment);
+            Optional<User> user = userRepository.findById(enrollmentDTO.getUserId());
+            if(user.isPresent()) {
+                if (!(Objects.equals(user.get().getManagerId(), enrollmentDTO.getAssignedBy()))) {
+                    throw new InvalidRequestException("You cannot assign course to this user");
+                }
+            }
+            if ( enrollmentDTO.getBundleId() == null || enrollmentDTO.getBundleId() == 0) {
+                if(enrollmentRepository.existsByUserIdAndCourseId(enrollmentDTO.getUserId(), enrollmentDTO.getCourseId())) {
+                    throw new ResourceConflictException("User Already Enrolled in this course");
+                }
+                Enrollment enrollment = EnrollmentConverter.enrollmentDtoToEnrollment(enrollmentDTO);
+                enrollmentRepository.save(enrollment);
             }
             else {
                 if (!courseMicroserviceClient.bundleExistsById(enrollmentDTO.getBundleId())) {
@@ -59,8 +73,11 @@ public class EnrollmentServiceImpl implements EnrollmentService {
                     Long courseId = courseBundleDTO.getCourseId();
                     boolean existingEnrollment = enrollmentRepository.existsByUserIdAndCourseId(
                             enrollmentDTO.getUserId(), courseId);
+                    if(existingEnrollment) {
+                        Enrollment enrollment = enrollmentRepository.getByUserIdAndCourseId(enrollmentDTO.getUserId(), courseId);
 
-                    if (!existingEnrollment) {
+                    }
+                    else {
                         EnrollmentDTO dto = new EnrollmentDTO();
                         dto.setUserId(enrollmentDTO.getUserId());
                         dto.setCourseId(courseId);
@@ -75,10 +92,10 @@ public class EnrollmentServiceImpl implements EnrollmentService {
                 }
             }
             return "Enrollment Successful";
-        } catch (ResourceNotFoundException e) {
+        } catch (ResourceNotFoundException | ResourceConflictException | InvalidRequestException e) {
             throw e;
-        } catch (Exception e) {
-            throw new RuntimeException("Something went wrong");
+        } catch(Exception e) {
+            throw new RuntimeException("Something went wrong", e);
         }
     }
 }

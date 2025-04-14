@@ -11,7 +11,7 @@ public class LmsApplication {
 	public static void main(String[] args) {
 
 		SpringApplication.run(LmsApplication.class, args);
-		System.out.println("welcome.................");
+		//System.out.println("welcome.................");
 //when two concurrent users are using the portal if one deletes a group and at the same time other user access its users what will happen ?
 		//constants
 

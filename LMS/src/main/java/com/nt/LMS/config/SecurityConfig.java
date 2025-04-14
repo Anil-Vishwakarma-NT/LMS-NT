@@ -32,6 +32,7 @@ public class SecurityConfig {
                 .csrf(csrf -> csrf.disable())
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers("/auth/**").permitAll()
+                        .requestMatchers("/api/enrollment/**").permitAll()
                         .requestMatchers("/admin/**").hasAuthority("admin")  // Use "admin" instead of "ROLE_ADMIN"
                         .requestMatchers("/employee/**").hasAnyAuthority("employee", "admin")
                         .requestMatchers("/admin/**").hasAuthority("admin")

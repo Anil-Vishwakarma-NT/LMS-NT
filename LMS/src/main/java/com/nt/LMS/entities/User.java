@@ -16,33 +16,36 @@ import static com.nt.LMS.constants.UserConstants.ADMIN_ID;
 public class User {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "user_id")
     private long userId;
 
-    @Column(nullable = false, unique = true)
+    @Column(name = "username", nullable = false, unique = true)
     private String userName;
 
-    @Column(nullable = false)
+    @Column(name = "firstname", nullable = false)
     private String firstName;
 
-    @Column(nullable = false)
+    @Column(name = "lastname", nullable = false)
     private String lastName;
 
-    @Column(nullable = false, unique = true)
+    @Column(name = "email", nullable = false, unique = true)
     private String email;
 
-    @Column(nullable = false)
+    @Column(name = "password", nullable = false)
     private String password;
 
-    @Column
+    @Column(name = "manager_id")
     private Long managerId;
 
     @Column(name = "role_id", nullable = false)
     private Long roleId;
 
     @Temporal(TemporalType.TIMESTAMP)
+    @Column(name = "created_at")
     private Date createdAt;
 
     @Temporal(TemporalType.TIMESTAMP)
+    @Column(name = "updated_at")
     private Date updatedAt;
 
     public User() {

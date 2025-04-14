@@ -10,7 +10,12 @@ public class EnrollmentConverter {
         Enrollment enrollment = new Enrollment();
         enrollment.setUserId(enrollmentDTO.getUserId());
         enrollment.setCourseId(enrollmentDTO.getCourseId());
-        enrollment.setBundleId(enrollmentDTO.getBundleId());
+        if (enrollmentDTO.getBundleId() != null && enrollmentDTO.getBundleId() != 0) {
+            enrollment.setBundleId(enrollmentDTO.getBundleId());
+        } else {
+            enrollment.setBundleId(null);
+        }
+
         enrollment.setAssignedBy(enrollmentDTO.getAssignedBy());
         enrollment.setEnrolledAt(LocalDateTime.now());
         enrollment.setDeadline(enrollmentDTO.getDeadline());
