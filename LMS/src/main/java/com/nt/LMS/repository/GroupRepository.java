@@ -6,11 +6,14 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
+import java.util.Optional;
 
 @Repository
 public interface GroupRepository extends JpaRepository<Group , Long> {
 
-    Group findById(long groupId);
+    Optional<Group> findById(long groupId);
+
+
 
     List<Group> findByCreatorId(long creatorId);
 

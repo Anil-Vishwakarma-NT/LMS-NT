@@ -15,7 +15,11 @@ public class UserGroup {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
+
+    @Column(nullable = false)
     private Long userId;
+
+    @Column(nullable = false)
     private Long groupId;
 
     public UserGroup(Long userId, Long groupId) {

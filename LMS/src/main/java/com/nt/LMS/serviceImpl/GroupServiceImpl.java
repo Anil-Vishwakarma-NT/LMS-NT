@@ -1,4 +1,4 @@
-package com.nt.LMS.service;
+package com.nt.LMS.serviceImpl;
 
 import com.nt.LMS.converter.GroupDTOConverter;
 import com.nt.LMS.converter.UserDTOConverter;
@@ -13,6 +13,7 @@ import com.nt.LMS.exception.UnauthorizedAccessException;
 import com.nt.LMS.repository.GroupRepository;
 import com.nt.LMS.repository.UserGroupRepository;
 import com.nt.LMS.repository.UserRepository;
+import com.nt.LMS.service.GroupService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -24,7 +25,7 @@ import static com.nt.LMS.constants.UserConstants.*;
 
 @Service
 @Slf4j // Add the @Slf4j annotation to enable logging
-public class GroupServiceImpl {
+public class GroupServiceImpl implements GroupService {
 
     @Autowired
     private GroupRepository groupRepository;

@@ -1,4 +1,4 @@
-package com.nt.LMS.service;
+package com.nt.LMS.serviceImpl;
 
 import com.nt.LMS.converter.UserDTOConverter;
 import com.nt.LMS.dto.UserOutDTO;
@@ -11,6 +11,7 @@ import com.nt.LMS.entities.User;
 import com.nt.LMS.exception.ResourceConflictException;
 import com.nt.LMS.repository.RoleRepository;
 import com.nt.LMS.repository.UserRepository;
+import com.nt.LMS.service.AdminService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -77,7 +78,6 @@ public class AdminServiceImpl implements AdminService {
                     return new ResourceNotFoundException(USER_NOT_FOUND);
                 });
 
-        // Fetch role name using roleId
         Role role = roleRepository.findById(user.getRoleId())
                 .orElseThrow(() -> {
                     log.error("Role with ID {} not found for user ID {}", user.getRoleId(), id);
@@ -118,12 +118,9 @@ public class AdminServiceImpl implements AdminService {
             List<UserOutDTO> userDtos = new ArrayList<>();
             for (User user : employees) {
                 User manager = userRepository.findById(user.getManagerId())
-                        .orElseGet(() -> {
+                        .orElseThrow(() -> {
                             log.error("Manager with ID {} not found", user.getManagerId());
-                            User fallbackManager = new User();
-                            fallbackManager.setFirstName("Unknown");
-                            fallbackManager.setLastName(" ");
-                            return fallbackManager;
+                            throw new ResourceNotFoundException(USER_NOT_FOUND);
                         });
                 String managerName = manager.getFirstName() + " " + manager.getLastName();
                 UserOutDTO userDto = userDTOConverter.userToOutDto(user, managerName);
