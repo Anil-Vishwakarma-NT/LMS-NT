@@ -4,6 +4,5 @@ import com.nt.LMS.dto.EnrollmentDTO;
 import com.nt.LMS.entities.Enrollment;
 
 public interface EnrollmentService {
-    public Enrollment enroll(EnrollmentDTO enrollmentDTO);
-
+    public String enroll(EnrollmentDTO enrollmentDTO);
 }

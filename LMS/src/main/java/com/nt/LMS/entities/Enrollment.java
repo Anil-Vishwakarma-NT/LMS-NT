@@ -25,6 +25,9 @@ public class Enrollment {
     @Column(name = "bundle_id")
     private long bundleId;
 
+    @Column(name = "assigned_by")
+    private long assignedBy;
+
     @Column(name = "enrolled_at")
     private LocalDateTime enrolledAt;
 
@@ -33,4 +36,10 @@ public class Enrollment {
 
     @Column(name = "is_enrolled")
     private boolean isEnrolled;
+
+    @Column(name = "is_individual_assigned")
+    private boolean isIndividualAssigned;
+
+    @Column(name = "is_group_assigned")
+    private boolean isGroupAssigned;
 }

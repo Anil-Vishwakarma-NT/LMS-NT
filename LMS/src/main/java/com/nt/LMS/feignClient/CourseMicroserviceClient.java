@@ -1,0 +1,23 @@
+package com.nt.LMS.feignClient;
+
+
+import com.nt.LMS.dto.CourseBundleDTO;
+import org.springframework.cloud.openfeign.FeignClient;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+
+import java.util.List;
+
+@FeignClient(name = "course-service-lms", url = "http:// localhost:8080/api")
+public interface CourseMicroserviceClient {
+
+    @GetMapping("/courses/{id}/exists")
+    boolean courseExistsById(@PathVariable("id") Long courseId);
+
+    @GetMapping("/bundles/{id}/exists")
+    boolean bundleExistsById(@PathVariable("id") Long bundleId);
+
+    @GetMapping("/course-bundles/bundle/{id}")
+    ResponseEntity<List<CourseBundleDTO>> getAllCoursesByBundleId(@PathVariable("id") Long bundleId);
+}

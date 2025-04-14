@@ -11,7 +11,6 @@ import com.nt.LMS.entities.User;
 import com.nt.LMS.exception.ResourceConflictException;
 import com.nt.LMS.repository.RoleRepository;
 import com.nt.LMS.repository.UserRepository;
-import com.nt.LMS.services.AdminService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
