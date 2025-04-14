@@ -2,9 +2,10 @@ package com.example.course_service_lms.serviceImplTest;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
-import com.example.course_service_lms.Enum.CourseLevel;
 import com.example.course_service_lms.dto.CourseDTO;
 import com.example.course_service_lms.entity.Course;
+import com.example.course_service_lms.entity.CourseBundle;
+import com.example.course_service_lms.entity.CourseLevel;
 import com.example.course_service_lms.exception.ResourceAlreadyExistsException;
 import com.example.course_service_lms.exception.ResourceNotFoundException;
 import com.example.course_service_lms.exception.ResourceNotValidException;
@@ -34,7 +35,7 @@ class CourseImplTest {
         MockitoAnnotations.openMocks(this);
 
         courseDTO = new CourseDTO("Java Basics", 1L, "Learn Java", "BEGINNER", "img.jpg");
-        course = new Course(1L, 1L, "Java Basics", "Learn Java", "img.jpg", com.example.course_service_lms.Enum.CourseLevel.BEGINNER);
+        course = new Course(1L, 1L, "Java Basics", "Learn Java", "img.jpg", CourseLevel.BEGINNER);
     }
     @Test
     void testCreateCourse_Success() {

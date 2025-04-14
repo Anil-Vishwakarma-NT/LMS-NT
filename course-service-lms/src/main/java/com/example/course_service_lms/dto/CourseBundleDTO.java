@@ -8,19 +8,21 @@ import lombok.NoArgsConstructor;
 
 import java.util.Objects;
 
+import static com.example.course_service_lms.constants.CourseBundleConstants.*;
+
 @Data
 public class CourseBundleDTO {
     private long courseBundleId;
 
-    @NotNull(message = "Bundle ID cannot be null")
-    @Positive(message = "Bundle ID must be a positive number")
+    @NotNull(message = BUNDLE_ID_NOT_NULL)
+    @Positive(message = BUNDLE_ID_POSITIVE)
     private Long bundleId;
 
     @NotNull
     private String bundleName;
 
-    @NotNull(message = "Course ID cannot be null")
-    @Positive(message = "Course ID must be a positive number")
+    @NotNull(message = COURSE_ID_NOT_NULL)
+    @Positive(message = COURSE_ID_POSITIVE)
     private Long courseId;
 
     @NotNull
@@ -37,10 +39,8 @@ public class CourseBundleDTO {
     public int hashCode() {
         return Objects.hash(courseBundleId, bundleId, bundleName, courseId, courseName);
     }
-
     public CourseBundleDTO() {
     }
-
     public CourseBundleDTO(long courseBundleId, Long bundleId, String bundleName, Long courseId, String courseName) {
         this.courseBundleId = courseBundleId;
         this.bundleId = bundleId;

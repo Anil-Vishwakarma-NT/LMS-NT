@@ -1,8 +1,8 @@
 package com.example.course_service_lms.converters;
 
-import com.example.course_service_lms.Enum.CourseLevel;
 import com.example.course_service_lms.dto.CourseDTO;
 import com.example.course_service_lms.entity.Course;
+import com.example.course_service_lms.entity.CourseLevel;
 import com.example.course_service_lms.utils.StringUtils;
 
 public class CourseConvertors {

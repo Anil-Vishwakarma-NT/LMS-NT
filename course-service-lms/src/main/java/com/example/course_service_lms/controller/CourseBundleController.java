@@ -1,6 +1,8 @@
 package com.example.course_service_lms.controller;
 
 import com.example.course_service_lms.dto.CourseBundleDTO;
+import com.example.course_service_lms.dto.CreateCourseBundleDTO;
+import com.example.course_service_lms.entity.CourseBundle;
 import com.example.course_service_lms.service.CourseBundleService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -10,15 +12,15 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
-@RequestMapping("/api/bundles/course_bundles")
+@RequestMapping("/api/bundles/course-bundles")
 @RequiredArgsConstructor
 public class CourseBundleController {
 
     private final CourseBundleService courseBundleService;
 
     @PostMapping
-    public ResponseEntity<CourseBundleDTO> createCourseBundle(@RequestBody CourseBundleDTO courseBundleDTO) {
-        CourseBundleDTO createdBundle = courseBundleService.createCourseBundle(courseBundleDTO);
+    public ResponseEntity<CourseBundle> createCourseBundle(@RequestBody CreateCourseBundleDTO createCourseBundleDTO) {
+        CourseBundle createdBundle = courseBundleService.createCourseBundle(createCourseBundleDTO);
         return ResponseEntity.status(HttpStatus.CREATED).body(createdBundle);
     }
 
@@ -45,10 +47,10 @@ public class CourseBundleController {
 
     // UPDATE CourseBundle by ID
     @PutMapping("/{id}")
-    public ResponseEntity<CourseBundleDTO> updateCourseBundle(
+    public ResponseEntity<String> updateCourseBundle(
             @PathVariable("id") Long courseBundleId,
-            @RequestBody CourseBundleDTO courseBundleDTO) {
-        CourseBundleDTO updatedCourseBundle = courseBundleService.updateCourseBundle(courseBundleId, courseBundleDTO);
+            @RequestBody CreateCourseBundleDTO createCourseBundleDTO) {
+        String updatedCourseBundle = courseBundleService.updateCourseBundle(courseBundleId, createCourseBundleDTO);
         return ResponseEntity.ok(updatedCourseBundle);
     }
 

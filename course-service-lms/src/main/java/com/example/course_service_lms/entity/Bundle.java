@@ -16,12 +16,10 @@ public class Bundle {
     @Column(name = "bundle_name")
     private String bundleName;
 
-
     public Bundle(long bundleId, String bundleName) {
         this.bundleId = bundleId;
         this.bundleName = bundleName;
     }
-
     public Bundle() {
     }
 }

@@ -4,12 +4,11 @@ import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import java.util.Objects;
 
 @Entity
 @Table(name = "course_content")
 @Data
-@NoArgsConstructor
-@AllArgsConstructor
 public class CourseContent {
 
     @Id
@@ -32,4 +31,27 @@ public class CourseContent {
     @Column(name = "resource_link")
     private String resourceLink;
 
+    public CourseContent(long courseContentId, long courseId, String title, String description, String videoLink, String resourceLink) {
+        this.courseContentId = courseContentId;
+        this.courseId = courseId;
+        this.title = title;
+        this.description = description;
+        this.videoLink = videoLink;
+        this.resourceLink = resourceLink;
+    }
+
+    public CourseContent() {
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (o == null || getClass() != o.getClass()) return false;
+        CourseContent that = (CourseContent) o;
+        return courseContentId == that.courseContentId && courseId == that.courseId && Objects.equals(title, that.title) && Objects.equals(description, that.description) && Objects.equals(videoLink, that.videoLink) && Objects.equals(resourceLink, that.resourceLink);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(courseContentId, courseId, title, description, videoLink, resourceLink);
+    }
 }
