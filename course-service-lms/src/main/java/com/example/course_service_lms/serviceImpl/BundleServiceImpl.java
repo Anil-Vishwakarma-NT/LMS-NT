@@ -150,4 +150,9 @@ public class BundleServiceImpl implements BundleService {
         }
 
     }
+
+    @Override
+    public boolean existsByBundleId(Long id) {
+        return bundleRepository.existsById(id);
+    }
 }

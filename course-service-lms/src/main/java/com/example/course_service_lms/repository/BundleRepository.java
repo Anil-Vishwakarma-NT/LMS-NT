@@ -7,4 +7,5 @@ import org.springframework.stereotype.Repository;
 @Repository
 public interface BundleRepository extends JpaRepository <Bundle,Long>{
     boolean existsByBundleName(String bundleName);
+    boolean existsById(Long id);
 }

@@ -64,4 +64,13 @@ public class BundleController {
         bundleService.deleteBundle(id);
         return ResponseEntity.ok("Bundle with ID " + id + " deleted successfully.");
     }
+
+
+    //Controllers Specifically for user microservice
+    @GetMapping("/{id}/exists")
+    public ResponseEntity<Boolean> checkIfBundleExists(@PathVariable Long id) {
+        log.info("Fetching course with ID: {}", id);
+        boolean exists = bundleService.existsByBundleId(id);
+        return ResponseEntity.ok(exists);
+    }
 }

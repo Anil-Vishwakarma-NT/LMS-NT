@@ -2,8 +2,11 @@ package com.example.course_service_lms.controller;
 
 import com.example.course_service_lms.dto.CourseBundleDTO;
 import com.example.course_service_lms.dto.CourseBundlePostDTO;
+import com.example.course_service_lms.entity.Course;
+import com.example.course_service_lms.entity.CourseBundle;
 import com.example.course_service_lms.service.CourseBundleService;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -11,8 +14,9 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
-@RequestMapping("/api/bundles/course_bundles")
+@RequestMapping("/api/bundles/course-bundles")
 @RequiredArgsConstructor
+@Slf4j
 public class CourseBundleController {
 
     private final CourseBundleService courseBundleService;
@@ -51,6 +55,13 @@ public class CourseBundleController {
             @RequestBody CourseBundlePostDTO courseBundlePostDTO) {
         CourseBundlePostDTO updatedCourseBundle = courseBundleService.updateCourseBundle(courseBundleId, courseBundlePostDTO);
         return ResponseEntity.ok(updatedCourseBundle);
+    }
+
+    @GetMapping("/bundle/{id}")
+    public ResponseEntity<List<CourseBundle>> getAllCoursesByBundleId(@PathVariable("id") Long bundleId) {
+        log.info("Received request to get all courses.");
+        List<CourseBundle> courseBundles = courseBundleService.getAllCoursesByBundle(bundleId);
+        return ResponseEntity.ok(courseBundles);
     }
 
 }

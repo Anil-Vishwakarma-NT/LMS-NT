@@ -1,6 +1,7 @@
 package com.example.course_service_lms.serviceImpl;
 
 import com.example.course_service_lms.converters.CourseConvertors;
+import com.example.course_service_lms.dto.CourseBundleDTO;
 import com.example.course_service_lms.dto.CourseDTO;
 import com.example.course_service_lms.entity.Course;
 import com.example.course_service_lms.entity.CourseBundle;
@@ -8,6 +9,7 @@ import com.example.course_service_lms.entity.CourseLevel;
 import com.example.course_service_lms.exception.ResourceAlreadyExistsException;
 import com.example.course_service_lms.exception.ResourceNotFoundException;
 import com.example.course_service_lms.exception.ResourceNotValidException;
+import com.example.course_service_lms.repository.CourseBundleRepository;
 import com.example.course_service_lms.repository.CourseRepository;
 import com.example.course_service_lms.service.CourseService;
 import com.example.course_service_lms.utils.StringUtils;
@@ -29,7 +31,8 @@ public class CourseImpl implements CourseService {
     @Autowired
     private CourseRepository courseRepository;
 
-    private static final Set<String> ALLOWED_IMAGE_TYPES = Set.of("image/png", "image/jpeg", "image/jpg");
+    @Autowired
+    private CourseBundleRepository courseBundleRepository;
 
     @Override
     public Course createCourse(CourseDTO courseDTO) {
@@ -149,5 +152,12 @@ public class CourseImpl implements CourseService {
             throw new RuntimeException(GENERAL_ERROR);
         }
     }
+
+    //Methods required specifically for user microservice
+    @Override
+    public boolean courseExistsById(Long courseId) {
+        return courseRepository.existsById(courseId);
+    }
+
 
 }

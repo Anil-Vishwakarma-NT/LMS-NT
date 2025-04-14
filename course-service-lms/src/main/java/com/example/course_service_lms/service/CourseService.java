@@ -13,4 +13,5 @@ public interface CourseService {
     Optional<Course> getCourseById(Long courseId);
     String deleteCourse(Long courseId);
     String updateCourse(Long courseId, CourseDTO courseDTO);
+    boolean courseExistsById(Long courseId);
 }

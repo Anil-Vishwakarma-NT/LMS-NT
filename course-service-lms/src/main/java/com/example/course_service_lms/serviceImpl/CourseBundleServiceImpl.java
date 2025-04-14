@@ -221,4 +221,20 @@ public class CourseBundleServiceImpl implements CourseBundleService {
         }
     }
 
+    @Override
+    public List<CourseBundle> getAllCoursesByBundle(Long bundleId) {
+        try {
+            List<CourseBundle> courseBundles = courseBundleRepository.findByBundleId(bundleId);
+            if(courseBundles.isEmpty()) {
+                throw new ResourceNotFoundException("No courses in the bundle");
+            }
+            return courseBundles;
+        } catch (ResourceNotFoundException e) {
+            throw e;
+        } catch (Exception e) {
+            log.error("Unexpected error occurred while creating course-bundle mapping: {}", e.getMessage());
+            throw new RuntimeException("Something went wrong");
+        }
+    }
+
 }

@@ -55,4 +55,12 @@ public class CourseController {
         String response = courseService.updateCourse(id, courseDTO);
         return ResponseEntity.ok(response);
     }
+
+    //Controllers Specifically for user microservice
+    @GetMapping("/{id}/exists")
+    public ResponseEntity<Boolean> checkIfCourseExists(@PathVariable Long id) {
+        log.info("Fetching course with ID: {}", id);
+        boolean exists = courseService.courseExistsById(id);
+        return ResponseEntity.ok(exists);
+    }
 }

@@ -17,4 +17,6 @@ public interface BundleService {
     BundleDTO updateBundle(Long bundleId, BundleDTO bundleDTO);
 
     void deleteBundle(Long id);
+
+    boolean existsByBundleId(Long id);
 }
