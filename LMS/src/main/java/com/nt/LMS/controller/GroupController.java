@@ -2,8 +2,9 @@ package com.nt.LMS.controller;
 
 import com.nt.LMS.dto.GroupInDTO;
 import com.nt.LMS.dto.GroupOutDTO;
+import com.nt.LMS.dto.MessageOutDto;
 import com.nt.LMS.dto.UserOutDTO;
-import com.nt.LMS.service.GroupService;
+import com.nt.LMS.serviceImpl.GroupServiceImpl;
 import com.nt.LMS.repository.UserRepository;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -24,51 +25,40 @@ import java.util.List;
 public class GroupController {
 
     @Autowired
-    private GroupService groupService;
+    private GroupServiceImpl groupService;
 
     @Autowired
     private UserRepository userRepository;
 
     @PostMapping("/create-group")
-    public ResponseEntity<String> createGroup(@RequestBody @Valid GroupInDTO groupInDTO) {
+    public ResponseEntity<MessageOutDto> createGroup(@RequestBody @Valid GroupInDTO groupInDTO) {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         String username = authentication.getName();
 
         log.info("Attempting to create a group with name: {}", groupInDTO.getGroupName());
-        groupService.createGroup(groupInDTO.getGroupName(), username);
-
         log.info("Group successfully created by user: {}", username);
-        return ResponseEntity.status(HttpStatus.CREATED).body("Group successfully created");
+        return new ResponseEntity<>(groupService.createGroup(groupInDTO.getGroupName(), username), HttpStatus.CREATED);
     }
 
     @DeleteMapping("/{groupId}")
-    public ResponseEntity<String> deleteGroup(@PathVariable long groupId) {
+    public ResponseEntity<MessageOutDto> deleteGroup(@PathVariable long groupId) {
         log.info("Attempting to delete group with ID: {}", groupId);
-
-        String response = groupService.delGroup(groupId);
-
         log.info("Group with ID: {} deleted successfully", groupId);
-        return ResponseEntity.ok(response);
+        return new ResponseEntity<>(groupService.delGroup(groupId), HttpStatus.OK);
     }
 
     @PostMapping("/add-user")
-    public ResponseEntity<String> addUserToGroup(@RequestBody GroupInDTO groupInDTO) {
+    public ResponseEntity<MessageOutDto> addUserToGroup(@RequestBody @Valid GroupInDTO groupInDTO) {
         log.info("Attempting to add user with ID: {} to group with ID: {}", groupInDTO.getUserId(), groupInDTO.getGroupId());
-
-        String response = groupService.addUserToGroup(groupInDTO.getUserId(), groupInDTO.getGroupId());
-
         log.info("User with ID: {} added to group with ID: {}", groupInDTO.getUserId(), groupInDTO.getGroupId());
-        return ResponseEntity.ok(response);
+        return new ResponseEntity<>(groupService.addUserToGroup(groupInDTO.getUserId(), groupInDTO.getGroupId()),HttpStatus.OK);
     }
 
     @DeleteMapping("/remove-user")
-    public ResponseEntity<String> removeUserFromGroup(@RequestBody GroupInDTO groupdto) {
+    public ResponseEntity<MessageOutDto> removeUserFromGroup(@RequestBody @Valid GroupInDTO groupdto) {
         log.info("Attempting to remove user with ID: {} from group with ID: {}", groupdto.getUserId(), groupdto.getGroupId());
-
-        String response = groupService.removeUserFromGroup(groupdto.getUserId(), groupdto.getGroupId());
-
         log.info("User with ID: {} removed from group with ID: {}", groupdto.getUserId(), groupdto.getGroupId());
-        return ResponseEntity.ok(response);
+        return new ResponseEntity<>(groupService.removeUserFromGroup(groupdto.getUserId(), groupdto.getGroupId()),HttpStatus.OK);
     }
 
     @GetMapping("/group-emps/{groupId}")
@@ -79,11 +69,11 @@ public class GroupController {
 
         if (users.isEmpty()) {
             log.warn("No users found in group with ID: {}", groupId);
-            return ResponseEntity.noContent().build();
+            return new ResponseEntity<>(users,HttpStatus.NO_CONTENT);
         }
 
         log.info("Users found in group with ID: {}: {}", groupId, users.size());
-        return ResponseEntity.ok(users); // HTTP 200 OK
+        return new ResponseEntity<>(users,HttpStatus.OK);
     }
 
     @GetMapping("/groups")
@@ -93,7 +83,10 @@ public class GroupController {
 
         log.info("Fetching groups for user: {}", username);
         List<GroupOutDTO> groups = groupService.getGroups(username);
-
+        if(groups.isEmpty()){
+            log.warn("No groups found");
+            return new  ResponseEntity<>(groups,HttpStatus.NO_CONTENT);
+        }
         log.info("Found {} groups for user: {}", groups.size(), username);
         return ResponseEntity.ok(groups);
     }

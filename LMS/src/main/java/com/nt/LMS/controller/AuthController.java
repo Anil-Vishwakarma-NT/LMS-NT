@@ -2,7 +2,7 @@ package com.nt.LMS.controller;
 import com.nt.LMS.dto.LoginDto;
 import com.nt.LMS.dto.MessageOutDto;
 import com.nt.LMS.dto.TokenResponseDto;
-import com.nt.LMS.service.AuthService;
+import com.nt.LMS.serviceImpl.AuthServiceImpl;
 import jakarta.validation.Valid;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -18,7 +18,7 @@ import java.util.Map;
 public class AuthController {
 
     @Autowired
-    private AuthService authService;
+    private AuthServiceImpl authService;
 
     @PostMapping("/login")
     public ResponseEntity<TokenResponseDto> login(@Valid @RequestBody LoginDto loginDto) {

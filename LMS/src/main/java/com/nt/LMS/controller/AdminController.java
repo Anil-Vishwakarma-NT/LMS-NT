@@ -1,9 +1,9 @@
 package com.nt.LMS.controller;
 
 import com.nt.LMS.dto.*;
-import com.nt.LMS.service.GroupService;
-import com.nt.LMS.service.UserService;
-import com.nt.LMS.service.AdminService;
+import com.nt.LMS.serviceImpl.GroupServiceImpl;
+import com.nt.LMS.serviceImpl.UserServiceImpl;
+import com.nt.LMS.serviceImpl.AdminServiceImpl;
 import jakarta.validation.Valid;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -14,22 +14,19 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
-import static com.nt.LMS.constants.UserConstants.UPDATED;
-import static com.nt.LMS.constants.UserConstants.USER_DELETION_MESSAGE;
-
 @Slf4j
 @RestController
 @RequestMapping("/admin")
 public class AdminController {
 
     @Autowired
-    private UserService userService;
+    private UserServiceImpl userService;
 
     @Autowired
-    private AdminService adminService;
+    private AdminServiceImpl adminService;
 
     @Autowired
-    private GroupService groupService;
+    private GroupServiceImpl groupService;
 
     @PostMapping("/register")
     @PreAuthorize("hasAuthority('admin')")
@@ -41,11 +38,11 @@ public class AdminController {
     }
 
     @DeleteMapping("/user/{userId}")
-    public ResponseEntity<String> deleteEmployee(@PathVariable long userId) {
+    public ResponseEntity<MessageOutDto> deleteEmployee(@PathVariable long userId) {
         log.info("Received request to delete user with ID: {}", userId);
-        adminService.employeeDeletion(userId);
+       MessageOutDto msg= adminService.employeeDeletion(userId);
         log.info("User with ID: {} deleted successfully", userId);
-        return ResponseEntity.ok(USER_DELETION_MESSAGE);
+        return new ResponseEntity<>(msg,HttpStatus.OK);
     }
 
     @GetMapping("/employees")
@@ -53,27 +50,26 @@ public class AdminController {
         log.info("Fetching all employees");
         List<UserOutDTO> employees = adminService.getAllUsers();
         log.info("Fetched {} employees", employees.size());
-        return ResponseEntity.ok(employees);
+        if(employees.isEmpty()){
+            return new ResponseEntity<>(employees, HttpStatus.NO_CONTENT);
+        }
+        return new ResponseEntity<>(employees , HttpStatus.OK);
     }
 
-    @GetMapping("/manager-employee")
-    public ResponseEntity<List<UserOutDTO>> getManagerEmployee(@RequestBody UserInDTO userdto) {
-        log.info("Fetching employees for manager with ID: {}", userdto.getUserId());
-        List<UserOutDTO> employees = adminService.getManagerEmployee(userdto.getUserId());
-        log.info("Fetched {} employees for manager with ID: {}", employees.size(), userdto.getUserId());
-        return ResponseEntity.ok(employees);
+    @GetMapping("/manager-employee/{userId}")
+    public ResponseEntity<List<UserOutDTO>> getManagerEmployee(@PathVariable long userId) {
+        log.info("Fetching employees for manager with ID: {}", userId);
+        List<UserOutDTO> employees = adminService.getManagerEmployee(userId);
+        if(employees.isEmpty()){
+            return new ResponseEntity<>(employees, HttpStatus.NO_CONTENT);
+        }
+        log.info("Fetched {} employees for manager with ID: {}", employees.size(), userId);
+        return new ResponseEntity<>(employees , HttpStatus.OK);
     }
 
     @PostMapping("/change-role")
-    public ResponseEntity<String> changeRole(@RequestBody UserInDTO userdto) {
+    public ResponseEntity<MessageOutDto> changeRole(@RequestBody @Valid UserInDTO userdto) {
         log.info("Received request to change role for user with ID: {}", userdto.getUserId());
-        boolean roleChanged = adminService.changeUserRole(userdto.getUserId(), userdto.getRole());
-        if (roleChanged) {
-            log.info("Role changed successfully for user with ID: {}", userdto.getUserId());
-            return ResponseEntity.ok(UPDATED);
-        } else {
-            log.warn("Failed to change role for user with ID: {}", userdto.getUserId());
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Failed to change role");
-        }
+        return new ResponseEntity<>(adminService.changeUserRole(userdto.getUserId(), userdto.getRole()),HttpStatus.OK);
     }
 }

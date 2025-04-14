@@ -1,6 +1,7 @@
 package com.nt.LMS.constants;
 
 public final class GroupConstants {
+    public static final String GROUP_CREATED = "Group created successfully";
 
     public static final String GROUP_DELETED = "Group deleted successfully";
 
@@ -13,4 +14,6 @@ public final class GroupConstants {
     public static final String User_REMOVED_SUCCESSFULLY ="User removed successfully";
 
     public static final String GROUP_NOT_FOUND = "Group with given credentials is not present";
+
+    public static final String USER_ALREADY_PRESENT_IN_GROUP = "User already present in group";
 }

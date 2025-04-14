@@ -1,4 +1,4 @@
-package com.nt.LMS.service;
+package com.nt.LMS.serviceImpl;
 
 import com.nt.LMS.config.JwtUtil;
 import com.nt.LMS.dto.LoginDto;
@@ -11,7 +11,7 @@ import com.nt.LMS.exception.InvalidRequestException;
 import com.nt.LMS.exception.ResourceNotFoundException;
 import com.nt.LMS.repository.RefreshTokenRepository;
 import com.nt.LMS.repository.UserRepository;
-import com.nt.LMS.services.AuthService;
+import com.nt.LMS.service.AuthService;
 import jakarta.transaction.Transactional;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;

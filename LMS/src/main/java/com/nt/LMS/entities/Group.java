@@ -2,10 +2,7 @@ package com.nt.LMS.entities;
 
 
 import jakarta.persistence.*;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
-import lombok.ToString;
+import lombok.*;
 
 
 import java.util.HashSet;
@@ -18,12 +15,18 @@ import java.util.Set;
 @Setter
 @ToString
 @NoArgsConstructor
+@AllArgsConstructor
+
 public class Group {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long groupId;
+
+    @Column(nullable = false)
     private String groupName;
+
+    @Column(nullable = false)
     private long creatorId;
 
     public Group(String name  , long creatorId){

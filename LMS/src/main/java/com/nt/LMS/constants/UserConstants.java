@@ -30,7 +30,7 @@ public final class UserConstants {
 
     public static final String INVALID_USER_ROLE = "User Role is not valid";
 
-    public static Long MANAGER_ID = 1L;
+    public static Long ADMIN_ID = 3L;
 
 
 }

@@ -7,6 +7,8 @@ import java.util.Date;
 import java.util.Set;
 import java.util.HashSet;
 
+import static com.nt.LMS.constants.UserConstants.ADMIN_ID;
+
 @Entity
 @Table(name = "users")
 @Data
@@ -44,7 +46,7 @@ public class User {
     private Date updatedAt;
 
     public User() {
-        this.managerId = 1L ;
+        this.managerId = ADMIN_ID ;
     }
 
 }
