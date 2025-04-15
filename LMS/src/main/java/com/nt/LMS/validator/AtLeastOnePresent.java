@@ -7,11 +7,12 @@ import java.lang.annotation.*;
 
 @Documented
 @Constraint(validatedBy = AtLeastOnePresentValidator.class)
-@Target({ ElementType.TYPE })
+@Target({ElementType.TYPE})
 @Retention(RetentionPolicy.RUNTIME)
 public @interface AtLeastOnePresent {
-    String message() default "Either courseId or bundleId must be provided";
+    String message() default "Only one of courseId or bundleId must be provided";
     Class<?>[] groups() default {};
     Class<? extends Payload>[] payload() default {};
 }
+
 

@@ -1,8 +1,8 @@
 package com.nt.LMS.service;
 
-import com.nt.LMS.dto.EnrollmentDTO;
-import com.nt.LMS.entities.Enrollment;
+import com.nt.LMS.repository.EnrollmentRepository;
+import org.springframework.beans.factory.annotation.Autowired;
 
 public interface EnrollmentService {
-    public String enroll(EnrollmentDTO enrollmentDTO);
+
 }

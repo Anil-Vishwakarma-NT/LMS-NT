@@ -1,6 +1,5 @@
 package com.nt.LMS.validator;
 
-import com.nt.LMS.dto.EnrollmentDTO;
 import jakarta.validation.ConstraintValidator;
 import jakarta.validation.ConstraintValidatorContext;
 
@@ -8,6 +7,10 @@ public class AtLeastOnePresentValidator implements ConstraintValidator<AtLeastOn
 
     @Override
     public boolean isValid(EnrollmentDTO dto, ConstraintValidatorContext context) {
-        return dto.getCourseId() != null || dto.getBundleId() != null;
+        boolean isCourseIdPresent = dto.getCourseId() != null && dto.getCourseId() > 0;
+        boolean isBundleIdPresent = dto.getBundleId() != null && dto.getBundleId() > 0;
+
+        // Return true only if one of them is present, but not both
+        return (isCourseIdPresent ^ isBundleIdPresent); // XOR: one true, the other false
     }
 }
