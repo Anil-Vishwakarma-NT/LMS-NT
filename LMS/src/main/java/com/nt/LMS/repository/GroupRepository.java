@@ -13,7 +13,7 @@ public interface GroupRepository extends JpaRepository<Group , Long> {
 
     Optional<Group> findById(long groupId);
 
-
+    boolean existsById(long groupId);
 
     List<Group> findByCreatorId(long creatorId);
 
