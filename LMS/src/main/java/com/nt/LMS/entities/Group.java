@@ -13,7 +13,6 @@ import java.util.Set;
 @Table(name = "groups")
 @Getter
 @Setter
-@ToString
 @NoArgsConstructor
 @AllArgsConstructor
 

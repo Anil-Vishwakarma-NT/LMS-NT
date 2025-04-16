@@ -36,7 +36,7 @@ public class User {
     @Column
     private Long managerId;
 
-    @JoinColumn(name = "role_id", nullable = false)
+    @Column(name = "role_id", nullable = false)
     private Long roleId;
 
     @Temporal(TemporalType.TIMESTAMP)
