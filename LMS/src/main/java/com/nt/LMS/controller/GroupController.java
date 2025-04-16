@@ -50,7 +50,6 @@ public final class GroupController {
     public ResponseEntity<MessageOutDto> createGroup(@RequestBody @Valid final GroupInDTO groupInDTO) {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         String username = authentication.getName();
-
         log.info("Attempting to create a group with name: {}", groupInDTO.getGroupName());
         return new ResponseEntity<>(groupService.createGroup(groupInDTO.getGroupName(), username), HttpStatus.CREATED);
     }

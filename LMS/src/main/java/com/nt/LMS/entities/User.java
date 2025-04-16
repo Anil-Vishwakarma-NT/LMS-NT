@@ -71,7 +71,7 @@ public class User {
     /**
      * The ID of the role assigned to the user.
      */
-    @JoinColumn(name = "role_id", nullable = false)
+    @Column(name = "role_id", nullable = false)
     private Long roleId;
 
     /**

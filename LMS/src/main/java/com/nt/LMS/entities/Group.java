@@ -19,7 +19,6 @@ import lombok.ToString;
 @Table(name = "groups")
 @Getter
 @Setter
-@ToString
 @NoArgsConstructor
 @AllArgsConstructor
 public class Group {

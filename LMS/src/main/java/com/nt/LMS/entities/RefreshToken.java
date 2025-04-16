@@ -30,7 +30,8 @@ public class RefreshToken {
     /**
      * The user ID associated with this refresh token.
      */
-    @JoinColumn(name = "user_id", nullable = false)
+
+    @Column(name = "user_id", nullable = false)
     private Long userId;
 
     /**
@@ -46,4 +47,5 @@ public class RefreshToken {
      */
     @Column(nullable = false)
     private Instant expiryDate;
+
 }
