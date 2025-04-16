@@ -30,42 +30,43 @@ public class User {
      */
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "user_id")
     private long userId;
 
     /**
      * The username of the user, which must be unique.
      */
-    @Column(nullable = false, unique = true)
+    @Column(name = "username",nullable = false, unique = true)
     private String userName;
 
     /**
      * The first name of the user.
      */
-    @Column(nullable = false)
+    @Column(name = "firstname",nullable = false)
     private String firstName;
 
     /**
      * The last name of the user.
      */
-    @Column(nullable = false)
+    @Column(name = "lastname", nullable = false)
     private String lastName;
 
     /**
      * The email address of the user, which must be unique.
      */
-    @Column(nullable = false, unique = true)
+    @Column(name = "email", nullable = false, unique = true)
     private String email;
 
     /**
      * The password for the user.
      */
-    @Column(nullable = false)
+    @Column(name = "password", nullable = false)
     private String password;
 
     /**
      * The ID of the user's manager. Defaults to the ADMIN_ID.
      */
-    @Column
+    @Column(name = "manager_id")
     private Long managerId;
 
     /**
@@ -78,12 +79,14 @@ public class User {
      * The timestamp when the user was created.
      */
     @Temporal(TemporalType.TIMESTAMP)
+    @Column(name = "created_at")
     private Date createdAt;
 
     /**
      * The timestamp when the user's details were last updated.
      */
     @Temporal(TemporalType.TIMESTAMP)
+    @Column(name = "updated_at")
     private Date updatedAt;
 
     /**
