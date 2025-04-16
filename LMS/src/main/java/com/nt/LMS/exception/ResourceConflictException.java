@@ -1,8 +1,12 @@
 package com.nt.LMS.exception;
 
 public class ResourceConflictException extends RuntimeException {
-    public ResourceConflictException(final String message){
-
+    /**
+     * Resolve Resource conflict.
+     *
+     * @param message
+     */
+    public ResourceConflictException(final String message) {
         super(message);
     }
 }
