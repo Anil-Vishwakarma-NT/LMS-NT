@@ -19,9 +19,9 @@ public class EnrollmentDTO {
     @Future(message = "Deadline must be in the future")
     private LocalDateTime deadline;
 
-    @NotNull(message = "Status is required")
-    @NotEmpty(message = "Status cannot be empty")
-    private String status;
+//    @NotNull(message = "Status is required")
+//    @NotEmpty(message = "Status cannot be empty")
+//    private String status;
 
     @AssertTrue(message = "Either userId or groupId must be present, but not both")
     private boolean isUserOrGroupValid() {
