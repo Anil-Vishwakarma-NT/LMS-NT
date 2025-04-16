@@ -1,52 +1,95 @@
 package com.nt.LMS.entities;
 
-import jakarta.persistence.*;
-import lombok.*;
+import com.nt.LMS.constants.UserConstants;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.Table;
+import jakarta.persistence.Temporal;
+import jakarta.persistence.TemporalType;
+import lombok.AllArgsConstructor;
+import lombok.Data;
 
 import java.util.Date;
-import java.util.Set;
-import java.util.HashSet;
 
-import static com.nt.LMS.constants.UserConstants.ADMIN_ID;
-
+/**
+ * Represents a user in the system. This entity contains the user's details,
+ * including their username, first name, last name, email, password, manager ID, and role ID.
+ */
 @Entity
 @Table(name = "users")
 @Data
 @AllArgsConstructor
 public class User {
+
+    /**
+     * Unique identifier for the user.
+     */
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long userId;
 
+    /**
+     * The username of the user, which must be unique.
+     */
     @Column(nullable = false, unique = true)
     private String userName;
 
+    /**
+     * The first name of the user.
+     */
     @Column(nullable = false)
     private String firstName;
 
+    /**
+     * The last name of the user.
+     */
     @Column(nullable = false)
     private String lastName;
 
+    /**
+     * The email address of the user, which must be unique.
+     */
     @Column(nullable = false, unique = true)
     private String email;
 
+    /**
+     * The password for the user.
+     */
     @Column(nullable = false)
     private String password;
 
+    /**
+     * The ID of the user's manager. Defaults to the ADMIN_ID.
+     */
     @Column
     private Long managerId;
 
+    /**
+     * The ID of the role assigned to the user.
+     */
     @JoinColumn(name = "role_id", nullable = false)
     private Long roleId;
 
+    /**
+     * The timestamp when the user was created.
+     */
     @Temporal(TemporalType.TIMESTAMP)
     private Date createdAt;
 
+    /**
+     * The timestamp when the user's details were last updated.
+     */
     @Temporal(TemporalType.TIMESTAMP)
     private Date updatedAt;
 
+    /**
+     * Default constructor. Sets the managerId to ADMIN_ID.
+     */
     public User() {
-        this.managerId = ADMIN_ID ;
+        this.managerId = UserConstants.getAdminId();
     }
-
 }

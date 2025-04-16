@@ -1,20 +1,34 @@
+/**
+ * This package contains classes and controllers for the Learning Management System (LMS) application.
+ * The main class starts the Spring Boot application.
+ */
 package com.nt.LMS;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 
+/**
+ * The entry point of the LMS application.
+ * This class starts the Spring Boot application.
+ */
+
+
 @SpringBootApplication
 public class LmsApplication {
 
-	public static void main(String[] args) {
-
-		SpringApplication.run(LmsApplication.class, args);
-		System.out.println("welcome.................");
-//when two concurrent users are using the portal if one deletes a group and at the same time other user access its users what will happen ?
-		//constants
-
-
-
-	}
+    /**
+     * This is protected constructor of LMSApplication.
+     */
+    protected LmsApplication() {
+    }
+    /**
+     * Main method to run the application.
+     *
+     * @param args command-line arguments passed during the execution
+     */
+    public static void main(final String[] args) {
+        SpringApplication.run(LmsApplication.class, args);
+        System.out.println("Welcome to the Learning Management System...");
+    }
 
 }
