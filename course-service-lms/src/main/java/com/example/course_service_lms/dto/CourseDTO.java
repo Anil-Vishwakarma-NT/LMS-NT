@@ -108,7 +108,7 @@ public class CourseDTO {
             return false;
         }
         CourseDTO courseDTO = (CourseDTO) o;
-        return ownerId == courseDTO.ownerId
+        return Objects.equals(ownerId, courseDTO.ownerId)
                 && Objects.equals(title, courseDTO.title)
                 && Objects.equals(description, courseDTO.description)
                 && Objects.equals(courseLevel, courseDTO.courseLevel)

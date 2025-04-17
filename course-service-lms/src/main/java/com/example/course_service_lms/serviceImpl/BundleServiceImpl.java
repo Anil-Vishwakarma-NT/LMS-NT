@@ -140,6 +140,7 @@ public class BundleServiceImpl implements BundleService {
         try {
             log.info("Attempting to update bundle with ID: {}", bundleId);
             // Check if the bundle exists
+            // noinspection unused
             Bundle existingBundle = bundleRepository.findById(bundleId).orElseThrow(() -> {
                 log.error("Bundle with ID {} not found", bundleId);
                 return new ResourceNotFoundException(String.format(BUNDLE_NOT_FOUND_BY_ID, bundleId));
@@ -181,6 +182,7 @@ public class BundleServiceImpl implements BundleService {
             log.info("Attempting to delete bundle with ID: {}", id);
 
             // Check if the bundle exists
+            // noinspection unused
             Bundle existingBundle = bundleRepository.findById(id).orElseThrow(() -> {
                 log.error("Bundle with ID {} not found", id);
                 return new ResourceNotFoundException(String.format(BUNDLE_NOT_FOUND_BY_ID, id));

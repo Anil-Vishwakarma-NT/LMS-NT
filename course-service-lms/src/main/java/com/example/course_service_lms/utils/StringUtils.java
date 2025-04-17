@@ -1,5 +1,7 @@
 package com.example.course_service_lms.utils;
 
+import java.util.Locale;
+
 /**
  * Utility class for String operations commonly used in the LMS Course Service.
  * Contains methods to transform and format string input values.
@@ -24,7 +26,7 @@ public final class StringUtils {
             return input;
         }
 
-        String[] words = input.trim().toLowerCase().split("\\s+");
+        String[] words = input.trim().toLowerCase(Locale.ENGLISH).split("\\s+");
         StringBuilder properCaseString = new StringBuilder();
 
         for (String word : words) {

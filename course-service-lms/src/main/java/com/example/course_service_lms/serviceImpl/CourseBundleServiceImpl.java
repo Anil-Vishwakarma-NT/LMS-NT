@@ -87,8 +87,10 @@ public class CourseBundleServiceImpl implements CourseBundleService {
             }
 
             // Convert entities to DTOs using the helper method
+            // noinspection unused
             List<CourseBundleDTO> courseBundleDTOs = new ArrayList<>();
             for (CourseBundle courseBundle : courseBundles) {
+                // noinspection unused
                 CourseBundleDTO courseBundleDTO = convertEntityToDTO(courseBundle);
                 Optional<Bundle> bundle = bundleRepository.findById(courseBundle.getBundleId());
                 if (bundle.isEmpty()) {
@@ -132,6 +134,7 @@ public class CourseBundleServiceImpl implements CourseBundleService {
     public CourseBundleDTO getCourseBundleById(final Long courseBundleId) {
         log.info("Fetching course-bundle record with ID: {}", courseBundleId);
         try {
+            // noinspection unused
             CourseBundle courseBundle = courseBundleRepository.findById(courseBundleId)
                     .orElseThrow(() -> {
                         log.error("Course-bundle record not found for ID: {}", courseBundleId);
@@ -179,7 +182,7 @@ public class CourseBundleServiceImpl implements CourseBundleService {
     public void deleteCourseBundle(final Long courseBundleId) {
         try {
             log.info("Starting process to delete course-bundle record with ID: {}", courseBundleId);
-
+            // noinspection unused
             CourseBundle courseBundle = courseBundleRepository.findById(courseBundleId)
                     .orElseThrow(() -> {
                         log.error("Course-bundle record not found for ID: {}", courseBundleId);
@@ -211,7 +214,7 @@ public class CourseBundleServiceImpl implements CourseBundleService {
     public CourseBundlePostDTO updateCourseBundle(final Long courseBundleId, final CourseBundlePostDTO courseBundlePostDTO) {
         try {
             log.info("Starting process to update course-bundle record with ID: {}", courseBundleId);
-
+            // noinspection unused
             CourseBundle existingBundle = courseBundleRepository.findById(courseBundleId)
                     .orElseThrow(() -> {
                         log.error("Course-bundle record not found for ID: {}", courseBundleId);
