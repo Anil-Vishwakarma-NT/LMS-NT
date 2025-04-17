@@ -2,6 +2,7 @@ package com.nt.LMS.serviceImpl;
 
 import com.nt.LMS.dto.CourseBundleDTO;
 import com.nt.LMS.dto.EnrollmentDTO;
+import com.nt.LMS.dto.UpdateEnrollmentDTO;
 import com.nt.LMS.entities.*;
 import com.nt.LMS.exception.InvalidRequestException;
 import com.nt.LMS.exception.ResourceConflictException;
@@ -9,9 +10,9 @@ import com.nt.LMS.exception.ResourceNotFoundException;
 import com.nt.LMS.feignClient.CourseMicroserviceClient;
 import com.nt.LMS.repository.*;
 import com.nt.LMS.service.EnrollmentService;
-import com.nt.LMS.service.UserCourseEnrollmentService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
 import java.util.*;
@@ -41,6 +42,7 @@ public class EnrollmentServiceImpl implements EnrollmentService {
     @Autowired
     UserGroupRepository userGroupRepository;
 
+    @Transactional
     @Override
     public String enrollUser(EnrollmentDTO enrollmentDTO) {
         // Validate common prerequisites
@@ -56,6 +58,64 @@ public class EnrollmentServiceImpl implements EnrollmentService {
         } else {
             throw new InvalidRequestException("Either userId or groupId must be provided");
         }
+    }
+
+    @Transactional
+    @Override
+    public String updateEnrollment(UpdateEnrollmentDTO updateEnrollmentDTO) {
+        //UPDATE FOR USER ENROLLMENT
+        if (updateEnrollmentDTO.getUserId() != null) {
+            //VALIDATE USER AND MANAGER RELATIONSHIP
+            User user = userRepository.findById(updateEnrollmentDTO.getUserId())
+                    .orElseThrow(() -> new ResourceNotFoundException("User not found"));
+
+            if (!Objects.equals(user.getManagerId(), updateEnrollmentDTO.getManagerId())) {
+                throw new InvalidRequestException("You cannot update enrollments of this user");
+            }
+
+            //USER COURSE ENROLLMENT UPDATE
+            if (updateEnrollmentDTO.getCourseId() != null) {
+                EnrollmentHistory updateUserCourseEnrollmentHistory = new EnrollmentHistory();
+                String remarks = "UPDATED ";
+                //CHECK IF ENROLLMENT EXISTS
+               UserCourseEnrollment userCourseEnrollment = userCourseEnrollmentRepository.findByUserIdAndCourseIdAndStatusNotIn(updateEnrollmentDTO.getUserId(), updateEnrollmentDTO.getCourseId(), Arrays.asList("COMPLETED", "EXPIRED"))
+                       .orElseThrow(() -> new ResourceNotFoundException("No Enrollment Found"));
+
+               if (updateEnrollmentDTO.getDeadline() != null || updateEnrollmentDTO.getStatus() != null) {
+                   if(updateEnrollmentDTO.getStatus() != null) {
+                       if (!List.of("ENROLLED", "IN PROGRESS", "COMPLETED", "UNENROLLED")
+                               .contains(updateEnrollmentDTO.getStatus())) {
+                           throw new InvalidRequestException("Invalid Status Provided");
+                       }
+                       if (List.of("ENROLLED", "IN PROGRESS").contains(userCourseEnrollment.getStatus())) {
+                           userCourseEnrollment.setStatus(updateEnrollmentDTO.getStatus());
+                           remarks += "Status ";
+                           userCourseEnrollmentRepository.save(userCourseEnrollment);
+                       }
+                   }
+
+                   if(updateEnrollmentDTO.getDeadline() != null) {
+                       userCourseEnrollment.setDeadline(updateEnrollmentDTO.getDeadline());
+                       updateUserCourseEnrollmentHistory.setDeadline(updateEnrollmentDTO.getDeadline());
+                       remarks += "Deadline ";
+                       userCourseEnrollmentRepository.save(userCourseEnrollment);
+                   }
+
+                   updateUserCourseEnrollmentHistory.setUserId(updateEnrollmentDTO.getUserId());
+                   updateUserCourseEnrollmentHistory.setCourseId(updateEnrollmentDTO.getCourseId());
+                   updateUserCourseEnrollmentHistory.setAssignedBy(userCourseEnrollment.getAssignedBy());
+                   updateUserCourseEnrollmentHistory.setActionType("UPDATED");
+                   if(updateEnrollmentDTO.getStatus().equals("UNENROLLED")) {
+                       updateUserCourseEnrollmentHistory.setActionType("UNASSIGNED");
+                       remarks = "Course Unenrolled";
+                   }
+                   updateUserCourseEnrollmentHistory.setRecordedAt(LocalDateTime.now());
+                   updateUserCourseEnrollmentHistory.setRemarks(remarks);
+
+               }
+            }
+        }
+        return "";
     }
 
     private String processUserEnrollment(EnrollmentDTO enrollmentDTO, LocalDateTime now) {
