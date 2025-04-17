@@ -11,6 +11,7 @@ package com.example.course_service_lms.exception;
  */
 public class ResourceAlreadyExistsException extends RuntimeException {
 
+    private static final long serialVersionUID = 1L;
     /**
      * Constructs a new {@code ResourceAlreadyExistsException} with the specified detail message.
      *

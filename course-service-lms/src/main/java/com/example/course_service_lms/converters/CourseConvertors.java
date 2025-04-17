@@ -4,6 +4,7 @@ import com.example.course_service_lms.dto.CourseDTO;
 import com.example.course_service_lms.entity.Course;
 import com.example.course_service_lms.entity.CourseLevel;
 import com.example.course_service_lms.utils.StringUtils;
+import java.util.Locale;
 
 /**
  * Utility class for converting between {@link CourseDTO} and {@link Course} entity.
@@ -28,7 +29,7 @@ public final class CourseConvertors {
         course.setTitle(StringUtils.toProperCase(courseDTO.getTitle()));
         course.setOwnerId(courseDTO.getOwnerId());
         course.setDescription(StringUtils.toProperCase(courseDTO.getDescription()));
-        course.setLevel(CourseLevel.valueOf(courseDTO.getCourseLevel().toUpperCase()));
+        course.setLevel(CourseLevel.valueOf(courseDTO.getCourseLevel().toUpperCase(Locale.ROOT)));
         course.setImage(courseDTO.getImage());
         return course;
     }
