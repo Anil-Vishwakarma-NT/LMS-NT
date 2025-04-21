@@ -1,6 +1,7 @@
 package com.example.course_service_lms.controller;
 
 import com.example.course_service_lms.dto.CourseDTO;
+import com.example.course_service_lms.dto.MessageOutDTO;
 import com.example.course_service_lms.entity.Course;
 import com.example.course_service_lms.service.CourseService;
 import jakarta.validation.Valid;
@@ -63,4 +64,13 @@ public class CourseController {
         boolean exists = courseService.courseExistsById(id);
         return ResponseEntity.ok(exists);
     }
+
+    @GetMapping("/count")
+    public ResponseEntity<MessageOutDTO> getCourseCount() {
+        log.info("Received request to get total course count.");
+        long count = courseService.countCourses();
+        log.info("Total course count retrieved: {}", count);
+        return ResponseEntity.ok(new MessageOutDTO(""+count));
+    }
+
 }

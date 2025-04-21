@@ -155,4 +155,10 @@ public class BundleServiceImpl implements BundleService {
     public boolean existsByBundleId(Long id) {
         return bundleRepository.existsById(id);
     }
+
+    @Override
+    public long countBundles() {
+        return bundleRepository.count();
+    }
+
 }

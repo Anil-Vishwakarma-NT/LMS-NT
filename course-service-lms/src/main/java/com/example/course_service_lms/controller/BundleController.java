@@ -1,6 +1,7 @@
 package com.example.course_service_lms.controller;
 
 import com.example.course_service_lms.dto.BundleDTO;
+import com.example.course_service_lms.dto.MessageOutDTO;
 import com.example.course_service_lms.entity.Bundle;
 import com.example.course_service_lms.service.BundleService;
 import jakarta.validation.Valid;
@@ -72,5 +73,12 @@ public class BundleController {
         log.info("Fetching course with ID: {}", id);
         boolean exists = bundleService.existsByBundleId(id);
         return ResponseEntity.ok(exists);
+    }
+    @GetMapping("/count")
+    public ResponseEntity<MessageOutDTO> getCourseCount() {
+        log.info("Received request to get total Bundle count.");
+        long count = bundleService.countBundles();
+        log.info("Total Bundle count retrieved: {}", count);
+        return ResponseEntity.ok(new MessageOutDTO(""+count));
     }
 }

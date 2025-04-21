@@ -158,6 +158,10 @@ public class CourseImpl implements CourseService {
     public boolean courseExistsById(Long courseId) {
         return courseRepository.existsById(courseId);
     }
+    @Override
+    public long countCourses() {
+        return courseRepository.count();
+    }
 
 
 }

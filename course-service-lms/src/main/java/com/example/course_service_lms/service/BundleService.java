@@ -19,4 +19,6 @@ public interface BundleService {
     void deleteBundle(Long id);
 
     boolean existsByBundleId(Long id);
+
+    long countBundles();
 }
