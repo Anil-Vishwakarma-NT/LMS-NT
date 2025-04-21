@@ -12,4 +12,5 @@ import java.util.Optional;
 public interface UserBundleEnrollmentRepository extends JpaRepository<UserBundleEnrollment, Long> {
 
     Optional<UserBundleEnrollment> findByUserIdAndBundleIdAndStatusNotIn(Long userId, Long bundleId, List<String> statuses);
+    List<UserBundleEnrollment> findByBundleId(Long bundleId);
 }

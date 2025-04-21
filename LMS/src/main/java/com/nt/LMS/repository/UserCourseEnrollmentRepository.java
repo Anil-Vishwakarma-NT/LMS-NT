@@ -11,4 +11,5 @@ import java.util.Optional;
 public interface UserCourseEnrollmentRepository extends JpaRepository<UserCourseEnrollment, Long> {
 
     Optional<UserCourseEnrollment> findByUserIdAndCourseIdAndStatusNotIn(Long userId, Long courseId, List<String> statuses);
+    List<UserCourseEnrollment> findByCourseId(Long courseId);
 }

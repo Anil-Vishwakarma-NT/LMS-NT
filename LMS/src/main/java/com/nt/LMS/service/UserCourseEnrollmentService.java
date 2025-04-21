@@ -1,4 +1,11 @@
 package com.nt.LMS.service;
 
+import com.nt.LMS.dto.UserCourseEnrollmentOutDTO;
+import com.nt.LMS.entities.UserCourseEnrollment;
+
+import java.util.List;
+
 public interface UserCourseEnrollmentService {
+    List<UserCourseEnrollment> findByCourseId(Long courseId);
+    List<UserCourseEnrollmentOutDTO> findByUserId();
 }

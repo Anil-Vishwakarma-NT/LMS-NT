@@ -17,7 +17,5 @@ public class EnrollmentDTO {
 
     private LocalDateTime assignedAt = LocalDateTime.now();
 
-    @NotNull(message = "Deadline is required")
-    @Future(message = "Deadline must be in the future")
     private LocalDateTime deadline;
 }
