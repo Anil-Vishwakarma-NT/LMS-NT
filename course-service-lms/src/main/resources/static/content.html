@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Course Content Viewer</title>
+  <style>
+    body {
+        font-family: Arial, sans-serif;
+        margin: 20px;
+    }
+    table {
+        width: 100%;
+        border-collapse: collapse;
+        margin-top: 20px;
+    }
+    th, td {
+        border: 1px solid #ddd;
+        padding: 10px;
+        text-align: left;
+    }
+    th {
+        background-color: #f4f4f4;
+    }
+    .modal {
+        display: none;
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background-color: rgba(0, 0, 0, 0.9);
+        justify-content: center;
+        align-items: center;
+        z-index: 9999;
+    }
+    #screenBlocker {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: rgba(0, 0, 0, 0.6);
+        z-index: 9998;
+        display: none;
+    }
+    #pdfViewerModal {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: rgba(0, 0, 0, 0.8);
+        z-index: 9999;
+        display: none;
+    }
+    #pdfViewerContainer {
+        position: absolute;
+        top: 10%;
+        left: 10%;
+        width: 80%;
+        height: 80%;
+        background: #fff;
+        border-radius: 8px;
+        padding: 16px;
+        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.5);
+        overflow-y: auto;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+    }
+    #pdfViewerHeader {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 10px;
+    }
+    #closeButton {
+      position: fixed; /* Fixes button in place */
+      top: 10px;
+      right: 10px;
+      z-index: 10000;
+      padding: 8px 16px;
+      background: #f44336;
+      color: #fff;
+      border: none;
+      border-radius: 4px;
+      cursor: not-allowed;
+    }
+    canvas {
+        display: block;
+        margin-bottom: 10px;
+    }
+
+    #timerMessage {
+    position: fixed;  /* ✅ Fix position */
+    top: 10px;        /* ✅ Stick to top */
+    left: 50%;        /* ✅ Center horizontally */
+    transform: translateX(-50%); /* ✅ Proper centering */
+    background: rgba(0, 0, 0, 0.7); /* ✅ Slight transparent background */
+    color: white;     /* ✅ Readable text */
+    padding: 8px 16px;
+    border-radius: 4px;
+    font-weight: bold;
+    z-index: 10000;   /* ✅ Ensure it's always above other elements */
+}
+  </style>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.16.105/pdf.min.js"></script>
+</head>
+<body>
+<h1>Course Content Viewer</h1>
+
+<div>
+  <label for="courseId">Enter Course ID:</label>
+  <input type="text" id="courseId" placeholder="Enter course ID">
+  <button id="fetchContent">Fetch by Course ID</button>
+  <button id="fetchAllContent">Fetch All Courses</button>
+</div>
+
+<table>
+  <thead>
+  <tr>
+    <th>Course ID</th>
+    <th>Title</th>
+    <th>Description</th>
+    <th>Content</th>
+  </tr>
+  </thead>
+  <tbody id="contentTable">
+  </tbody>
+</table>
+
+<!-- Video Modal -->
+<div id="videoModal" class="modal" data-course-id="" data-course-content-id="">
+  <div class="modal-content">
+    <button class="close-button" id="closeModal">Close</button>
+    <div id="mediaPlayer">
+      <video id="videoPlayer" controls>
+        <source src="" type="video/mp4">
+        Your browser does not support the video tag.
+      </video>
+    </div>
+  </div>
+</div>
+
+<!-- Screen Blocker -->
+<div id="screenBlocker"></div>
+
+<!-- PDF Viewer Modal -->
+<div id="pdfViewerModal">
+  <div id="pdfViewerContainer">
+    <div id="pdfViewerHeader">
+      <button id="closeButton" disabled>Close Viewer</button>
+      <span id="timerMessage">You can close this after 10 seconds.</span>
+    </div>
+    <div id="pdfCanvasContainer"></div> <!-- Where PDF pages will be rendered -->
+  </div>
+</div>
+
+<script src="https://www.youtube.com/iframe_api"></script>
+<script src="script.js"></script>
+</body>
+</html>
