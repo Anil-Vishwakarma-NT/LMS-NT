@@ -105,10 +105,7 @@ public class AuthServiceImpl implements AuthService {
                     log.error("User not found with email: {}", loginDto.getEmail());
                     return new ResourceNotFoundException(UserConstants.USER_NOT_FOUND);
                 });
-        Role role = roleRepository.findById(user.getRoleId()).orElseThrow(() -> {
-            log.error("Role not found with email: {}", loginDto.getEmail());
-            return new ResourceNotFoundException(UserConstants.USER_NOT_FOUND);
-        });
+
         refreshTokenRepository.deleteByUserId(user.getUserId());
         log.debug("Old refresh token removed for user: {}", user.getEmail());
 
@@ -119,7 +116,7 @@ public class AuthServiceImpl implements AuthService {
         refreshTokenRepository.save(refreshTokenEntity);
         log.info("Refresh token stored for user: {}", user.getEmail());
 
-        return new TokenResponseDto(accessToken, refreshToken, "Bearer" , role.getName());
+        return new TokenResponseDto(accessToken, refreshToken, "Bearer" );
     }
 
     /**
@@ -150,10 +147,7 @@ public class AuthServiceImpl implements AuthService {
 
         User user = userRepository.findById(refreshTokenEntity.get().getUserId())
                 .orElseThrow(() -> new InvalidRequestException(UserConstants.USER_NOT_FOUND));
-        Role role = roleRepository.findById(user.getRoleId()).orElseThrow(() -> {
-            log.error("Role not found with email: {}");
-            return new ResourceNotFoundException(UserConstants.USER_NOT_FOUND);
-        });
+
 
         log.debug("Found valid refresh token for user: {}", user.getEmail());
 
@@ -162,7 +156,7 @@ public class AuthServiceImpl implements AuthService {
 
         log.info("New access token generated for user: {}", user.getEmail());
 
-        return new TokenResponseDto(newAccessToken, refreshToken, "Bearer" ,role.getName());
+        return new TokenResponseDto(newAccessToken, refreshToken, "Bearer" );
     }
 
     /**
