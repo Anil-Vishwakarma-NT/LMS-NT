@@ -66,7 +66,7 @@ public final class AdminController {
      * @param userId the ID of the user to delete
      * @return success message
      */
-    @DeleteMapping("/user/{userId}")
+    @DeleteMapping("/remove-user/{userId}")
     public ResponseEntity<MessageOutDto> deleteEmployee(@PathVariable final long userId) {
         log.info("Received request to delete user with ID: {}", userId);
         MessageOutDto msg = adminService.employeeDeletion(userId);
@@ -121,4 +121,6 @@ public final class AdminController {
                 HttpStatus.OK
         );
     }
+
+
 }

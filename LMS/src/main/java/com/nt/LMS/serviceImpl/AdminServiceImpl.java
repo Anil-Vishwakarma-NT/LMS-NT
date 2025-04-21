@@ -158,6 +158,13 @@ public final class AdminServiceImpl implements AdminService {
                             throw new ResourceNotFoundException(UserConstants.USER_NOT_FOUND);
                         });
                 String managerName = manager.getFirstName() + " " + manager.getLastName();
+                Role role = roleRepository.findById(user.getRoleId()).orElseThrow(
+                        () -> {
+                            log.error("Role with ID {} not found", user.getManagerId());
+                            throw new ResourceNotFoundException(UserConstants.USER_NOT_FOUND);
+                        }
+                );
+
                 UserOutDTO userDto = userDTOConverter.userToOutDto(user, managerName);
                 userDtos.add(userDto);
             }

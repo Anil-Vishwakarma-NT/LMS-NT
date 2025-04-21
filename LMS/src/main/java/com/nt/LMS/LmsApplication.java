@@ -13,7 +13,6 @@ import org.springframework.cloud.openfeign.EnableFeignClients;
  * This class starts the Spring Boot application.
  */
 
-
 @SpringBootApplication
 @EnableFeignClients
 public class LmsApplication {
