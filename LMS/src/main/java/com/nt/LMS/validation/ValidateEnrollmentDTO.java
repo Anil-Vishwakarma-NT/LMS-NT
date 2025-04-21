@@ -1,4 +1,4 @@
-package com.nt.LMS.validator;
+package com.nt.LMS.validation;
 
 import jakarta.validation.Constraint;
 import jakarta.validation.Payload;
@@ -6,12 +6,11 @@ import jakarta.validation.Payload;
 import java.lang.annotation.*;
 
 @Documented
-@Constraint(validatedBy = AtLeastOnePresentValidator.class)
+@Constraint(validatedBy = EnrollmentValidator.class)
 @Target({ ElementType.TYPE })
 @Retention(RetentionPolicy.RUNTIME)
-public @interface AtLeastOnePresent {
-    String message() default "Either courseId or bundleId must be provided";
+public @interface ValidateEnrollmentDTO {
+    String message() default "Invalid enrollment update: specify either userId or groupId, and either courseId or bundleId";
     Class<?>[] groups() default {};
     Class<? extends Payload>[] payload() default {};
 }
-

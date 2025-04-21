@@ -1,38 +1,23 @@
 package com.nt.LMS.dto;
 
-import com.nt.LMS.validator.AtLeastOnePresent;
-import jakarta.persistence.Column;
-import jakarta.validation.constraints.Future;
-import jakarta.validation.constraints.NotNull;
-import jakarta.validation.constraints.Positive;
+import com.nt.LMS.validation.ValidateEnrollmentDTO;
 import lombok.Data;
-
+import jakarta.validation.constraints.*;
 import java.time.LocalDateTime;
 
 @Data
-@AtLeastOnePresent
+@ValidateEnrollmentDTO
 public class EnrollmentDTO {
 
-    @NotNull(message = "User ID is required")
-    @Positive(message = "User ID must be positive")
     private Long userId;
-
-    @NotNull(message = "Course ID is required")
-    @Positive(message = "Course ID must be positive")
+    private Long groupId;
     private Long courseId;
-
     private Long bundleId;
-
-    @Future(message = "Deadline must be a future date and time")
-    private LocalDateTime deadline;
-
-    @NotNull(message = "User ID is required")
-    @Positive(message = "User ID must be positive")
     private Long assignedBy;
 
-    @NotNull(message = "Please specify if the course is individually assigned")
-    private Boolean isIndividualAssigned;
+    private LocalDateTime assignedAt = LocalDateTime.now();
 
-    @NotNull(message = "Please specify if the course is assigned through a group")
-    private Boolean isGroupAssigned;
+    @NotNull(message = "Deadline is required")
+    @Future(message = "Deadline must be in the future")
+    private LocalDateTime deadline;
 }

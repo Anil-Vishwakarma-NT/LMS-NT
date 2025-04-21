@@ -1,48 +1,63 @@
 package com.nt.LMS.controller;
+
 import com.nt.LMS.dto.LoginDto;
 import com.nt.LMS.dto.MessageOutDto;
 import com.nt.LMS.dto.TokenResponseDto;
-import com.nt.LMS.serviceImpl.AuthServiceImpl;
-import jakarta.validation.Valid;
+import com.nt.LMS.service.AuthService;
+import jakarta.servlet.http.HttpServletRequest;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestParam;
 
-import java.util.Map;
-
+/**
+ * Controller to handle authentication-related endpoints.
+ */
 @Slf4j
 @RestController
-@RequestMapping("/auth")
-@CrossOrigin(origins = "http://localhost:3000")
-public class AuthController {
+@RequestMapping("/api/auth")
+public final class AuthController {
 
+    /**
+     * For using auth services.
+     */
     @Autowired
-    private AuthServiceImpl authService;
+    private AuthService authService;
 
+    /**
+     * Endpoint for user login.
+     *
+     * @param loginDto The login request containing email and password.
+     * @return Access and refresh tokens.
+     */
     @PostMapping("/login")
-    public ResponseEntity<TokenResponseDto> login(@Valid @RequestBody LoginDto loginDto) {
-        log.info("Login attempt for email: {}", loginDto.getEmail());
-        TokenResponseDto response = authService.login(loginDto);
-        log.info("Login successful for email: {}", loginDto.getEmail());
-        return new ResponseEntity<>(response, HttpStatus.OK);
+    public TokenResponseDto login(@RequestBody final LoginDto loginDto) {
+        return authService.login(loginDto);
     }
 
+    /**
+     * Endpoint to refresh access token using refresh token.
+     *
+     * @param request The HTTP request containing the refresh token in the header.
+     * @return A new access token and the same refresh token.
+     */
     @PostMapping("/refresh-token")
-    public ResponseEntity<TokenResponseDto> refreshToken(@Valid @RequestBody Map<String, String> request) {
-        String refreshToken = request.get("refreshToken");
-        log.info("Refresh token attempt: {}", refreshToken);
-        TokenResponseDto response = authService.refreshToken(refreshToken);
-        log.info("Access token refreshed successfully");
-        return new ResponseEntity<>(response, HttpStatus.OK);
+    public TokenResponseDto refreshToken(final HttpServletRequest request) {
+        final String refreshToken = request.getHeader("Refresh-Token");
+        return authService.refreshToken(refreshToken);
     }
 
-    @PostMapping("/logout/{email}")
-    public ResponseEntity<MessageOutDto> logout(@PathVariable String email) {
-        log.info("Logout attempt for email: {}", email);
-        MessageOutDto response = authService.logout(email);
-        log.info("Logout successful for email: {}", email);
-        return new ResponseEntity<>(response, HttpStatus.OK);
+    /**
+     * Endpoint to logout a user and invalidate refresh token.
+     *
+     * @param email The email of the user to logout.
+     * @return Message indicating successful logout.
+     */
+    @PostMapping("/logout")
+    public MessageOutDto logout(@RequestParam final String email) {
+        return authService.logout(email);
     }
 }

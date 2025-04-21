@@ -11,14 +11,15 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 @Slf4j
 @RestController
-@RequestMapping("/api/enrollment")
+@RequestMapping("/api/enrollment/enroll")
 public class EnrollmentController {
+
     @Autowired
     private EnrollmentService enrollmentService;
 
-    @PostMapping("/enroll")
+    @PostMapping
     public ResponseEntity<String> enroll(@Valid @RequestBody EnrollmentDTO enrollmentDTO) {
-        String response = enrollmentService.enroll(enrollmentDTO);
+        String response = enrollmentService.enrollUser(enrollmentDTO);
         return ResponseEntity.ok(response);
     }
     @GetMapping("/count")

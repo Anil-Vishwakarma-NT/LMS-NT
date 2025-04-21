@@ -1,6 +1,9 @@
 package com.nt.LMS.controller;
 
-import com.nt.LMS.dto.*;
+import com.nt.LMS.dto.RegisterDto;
+import com.nt.LMS.dto.MessageOutDto;
+import com.nt.LMS.dto.UserOutDTO;
+import com.nt.LMS.dto.UserInDTO;
 import com.nt.LMS.serviceImpl.GroupServiceImpl;
 import com.nt.LMS.serviceImpl.UserServiceImpl;
 import com.nt.LMS.serviceImpl.AdminServiceImpl;
@@ -10,68 +13,117 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.web.bind.annotation.*;
-
+import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.GetMapping;
 import java.util.List;
 
+/**
+ * Controller for Admin functionalities such as registering users,
+ * deleting users, listing employees, assigning roles, etc.
+ */
 @Slf4j
 @RestController
 @RequestMapping("/admin")
-@CrossOrigin("http://localhost:3000")
-public class AdminController {
+public final class AdminController {
 
+    /**
+     * Service for user operations.
+     */
     @Autowired
     private UserServiceImpl userService;
 
+    /**
+     * Service for admin operations.
+     */
     @Autowired
     private AdminServiceImpl adminService;
 
+    /**
+     * Service for group operations.
+     */
     @Autowired
     private GroupServiceImpl groupService;
 
+    /**
+     * Registers new user.
+     *
+     * @param registerDto the user registration information
+     * @return success message
+     */
     @PostMapping("/register")
     @PreAuthorize("hasAuthority('admin')")
-    public ResponseEntity<MessageOutDto> register(@Valid @RequestBody RegisterDto registerDto) {
+    public ResponseEntity<MessageOutDto> register(@Valid @RequestBody final RegisterDto registerDto) {
         log.info("Admin registration request received for: {}", registerDto.getEmail());
         MessageOutDto response = adminService.register(registerDto);
         log.info("Admin registered successfully: {}", registerDto.getEmail());
         return new ResponseEntity<>(response, HttpStatus.CREATED);
     }
 
+    /**
+     * Deletes a user by ID.
+     *
+     * @param userId the ID of the user to delete
+     * @return success message
+     */
     @DeleteMapping("/user/{userId}")
-    public ResponseEntity<MessageOutDto> deleteEmployee(@PathVariable long userId) {
+    public ResponseEntity<MessageOutDto> deleteEmployee(@PathVariable final long userId) {
         log.info("Received request to delete user with ID: {}", userId);
-       MessageOutDto msg= adminService.employeeDeletion(userId);
+        MessageOutDto msg = adminService.employeeDeletion(userId);
         log.info("User with ID: {} deleted successfully", userId);
-        return new ResponseEntity<>(msg,HttpStatus.OK);
+        return new ResponseEntity<>(msg, HttpStatus.OK);
     }
 
+    /**
+     * Gets all employees.
+     *
+     * @return list of all employees
+     */
     @GetMapping("/employees")
     public ResponseEntity<List<UserOutDTO>> getAllEmployees() {
         log.info("Fetching all employees");
         List<UserOutDTO> employees = adminService.getAllUsers();
         log.info("Fetched {} employees", employees.size());
-        if(employees.isEmpty()){
+        if (employees.isEmpty()) {
             return new ResponseEntity<>(employees, HttpStatus.NO_CONTENT);
         }
-        return new ResponseEntity<>(employees , HttpStatus.OK);
+        return new ResponseEntity<>(employees, HttpStatus.OK);
     }
 
+    /**
+     * Gets employees under a manager.
+     *
+     * @param userId manager's user ID
+     * @return list of employees
+     */
     @GetMapping("/manager-employee/{userId}")
-    public ResponseEntity<List<UserOutDTO>> getManagerEmployee(@PathVariable long userId) {
+    public ResponseEntity<List<UserOutDTO>> getManagerEmployee(@PathVariable final long userId) {
         log.info("Fetching employees for manager with ID: {}", userId);
         List<UserOutDTO> employees = adminService.getManagerEmployee(userId);
-        if(employees.isEmpty()){
+        if (employees.isEmpty()) {
             return new ResponseEntity<>(employees, HttpStatus.NO_CONTENT);
         }
         log.info("Fetched {} employees for manager with ID: {}", employees.size(), userId);
-        return new ResponseEntity<>(employees , HttpStatus.OK);
+        return new ResponseEntity<>(employees, HttpStatus.OK);
     }
 
+    /**
+     * Changes a user's role.
+     *
+     * @param userDto user ID and new role
+     * @return success message
+     */
     @PostMapping("/change-role")
-    public ResponseEntity<MessageOutDto> changeRole(@RequestBody @Valid UserInDTO userdto) {
-        log.info("Received request to change role for user with ID: {}", userdto.getUserId());
-        return new ResponseEntity<>(adminService.changeUserRole(userdto.getUserId(), userdto.getRole()),HttpStatus.OK);
+    public ResponseEntity<MessageOutDto> changeRole(@RequestBody @Valid final UserInDTO userDto) {
+        log.info("Received request to change role for user with ID: {}", userDto.getUserId());
+        return new ResponseEntity<>(
+                adminService.changeUserRole(userDto.getUserId(), userDto.getRole()),
+                HttpStatus.OK
+        );
     }
 
     @PreAuthorize("permitAll()")

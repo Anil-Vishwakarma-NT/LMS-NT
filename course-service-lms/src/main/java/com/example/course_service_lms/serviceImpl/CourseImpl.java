@@ -1,10 +1,8 @@
 package com.example.course_service_lms.serviceImpl;
 
 import com.example.course_service_lms.converters.CourseConvertors;
-import com.example.course_service_lms.dto.CourseBundleDTO;
 import com.example.course_service_lms.dto.CourseDTO;
 import com.example.course_service_lms.entity.Course;
-import com.example.course_service_lms.entity.CourseBundle;
 import com.example.course_service_lms.entity.CourseLevel;
 import com.example.course_service_lms.exception.ResourceAlreadyExistsException;
 import com.example.course_service_lms.exception.ResourceNotFoundException;
@@ -19,27 +17,51 @@ import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.Optional;
-import java.util.Set;
 
 import static com.example.course_service_lms.constants.BundleConstants.GENERAL_ERROR;
-import static com.example.course_service_lms.constants.CourseConstants.*;
+import static com.example.course_service_lms.constants.CourseConstants.COURSE_ALREADY_EXISTS;
+import static com.example.course_service_lms.constants.CourseConstants.COURSE_DELETED_SUCCESSFULLY;
+import static com.example.course_service_lms.constants.CourseConstants.COURSE_DUPLICATE_FOR_OWNER;
+import static com.example.course_service_lms.constants.CourseConstants.COURSE_NOT_FOUND;
+import static com.example.course_service_lms.constants.CourseConstants.COURSE_UPDATED_SUCCESSFULLY;
 
+/**
+ * Implementation of the {@link CourseService} interface that manages course-related operations.
+ * Supports creating, retrieving, updating, and deleting course records.
+ * Includes validation logic and logs significant operations.
+ *
+ * @see CourseService
+ */
 @Slf4j
 @Service
 public class CourseImpl implements CourseService {
 
+    /**
+     * Repository to interact with course data.
+     */
     @Autowired
     private CourseRepository courseRepository;
 
+    /**
+     * Repository to manage course-bundle mapping data.
+     */
     @Autowired
     private CourseBundleRepository courseBundleRepository;
 
+    /**
+     * Creates a new course after checking for duplicates.
+     *
+     * @param courseDTO the course data transfer object containing course details
+     * @return the saved {@link Course} entity
+     * @throws ResourceAlreadyExistsException if a course with the same title and owner already exists
+     */
     @Override
-    public Course createCourse(CourseDTO courseDTO) {
+    public Course createCourse(final CourseDTO courseDTO) {
         try {
             log.info("Creating a new course with title: {}", courseDTO.getTitle());
 
-            Optional<Course> existingCourse = courseRepository.findByTitleIgnoreCaseAndOwnerId(courseDTO.getTitle(),courseDTO.getOwnerId());
+            Optional<Course> existingCourse = courseRepository.findByTitleIgnoreCaseAndOwnerId(
+                    courseDTO.getTitle(), courseDTO.getOwnerId());
             if (existingCourse.isPresent()) {
                 log.warn("Course with title '{}' already exists.", courseDTO.getTitle());
                 throw new ResourceAlreadyExistsException(COURSE_ALREADY_EXISTS);
@@ -49,13 +71,19 @@ public class CourseImpl implements CourseService {
             Course savedCourse = courseRepository.save(course);
             log.info("Course '{}' created successfully with ID: {}", courseDTO.getTitle(), savedCourse.getCourseId());
             return savedCourse;
-        } catch(ResourceAlreadyExistsException e) {
+        } catch (ResourceAlreadyExistsException e) {
             throw e;
         } catch (Exception e) {
             throw new RuntimeException(GENERAL_ERROR);
         }
     }
 
+    /**
+     * Retrieves all courses from the repository.
+     *
+     * @return a list of all {@link Course} entities
+     * @throws ResourceNotFoundException if no courses are found
+     */
     @Override
     public List<Course> getAllCourses() {
         try {
@@ -74,8 +102,15 @@ public class CourseImpl implements CourseService {
         }
     }
 
+    /**
+     * Retrieves a course by its ID.
+     *
+     * @param courseId the ID of the course to retrieve
+     * @return an {@link Optional} containing the found {@link Course}, or empty if not found
+     * @throws ResourceNotFoundException if the course does not exist
+     */
     @Override
-    public Optional<Course> getCourseById(Long courseId) {
+    public Optional<Course> getCourseById(final Long courseId) {
         try {
             log.info("Fetching course by ID: {}", courseId);
             Optional<Course> course = courseRepository.findById(courseId);
@@ -92,8 +127,15 @@ public class CourseImpl implements CourseService {
         }
     }
 
+    /**
+     * Deletes a course by its ID.
+     *
+     * @param courseId the ID of the course to delete
+     * @return a confirmation message
+     * @throws ResourceNotFoundException if the course does not exist
+     */
     @Override
-    public String deleteCourse(Long courseId) {
+    public String deleteCourse(final Long courseId) {
         try {
             log.info("Deleting course with ID: {}", courseId);
             Optional<Course> course = courseRepository.findById(courseId);
@@ -111,8 +153,18 @@ public class CourseImpl implements CourseService {
         }
     }
 
+    /**
+     * Updates an existing course.
+     * Checks for duplicate title and owner combinations before updating.
+     *
+     * @param courseId   the ID of the course to update
+     * @param courseDTO  the updated course details
+     * @return a confirmation message
+     * @throws ResourceNotFoundException if the course to update is not found
+     * @throws ResourceNotValidException if the updated title and owner combination already exists for another course
+     */
     @Override
-    public String updateCourse(Long courseId, CourseDTO courseDTO) {
+    public String updateCourse(final Long courseId, final CourseDTO courseDTO) {
         try {
             log.info("Updating course with ID: {}", courseId);
 
@@ -153,9 +205,15 @@ public class CourseImpl implements CourseService {
         }
     }
 
-    //Methods required specifically for user microservice
+    /**
+     * Checks if a course exists by its ID.
+     * This method is specifically used by the User microservice.
+     *
+     * @param courseId the ID of the course
+     * @return true if the course exists, false otherwise
+     */
     @Override
-    public boolean courseExistsById(Long courseId) {
+    public boolean courseExistsById(final Long courseId) {
         return courseRepository.existsById(courseId);
     }
     @Override

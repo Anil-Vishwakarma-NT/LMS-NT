@@ -1,105 +1,452 @@
 package com.nt.LMS.serviceImpl;
 
-import com.nt.LMS.converter.EnrollmentConverter;
 import com.nt.LMS.dto.CourseBundleDTO;
 import com.nt.LMS.dto.EnrollmentDTO;
-import com.nt.LMS.entities.Enrollment;
-import com.nt.LMS.entities.User;
+import com.nt.LMS.dto.UpdateEnrollmentDTO;
+import com.nt.LMS.entities.*;
 import com.nt.LMS.exception.InvalidRequestException;
 import com.nt.LMS.exception.ResourceConflictException;
 import com.nt.LMS.exception.ResourceNotFoundException;
 import com.nt.LMS.feignClient.CourseMicroserviceClient;
-import com.nt.LMS.repository.EnrollmentRepository;
-import com.nt.LMS.repository.UserGroupRepository;
-import com.nt.LMS.repository.UserRepository;
+import com.nt.LMS.repository.*;
 import com.nt.LMS.service.EnrollmentService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
-import java.util.List;
-import java.util.Objects;
-import java.util.Optional;
+import java.time.LocalDateTime;
+import java.util.*;
+import java.util.stream.Collectors;
 
 @Service
 public class EnrollmentServiceImpl implements EnrollmentService {
 
     @Autowired
-    private EnrollmentRepository enrollmentRepository;
-
+    EnrollmentRepository enrollmentRepository;
     @Autowired
-    private CourseMicroserviceClient courseMicroserviceClient;
-
+    UserRepository userRepository;
+    @Autowired
+    CourseMicroserviceClient courseMicroserviceClient;
+    @Autowired
+    UserCourseEnrollmentRepository userCourseEnrollmentRepository;
+    @Autowired
+    UserBundleEnrollmentRepository userBundleEnrollmentRepository;
+    @Autowired
+    GroupCourseEnrollmentRepository groupCourseEnrollmentRepository;
+    @Autowired
+    GroupBundleEnrollmentRepository groupBundleEnrollmentRepository;
+    @Autowired
+    EnrollmentHistoryRepository enrollmentHistoryRepository;
+    @Autowired
+    GroupRepository groupRepository;
     @Autowired
     UserGroupRepository userGroupRepository;
 
-    @Autowired
-    UserRepository userRepository;
-
+    @Transactional
     @Override
-    public String enroll(EnrollmentDTO enrollmentDTO) {
-        try {
+    public String enrollUser(EnrollmentDTO enrollmentDTO) {
+        // Validate common prerequisites
+        User manager = userRepository.findById(enrollmentDTO.getAssignedBy())
+                .orElseThrow(() -> new ResourceNotFoundException("Manager not found"));
 
-            if (!userRepository.existsById(enrollmentDTO.getUserId())) {
-                throw new ResourceNotFoundException("User not found");
-            }
-            if (!courseMicroserviceClient.courseExistsById(enrollmentDTO.getCourseId())) {
-                throw new ResourceNotFoundException("Course not found");
-            }
-            if (!userRepository.existsById(enrollmentDTO.getAssignedBy())) {
-                throw new ResourceNotFoundException("Course assigner not found");
-            }
-            Optional<User> user = userRepository.findById(enrollmentDTO.getUserId());
-            if(user.isPresent()) {
-                if (!(Objects.equals(user.get().getManagerId(), enrollmentDTO.getAssignedBy()))) {
-                    throw new InvalidRequestException("You cannot assign course to this user");
-                }
-            }
-            if ( enrollmentDTO.getBundleId() == null || enrollmentDTO.getBundleId() == 0) {
-                if(enrollmentRepository.existsByUserIdAndCourseId(enrollmentDTO.getUserId(), enrollmentDTO.getCourseId())) {
-                    throw new ResourceConflictException("User Already Enrolled in this course");
-                }
-                Enrollment enrollment = EnrollmentConverter.enrollmentDtoToEnrollment(enrollmentDTO);
-                enrollmentRepository.save(enrollment);
-            }
-            else {
-                if (!courseMicroserviceClient.bundleExistsById(enrollmentDTO.getBundleId())) {
-                    throw new ResourceNotFoundException("Bundle not found");
-                }
-                List<CourseBundleDTO> courseBundleDTOS = courseMicroserviceClient.getAllCoursesByBundleId(enrollmentDTO.getBundleId()).getBody();
-                if (courseBundleDTOS == null || courseBundleDTOS.isEmpty()) {
-                    throw new ResourceNotFoundException("No courses found in bundle");
-                }
-                for (CourseBundleDTO courseBundleDTO : courseBundleDTOS) {
-                    Long courseId = courseBundleDTO.getCourseId();
-                    boolean existingEnrollment = enrollmentRepository.existsByUserIdAndCourseId(
-                            enrollmentDTO.getUserId(), courseId);
-                    if(existingEnrollment) {
-                        Enrollment enrollment = enrollmentRepository.getByUserIdAndCourseId(enrollmentDTO.getUserId(), courseId);
+        LocalDateTime now = LocalDateTime.now();
 
-                    }
-                    else {
-                        EnrollmentDTO dto = new EnrollmentDTO();
-                        dto.setUserId(enrollmentDTO.getUserId());
-                        dto.setCourseId(courseId);
-                        dto.setBundleId(enrollmentDTO.getBundleId());
-                        dto.setAssignedBy(enrollmentDTO.getAssignedBy());
-                        dto.setDeadline(enrollmentDTO.getDeadline());
-                        dto.setIsIndividualAssigned(enrollmentDTO.getIsIndividualAssigned());
-                        dto.setIsGroupAssigned(enrollmentDTO.getIsGroupAssigned());
-                        Enrollment enrollment = EnrollmentConverter.enrollmentDtoToEnrollment(dto);
-                        enrollmentRepository.save(enrollment);
-                    }
-                }
+        if (enrollmentDTO.getUserId() != null) {
+            return processUserEnrollment(enrollmentDTO, now);
+        } else if (enrollmentDTO.getGroupId() != null) {
+            return processGroupEnrollment(enrollmentDTO, now);
+        } else {
+            throw new InvalidRequestException("Either userId or groupId must be provided");
+        }
+    }
+
+    @Transactional
+    @Override
+    public String updateEnrollment(UpdateEnrollmentDTO updateEnrollmentDTO) {
+        //UPDATE FOR USER ENROLLMENT
+        if (updateEnrollmentDTO.getUserId() != null) {
+            //VALIDATE USER AND MANAGER RELATIONSHIP
+            User user = userRepository.findById(updateEnrollmentDTO.getUserId())
+                    .orElseThrow(() -> new ResourceNotFoundException("User not found"));
+
+            if (!Objects.equals(user.getManagerId(), updateEnrollmentDTO.getManagerId())) {
+                throw new InvalidRequestException("You cannot update enrollments of this user");
             }
-            return "Enrollment Successful";
-        } catch (ResourceNotFoundException | ResourceConflictException | InvalidRequestException e) {
-            throw e;
-        } catch(Exception e) {
-            throw new RuntimeException("Something went wrong", e);
+
+            //USER COURSE ENROLLMENT UPDATE
+            if (updateEnrollmentDTO.getCourseId() != null) {
+                EnrollmentHistory updateUserCourseEnrollmentHistory = new EnrollmentHistory();
+                String remarks = "UPDATED ";
+                //CHECK IF ENROLLMENT EXISTS
+               UserCourseEnrollment userCourseEnrollment = userCourseEnrollmentRepository.findByUserIdAndCourseIdAndStatusNotIn(updateEnrollmentDTO.getUserId(), updateEnrollmentDTO.getCourseId(), Arrays.asList("COMPLETED", "EXPIRED"))
+                       .orElseThrow(() -> new ResourceNotFoundException("No Enrollment Found"));
+
+               if (updateEnrollmentDTO.getDeadline() != null || updateEnrollmentDTO.getStatus() != null) {
+                   if(updateEnrollmentDTO.getStatus() != null) {
+                       if (!List.of("ENROLLED", "IN PROGRESS", "COMPLETED", "UNENROLLED")
+                               .contains(updateEnrollmentDTO.getStatus())) {
+                           throw new InvalidRequestException("Invalid Status Provided");
+                       }
+                       if (List.of("ENROLLED", "IN PROGRESS").contains(userCourseEnrollment.getStatus())) {
+                           userCourseEnrollment.setStatus(updateEnrollmentDTO.getStatus());
+                           remarks += "Status ";
+                           userCourseEnrollmentRepository.save(userCourseEnrollment);
+                       }
+                   }
+
+                   if(updateEnrollmentDTO.getDeadline() != null) {
+                       userCourseEnrollment.setDeadline(updateEnrollmentDTO.getDeadline());
+                       updateUserCourseEnrollmentHistory.setDeadline(updateEnrollmentDTO.getDeadline());
+                       remarks += "Deadline ";
+                       userCourseEnrollmentRepository.save(userCourseEnrollment);
+                   }
+
+                   updateUserCourseEnrollmentHistory.setUserId(updateEnrollmentDTO.getUserId());
+                   updateUserCourseEnrollmentHistory.setCourseId(updateEnrollmentDTO.getCourseId());
+                   updateUserCourseEnrollmentHistory.setAssignedBy(userCourseEnrollment.getAssignedBy());
+                   updateUserCourseEnrollmentHistory.setActionType("UPDATED");
+                   if(updateEnrollmentDTO.getStatus().equals("UNENROLLED")) {
+                       updateUserCourseEnrollmentHistory.setActionType("UNASSIGNED");
+                       remarks = "Course Unenrolled";
+                   }
+                   updateUserCourseEnrollmentHistory.setRecordedAt(LocalDateTime.now());
+                   updateUserCourseEnrollmentHistory.setRemarks(remarks);
+
+               }
+            }
+        }
+        return "";
+    }
+
+    private String processUserEnrollment(EnrollmentDTO enrollmentDTO, LocalDateTime now) {
+        // Verify user and manager relationship
+        User user = userRepository.findById(enrollmentDTO.getUserId())
+                .orElseThrow(() -> new ResourceNotFoundException("User not found"));
+
+        if (!Objects.equals(user.getManagerId(), enrollmentDTO.getAssignedBy())) {
+            throw new InvalidRequestException("You cannot assign courses to this user");
+        }
+
+        if (enrollmentDTO.getCourseId() != null) {
+            enrollUserInCourse(enrollmentDTO, now);
+        } else if (enrollmentDTO.getBundleId() != null) {
+            enrollUserInBundle(enrollmentDTO, now);
+        } else {
+            throw new InvalidRequestException("Either courseId or bundleId must be provided");
+        }
+
+        return "Enrollment Successful";
+    }
+
+    private void enrollUserInCourse(EnrollmentDTO enrollmentDTO, LocalDateTime now) {
+        // Verify course exists
+        if (!courseMicroserviceClient.courseExistsById(enrollmentDTO.getCourseId())) {
+            throw new ResourceNotFoundException("Course Not Found");
+        }
+
+        // Check if already enrolled
+        userCourseEnrollmentRepository.findByUserIdAndCourseIdAndStatusNotIn(
+                        enrollmentDTO.getUserId(),
+                        enrollmentDTO.getCourseId(),
+                        Arrays.asList("COMPLETED", "EXPIRED"))
+                .ifPresent(enrollment -> {
+                    throw new ResourceConflictException("This course is already assigned to the user");
+                });
+
+        // Create enrollment records
+        UserCourseEnrollment userCourseEnrollment = new UserCourseEnrollment();
+        userCourseEnrollment.setUserId(enrollmentDTO.getUserId());
+        userCourseEnrollment.setCourseId(enrollmentDTO.getCourseId());
+        userCourseEnrollment.setAssignedBy(enrollmentDTO.getAssignedBy());
+        userCourseEnrollment.setStatus("ENROLLED");
+        userCourseEnrollment.setAssignedAt(now);
+        userCourseEnrollment.setDeadline(enrollmentDTO.getDeadline());
+        userCourseEnrollmentRepository.save(userCourseEnrollment);
+
+        // Update main enrollment record if needed
+        createOrUpdateEnrollment(
+                enrollmentDTO.getUserId(),
+                enrollmentDTO.getCourseId(),
+                enrollmentDTO.getAssignedBy()
+        );
+
+        // Log history
+        logEnrollmentHistory(
+                enrollmentDTO.getUserId(),
+                null,
+                enrollmentDTO.getCourseId(),
+                null,
+                enrollmentDTO.getDeadline(),
+                enrollmentDTO.getAssignedBy(),
+                now,
+                "ASSIGNED"
+        );
+    }
+
+    private void enrollUserInBundle(EnrollmentDTO enrollmentDTO, LocalDateTime now) {
+        // Verify bundle exists
+        if (!courseMicroserviceClient.bundleExistsById(enrollmentDTO.getBundleId())) {
+            throw new ResourceNotFoundException("Bundle not found");
+        }
+
+        // Check if already enrolled
+        userBundleEnrollmentRepository.findByUserIdAndBundleIdAndStatusNotIn(
+                        enrollmentDTO.getUserId(),
+                        enrollmentDTO.getBundleId(),
+                        Arrays.asList("COMPLETED", "EXPIRED"))
+                .ifPresent(enrollment -> {
+                    throw new ResourceConflictException("Bundle is already assigned to the user");
+                });
+
+        // Create bundle enrollment record
+        UserBundleEnrollment userBundleEnrollment = new UserBundleEnrollment();
+        userBundleEnrollment.setUserId(enrollmentDTO.getUserId());
+        userBundleEnrollment.setBundleId(enrollmentDTO.getBundleId());
+        userBundleEnrollment.setDeadline(enrollmentDTO.getDeadline());
+        userBundleEnrollment.setStatus("ENROLLED");
+        userBundleEnrollment.setAssignedBy(enrollmentDTO.getAssignedBy());
+        userBundleEnrollment.setAssignedAt(now);
+        userBundleEnrollmentRepository.save(userBundleEnrollment);
+
+        // Log bundle enrollment
+        logEnrollmentHistory(
+                enrollmentDTO.getUserId(),
+                null,
+                null,
+                enrollmentDTO.getBundleId(),
+                enrollmentDTO.getDeadline(),
+                enrollmentDTO.getAssignedBy(),
+                now,
+                "ASSIGNED"
+        );
+
+        // Process all courses in the bundle
+        List<CourseBundleDTO> courseBundleDTOs = getCoursesInBundle(enrollmentDTO.getBundleId());
+
+        for (CourseBundleDTO courseBundle : courseBundleDTOs) {
+            // Update enrollment record
+            createOrUpdateEnrollment(
+                    enrollmentDTO.getUserId(),
+                    courseBundle.getCourseId(),
+                    enrollmentDTO.getAssignedBy()
+            );
+
+            // Log course from bundle enrollment
+            logEnrollmentHistory(
+                    enrollmentDTO.getUserId(),
+                    null,
+                    courseBundle.getCourseId(),
+                    enrollmentDTO.getBundleId(),
+                    enrollmentDTO.getDeadline(),
+                    enrollmentDTO.getAssignedBy(),
+                    now,
+                    "ASSIGNED"
+            );
+        }
+    }
+
+    private String processGroupEnrollment(EnrollmentDTO enrollmentDTO, LocalDateTime now) {
+        // Verify group exists and get all users in the group
+        Group group = groupRepository.findById(enrollmentDTO.getGroupId())
+                .orElseThrow(() -> new ResourceNotFoundException("Group not found"));
+
+        List<UserGroup> userGroups = userGroupRepository.findAllByGroupId(group.getGroupId());
+        if (userGroups.isEmpty()) {
+            throw new ResourceNotFoundException("No users in the group");
+        }
+
+        // Verify manager has authority over all users in the group (batch fetch)
+        List<Long> userIds = userGroups.stream().map(UserGroup::getUserId).collect(Collectors.toList());
+        Map<Long, User> users = userRepository.findAllById(userIds).stream()
+                .collect(Collectors.toMap(User::getUserId, user -> user));
+
+        for (UserGroup userGroup : userGroups) {
+            User user = users.get(userGroup.getUserId());
+            if (user == null || !Objects.equals(user.getManagerId(), enrollmentDTO.getAssignedBy())) {
+                throw new ResourceConflictException("Group has members that are not managed by you");
+            }
+        }
+
+        if (enrollmentDTO.getCourseId() != null) {
+            enrollGroupInCourse(enrollmentDTO, userGroups, now);
+        } else if (enrollmentDTO.getBundleId() != null) {
+            enrollGroupInBundle(enrollmentDTO, userGroups, now);
+        } else {
+            throw new InvalidRequestException("Either courseId or bundleId must be provided");
+        }
+
+        return "Enrollment Successful";
+    }
+
+    private void enrollGroupInCourse(EnrollmentDTO enrollmentDTO, List<UserGroup> userGroups, LocalDateTime now) {
+        // Verify course exists
+        if (!courseMicroserviceClient.courseExistsById(enrollmentDTO.getCourseId())) {
+            throw new ResourceNotFoundException("Course Not Found");
+        }
+
+        // Check if already enrolled
+        groupCourseEnrollmentRepository.findByGroupIdAndCourseIdAndStatusNotIn(
+                        enrollmentDTO.getGroupId(),
+                        enrollmentDTO.getCourseId(),
+                        Arrays.asList("COMPLETED", "EXPIRED"))
+                .ifPresent(enrollment -> {
+                    throw new ResourceConflictException("Course is already assigned to the group");
+                });
+
+        // Create group course enrollment
+        GroupCourseEnrollment groupCourseEnrollment = new GroupCourseEnrollment();
+        groupCourseEnrollment.setGroupId(enrollmentDTO.getGroupId());
+        groupCourseEnrollment.setCourseId(enrollmentDTO.getCourseId());
+        groupCourseEnrollment.setDeadline(enrollmentDTO.getDeadline());
+        groupCourseEnrollment.setStatus("ENROLLED");
+        groupCourseEnrollment.setAssignedBy(enrollmentDTO.getAssignedBy());
+        groupCourseEnrollment.setAssignedAt(now);
+        groupCourseEnrollmentRepository.save(groupCourseEnrollment);
+
+        // Log group enrollment
+        logEnrollmentHistory(
+                null,
+                enrollmentDTO.getGroupId(),
+                enrollmentDTO.getCourseId(),
+                null,
+                enrollmentDTO.getDeadline(),
+                enrollmentDTO.getAssignedBy(),
+                now,
+                "ASSIGNED"
+        );
+
+        // Enroll each user in the group
+        for (UserGroup userGroup : userGroups) {
+            // Update enrollment record
+            createOrUpdateEnrollment(
+                    userGroup.getUserId(),
+                    enrollmentDTO.getCourseId(),  // Fixed bug: was using userId instead of courseId
+                    enrollmentDTO.getAssignedBy()
+            );
+
+            // Log individual enrollment within group
+            logEnrollmentHistory(
+                    userGroup.getUserId(),
+                    enrollmentDTO.getGroupId(),
+                    enrollmentDTO.getCourseId(),
+                    null,
+                    enrollmentDTO.getDeadline(),
+                    enrollmentDTO.getAssignedBy(),
+                    now,
+                    "ASSIGNED"
+            );
+        }
+    }
+
+    private void enrollGroupInBundle(EnrollmentDTO enrollmentDTO, List<UserGroup> userGroups, LocalDateTime now) {
+        // Verify bundle exists
+        if (!courseMicroserviceClient.bundleExistsById(enrollmentDTO.getBundleId())) {
+            throw new ResourceNotFoundException("Bundle not found");
+        }
+
+        // Check if already enrolled
+        groupBundleEnrollmentRepository.findByGroupIdAndBundleIdAndStatusNotIn(
+                        enrollmentDTO.getGroupId(),
+                        enrollmentDTO.getBundleId(),
+                        Arrays.asList("COMPLETED", "EXPIRED"))
+                .ifPresent(enrollment -> {
+                    throw new ResourceConflictException("Bundle is already assigned to the group");
+                });
+
+        // Get courses in bundle
+        List<CourseBundleDTO> courseBundleDTOs = getCoursesInBundle(enrollmentDTO.getBundleId());
+
+        // Create group bundle enrollment
+        GroupBundleEnrollment groupBundleEnrollment = new GroupBundleEnrollment();
+        groupBundleEnrollment.setGroupId(enrollmentDTO.getGroupId());
+        groupBundleEnrollment.setBundleId(enrollmentDTO.getBundleId());
+        groupBundleEnrollment.setDeadline(enrollmentDTO.getDeadline());
+        groupBundleEnrollment.setAssignedBy(enrollmentDTO.getAssignedBy());
+        groupBundleEnrollment.setAssignedAt(now);
+        groupBundleEnrollment.setStatus("ENROLLED");
+        groupBundleEnrollmentRepository.save(groupBundleEnrollment);
+
+        // Log group bundle enrollment
+        logEnrollmentHistory(
+                null,
+                enrollmentDTO.getGroupId(),
+                null,
+                enrollmentDTO.getBundleId(),
+                enrollmentDTO.getDeadline(),
+                enrollmentDTO.getAssignedBy(),
+                now,
+                "ASSIGNED"
+        );
+
+        // Process course enrollments for all users in group
+        for (UserGroup userGroup : userGroups) {
+            for (CourseBundleDTO courseBundle : courseBundleDTOs) {
+                // Update enrollment record - Fixed bug: missing save call
+                createOrUpdateEnrollment(
+                        userGroup.getUserId(),
+                        courseBundle.getCourseId(),
+                        enrollmentDTO.getAssignedBy()
+                );
+
+                // Log individual course enrollment
+                logEnrollmentHistory(
+                        userGroup.getUserId(),
+                        enrollmentDTO.getGroupId(),
+                        courseBundle.getCourseId(),
+                        enrollmentDTO.getBundleId(),
+                        enrollmentDTO.getDeadline(),
+                        enrollmentDTO.getAssignedBy(),
+                        now,
+                        "ASSIGNED"
+                );
+            }
         }
     }
     @Override
     public long countEnrollments() {
         return enrollmentRepository.count();
+    }
+
+    // Helper methods
+    private List<CourseBundleDTO> getCoursesInBundle(Long bundleId) {
+        List<CourseBundleDTO> courseBundleDTOs = courseMicroserviceClient.getAllCoursesByBundleId(bundleId).getBody();
+        if (courseBundleDTOs == null || courseBundleDTOs.isEmpty()) {
+            throw new ResourceNotFoundException("No courses in the bundle");
+        }
+        return courseBundleDTOs;
+    }
+
+    private void createOrUpdateEnrollment(Long userId, Long courseId, Long assignedBy) {
+        Enrollment existingEnrollment = enrollmentRepository.getByUserIdAndCourseId(userId, courseId);
+        if (existingEnrollment == null) {
+            Enrollment enrollment = new Enrollment();
+            enrollment.setUserId(userId);
+            enrollment.setCourseId(courseId);
+            enrollment.setAssignedBy(assignedBy);
+            enrollment.setIsEnrolled(true);
+            enrollmentRepository.save(enrollment);
+        }
+    }
+
+    private void logEnrollmentHistory(
+            Long userId,
+            Long groupId,
+            Long courseId,
+            Long bundleId,
+            LocalDateTime deadline,
+            Long assignedBy,
+            LocalDateTime recordedAt,
+            String actionType) {
+
+        EnrollmentHistory history = new EnrollmentHistory();
+        history.setUserId(userId);
+        history.setGroupId(groupId);
+        history.setCourseId(courseId);
+        history.setBundleId(bundleId);
+        history.setDeadline(deadline);
+        history.setAssignedBy(assignedBy);
+        history.setActionType(actionType);
+        history.setRecordedAt(recordedAt);
+        enrollmentHistoryRepository.save(history);
     }
 }

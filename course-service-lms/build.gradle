@@ -3,6 +3,9 @@ plugins {
 	id 'org.springframework.boot' version '3.4.4'
 	id 'io.spring.dependency-management' version '1.1.7'
 	id 'jacoco'
+	id 'checkstyle'
+	id 'pmd'
+	id 'com.github.spotbugs' version '5.0.13'
 }
 
 group = 'com.example'
@@ -56,4 +59,51 @@ jacocoTestReport {
 		csv.required = false
 		html.outputLocation = layout.buildDirectory.dir('jacocoHtml')
 	}
+}
+
+checkstyle {
+	toolVersion = '10.12.1'
+	configFile = file("${rootDir}/config/checkstyle-checker.xml")
+	configProperties = [
+			'checkstyle.cache.file': "${buildDir}/checkstyle.cache"
+	]
+	showViolations = true
+}
+
+tasks.withType(Checkstyle).configureEach {
+	ignoreFailures = false // Fail build on violations
+}
+
+pmd {
+	toolVersion = '6.55.0' // Latest stable as of now
+	consoleOutput = true
+	ignoreFailures = false
+}
+
+spotbugs {
+	toolVersion = '4.8.5'
+	ignoreFailures = false
+	showProgress = true
+	effort = 'max'
+	reportLevel = 'medium'
+	reportsDir = file("$buildDir/reports/spotbugs")
+}
+
+spotbugsMain {
+	reports {
+		html.enabled = true
+		xml.enabled = false
+	}
+}
+
+spotbugsTest {
+	reports {
+		html.enabled = true
+		xml.enabled = false
+	}
+}
+
+// If you need to execute spotbugs during the build process
+tasks.named('check') {
+	dependsOn 'spotbugsMain'
 }

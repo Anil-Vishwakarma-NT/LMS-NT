@@ -10,7 +10,22 @@ import java.util.Optional;
 
 @Repository
 public interface UserGroupRepository extends JpaRepository<UserGroup, Long> {
+    /**
+     * To delete a group from Group Table.
+     * @param groupId
+     */
     void deleteByGroupId(Long groupId);
+    /**
+     * Find all group user mapping by groupId.
+     * @param groupId
+     * @return usergroup
+     */
     List<UserGroup> findAllByGroupId(Long groupId);
+    /**
+     * Find all group user mapping by groupId and userId.
+     * @param groupId
+     * @param userId
+     * @return UserGroup
+     */
     Optional<UserGroup> findByUserIdAndGroupId(Long userId, Long groupId);
 }
