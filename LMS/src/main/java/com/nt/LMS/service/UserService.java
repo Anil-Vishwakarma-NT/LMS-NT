@@ -8,5 +8,5 @@ public interface UserService extends UserDetailsService {
 
     @Override
     public UserDetails loadUserByUsername(String email) throws UsernameNotFoundException;
-
+    public long CountUsers();
 }

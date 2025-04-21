@@ -39,4 +39,8 @@ public UserDetails loadUserByUsername(String email) throws UsernameNotFoundExcep
             .build();
 }
 
+    @Override
+    public long CountUsers() {
+        return userRepository.count();
+    }
 }

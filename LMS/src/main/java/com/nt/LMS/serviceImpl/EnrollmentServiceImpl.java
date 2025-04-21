@@ -98,4 +98,8 @@ public class EnrollmentServiceImpl implements EnrollmentService {
             throw new RuntimeException("Something went wrong", e);
         }
     }
+    @Override
+    public long countEnrollments() {
+        return enrollmentRepository.count();
+    }
 }

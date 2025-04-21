@@ -17,6 +17,7 @@ import java.util.List;
 @Slf4j
 @RestController
 @RequestMapping("/admin")
+@CrossOrigin("http://localhost:3000")
 public class AdminController {
 
     @Autowired
@@ -71,5 +72,16 @@ public class AdminController {
     public ResponseEntity<MessageOutDto> changeRole(@RequestBody @Valid UserInDTO userdto) {
         log.info("Received request to change role for user with ID: {}", userdto.getUserId());
         return new ResponseEntity<>(adminService.changeUserRole(userdto.getUserId(), userdto.getRole()),HttpStatus.OK);
+    }
+
+    @PreAuthorize("permitAll()")
+    @GetMapping("/count")
+    public ResponseEntity<MessageOutDto> getTotalUserCount() {
+        log.info("Fetching total user count");
+        long count = userService.CountUsers();
+        log.info("Total user count retrieved: {}", count);
+        MessageOutDto message =new MessageOutDto();
+        message.setMessage(""+count);
+        return ResponseEntity.ok(message);
     }
 }
