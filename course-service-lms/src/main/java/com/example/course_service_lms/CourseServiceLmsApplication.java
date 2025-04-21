@@ -7,11 +7,8 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
  * Entry point for the Course Service LMS Spring Boot application.
  */
 @SpringBootApplication
-public final class CourseServiceLmsApplication {
+public class CourseServiceLmsApplication {
 
-private CourseServiceLmsApplication() {
-       throw new UnsupportedOperationException("This is a utility class and cannot be instantiated");
-   }
     /**
      * Main method used to launch the Spring Boot application.
      *

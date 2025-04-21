@@ -6,10 +6,12 @@ import com.nt.LMS.dto.LoginDto;
 import com.nt.LMS.dto.MessageOutDto;
 import com.nt.LMS.dto.TokenResponseDto;
 import com.nt.LMS.entities.RefreshToken;
+import com.nt.LMS.entities.Role;
 import com.nt.LMS.entities.User;
 import com.nt.LMS.exception.InvalidRequestException;
 import com.nt.LMS.exception.ResourceNotFoundException;
 import com.nt.LMS.repository.RefreshTokenRepository;
+import com.nt.LMS.repository.RoleRepository;
 import com.nt.LMS.repository.UserRepository;
 import com.nt.LMS.service.AuthService;
 import jakarta.transaction.Transactional;
@@ -58,6 +60,9 @@ public class AuthServiceImpl implements AuthService {
     @Autowired
     private UserRepository userRepository;
 
+
+    @Autowired
+    private RoleRepository roleRepository;
     /**
      * Repository for managing refresh tokens.
      */
@@ -111,7 +116,7 @@ public class AuthServiceImpl implements AuthService {
         refreshTokenRepository.save(refreshTokenEntity);
         log.info("Refresh token stored for user: {}", user.getEmail());
 
-        return new TokenResponseDto(accessToken, refreshToken, "Bearer");
+        return new TokenResponseDto(accessToken, refreshToken, "Bearer" );
     }
 
     /**
@@ -142,6 +147,8 @@ public class AuthServiceImpl implements AuthService {
 
         User user = userRepository.findById(refreshTokenEntity.get().getUserId())
                 .orElseThrow(() -> new InvalidRequestException(UserConstants.USER_NOT_FOUND));
+
+
         log.debug("Found valid refresh token for user: {}", user.getEmail());
 
         UserDetails userDetails = userDetailsService.loadUserByUsername(user.getEmail());
@@ -149,7 +156,7 @@ public class AuthServiceImpl implements AuthService {
 
         log.info("New access token generated for user: {}", user.getEmail());
 
-        return new TokenResponseDto(newAccessToken, refreshToken, "Bearer");
+        return new TokenResponseDto(newAccessToken, refreshToken, "Bearer" );
     }
 
     /**
