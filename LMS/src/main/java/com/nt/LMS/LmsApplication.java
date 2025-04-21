@@ -12,7 +12,6 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
  * This class starts the Spring Boot application.
  */
 
-
 @SpringBootApplication
 public class LmsApplication {
 

@@ -19,4 +19,6 @@ public class TokenResponseDto {
      */
     private String tokenType = "Bearer";
 
+    private String role ;
+
 }
