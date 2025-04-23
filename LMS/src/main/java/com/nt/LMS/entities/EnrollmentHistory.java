@@ -26,8 +26,8 @@ public class EnrollmentHistory {
     @Column(name = "bundle_id")
     private Long bundleId;
 
-    @Column(name = "action_type", nullable = false, length = 30)
-    private String actionType;
+    @Column(name = "status", nullable = false, length = 30)
+    private String status;
 
     @Column(name = "deadline")
     private LocalDateTime deadline;

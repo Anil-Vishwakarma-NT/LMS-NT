@@ -6,6 +6,5 @@ import com.nt.LMS.entities.UserCourseEnrollment;
 import java.util.List;
 
 public interface UserCourseEnrollmentService {
-    List<UserCourseEnrollment> findByCourseId(Long courseId);
-    List<UserCourseEnrollmentOutDTO> findByUserId();
+    List<UserCourseEnrollmentOutDTO> getUserEnrollmentsByCourse();
 }

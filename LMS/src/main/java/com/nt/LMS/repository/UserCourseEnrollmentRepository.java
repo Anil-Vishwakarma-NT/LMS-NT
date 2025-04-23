@@ -12,4 +12,7 @@ public interface UserCourseEnrollmentRepository extends JpaRepository<UserCourse
 
     Optional<UserCourseEnrollment> findByUserIdAndCourseIdAndStatusNotIn(Long userId, Long courseId, List<String> statuses);
     List<UserCourseEnrollment> findByCourseId(Long courseId);
+    long countByStatusNotIn(List<String> statuses);
+    long countByCourseIdAndStatusNotIn(Long courseId, List<String> statuses);
+
 }

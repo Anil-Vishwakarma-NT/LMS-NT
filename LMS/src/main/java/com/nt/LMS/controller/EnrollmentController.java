@@ -1,6 +1,7 @@
 package com.nt.LMS.controller;
 
 import com.nt.LMS.dto.EnrollmentDTO;
+import com.nt.LMS.dto.EnrollmentDashBoardStatsDTO;
 import com.nt.LMS.dto.MessageOutDto;
 import com.nt.LMS.entities.Enrollment;
 import com.nt.LMS.service.EnrollmentService;
@@ -11,13 +12,13 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 @Slf4j
 @RestController
-@RequestMapping("/api/enrollment/enroll")
+@RequestMapping("/api/enrollment")
 public class EnrollmentController {
 
     @Autowired
     private EnrollmentService enrollmentService;
 
-    @PostMapping
+    @PostMapping("/enroll")
     public ResponseEntity<String> enroll(@Valid @RequestBody EnrollmentDTO enrollmentDTO) {
         String response = enrollmentService.enrollUser(enrollmentDTO);
         return ResponseEntity.ok(response);
@@ -30,5 +31,10 @@ public class EnrollmentController {
         MessageOutDto message =new MessageOutDto();
         message.setMessage(""+count);
         return ResponseEntity.ok(message);
+    }
+
+    @GetMapping("/stats")
+    public ResponseEntity<EnrollmentDashBoardStatsDTO> getEnrollmentStats() {
+        return ResponseEntity.ok(enrollmentService.getEnrollmentStats());
     }
 }

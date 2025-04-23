@@ -2,6 +2,7 @@ package com.nt.LMS.feignClient;
 
 
 import com.nt.LMS.dto.CourseBundleDTO;
+import com.nt.LMS.dto.CourseInfoDTO;
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -20,4 +21,10 @@ public interface CourseMicroserviceClient {
 
     @GetMapping("/bundles/course-bundles/bundle/{id}")
     ResponseEntity<List<CourseBundleDTO>> getAllCoursesByBundleId(@PathVariable("id") Long bundleId);
+
+    @GetMapping("/course/{id}/info")
+    public ResponseEntity<String> getCourseNameById(@PathVariable("id") Long id);
+
+    @GetMapping("/course/info")
+    public ResponseEntity<List<CourseInfoDTO>> getCourseInfo();
 }
