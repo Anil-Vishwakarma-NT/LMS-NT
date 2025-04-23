@@ -3,6 +3,7 @@ package com.nt.LMS.controller;
 import com.nt.LMS.dto.UserOutDTO;
 import com.nt.LMS.serviceImpl.AdminServiceImpl;
 import com.nt.LMS.serviceImpl.GroupServiceImpl;
+import com.nt.LMS.serviceImpl.ManagerServiceImpl;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.*;
@@ -35,6 +36,9 @@ class ManagerControllerTest {
     private AdminServiceImpl adminService;
 
     @Mock
+    private ManagerServiceImpl managerService;
+
+    @Mock
     private GroupServiceImpl groupService;
 
     private MockMvc mockMvc;
@@ -61,7 +65,7 @@ class ManagerControllerTest {
         employee.setEmail("employee@example.com");
 //        employee.setRole("employee");
 
-        when(adminService.getEmployees("manager@example.com")).thenReturn(List.of(employee));
+        when(managerService.getEmployees("manager@example.com")).thenReturn(List.of(employee));
 
         mockMvc.perform(get("/manager/manager-employees"))
                 .andExpect(status().isOk())
@@ -71,7 +75,7 @@ class ManagerControllerTest {
 
     @Test
     void testGetManagerEmp_WhenNoEmployees() throws Exception {
-        when(adminService.getEmployees("manager@example.com")).thenReturn(Collections.emptyList());
+        when(managerService.getEmployees("manager@example.com")).thenReturn(Collections.emptyList());
 
         mockMvc.perform(get("/manager/manager-employees"))
                 .andExpect(status().isNoContent());
