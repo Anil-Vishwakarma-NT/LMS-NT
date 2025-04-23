@@ -121,4 +121,12 @@ public class CourseController {
         return ResponseEntity.ok(new MessageOutDTO(""+count));
     }
 
+    @GetMapping("/{id}/name")
+    public ResponseEntity<String> getCourseNameById(@PathVariable("id") Long id) {
+        log.info("Received request to get course name.");
+        String courseName = courseService.getCourseNameById(id);
+        log.info("Course name retrieved");
+        return ResponseEntity.ok(courseName);
+    }
+
 }

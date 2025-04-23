@@ -127,6 +127,24 @@ public class CourseImpl implements CourseService {
         }
     }
 
+    @Override
+    public String getCourseNameById(Long courseId) {
+        try {
+            log.info("Fetching course by ID: {}", courseId);
+            Optional<Course> course = courseRepository.findById(courseId);
+            if (course.isEmpty()) {
+                log.warn("Course not found with ID: {}", courseId);
+                throw new ResourceNotFoundException(COURSE_NOT_FOUND);
+            }
+            log.info("Course found: {}", course.get().getTitle());
+            return course.get().getTitle();
+        } catch (ResourceNotFoundException e) {
+            throw e;
+        } catch (Exception e) {
+            throw new RuntimeException(GENERAL_ERROR);
+        }
+    }
+
     /**
      * Deletes a course by its ID.
      *

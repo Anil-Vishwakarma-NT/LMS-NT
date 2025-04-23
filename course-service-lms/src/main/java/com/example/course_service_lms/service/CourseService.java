@@ -38,6 +38,8 @@ public interface CourseService {
      */
     Optional<Course> getCourseById(Long courseId);
 
+    String getCourseNameById(Long courseId);
+
     /**
      * Deletes a course by its ID.
      *
