@@ -28,6 +28,7 @@ public final class UserDTOConverter {
 
         if (manager != null) {
             userout.setManager(manager);
+            System.out.println(manager);
         }
         return userout;
     }

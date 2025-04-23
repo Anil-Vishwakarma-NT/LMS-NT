@@ -1,6 +1,7 @@
 package com.nt.LMS.serviceImpl;
 
 import com.nt.LMS.converter.UserDTOConverter;
+import com.nt.LMS.dto.UserInDTO;
 import com.nt.LMS.dto.UserOutDTO;
 import com.nt.LMS.exception.ResourceNotFoundException;
 import com.nt.LMS.constants.UserConstants;
@@ -21,6 +22,8 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
 import java.util.List;
+
+import static com.nt.LMS.constants.UserConstants.USER_UPDATED_SUCCESSFULLY;
 
 /**
  * Implementation of AdminService containing admin operations.
@@ -52,6 +55,9 @@ public final class AdminServiceImpl implements AdminService {
      */
     @Autowired
     private UserDTOConverter userDTOConverter;
+
+
+
 
     /**
      * Registers a new user.
@@ -90,7 +96,7 @@ public final class AdminServiceImpl implements AdminService {
     }
 
     /**
-     * Deletes an employee or manager.
+     * Deletes an employee or manager(soft delete only).
      *
      * @param id the user ID
      * @return a message response
@@ -113,7 +119,8 @@ public final class AdminServiceImpl implements AdminService {
         String roleName = role.getName();
 
         if ("employee".equalsIgnoreCase(roleName)) {
-            userRepository.deleteById(user.getUserId());
+            user.set_active(false);
+            userRepository.save(user);
             log.info("Employee with ID {} deleted successfully", id);
         } else if ("manager".equalsIgnoreCase(roleName)) {
             log.info("Changing manager for the deleted manager with ID: {}", id);
@@ -126,7 +133,8 @@ public final class AdminServiceImpl implements AdminService {
                 userRepository.saveAll(subordinates);
             }
 
-            userRepository.deleteById(user.getUserId());
+            user.set_active(false);
+            userRepository.save(user);
             log.info("Manager with ID {} deleted successfully", id);
         } else {
             log.error("Invalid role for user with ID {}: {}", id, roleName);
@@ -141,7 +149,7 @@ public final class AdminServiceImpl implements AdminService {
      * @return a list of UserOutDTO
      */
     @Override
-    public List<UserOutDTO> getAllUsers() {
+    public List<UserOutDTO> getAllActiveUsers() {
         log.info("Fetching all users");
         try {
             List<User> employees = userRepository.findAll();
@@ -152,30 +160,79 @@ public final class AdminServiceImpl implements AdminService {
 
             List<UserOutDTO> userDtos = new ArrayList<>();
             for (User user : employees) {
-                User manager = userRepository.findById(user.getManagerId())
-                        .orElseThrow(() -> {
-                            log.error("Manager with ID {} not found", user.getManagerId());
-                            throw new ResourceNotFoundException(UserConstants.USER_NOT_FOUND);
-                        });
-                String managerName = manager.getFirstName() + " " + manager.getLastName();
-                Role role = roleRepository.findById(user.getRoleId()).orElseThrow(
-                        () -> {
-                            log.error("Role with ID {} not found", user.getManagerId());
-                            throw new ResourceNotFoundException(UserConstants.USER_NOT_FOUND);
-                        }
-                );
+                if (user.is_active() && (user.getUserId() != UserConstants.getAdminId()) ) {
+                    User manager = userRepository.findById(user.getManagerId())
+                            .orElseThrow(() -> {
+                                log.error("Manager with ID {} not found", user.getManagerId());
+                                throw new ResourceNotFoundException(UserConstants.USER_NOT_FOUND);
+                            });
+                    String managerName = manager.getFirstName() + " " + manager.getLastName();
+                    Role role = roleRepository.findById(user.getRoleId()).orElseThrow(
+                            () -> {
+                                log.error("Role with ID {} not found", user.getManagerId());
+                                throw new ResourceNotFoundException(UserConstants.USER_NOT_FOUND);
+                            }
+                    );
 
-                UserOutDTO userDto = userDTOConverter.userToOutDto(user, managerName);
-                userDtos.add(userDto);
+                    UserOutDTO userDto = userDTOConverter.userToOutDto(user, managerName);
+                    userDtos.add(userDto);
+                }
             }
 
-            log.info("Successfully fetched {} users", userDtos.size());
+                log.info("Successfully fetched {} users", userDtos.size());
+                return userDtos;
+            } catch(Exception e){
+                log.error("Error fetching users", e);
+                throw new RuntimeException(UserConstants.DATABASE_ERROR, e);
+            }
+        }
+
+    /**
+     * Get all inactive users.
+     *
+     * @return list of UserOutDto
+     */
+    @Override
+    public List<UserOutDTO> getAllInactiveUsers(){
+        log.info("Fetching all  inactive users");
+        try {
+            List<User> employees = userRepository.findAll();
+            if (employees.isEmpty()) {
+                log.warn("No employees found");
+                return Collections.emptyList();
+            }
+
+            List<UserOutDTO> userDtos = new ArrayList<>();
+            for (User user : employees) {
+                if (!user.is_active() && (user.getUserId() != UserConstants.getAdminId()) ) {
+                    User manager = userRepository.findById(user.getManagerId())
+                            .orElseThrow(() -> {
+                                log.error("Manager with ID {} not found", user.getManagerId());
+                                throw new ResourceNotFoundException(UserConstants.USER_NOT_FOUND);
+                            });
+                    String managerName = manager.getFirstName() + " " + manager.getLastName();
+                    Role role = roleRepository.findById(user.getRoleId()).orElseThrow(
+                            () -> {
+                                log.error("Role with ID {} not found", user.getManagerId());
+                                throw new ResourceNotFoundException(UserConstants.USER_NOT_FOUND);
+                            }
+                    );
+
+                    UserOutDTO userDto = userDTOConverter.userToOutDto(user, managerName);
+                    userDtos.add(userDto);
+                }
+            }
+
+            log.info("Successfully fetched {} inactive users", userDtos.size());
             return userDtos;
-        } catch (Exception e) {
+        } catch(Exception e){
             log.error("Error fetching users", e);
             throw new RuntimeException(UserConstants.DATABASE_ERROR, e);
         }
     }
+
+
+
 
     /**
      * Changes a user's role.
@@ -247,40 +304,31 @@ public final class AdminServiceImpl implements AdminService {
         }
     }
 
-    /**
-     * Fetches employees under a manager by username.
-     *
-     * @param username the manager's email/username
-     * @return a list of UserOutDTO
-     */
-    @Override
-    public List<UserOutDTO> getEmployees(final String username) {
-        log.info("Fetching employees for manager with email: {}", username);
+
+    public MessageOutDto updateUserDetails(RegisterDto registerDto , long userId ){
+        log.info("updating user information");
         try {
-            User manager = userRepository.findByEmail(username)
-                    .orElseThrow(() -> {
-                        log.error("Manager with email {} not found", username);
-                        throw new ResourceNotFoundException(UserConstants.USER_NOT_FOUND);
-                    });
+            User user = userRepository.findById(userId).orElseThrow(() -> {
+                log.error("User with ID {} not found", userId);
+                throw new ResourceNotFoundException(UserConstants.USER_NOT_FOUND);
+            });
 
-            String managerName = manager.getFirstName() + manager.getLastName();
-            List<User> users = userRepository.findByManagerId(manager.getUserId());
-            if (users.isEmpty()) {
-                log.warn("No employees found");
-                return Collections.emptyList();
-            }
+            user.setFirstName(registerDto.getFirstName());
+            user.setLastName(registerDto.getLastName());
+            user.setUserName(registerDto.getUserName());
+            user.setEmail(registerDto.getEmail());
+            user.setRoleId(registerDto.getRoleId());
 
-            List<UserOutDTO> response = new ArrayList<>();
-            for (User u : users) {
-                UserOutDTO userDto = userDTOConverter.userToOutDto(u, managerName);
-                response.add(userDto);
-            }
+            userRepository.save(user);
 
-            log.info("Successfully fetched {} employees for manager with email: {}", response.size(), username);
-            return response;
-        } catch (Exception e) {
-            log.error("Error fetching employees for manager with email: {}", username, e);
+            return new MessageOutDto(USER_UPDATED_SUCCESSFULLY);
+        }
+        catch(Exception e){
+            log.error("Error fetching employees for manager with ID: {}", userId, e);
             throw new RuntimeException(UserConstants.ERROR, e);
         }
     }
+
+
+
 }

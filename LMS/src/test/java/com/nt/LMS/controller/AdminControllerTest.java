@@ -113,7 +113,7 @@ class AdminControllerTest {
         user.setEmail("test@example.com");
         employees.add(user);
 
-        when(adminService.getAllUsers()).thenReturn(employees);
+        when(adminService.getAllActiveUsers()).thenReturn(employees);
 
         mockMvc.perform(get("/admin/employees"))
                 .andExpect(status().isOk())
@@ -121,7 +121,7 @@ class AdminControllerTest {
                 .andExpect(jsonPath("$[0].userId").value(1))
                 .andExpect(jsonPath("$[0].email").value("test@example.com"));
 
-        verify(adminService, times(1)).getAllUsers();
+        verify(adminService, times(1)).getAllActiveUsers();
     }
 
     /**
@@ -131,12 +131,12 @@ class AdminControllerTest {
     void testGetAllEmployees_ShouldReturnNoContent_WhenNoEmployeesExist() throws Exception {
         List<UserOutDTO> employees = new ArrayList<>();
 
-        when(adminService.getAllUsers()).thenReturn(employees);
+        when(adminService.getAllActiveUsers()).thenReturn(employees);
 
         mockMvc.perform(get("/admin/employees"))
                 .andExpect(status().isNoContent());
 
-        verify(adminService, times(1)).getAllUsers();
+        verify(adminService, times(1)).getAllActiveUsers();
     }
 
     /**

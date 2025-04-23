@@ -77,10 +77,12 @@ public final class UserConstants {
      */
     public static final String INVALID_USER_ROLE = "User Role is not valid";
 
+    public static final String USER_UPDATED_SUCCESSFULLY = "User details updated successfully";
+
     /**
      * The ID of the administrator user.
      */
-    private static final Long ADMIN_ID = 3L;
+    private static final Long ADMIN_ID = 9L;
 
     /**
      * to access admin id.
