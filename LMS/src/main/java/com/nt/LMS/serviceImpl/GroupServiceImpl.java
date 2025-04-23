@@ -1,5 +1,6 @@
 package com.nt.LMS.serviceImpl;
 
+import com.nt.LMS.constants.UserConstants;
 import com.nt.LMS.converter.GroupDTOConverter;
 import com.nt.LMS.converter.UserDTOConverter;
 import com.nt.LMS.dto.GroupOutDTO;
@@ -18,204 +19,259 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
 
-import static com.nt.LMS.constants.GroupConstants.*;
-import static com.nt.LMS.constants.UserConstants.*;
+import static com.nt.LMS.constants.GroupConstants.GROUP_CREATED;
+import static com.nt.LMS.constants.GroupConstants.GROUP_DELETED;
+import static com.nt.LMS.constants.GroupConstants.GROUP_FAILURE;
+import static com.nt.LMS.constants.GroupConstants.GROUP_NOT_FOUND;
+import static com.nt.LMS.constants.GroupConstants.USER_ADDED_TO_GROUP;
+import static com.nt.LMS.constants.GroupConstants.USER_ALREADY_PRESENT_IN_GROUP;
+import static com.nt.LMS.constants.UserConstants.USER_NOT_FOUND;
+import static com.nt.LMS.constants.GroupConstants.USER_NOT_FOUND_IN_GROUP;
+import static com.nt.LMS.constants.GroupConstants.USER_REMOVED_SUCCESSFULLY;
 
+/**
+ * Implementation of the GroupService interface for managing user groups.
+ */
 @Service
-@Slf4j // Add the @Slf4j annotation to enable logging
+@Slf4j
 public class GroupServiceImpl implements GroupService {
 
+    /**
+     * To use group services.
+     */
     @Autowired
     private GroupRepository groupRepository;
 
+    /**
+     * To use user services.
+     */
     @Autowired
     private UserRepository userRepository;
 
+
+    /**
+     * To convert user to dto.
+     */
     @Autowired
     private UserDTOConverter userDTOConverter;
 
+    /**
+     * To use repo services.
+     */
     @Autowired
     private UserGroupRepository userGroupRepository;
+
+
+    /**
+     * To convert group to dto.
+     */
     @Autowired
     private GroupDTOConverter groupDTOConverter;
 
-    public MessageOutDto createGroup(String groupName , String username){
+    /**
+     * Creates a new group.
+     *
+     * @param groupName the name of the group
+     * @param username  the creator's email
+     * @return a success message
+     */
+    @Override
+    public MessageOutDto createGroup(final String groupName, final String username) {
         try {
             log.info("Attempting to create a group with name: {} by user: {}", groupName, username);
             User user = userRepository.findByEmail(username)
                     .orElseThrow(() -> new UnauthorizedAccessException(USER_NOT_FOUND));
+
             Group group = new Group(groupName, user.getUserId());
             groupRepository.save(group);
-            log.info("Group '{}' created successfully with creator '{}'", groupName, username);
+            log.info("Group '{}' created successfully by '{}'", groupName, username);
+
             return new MessageOutDto(GROUP_CREATED);
         } catch (Exception e) {
-            log.error("Error while creating group '{}' by user '{}'", groupName, username, e);
+            log.error("Error while creating group '{}' by '{}'", groupName, username, e);
             throw new RuntimeException(e);
         }
     }
 
-
-    public MessageOutDto delGroup(long groupId) {
+    /**
+     * Deletes a group by its ID.
+     *
+     * @param groupId the group ID
+     * @return a success message
+     */
+    @Override
+    public MessageOutDto delGroup(final long groupId) {
         try {
             log.info("Attempting to delete group with ID: {}", groupId);
-
-            Group group = groupRepository.findById(groupId).orElseThrow(() -> {
-                        log.warn("Group not found with ID {}", groupId);
-                        return new ResourceNotFoundException(GROUP_NOT_FOUND); });
+            Group group = groupRepository.findById(groupId)
+                    .orElseThrow(() -> new ResourceNotFoundException(GROUP_NOT_FOUND));
 
             userGroupRepository.deleteByGroupId(groupId);
             groupRepository.delete(group);
-
             log.info("Group with ID: {} deleted successfully", groupId);
 
             return new MessageOutDto(GROUP_DELETED);
-
         } catch (Exception e) {
-
             log.error("Error while deleting group with ID: {}", groupId, e);
             throw new RuntimeException(GROUP_FAILURE, e);
-
         }
     }
 
-
-    public MessageOutDto addUserToGroup(long userId, long groupId) {
+    /**
+     * Adds a user to a group.
+     *
+     * @param userId  the user ID
+     * @param groupId the group ID
+     * @return a success or failure message
+     */
+    @Override
+    public MessageOutDto addUserToGroup(final long userId, final long groupId) {
         try {
-            log.info("Attempting to add user with ID: {} to group with ID: {}", userId, groupId);
+            log.info("Adding user ID: {} to group ID: {}", userId, groupId);
 
-            if(groupRepository.findById(groupId).isEmpty()){
-                log.warn(GROUP_NOT_FOUND);
+            if (groupRepository.findById(groupId).isEmpty()) {
                 throw new ResourceNotFoundException(GROUP_NOT_FOUND);
             }
-            if(userRepository.findById(userId).isEmpty()){
-                log.warn(USER_NOT_FOUND);
+
+            if (userRepository.findById(userId).isEmpty()) {
                 throw new ResourceNotFoundException(USER_NOT_FOUND);
             }
-            if(userGroupRepository.findByUserIdAndGroupId(userId,groupId).isPresent()){
-                log.info(USER_ALREADY_PRESENT_IN_GROUP);
+
+            if (userGroupRepository.findByUserIdAndGroupId(userId, groupId).isPresent()) {
                 return new MessageOutDto(USER_ALREADY_PRESENT_IN_GROUP);
             }
-            UserGroup userGroup = new UserGroup(userId,groupId) ;
-            userGroupRepository.save(userGroup);
 
-            log.info("User with ID: {} successfully added to group with ID: {}", userId, groupId);
+            UserGroup userGroup = new UserGroup(userId, groupId);
+            userGroupRepository.save(userGroup);
 
             return new MessageOutDto(USER_ADDED_TO_GROUP);
         } catch (Exception e) {
-            log.error("Error while adding user with ID: {} to group with ID: {}", userId, groupId, e);
+            log.error("Error adding user ID: {} to group ID: {}", userId, groupId, e);
             throw new RuntimeException(GROUP_FAILURE, e);
         }
     }
 
-
-    public MessageOutDto removeUserFromGroup(long userId, long groupId) {
+    /**
+     * Removes a user from a group.
+     *
+     * @param userId  the user ID
+     * @param groupId the group ID
+     * @return a success message
+     */
+    @Override
+    public MessageOutDto removeUserFromGroup(final long userId, final long groupId) {
         try {
-            log.info("Attempting to remove user with ID: {} from group with ID: {}", userId, groupId);
-
-            UserGroup userGroup = userGroupRepository.findByUserIdAndGroupId(userId, groupId).orElseThrow(()->{
-                        log.warn(USER_NOT_FOUND_IN_GROUP);
-                        throw new ResourceNotFoundException(USER_NOT_FOUND_IN_GROUP);    } );
+            UserGroup userGroup = userGroupRepository.findByUserIdAndGroupId(userId, groupId)
+                    .orElseThrow(() -> new ResourceNotFoundException(USER_NOT_FOUND_IN_GROUP));
 
             userGroupRepository.delete(userGroup);
-
-            log.info("User with ID: {} successfully removed from group with ID: {}", userId, groupId);
-
-            return new MessageOutDto(User_REMOVED_SUCCESSFULLY);
-
+            return new MessageOutDto(USER_REMOVED_SUCCESSFULLY);
         } catch (Exception e) {
-            log.error("Error while removing user with ID: {} from group with ID: {}", userId, groupId, e);
+            log.error("Error removing user ID: {} from group ID: {}", userId, groupId, e);
             throw new RuntimeException(GROUP_FAILURE, e);
         }
     }
 
-
-    public List<UserOutDTO> getUsersInGroup(long groupId) {
+    /**
+     * Gets all users in a group.
+     *
+     * @param groupId the group ID
+     * @return list of users
+     */
+    @Override
+    public List<UserOutDTO> getUsersInGroup(final long groupId) {
         try {
-            log.info("Fetching users in group with ID: {}", groupId);
-            Group group= groupRepository.findById(groupId).orElseThrow(()->{
-                        log.warn("Group not found" + groupId);
-                        return new ResourceNotFoundException(GROUP_NOT_FOUND);   });
+            Group group = groupRepository.findById(groupId)
+                    .orElseThrow(() -> new ResourceNotFoundException(GROUP_NOT_FOUND));
 
             List<UserGroup> userGroupList = userGroupRepository.findAllByGroupId(groupId);
-
             if (userGroupList.isEmpty()) {
-                log.info("No users found in group with ID: {}", groupId);
                 return Collections.emptyList();
             }
 
             List<UserOutDTO> response = new ArrayList<>();
-
             for (UserGroup ug : userGroupList) {
-                User user = userRepository.findById(ug.getUserId()).orElseThrow(()->{
-                    log.warn(USER_NOT_FOUND);
-                    throw new ResourceNotFoundException(USER_NOT_FOUND);
-                });
-                    User manager = userRepository.findById(user.getManagerId()).orElseGet(() -> {
-                        log.error("Manager with ID {} not found", user.getManagerId());
-                        User fallbackManager = new User();
-                        fallbackManager.setFirstName("Unknown");
-                        fallbackManager.setLastName(" ");
-                        return fallbackManager;
-                    });
-                    UserOutDTO dto = userDTOConverter.userToOutDto(user, manager.getFirstName()+manager.getLastName());
-                    response.add(dto);
+                User user = userRepository.findById(ug.getUserId())
+                        .orElseThrow(() -> new ResourceNotFoundException(USER_NOT_FOUND));
+
+                User manager = userRepository.findById(user.getManagerId())
+                        .orElseThrow(() -> new ResourceNotFoundException(USER_NOT_FOUND));
+
+                UserOutDTO dto = userDTOConverter.userToOutDto(user,
+                        manager.getFirstName() + " " + manager.getLastName());
+                response.add(dto);
             }
-            log.info("Fetched {} users in group with ID: {}", response.size(), groupId);
+
             return response;
         } catch (Exception e) {
-            log.error("Error while fetching users in group with ID: {}", groupId, e);
+            log.error("Error fetching users in group ID: {}", groupId, e);
             throw new RuntimeException(GROUP_FAILURE + groupId, e);
         }
     }
 
-
-    public List<GroupOutDTO> getGroups(String email){
+    /**
+     * Gets groups created by a user or assigned by admin.
+     *
+     * @param email the user's email
+     * @return list of groups
+     */
+    @Override
+    public List<GroupOutDTO> getGroups(final String email) {
         try {
-            log.info("Fetching groups for user with email: {}", email);
             User user = userRepository.findByEmail(email)
                     .orElseThrow(() -> new ResourceNotFoundException(USER_NOT_FOUND));
-            List<Group> groups = groupRepository.findByCreatorId(user.getUserId());
 
-            List<GroupOutDTO> groupout = new ArrayList<>();
+            List<GroupOutDTO> groupOutList = new ArrayList<>();
+            List<Group> userGroups = groupRepository.findByCreatorId(user.getUserId());
 
-            for(Group group : groups){
-                GroupOutDTO gout = groupDTOConverter.groupToOutDto(group , user.getFirstName() + user.getLastName());
-                groupout.add(gout);
+            for (Group group : userGroups) {
+                GroupOutDTO gout = groupDTOConverter.groupToOutDto(group,
+                        user.getFirstName() + " " + user.getLastName());
+                groupOutList.add(gout);
             }
 
-            if(user.getUserId() != ADMIN_ID) {
-                List<Group> adminGroups = groupRepository.findByCreatorId(ADMIN_ID);
+            if (user.getUserId() != UserConstants.getAdminId()) {
+                List<Group> adminGroups = groupRepository.findByCreatorId(UserConstants.getAdminId());
                 for (Group group : adminGroups) {
-                    GroupOutDTO gout = groupDTOConverter.groupToOutDto(group, user.getFirstName() + user.getLastName());
-                    groupout.add(gout);
+                    GroupOutDTO gout = groupDTOConverter.groupToOutDto(group,
+                            user.getFirstName() + " " + user.getLastName());
+                    groupOutList.add(gout);
                 }
             }
 
-            log.info("Fetched {} groups for user with email: {}", groupout.size(), email);
-            return groupout;
+            return groupOutList;
         } catch (Exception e) {
-            log.error("Error while fetching groups for user with email: {}", email, e);
+            log.error("Error fetching groups for user with email: {}", email, e);
             throw new RuntimeException(e);
         }
     }
 
-    public List<GroupOutDTO> getAllGroups(){
+    /**
+     * Gets all groups in the system.
+     *
+     * @return list of all groups
+     */
+    @Override
+    public List<GroupOutDTO> getAllGroups() {
         try {
-            log.info("Fetching all groups");
             List<Group> groups = groupRepository.findAll();
-            List<GroupOutDTO> groupout = new ArrayList<>();
-            for(Group group : groups){
-                Optional<User> creatorOp = userRepository.findById(group.getCreatorId());
-                User creator = creatorOp.orElseThrow(() -> new ResourceNotFoundException(USER_NOT_FOUND));
-                GroupOutDTO gout = groupDTOConverter.groupToOutDto(group , creator.getFirstName() + creator.getLastName());
-                groupout.add(gout);
+            List<GroupOutDTO> groupOutList = new ArrayList<>();
+
+            for (Group group : groups) {
+                User creator = userRepository.findById(group.getCreatorId())
+                        .orElseThrow(() -> new ResourceNotFoundException(USER_NOT_FOUND));
+                GroupOutDTO gout = groupDTOConverter.groupToOutDto(group,
+                        creator.getFirstName() + " " + creator.getLastName());
+                groupOutList.add(gout);
             }
-            log.info("Fetched {} groups", groupout.size());
-            return groupout;
+
+            return groupOutList;
         } catch (Exception e) {
-            log.error("Error while fetching all groups", e);
+            log.error("Error fetching all groups", e);
             throw new RuntimeException(e);
         }
     }

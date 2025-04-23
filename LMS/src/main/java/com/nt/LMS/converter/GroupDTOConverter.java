@@ -1,14 +1,23 @@
 package com.nt.LMS.converter;
 
 import com.nt.LMS.dto.GroupOutDTO;
-import com.nt.LMS.dto.UserOutDTO;
 import com.nt.LMS.entities.Group;
-import com.nt.LMS.entities.User;
 import org.springframework.stereotype.Component;
 
+/**
+ * Converter class to transform Group entities into GroupOutDTOs.
+ */
 @Component
-public class GroupDTOConverter {
-    public GroupOutDTO groupToOutDto(Group group , String creator){
+public final class GroupDTOConverter {
+
+    /**
+     * Converts a Group entity to a GroupOutDTO.
+     *
+     * @param group   the Group entity to convert
+     * @param creator the name of the group's creator
+     * @return the converted GroupOutDTO
+     */
+    public GroupOutDTO groupToOutDto(final Group group, final String creator) {
         GroupOutDTO groupout = new GroupOutDTO();
         groupout.setGroupId(group.getGroupId());
         groupout.setGroupName(group.getGroupName());

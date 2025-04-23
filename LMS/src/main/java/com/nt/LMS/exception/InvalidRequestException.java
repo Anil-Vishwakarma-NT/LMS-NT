@@ -1,7 +1,11 @@
 package com.nt.LMS.exception;
 
 public class InvalidRequestException extends RuntimeException {
-    public InvalidRequestException(final String message){
+    /**
+     * Exception class for Unauthorized or Invalid Request.
+     * @param message
+     */
+    public InvalidRequestException(final String message) {
         super(message);
     }
 }

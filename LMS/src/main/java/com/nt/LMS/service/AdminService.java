@@ -6,16 +6,56 @@ import com.nt.LMS.dto.UserOutDTO;
 
 import java.util.List;
 
+/**
+ * Service interface for admin-related operations.
+ */
 public interface AdminService {
-    public MessageOutDto register(RegisterDto registerDto);
 
-    public MessageOutDto employeeDeletion(long id);
+    /**
+     * Registers a new user.
+     *
+     * @param registerDto the registration details
+     * @return a message response
+     */
+    MessageOutDto register(RegisterDto registerDto);
 
-    public List<UserOutDTO> getAllUsers();
+    /**
+     * Deletes an employee by their ID.
+     *
+     * @param id the employee ID
+     * @return a message response
+     */
+    MessageOutDto employeeDeletion(long id);
 
-    public MessageOutDto changeUserRole(long userId, String newRoleName);
+    /**
+     * Gets a list of all users.
+     *
+     * @return list of user DTOs
+     */
+    List<UserOutDTO> getAllUsers();
 
-    public List<UserOutDTO> getManagerEmployee(long userId);
+    /**
+     * Changes the role of a user.
+     *
+     * @param userId      the user ID
+     * @param newRoleName the new role name
+     * @return a message response
+     */
+    MessageOutDto changeUserRole(long userId, String newRoleName);
 
-    public List<UserOutDTO> getEmployees(String username);
+    /**
+     * Gets employees under a specific manager.
+     *
+     * @param userId the manager's user ID
+     * @return list of user DTOs
+     */
+    List<UserOutDTO> getManagerEmployee(long userId);
+
+    /**
+     * Gets employees by username.
+     *
+     * @param username the username to filter by
+     * @return list of user DTOs
+     */
+    List<UserOutDTO> getEmployees(String username);
 }
