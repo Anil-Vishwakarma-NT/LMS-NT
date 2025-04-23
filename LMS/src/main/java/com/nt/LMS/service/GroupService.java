@@ -68,4 +68,6 @@ public interface GroupService {
      * @return A list of GroupOutDTO representing all groups.
      */
     List<GroupOutDTO> getAllGroups();
+
+    long countGroups();
 }
