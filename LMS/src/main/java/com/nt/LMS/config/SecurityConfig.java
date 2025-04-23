@@ -14,6 +14,11 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+import org.springframework.web.cors.CorsConfiguration;
+import org.springframework.web.cors.CorsConfigurationSource;
+import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
+
+import java.util.List;
 
 @Configuration
 @EnableWebSecurity
@@ -27,21 +32,19 @@ public class SecurityConfig {
 
 
     @Bean
-    public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
+    public SecurityFilterChain securityFilterChain(final HttpSecurity http) throws Exception {
         http
+                .cors(cors -> cors.configurationSource(corsConfigurationSource()))
                 .csrf(csrf -> csrf.disable())
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/auth/**").permitAll()
-                        .requestMatchers("/admin/**").hasAuthority("admin")  // Use "admin" instead of "ROLE_ADMIN"
-                        .requestMatchers("/employee/**").hasAnyAuthority("employee", "admin")
+                        .requestMatchers("/api/auth/**").permitAll()
                         .requestMatchers("/admin/**").hasAuthority("admin")
-                        .requestMatchers("/manager/**").hasAnyAuthority("manager" ,"admin")
+                        .requestMatchers("/employee/**").hasAnyAuthority("employee", "admin")
+                        .requestMatchers("/manager/**").hasAnyAuthority("manager", "admin")
                         .requestMatchers("/group/all-groups").hasAuthority("admin")
-                        .requestMatchers("/group/**").hasAnyAuthority("manager","admin")// Use "admin" instead of "ROLE_ADMIN"
-                        .requestMatchers("/employee/**").hasAnyAuthority("employee", "admin" , "manager")  // Adjust for multiple roles
+                        .requestMatchers("/group/**").hasAnyAuthority("manager", "admin")
                         .anyRequest().authenticated()
                 )
-
                 .sessionManagement(sess -> sess.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authenticationProvider(authenticationProvider())
                 .addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class);
@@ -65,5 +68,19 @@ public class SecurityConfig {
     @Bean
     public PasswordEncoder passwordEncoder() {
         return new BCryptPasswordEncoder();
+    }
+
+    @Bean
+    public CorsConfigurationSource corsConfigurationSource() {
+        CorsConfiguration config = new CorsConfiguration();
+        config.setAllowedOrigins(List.of("http://localhost:3003")); // or your frontend URL
+        config.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS"));
+        config.setAllowedHeaders(List.of("Authorization", "Content-Type"));
+        config.setAllowCredentials(true);
+        config.setExposedHeaders(List.of("Authorization"));
+
+        UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
+        source.registerCorsConfiguration("/**", config);
+        return source;
     }
 }
