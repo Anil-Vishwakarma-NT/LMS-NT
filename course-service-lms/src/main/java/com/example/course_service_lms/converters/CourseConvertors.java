@@ -32,9 +32,7 @@ public final class CourseConvertors {
         course.setOwnerId(courseDTO.getOwnerId());
         course.setDescription(StringUtils.toProperCase(courseDTO.getDescription()));
         course.setLevel(CourseLevel.valueOf(courseDTO.getCourseLevel().toUpperCase(Locale.ROOT)));
-        course.setImage(courseDTO.getImage());
         course.setActive(courseDTO.isActive());
-        course.setUpdatedAt(LocalDateTime.now());
         return course;
     }
 }

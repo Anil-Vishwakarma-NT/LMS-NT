@@ -2,6 +2,8 @@ package com.example.course_service_lms.serviceImpl;
 
 import com.example.course_service_lms.dto.CourseBundleDTO;
 import com.example.course_service_lms.dto.CourseBundlePostDTO;
+import com.example.course_service_lms.dto.UpdateCourseBundleDTO;
+import com.example.course_service_lms.dto.UpdateCourseContentDTO;
 import com.example.course_service_lms.entity.Bundle;
 import com.example.course_service_lms.entity.Course;
 import com.example.course_service_lms.entity.CourseBundle;
@@ -17,6 +19,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -205,13 +208,13 @@ public class CourseBundleServiceImpl implements CourseBundleService {
      * Updates an existing course-bundle mapping.
      *
      * @param courseBundleId the ID of the course-bundle mapping to update
-     * @param courseBundlePostDTO the updated data for the course-bundle mapping
+     * @param updateCourseBundleDTO the updated data for the course-bundle mapping
      * @return the updated {@link CourseBundlePostDTO} object
      * @throws ResourceNotFoundException if the course-bundle mapping with the given ID is not found
      * @throws RuntimeException if an unexpected error occurs during the update
      */
     @Override
-    public CourseBundlePostDTO updateCourseBundle(final Long courseBundleId, final CourseBundlePostDTO courseBundlePostDTO) {
+    public String updateCourseBundle(final Long courseBundleId, final UpdateCourseBundleDTO updateCourseBundleDTO) {
         try {
             log.info("Starting process to update course-bundle record with ID: {}", courseBundleId);
             // noinspection unused
@@ -222,15 +225,17 @@ public class CourseBundleServiceImpl implements CourseBundleService {
                     });
 
             // Update entity fields using the DTO
-            existingBundle.setBundleId(courseBundlePostDTO.getBundleId());
-            existingBundle.setCourseId(courseBundlePostDTO.getCourseId());
+            existingBundle.setBundleId(updateCourseBundleDTO.getBundleId());
+            existingBundle.setCourseId(updateCourseBundleDTO.getCourseId());
+            existingBundle.setUpdatedAt(LocalDateTime.now());
+            existingBundle.setActive(updateCourseBundleDTO.isActive());
 
             // Save updated entity to the database
             CourseBundle updatedBundle = courseBundleRepository.save(existingBundle);
             log.info("Successfully updated course-bundle record with ID: {}", updatedBundle.getCourseBundleId());
 
             // Convert updated entity to DTO
-            return convertEntityToDTOPost(updatedBundle);
+            return "Course Bundle Updated Successfully";
 
         } catch (ResourceNotFoundException e) {
             throw e;
@@ -251,7 +256,7 @@ public class CourseBundleServiceImpl implements CourseBundleService {
      * @throws RuntimeException if an unexpected error occurs during the creation process
      */
     @Override
-    public CourseBundlePostDTO createCourseBundle(final CourseBundlePostDTO courseBundlePostDTO) {
+    public CourseBundle createCourseBundle(final CourseBundlePostDTO courseBundlePostDTO) {
         try {
             log.info("Starting process to create a new course-bundle mapping");
 
@@ -277,13 +282,14 @@ public class CourseBundleServiceImpl implements CourseBundleService {
 
             // Convert DTO to Entity
             CourseBundle courseBundle = convertDTOToEntityPost(courseBundlePostDTO);
-
+            courseBundle.setCreatedAt(LocalDateTime.now());
+            courseBundle.setUpdatedAt(LocalDateTime.now());
             // Save entity to the database
             CourseBundle savedBundle = courseBundleRepository.save(courseBundle);
             log.info("Successfully created a new course-bundle mapping with ID: {}", savedBundle.getCourseBundleId());
 
             // Convert saved entity to DTO
-            return convertEntityToDTOPost(savedBundle);
+            return savedBundle;
 
         } catch (ResourceAlreadyExistsException | ResourceNotValidException e) {
             throw e;

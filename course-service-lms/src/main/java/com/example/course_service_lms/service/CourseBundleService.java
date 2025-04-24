@@ -2,6 +2,7 @@ package com.example.course_service_lms.service;
 
 import com.example.course_service_lms.dto.CourseBundleDTO;
 import com.example.course_service_lms.dto.CourseBundlePostDTO;
+import com.example.course_service_lms.dto.UpdateCourseBundleDTO;
 import com.example.course_service_lms.entity.CourseBundle;
 
 import java.util.List;
@@ -49,10 +50,10 @@ public interface CourseBundleService {
      * Updates an existing course-bundle association.
      *
      * @param courseBundleId the ID of the course-bundle record to update
-     * @param courseBundlePostDTO the new data for the course-bundle mapping
+     * @param updateCourseBundleDTO the new data for the course-bundle mapping
      * @return the updated {@link CourseBundlePostDTO}
      */
-    CourseBundlePostDTO updateCourseBundle(Long courseBundleId, CourseBundlePostDTO courseBundlePostDTO);
+    String updateCourseBundle(Long courseBundleId, UpdateCourseBundleDTO updateCourseBundleDTO);
 
     /**
      * Creates a new course-bundle association.
@@ -60,5 +61,5 @@ public interface CourseBundleService {
      * @param courseBundlePostDTO the details of the new course-bundle mapping
      * @return the created {@link CourseBundlePostDTO}
      */
-    CourseBundlePostDTO createCourseBundle(CourseBundlePostDTO courseBundlePostDTO);
+    CourseBundle createCourseBundle(CourseBundlePostDTO courseBundlePostDTO);
 }

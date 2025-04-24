@@ -24,8 +24,8 @@ public final class CourseContentConverters {
         courseContent.setCourseId(courseContentDTO.getCourseId());
         courseContent.setTitle(courseContentDTO.getTitle());
         courseContent.setDescription(courseContentDTO.getDescription());
-        courseContent.setVideoLink(courseContentDTO.getVideoLink());
         courseContent.setResourceLink(courseContentDTO.getResourceLink());
+        courseContent.setActive(courseContentDTO.isActive());
         return courseContent;
     }
 }

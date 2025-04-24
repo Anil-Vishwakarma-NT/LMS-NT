@@ -4,6 +4,7 @@ import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Positive;
 import lombok.Data;
 
+import java.time.LocalDateTime;
 import java.util.Objects;
 
 import static com.example.course_service_lms.constants.CourseBundleConstants.BUNDLE_ID_NOT_NULL;
@@ -61,7 +62,7 @@ public class CourseBundleDTO {
      * Human-readable name of the course.
      * <p>Used for display or reference purposes.</p>
      */
-    @NotNull
+    @NotNull(message = "Course name is required")
     private String courseName;
 
     /**
@@ -79,8 +80,7 @@ public class CourseBundleDTO {
      * @param courseId       ID of the associated course
      * @param courseName     name of the course
      */
-    public CourseBundleDTO(final long courseBundleId, final Long bundleId, final String bundleName,
-                           final Long courseId, final String courseName) {
+    public CourseBundleDTO(long courseBundleId, Long bundleId, String bundleName, Long courseId, String courseName) {
         this.courseBundleId = courseBundleId;
         this.bundleId = bundleId;
         this.bundleName = bundleName;
@@ -88,30 +88,14 @@ public class CourseBundleDTO {
         this.courseName = courseName;
     }
 
-    /**
-     * Custom equality check based on all fields.
-     *
-     * @param o the object to compare
-     * @return true if equal, false otherwise
-     */
     @Override
-    public boolean equals(final Object o) {
-        if (o == null || getClass() != o.getClass()) {
-            return false;
-        }
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
         CourseBundleDTO that = (CourseBundleDTO) o;
-        return courseBundleId == that.courseBundleId
-                && Objects.equals(bundleId, that.bundleId)
-                && Objects.equals(bundleName, that.bundleName)
-                && Objects.equals(courseId, that.courseId)
-                && Objects.equals(courseName, that.courseName);
+        return courseBundleId == that.courseBundleId && Objects.equals(bundleId, that.bundleId) && Objects.equals(bundleName, that.bundleName) && Objects.equals(courseId, that.courseId) && Objects.equals(courseName, that.courseName);
     }
 
-    /**
-     * Custom hashCode implementation using all fields.
-     *
-     * @return hashcode
-     */
     @Override
     public int hashCode() {
         return Objects.hash(courseBundleId, bundleId, bundleName, courseId, courseName);

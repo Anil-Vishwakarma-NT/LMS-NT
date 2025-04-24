@@ -2,6 +2,7 @@ package com.example.course_service_lms.service;
 
 
 import com.example.course_service_lms.dto.CourseContentDTO;
+import com.example.course_service_lms.dto.UpdateCourseContentDTO;
 import com.example.course_service_lms.entity.CourseContent;
 
 import java.util.List;
@@ -51,10 +52,10 @@ public interface CourseContentService {
      * Updates course content for a given course ID.
      *
      * @param courseId the ID of the course whose content is to be updated
-     * @param courseContentDTO the updated content data
+     * @param updateCourseContentDTO the updated content data
      * @return a success message indicating the outcome
      */
-    String updateCourseContent(Long courseId, CourseContentDTO courseContentDTO);
+    String updateCourseContent(Long courseId, UpdateCourseContentDTO updateCourseContentDTO);
 
     /**
      * Retrieves all course content items associated with a specific course.

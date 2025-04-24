@@ -3,6 +3,7 @@ package com.example.course_service_lms.serviceImpl;
 import com.example.course_service_lms.converters.CourseConvertors;
 import com.example.course_service_lms.dto.CourseDTO;
 import com.example.course_service_lms.dto.CourseInfoDTO;
+import com.example.course_service_lms.dto.UpdateCourseDTO;
 import com.example.course_service_lms.entity.Course;
 import com.example.course_service_lms.entity.CourseLevel;
 import com.example.course_service_lms.exception.ResourceAlreadyExistsException;
@@ -71,13 +72,15 @@ public class CourseImpl implements CourseService {
             }
 
             Course course = CourseConvertors.courseDtoToCourse(courseDTO);
+            course.setCreatedAt(LocalDateTime.now());
+            course.setUpdatedAt(LocalDateTime.now());
             Course savedCourse = courseRepository.save(course);
             log.info("Course '{}' created successfully with ID: {}", courseDTO.getTitle(), savedCourse.getCourseId());
             return savedCourse;
         } catch (ResourceAlreadyExistsException e) {
             throw e;
         } catch (Exception e) {
-            throw new RuntimeException(GENERAL_ERROR);
+            throw new RuntimeException(e.getMessage());
         }
     }
 
@@ -188,7 +191,6 @@ public class CourseImpl implements CourseService {
                 courseDTO.setTitle(course.getTitle());
                 courseDTO.setDescription(course.getDescription());
                 courseDTO.setOwnerId(course.getOwnerId());
-                courseDTO.setImage(course.getImage());
                 courseDTO.setCourseLevel(course.getLevel().toString());
                 courseDTO.setActive(course.isActive());
                 courseDTO.setUpdatedAt(course.getUpdatedAt());
@@ -208,13 +210,13 @@ public class CourseImpl implements CourseService {
      * Checks for duplicate title and owner combinations before updating.
      *
      * @param courseId   the ID of the course to update
-     * @param courseDTO  the updated course details
+     * @param updateCourseDTO  the updated course details
      * @return a confirmation message
      * @throws ResourceNotFoundException if the course to update is not found
      * @throws ResourceNotValidException if the updated title and owner combination already exists for another course
      */
     @Override
-    public String updateCourse(final Long courseId, final CourseDTO courseDTO) {
+    public String updateCourse(final Long courseId, final UpdateCourseDTO updateCourseDTO) {
         try {
             log.info("Updating course with ID: {}", courseId);
 
@@ -226,25 +228,25 @@ public class CourseImpl implements CourseService {
 
             Course existingCourse = courseOptional.get();
 
-            boolean isTitleChanged = !existingCourse.getTitle().equalsIgnoreCase(courseDTO.getTitle());
-            boolean isOwnerChanged = !(existingCourse.getOwnerId() == courseDTO.getOwnerId());
+            boolean isTitleChanged = !existingCourse.getTitle().equalsIgnoreCase(updateCourseDTO.getTitle());
+            boolean isOwnerChanged = !(existingCourse.getOwnerId() == updateCourseDTO.getOwnerId());
 
             if (isTitleChanged || isOwnerChanged) {
                 Optional<Course> duplicateCourse = courseRepository.findByTitleIgnoreCaseAndOwnerId(
-                        courseDTO.getTitle(), courseDTO.getOwnerId()
+                        updateCourseDTO.getTitle(), updateCourseDTO.getOwnerId()
                 );
 
                 if (duplicateCourse.isPresent() && !(duplicateCourse.get().getCourseId() == courseId)) {
-                    log.warn("Duplicate course title '{}' exists for owner ID {}", courseDTO.getTitle(), courseDTO.getOwnerId());
+                    log.warn("Duplicate course title '{}' exists for owner ID {}", updateCourseDTO.getTitle(), updateCourseDTO.getOwnerId());
                     throw new ResourceNotValidException(COURSE_DUPLICATE_FOR_OWNER);
                 }
             }
 
-            existingCourse.setTitle(StringUtils.toProperCase(courseDTO.getTitle()));
-            existingCourse.setDescription(StringUtils.toProperCase(courseDTO.getDescription()));
-            existingCourse.setLevel(CourseLevel.valueOf(courseDTO.getCourseLevel()));
-            existingCourse.setOwnerId(courseDTO.getOwnerId());
-            existingCourse.setActive(courseDTO.isActive());
+            existingCourse.setTitle(StringUtils.toProperCase(updateCourseDTO.getTitle()));
+            existingCourse.setDescription(StringUtils.toProperCase(updateCourseDTO.getDescription()));
+            existingCourse.setLevel(CourseLevel.valueOf(updateCourseDTO.getCourseLevel()));
+            existingCourse.setOwnerId(updateCourseDTO.getOwnerId());
+            existingCourse.setActive(updateCourseDTO.isActive());
             existingCourse.setUpdatedAt(LocalDateTime.now());
 
             courseRepository.save(existingCourse);

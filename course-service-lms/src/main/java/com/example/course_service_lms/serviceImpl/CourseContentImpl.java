@@ -2,6 +2,7 @@ package com.example.course_service_lms.serviceImpl;
 
 import com.example.course_service_lms.converters.CourseContentConverters;
 import com.example.course_service_lms.dto.CourseContentDTO;
+import com.example.course_service_lms.dto.UpdateCourseContentDTO;
 import com.example.course_service_lms.entity.CourseContent;
 import com.example.course_service_lms.exception.ResourceAlreadyExistsException;
 import com.example.course_service_lms.exception.ResourceNotFoundException;
@@ -11,6 +12,7 @@ import com.example.course_service_lms.service.CourseContentService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 
@@ -67,6 +69,8 @@ public class CourseContentImpl implements CourseContentService {
                 throw new ResourceNotFoundException(COURSE_NOT_FOUND);
             }
             CourseContent courseContent = CourseContentConverters.courseContentDtoToCourseContent(courseContentDTO);
+            courseContent.setCreatedAt(LocalDateTime.now());
+            courseContent.setUpdatedAt(LocalDateTime.now());
             return courseContentRepository.save(courseContent);
         } catch (ResourceAlreadyExistsException | ResourceNotFoundException e) {
             throw e;
@@ -145,41 +149,42 @@ public class CourseContentImpl implements CourseContentService {
      * Updates an existing course content by ID.
      *
      * @param courseId ID of the course content to update
-     * @param courseContentDTO the updated data
+     * @param updateCourseContentDTO the updated data
      * @return success message upon update
      * @throws ResourceNotFoundException of course content or course is not found
      * @throws ResourceAlreadyExistsException if  updated title and course combination already exists
      */
     @Override
-    public String updateCourseContent(final Long courseId, final CourseContentDTO courseContentDTO) {
+    public String updateCourseContent(final Long courseId, final UpdateCourseContentDTO updateCourseContentDTO) {
         try {
             Optional<CourseContent> courseContentOptional = courseContentRepository.findById(courseId);
             if  (courseContentOptional.isEmpty()) {
                 throw new ResourceNotFoundException(COURSE_CONTENT_NOT_FOUND);
             }
-            boolean courseExists = courseRepository.existsById(courseContentDTO.getCourseId());
+            boolean courseExists = courseRepository.existsById(updateCourseContentDTO.getCourseId());
             if  (!courseExists) {
                 throw new ResourceNotFoundException(COURSE_NOT_FOUND);
             }
             CourseContent existingCourseContent = courseContentOptional.get();
 
-            boolean isTitleChanged = !existingCourseContent.getTitle().equalsIgnoreCase(courseContentDTO.getTitle());
-            boolean isCourseIdChanged = !(existingCourseContent.getCourseId() == courseContentDTO.getCourseId());
+            boolean isTitleChanged = !existingCourseContent.getTitle().equalsIgnoreCase(updateCourseContentDTO.getTitle());
+            boolean isCourseIdChanged = !(existingCourseContent.getCourseId() == updateCourseContentDTO.getCourseId());
 
             if  (isTitleChanged || isCourseIdChanged) {
                 Optional<CourseContent> duplicate = courseContentRepository.findByTitleIgnoreCaseAndCourseId(
-                        courseContentDTO.getTitle(), courseContentDTO.getCourseId());
+                        updateCourseContentDTO.getTitle(), updateCourseContentDTO.getCourseId());
 
                 if  (duplicate.isPresent() && !(duplicate.get().getCourseId() == courseId)) {
                     throw new ResourceAlreadyExistsException(COURSE_CONTENT_DUPLICATE);
                 }
             }
 
-            existingCourseContent.setCourseId(courseContentDTO.getCourseId());
-            existingCourseContent.setTitle(courseContentDTO.getTitle());
-            existingCourseContent.setDescription(courseContentDTO.getDescription());
-            existingCourseContent.setVideoLink(courseContentDTO.getVideoLink());
-            existingCourseContent.setResourceLink(courseContentDTO.getResourceLink());
+            existingCourseContent.setCourseId(updateCourseContentDTO.getCourseId());
+            existingCourseContent.setTitle(updateCourseContentDTO.getTitle());
+            existingCourseContent.setDescription(updateCourseContentDTO.getDescription());
+            existingCourseContent.setResourceLink(updateCourseContentDTO.getResourceLink());
+            existingCourseContent.setUpdatedAt(LocalDateTime.now());
+            existingCourseContent.setActive(updateCourseContentDTO.isActive());
 
             courseContentRepository.save(existingCourseContent);
             return COURSE_CONTENT_UPDATED;

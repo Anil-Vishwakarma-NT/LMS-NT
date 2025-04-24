@@ -4,6 +4,7 @@ import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Positive;
 import lombok.Data;
 
+import java.time.LocalDateTime;
 import java.util.Objects;
 
 import static com.example.course_service_lms.constants.CourseBundleConstants.BUNDLE_ID_NOT_NULL;
@@ -49,6 +50,9 @@ public class CourseBundlePostDTO {
     @Positive(message = COURSE_ID_POSITIVE)
     private Long courseId;
 
+    @NotNull(message = "Is Active field is required")
+    private boolean isActive;
+
     /**
      * Default constructor for frameworks that require no-args constructor.
      */
@@ -62,36 +66,24 @@ public class CourseBundlePostDTO {
      * @param bundleId       ID of the bundle
      * @param courseId       ID of the course
      */
-    public CourseBundlePostDTO(final long courseBundleId, final Long bundleId, final Long courseId) {
+
+    public CourseBundlePostDTO(long courseBundleId, Long bundleId, Long courseId, boolean isActive) {
         this.courseBundleId = courseBundleId;
         this.bundleId = bundleId;
         this.courseId = courseId;
+        this.isActive = isActive;
     }
 
-    /**
-     * Custom equality check based on all fields.
-     *
-     * @param o the object to compare
-     * @return true if equal, false otherwise
-     */
     @Override
-    public boolean equals(final Object o) {
-        if (o == null || getClass() != o.getClass()) {
-            return false;
-        }
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
         CourseBundlePostDTO that = (CourseBundlePostDTO) o;
-        return courseBundleId == that.courseBundleId
-                && Objects.equals(bundleId, that.bundleId)
-                && Objects.equals(courseId, that.courseId);
+        return courseBundleId == that.courseBundleId && isActive == that.isActive && Objects.equals(bundleId, that.bundleId) && Objects.equals(courseId, that.courseId);
     }
 
-    /**
-     * Custom hashCode implementation using all fields.
-     *
-     * @return hashcode
-     */
     @Override
     public int hashCode() {
-        return Objects.hash(courseBundleId, bundleId, courseId);
+        return Objects.hash(courseBundleId, bundleId, courseId, isActive);
     }
 }

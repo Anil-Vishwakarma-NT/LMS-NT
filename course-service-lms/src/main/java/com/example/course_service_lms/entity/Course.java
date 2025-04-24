@@ -55,12 +55,6 @@ public class Course {
     private String description;
 
     /**
-     * Optional image URL or path for the course thumbnail or banner.
-     */
-    @Column(name = "image")
-    private String image;
-
-    /**
      * Level of the course (e.g., BEGINNER, INTERMEDIATE, ADVANCED).
      */
     @Enumerated(EnumType.STRING)
@@ -69,6 +63,9 @@ public class Course {
 
     @Column(name = "is_active")
     private boolean isActive;
+
+    @Column(name = "created_at")
+    private LocalDateTime createdAt;
 
     @Column(name = "updated_at")
     private LocalDateTime updatedAt;
@@ -83,14 +80,14 @@ public class Course {
      * @param image        the image path or URL
      * @param level        the course difficulty level
      */
-    public Course(long courseId, long ownerId, String title, String description, String image, CourseLevel level, boolean isActive, LocalDateTime updatedAt) {
+    public Course(long courseId, long ownerId, String title, String description, String image, CourseLevel level, boolean isActive, LocalDateTime createdAt, LocalDateTime updatedAt) {
         this.courseId = courseId;
         this.ownerId = ownerId;
         this.title = title;
         this.description = description;
-        this.image = image;
         this.level = level;
         this.isActive = isActive;
+        this.createdAt = createdAt;
         this.updatedAt = updatedAt;
     }
 
@@ -105,12 +102,12 @@ public class Course {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         Course course = (Course) o;
-        return courseId == course.courseId && ownerId == course.ownerId && isActive == course.isActive && Objects.equals(title, course.title) && Objects.equals(description, course.description) && Objects.equals(image, course.image) && level == course.level && Objects.equals(updatedAt, course.updatedAt);
+        return courseId == course.courseId && ownerId == course.ownerId && isActive == course.isActive && Objects.equals(title, course.title) && Objects.equals(description, course.description) && level == course.level && Objects.equals(createdAt, course.createdAt) && Objects.equals(updatedAt, course.updatedAt);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(courseId, ownerId, title, description, image, level, isActive, updatedAt);
+        return Objects.hash(courseId, ownerId, title, description, level, isActive, createdAt, updatedAt);
     }
 }
 

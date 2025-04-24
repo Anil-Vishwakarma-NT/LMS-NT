@@ -8,6 +8,7 @@ import jakarta.persistence.Id;
 import jakarta.persistence.Table;
 import lombok.Data;
 
+import java.time.LocalDateTime;
 import java.util.Objects;
 
 /**
@@ -38,6 +39,15 @@ public class Bundle {
      */
     @Column(name = "bundle_name")
     private String bundleName;
+
+    @Column(name = "is_active")
+    private boolean isActive;
+
+    @Column(name = "created_at")
+    private LocalDateTime createdAt;
+
+    @Column(name = "updated_at")
+    private LocalDateTime updatedAt;
 
     /**
      * Constructs a {@code Bundle} with the given ID and name.

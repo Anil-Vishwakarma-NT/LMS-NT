@@ -7,6 +7,7 @@ import jakarta.validation.constraints.Pattern;
 import jakarta.validation.constraints.Size;
 import lombok.Data;
 
+import java.time.LocalDateTime;
 import java.util.Objects;
 
 import static com.example.course_service_lms.constants.CourseContentConstants.COURSE_ID_NOT_NULL;
@@ -65,75 +66,41 @@ public class CourseContentDTO {
     private String description;
 
     /**
-     * The URL of the video lecture associated with this content.
-     * <p>Must be a valid HTTP, HTTPS, or FTP link.</p>
-     */
-    @NotBlank(message = VIDEO_LINK_NOT_BLANK)
-    @Pattern(
-            regexp = "^(https?|ftp)://.*$",
-            message = VIDEO_LINK_INVALID
-    )
-    private String videoLink;
-
-    /**
      * The optional URL to additional learning resources.
      * <p>If provided, must be a valid HTTP, HTTPS, or FTP link.</p>
      */
+    @NotNull(message = "Resource Link should not be empty")
     @Pattern(
             regexp = "^$|^(https?|ftp)://.*$",
             message = RESOURCE_LINK_INVALID
     )
     private String resourceLink;
-    /**
-     * All-arguments constructor for initializing all fields.
-     *
-     * @param courseId      ID of the course
-     * @param title         Title of the content
-     * @param description   Description of the content
-     * @param videoLink     URL to the video lecture
-     * @param resourceLink  URL to additional resources
-     */
-    public CourseContentDTO(final long courseId, final String title, final String description,
-                            final String videoLink, final String resourceLink) {
+
+    @NotNull(message = "Is Active field is required")
+    private boolean isActive;
+
+
+    public CourseContentDTO(long courseId, String title, String description, String resourceLink, boolean isActive) {
         this.courseId = courseId;
         this.title = title;
         this.description = description;
-        this.videoLink = videoLink;
         this.resourceLink = resourceLink;
+        this.isActive = isActive;
     }
 
-    /**
-     * No-args constructor for frameworks that require default instantiation.
-     */
     public CourseContentDTO() {
     }
 
-    /**
-     * Custom equality check based on all fields.
-     *
-     * @param o Object to compare
-     * @return true if equal, false otherwise
-     */
     @Override
-    public boolean equals(final Object o) {
-        if (o == null || getClass() != o.getClass()) {
-            return false;
-        }
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
         CourseContentDTO that = (CourseContentDTO) o;
-        return courseId == that.courseId
-                && Objects.equals(title, that.title)
-                && Objects.equals(description, that.description)
-                && Objects.equals(videoLink, that.videoLink)
-                && Objects.equals(resourceLink, that.resourceLink);
+        return courseId == that.courseId && isActive == that.isActive && Objects.equals(title, that.title) && Objects.equals(description, that.description) && Objects.equals(resourceLink, that.resourceLink);
     }
 
-    /**
-     * Custom hash code generation based on all fields.
-     *
-     * @return computed hash code
-     */
     @Override
     public int hashCode() {
-        return Objects.hash(courseId, title, description, videoLink, resourceLink);
+        return Objects.hash(courseId, title, description, resourceLink, isActive);
     }
 }

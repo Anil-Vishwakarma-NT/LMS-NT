@@ -7,6 +7,8 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
 import lombok.Data;
+
+import java.time.LocalDateTime;
 import java.util.Objects;
 
 /**
@@ -49,16 +51,19 @@ public class CourseContent {
     private String description;
 
     /**
-     * The URL link to the video resource for this content section.
-     */
-    @Column(name = "video_link")
-    private String videoLink;
-
-    /**
      * An optional URL link to an external resource (e.g., reading material).
      */
     @Column(name = "resource_link")
     private String resourceLink;
+
+    @Column(name = "is_active")
+    private boolean isActive;
+
+    @Column(name = "created_at")
+    private LocalDateTime createdAt;
+
+    @Column(name = "updated_at")
+    private LocalDateTime updatedAt;
 
     /**
      * Default no-args constructor required by JPA.
@@ -73,16 +78,14 @@ public class CourseContent {
      * @param courseId        the ID of the course
      * @param title           the title of the content
      * @param description     the content description
-     * @param videoLink       the video link
      * @param resourceLink    the optional resource link
      */
     public CourseContent(final long courseContentId, final long courseId, final String title,
-                         final String description, final String videoLink, final String resourceLink) {
+                         final String description, final String resourceLink) {
         this.courseContentId = courseContentId;
         this.courseId = courseId;
         this.title = title;
         this.description = description;
-        this.videoLink = videoLink;
         this.resourceLink = resourceLink;
     }
 
@@ -102,7 +105,6 @@ public class CourseContent {
                 && courseId == that.courseId
                 && Objects.equals(title, that.title)
                 && Objects.equals(description, that.description)
-                && Objects.equals(videoLink, that.videoLink)
                 && Objects.equals(resourceLink, that.resourceLink);
     }
 
@@ -113,6 +115,6 @@ public class CourseContent {
      */
     @Override
     public int hashCode() {
-        return Objects.hash(courseContentId, courseId, title, description, videoLink, resourceLink);
+        return Objects.hash(courseContentId, courseId, title, description, resourceLink);
     }
 }

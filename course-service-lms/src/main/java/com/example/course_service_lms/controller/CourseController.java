@@ -3,6 +3,7 @@ package com.example.course_service_lms.controller;
 import com.example.course_service_lms.dto.CourseDTO;
 import com.example.course_service_lms.dto.CourseInfoDTO;
 import com.example.course_service_lms.dto.MessageOutDTO;
+import com.example.course_service_lms.dto.UpdateCourseDTO;
 import com.example.course_service_lms.entity.Course;
 import com.example.course_service_lms.service.CourseService;
 import jakarta.validation.Valid;
@@ -90,13 +91,13 @@ public class CourseController {
      * Updates an existing course by its ID.
      *
      * @param id ID of the course to update.
-     * @param courseDTO DTO containing updated course information.
+     * @param updateCourseDTO DTO containing updated course information.
      * @return ResponseEntity containing a confirmation message.
      */
     @PutMapping("/{id}")
-    public ResponseEntity<String> updateCourse(@PathVariable final Long id, @Valid @RequestBody final CourseDTO courseDTO) {
+    public ResponseEntity<String> updateCourse(@PathVariable final Long id, @Valid @RequestBody final UpdateCourseDTO updateCourseDTO) {
         log.info("Received request to update course with ID: {}", id);
-        String response = courseService.updateCourse(id, courseDTO);
+        String response = courseService.updateCourse(id, updateCourseDTO);
         return ResponseEntity.ok(response);
     }
 

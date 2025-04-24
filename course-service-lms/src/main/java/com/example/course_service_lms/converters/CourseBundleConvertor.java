@@ -40,6 +40,7 @@ public final class CourseBundleConvertor {
         courseBundle.setCourseBundleId(courseBundlePostDTO.getCourseBundleId());
         courseBundle.setBundleId(courseBundlePostDTO.getBundleId());
         courseBundle.setCourseId(courseBundlePostDTO.getCourseId());
+        courseBundle.setActive(courseBundlePostDTO.isActive());
         return courseBundle;
     }
 

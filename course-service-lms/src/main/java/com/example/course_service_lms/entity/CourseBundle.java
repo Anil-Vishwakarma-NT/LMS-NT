@@ -7,6 +7,7 @@ import jakarta.persistence.Id;
 import jakarta.persistence.Table;
 import lombok.Data;
 
+import java.time.LocalDateTime;
 import java.util.Objects;
 
 /**
@@ -43,6 +44,15 @@ public class CourseBundle {
      */
     @Column(name = "course_id")
     private long courseId;
+
+    @Column(name = "is_active")
+    private boolean isActive;
+
+    @Column(name = "created_at")
+    private LocalDateTime createdAt;
+
+    @Column(name = "updated_at")
+    private LocalDateTime updatedAt;
 
     /**
      * Default no-argument constructor required by JPA.

@@ -67,15 +67,8 @@ public class CourseDTO {
     @NotNull(message = COURSE_LEVEL_REQUIRED)
     private String courseLevel;
 
-    /**
-     * A string representing the course's image.
-     * <p>This can be a URL or a path to a local file (optional).</p>
-     */
-    private String image;
-
+    @NotNull(message = "Is Active field is required")
     private boolean isActive;
-
-    private LocalDateTime updatedAt = LocalDateTime.now();
 
     /**
      * All-args constructor for initializing all fields.
@@ -84,16 +77,13 @@ public class CourseDTO {
      * @param ownerId      ID of the course owner
      * @param description  Description of the course
      * @param courseLevel  Level of the course (e.g., BEGINNER)
-     * @param image        Course image or thumbnail (optional)
      */
-    public CourseDTO(String title, Long ownerId, String description, String courseLevel, String image, boolean isActive, LocalDateTime updatedAt) {
+    public CourseDTO(String title, Long ownerId, String description, String courseLevel, boolean isActive) {
         this.title = title;
         this.ownerId = ownerId;
         this.description = description;
         this.courseLevel = courseLevel;
-        this.image = image;
         this.isActive = isActive;
-        this.updatedAt = updatedAt;
     }
 
     /**
@@ -109,25 +99,15 @@ public class CourseDTO {
      * @return true if all fields are equal, false otherwise
      */
     @Override
-    public boolean equals(final Object o) {
-        if (o == null || getClass() != o.getClass()) {
-            return false;
-        }
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
         CourseDTO courseDTO = (CourseDTO) o;
-        return Objects.equals(ownerId, courseDTO.ownerId)
-                && Objects.equals(title, courseDTO.title)
-                && Objects.equals(description, courseDTO.description)
-                && Objects.equals(courseLevel, courseDTO.courseLevel)
-                && Objects.equals(image, courseDTO.image);
+        return isActive == courseDTO.isActive && Objects.equals(title, courseDTO.title) && Objects.equals(ownerId, courseDTO.ownerId) && Objects.equals(description, courseDTO.description) && Objects.equals(courseLevel, courseDTO.courseLevel);
     }
 
-    /**
-     * Custom hash code based on all fields.
-     *
-     * @return hash code for the object
-     */
     @Override
     public int hashCode() {
-        return Objects.hash(title, ownerId, description, courseLevel, image);
+        return Objects.hash(title, ownerId, description, courseLevel, isActive);
     }
 }

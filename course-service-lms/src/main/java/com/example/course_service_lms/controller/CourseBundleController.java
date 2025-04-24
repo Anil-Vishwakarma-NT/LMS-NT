@@ -2,6 +2,7 @@ package com.example.course_service_lms.controller;
 
 import com.example.course_service_lms.dto.CourseBundleDTO;
 import com.example.course_service_lms.dto.CourseBundlePostDTO;
+import com.example.course_service_lms.dto.UpdateCourseBundleDTO;
 import com.example.course_service_lms.entity.CourseBundle;
 import com.example.course_service_lms.service.CourseBundleService;
 import lombok.RequiredArgsConstructor;
@@ -41,8 +42,8 @@ public class CourseBundleController {
      * @return ResponseEntity containing the created CourseBundlePostDTO.
      */
     @PostMapping
-    public ResponseEntity<CourseBundlePostDTO> createCourseBundle(@RequestBody final CourseBundlePostDTO courseBundlePostDTO) {
-        CourseBundlePostDTO createdBundle = courseBundleService.createCourseBundle(courseBundlePostDTO);
+    public ResponseEntity<CourseBundle> createCourseBundle(@RequestBody final CourseBundlePostDTO courseBundlePostDTO) {
+        CourseBundle createdBundle = courseBundleService.createCourseBundle(courseBundlePostDTO);
         return ResponseEntity.status(HttpStatus.CREATED).body(createdBundle);
     }
 
@@ -85,15 +86,15 @@ public class CourseBundleController {
      * Updates an existing CourseBundle with new data.
      *
      * @param courseBundleId ID of the CourseBundle to update.
-     * @param courseBundlePostDTO DTO containing updated data for the CourseBundle.
+     * @param updateCourseBundleDTO DTO containing updated data for the CourseBundle.
      * @return ResponseEntity containing the updated CourseBundlePostDTO.
      */
     @PutMapping("/{id}")
-    public ResponseEntity<CourseBundlePostDTO> updateCourseBundle(
+    public ResponseEntity<String> updateCourseBundle(
             @PathVariable("id") final Long courseBundleId,
-            @RequestBody final CourseBundlePostDTO courseBundlePostDTO) {
-        CourseBundlePostDTO updatedCourseBundle = courseBundleService.updateCourseBundle(courseBundleId, courseBundlePostDTO);
-        return ResponseEntity.ok(updatedCourseBundle);
+            @RequestBody final UpdateCourseBundleDTO updateCourseBundleDTO) {
+        String response = courseBundleService.updateCourseBundle(courseBundleId, updateCourseBundleDTO);
+        return ResponseEntity.ok(response);
     }
 
     /**

@@ -1,9 +1,13 @@
 package com.example.course_service_lms.dto;
 
 import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Pattern;
 import jakarta.validation.constraints.Size;
 import lombok.Data;
+
+import java.time.LocalDateTime;
+import java.util.Objects;
 
 import static com.example.course_service_lms.constants.BundleConstants.BUNDLE_NAME_INVALID;
 import static com.example.course_service_lms.constants.BundleConstants.BUNDLE_NAME_MIN_LENGTH;
@@ -48,13 +52,25 @@ public class BundleDTO {
     )
     private String bundleName;
 
-    /**
-     * All-args constructor to create a BundleDTO instance with a bundle name.
-     *
-     * @param bundleName the name of the bundle
-     */
-    public BundleDTO(final String bundleName) {
+    @NotNull(message = "Is Active field is required")
+    private boolean isActive;
+
+    public BundleDTO(String bundleName, boolean isActive) {
         this.bundleName = bundleName;
+        this.isActive = isActive;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        BundleDTO bundleDTO = (BundleDTO) o;
+        return isActive == bundleDTO.isActive && Objects.equals(bundleName, bundleDTO.bundleName);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(bundleName, isActive);
     }
 
     /**

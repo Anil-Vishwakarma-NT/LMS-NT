@@ -2,6 +2,7 @@ package com.example.course_service_lms.controller;
 
 import com.example.course_service_lms.dto.BundleDTO;
 import com.example.course_service_lms.dto.MessageOutDTO;
+import com.example.course_service_lms.dto.UpdateBundleDTO;
 import com.example.course_service_lms.entity.Bundle;
 import com.example.course_service_lms.service.BundleService;
 import jakarta.validation.Valid;
@@ -76,14 +77,14 @@ public class BundleController {
      * Updates an existing bundle with the given ID.
      *
      * @param id The ID of the bundle to be updated.
-     * @param bundleDTO DTO containing updated details of the bundle.
+     * @param updateBundleDTO DTO containing updated details of the bundle.
      * @return ResponseEntity containing the updated BundleDTO.
      */
     @PutMapping("/{id}")
-    public ResponseEntity<BundleDTO> updateBundle(@PathVariable final Long id, @Valid @RequestBody final BundleDTO bundleDTO) {
+    public ResponseEntity<String> updateBundle(@PathVariable final Long id, @Valid @RequestBody final UpdateBundleDTO updateBundleDTO) {
         log.info("Received request to update bundle with ID: {}", id);
-        BundleDTO updatedBundle = bundleService.updateBundle(id, bundleDTO);
-        return ResponseEntity.ok(updatedBundle);
+        String response = bundleService.updateBundle(id, updateBundleDTO);
+        return ResponseEntity.ok(response);
     }
 
     /**

@@ -24,8 +24,6 @@ public class CourseInfoDTO {
 
     private String courseLevel;
 
-    private String image;
-
     private boolean isActive;
 
     private LocalDateTime updatedAt;

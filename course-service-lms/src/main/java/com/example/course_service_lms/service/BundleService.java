@@ -1,6 +1,7 @@
 package com.example.course_service_lms.service;
 
 import com.example.course_service_lms.dto.BundleDTO;
+import com.example.course_service_lms.dto.UpdateBundleDTO;
 import com.example.course_service_lms.entity.Bundle;
 
 import java.util.List;
@@ -42,10 +43,10 @@ public interface BundleService {
      * Updates the details of an existing bundle.
      *
      * @param bundleId the ID of the bundle to update
-     * @param bundleDTO the updated bundle data
+     * @param updateBundleDTO the updated bundle data
      * @return the updated {@link BundleDTO}
      */
-    BundleDTO updateBundle(Long bundleId, BundleDTO bundleDTO);
+    String updateBundle(Long bundleId, UpdateBundleDTO updateBundleDTO);
 
     /**
      * Deletes the bundle with the given ID.
