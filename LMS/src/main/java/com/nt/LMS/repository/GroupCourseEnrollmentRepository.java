@@ -12,4 +12,5 @@ import java.util.Optional;
 public interface GroupCourseEnrollmentRepository extends JpaRepository<GroupCourseEnrollment, Long> {
     Optional<GroupCourseEnrollment> findByGroupIdAndCourseIdAndStatusNotIn(Long groupId, Long courseId, List<String> statuses);
     List<GroupCourseEnrollment> findByCourseId(Long courseId);
+    long countByStatusNotIn(List<String> statuses);
 }

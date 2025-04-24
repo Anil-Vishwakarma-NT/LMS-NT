@@ -6,6 +6,7 @@ import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 import lombok.Data;
 
+import java.time.LocalDateTime;
 import java.util.Objects;
 
 import static com.example.course_service_lms.constants.BundleConstants.INT_VALUE_3;
@@ -72,6 +73,10 @@ public class CourseDTO {
      */
     private String image;
 
+    private boolean isActive;
+
+    private LocalDateTime updatedAt = LocalDateTime.now();
+
     /**
      * All-args constructor for initializing all fields.
      *
@@ -81,13 +86,14 @@ public class CourseDTO {
      * @param courseLevel  Level of the course (e.g., BEGINNER)
      * @param image        Course image or thumbnail (optional)
      */
-    public CourseDTO(final String title, final long ownerId, final String description,
-                     final String courseLevel, final String image) {
+    public CourseDTO(String title, Long ownerId, String description, String courseLevel, String image, boolean isActive, LocalDateTime updatedAt) {
         this.title = title;
         this.ownerId = ownerId;
         this.description = description;
         this.courseLevel = courseLevel;
         this.image = image;
+        this.isActive = isActive;
+        this.updatedAt = updatedAt;
     }
 
     /**

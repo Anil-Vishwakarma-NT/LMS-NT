@@ -2,6 +2,7 @@ package com.example.course_service_lms.service;
 
 import com.example.course_service_lms.dto.CourseDTO;
 import com.example.course_service_lms.dto.CourseSummaryDTO;
+import com.example.course_service_lms.dto.CourseInfoDTO;
 import com.example.course_service_lms.entity.Course;
 
 import java.util.List;
@@ -39,6 +40,8 @@ public interface CourseService {
      */
     Optional<Course> getCourseById(Long courseId);
 
+    String getCourseNameById(Long courseId);
+
     /**
      * Deletes a course by its ID.
      *
@@ -65,4 +68,5 @@ public interface CourseService {
     boolean courseExistsById(Long courseId);
     long countCourses();
     List<CourseSummaryDTO> getRecentCourseSummaries();
+    List<CourseInfoDTO> getCoursesInfo();
 }

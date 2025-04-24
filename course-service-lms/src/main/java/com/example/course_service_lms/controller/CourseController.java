@@ -2,6 +2,7 @@ package com.example.course_service_lms.controller;
 
 import com.example.course_service_lms.dto.CourseDTO;
 import com.example.course_service_lms.dto.CourseSummaryDTO;
+import com.example.course_service_lms.dto.CourseInfoDTO;
 import com.example.course_service_lms.dto.MessageOutDTO;
 import com.example.course_service_lms.entity.Course;
 import com.example.course_service_lms.service.CourseService;
@@ -126,4 +127,16 @@ public class CourseController {
         return ResponseEntity.ok(courseService.getRecentCourseSummaries());
     }
 
-}
+    @GetMapping("/{id}/name")
+    public ResponseEntity<String> getCourseNameById(@PathVariable("id") Long id) {
+        log.info("Received request to get course name.");
+        String courseName = courseService.getCourseNameById(id);
+        log.info("Course name retrieved");
+        return ResponseEntity.ok(courseName);
+    }
+
+    @GetMapping("/info")
+    public ResponseEntity<List<CourseInfoDTO>> getCoursesInfo() {
+        List<CourseInfoDTO> courseDTOS = courseService.getCoursesInfo();
+        return ResponseEntity.ok(courseDTOS);
+    }

@@ -13,4 +13,5 @@ import java.util.Optional;
 public interface GroupBundleEnrollmentRepository extends JpaRepository <GroupBundleEnrollment, Long> {
     Optional<GroupBundleEnrollment> findByGroupIdAndBundleIdAndStatusNotIn(Long groupId, Long bundleId, List<String> statuses);
     List<GroupBundleEnrollment> findByBundleId(Long bundleId);
+    long countByStatusNotIn(List<String> statuses);
 }

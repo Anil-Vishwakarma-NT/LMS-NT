@@ -3,6 +3,7 @@ package com.example.course_service_lms.serviceImpl;
 import com.example.course_service_lms.converters.CourseConvertors;
 import com.example.course_service_lms.dto.CourseDTO;
 import com.example.course_service_lms.dto.CourseSummaryDTO;
+import com.example.course_service_lms.dto.CourseInfoDTO;
 import com.example.course_service_lms.entity.Course;
 import com.example.course_service_lms.entity.CourseLevel;
 import com.example.course_service_lms.exception.ResourceAlreadyExistsException;
@@ -16,6 +17,8 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -129,6 +132,24 @@ public class CourseImpl implements CourseService {
         }
     }
 
+    @Override
+    public String getCourseNameById(Long courseId) {
+        try {
+            log.info("Fetching course by ID: {}", courseId);
+            Optional<Course> course = courseRepository.findById(courseId);
+            if (course.isEmpty()) {
+                log.warn("Course not found with ID: {}", courseId);
+                throw new ResourceNotFoundException(COURSE_NOT_FOUND);
+            }
+            log.info("Course found: {}", course.get().getTitle());
+            return course.get().getTitle();
+        } catch (ResourceNotFoundException e) {
+            throw e;
+        } catch (Exception e) {
+            throw new RuntimeException(GENERAL_ERROR);
+        }
+    }
+
     /**
      * Deletes a course by its ID.
      *
@@ -152,6 +173,35 @@ public class CourseImpl implements CourseService {
             throw e;
         } catch (Exception e) {
             throw new RuntimeException(GENERAL_ERROR);
+        }
+    }
+
+
+    @Override
+    public List<CourseInfoDTO> getCoursesInfo() {
+        try {
+            List<Course> courses = courseRepository.findAll();
+            if (courses.isEmpty()) {
+                throw new ResourceNotFoundException(COURSE_NOT_FOUND);
+            }
+            List<CourseInfoDTO> courseDTOS = new ArrayList<>();
+            for(Course course : courses) {
+                CourseInfoDTO courseDTO = new CourseInfoDTO();
+                courseDTO.setTitle(course.getTitle());
+                courseDTO.setDescription(course.getDescription());
+                courseDTO.setOwnerId(course.getOwnerId());
+                courseDTO.setImage(course.getImage());
+                courseDTO.setCourseLevel(course.getLevel().toString());
+                courseDTO.setActive(course.isActive());
+                courseDTO.setUpdatedAt(course.getUpdatedAt());
+                courseDTO.setCourseId(course.getCourseId());
+                courseDTOS.add(courseDTO);
+            }
+            return courseDTOS;
+        } catch (ResourceNotFoundException e) {
+            throw e;
+        } catch (Exception e) {
+            throw new RuntimeException(e);
         }
     }
 
@@ -196,6 +246,8 @@ public class CourseImpl implements CourseService {
             existingCourse.setDescription(StringUtils.toProperCase(courseDTO.getDescription()));
             existingCourse.setLevel(CourseLevel.valueOf(courseDTO.getCourseLevel()));
             existingCourse.setOwnerId(courseDTO.getOwnerId());
+            existingCourse.setActive(courseDTO.isActive());
+            existingCourse.setUpdatedAt(LocalDateTime.now());
 
             courseRepository.save(existingCourse);
             log.info("Course with ID: {} updated successfully.", courseId);

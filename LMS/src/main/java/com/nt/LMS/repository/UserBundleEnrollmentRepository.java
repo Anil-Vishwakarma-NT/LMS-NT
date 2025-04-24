@@ -13,4 +13,5 @@ public interface UserBundleEnrollmentRepository extends JpaRepository<UserBundle
 
     Optional<UserBundleEnrollment> findByUserIdAndBundleIdAndStatusNotIn(Long userId, Long bundleId, List<String> statuses);
     List<UserBundleEnrollment> findByBundleId(Long bundleId);
+    long countByStatusNotIn(List<String> statuses);
 }

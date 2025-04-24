@@ -2,6 +2,7 @@ package com.nt.LMS.serviceImpl;
 
 import com.nt.LMS.dto.CourseBundleDTO;
 import com.nt.LMS.dto.EnrollmentDTO;
+import com.nt.LMS.dto.EnrollmentDashBoardStatsDTO;
 import com.nt.LMS.dto.UpdateEnrollmentDTO;
 import com.nt.LMS.entities.*;
 import com.nt.LMS.exception.InvalidRequestException;
@@ -10,6 +11,7 @@ import com.nt.LMS.exception.ResourceNotFoundException;
 import com.nt.LMS.feignClient.CourseMicroserviceClient;
 import com.nt.LMS.repository.*;
 import com.nt.LMS.service.EnrollmentService;
+import feign.FeignException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -60,63 +62,63 @@ public class EnrollmentServiceImpl implements EnrollmentService {
         }
     }
 
-    @Transactional
-    @Override
-    public String updateEnrollment(UpdateEnrollmentDTO updateEnrollmentDTO) {
-        //UPDATE FOR USER ENROLLMENT
-        if (updateEnrollmentDTO.getUserId() != null) {
-            //VALIDATE USER AND MANAGER RELATIONSHIP
-            User user = userRepository.findById(updateEnrollmentDTO.getUserId())
-                    .orElseThrow(() -> new ResourceNotFoundException("User not found"));
-
-            if (!Objects.equals(user.getManagerId(), updateEnrollmentDTO.getManagerId())) {
-                throw new InvalidRequestException("You cannot update enrollments of this user");
-            }
-
-            //USER COURSE ENROLLMENT UPDATE
-            if (updateEnrollmentDTO.getCourseId() != null) {
-                EnrollmentHistory updateUserCourseEnrollmentHistory = new EnrollmentHistory();
-                String remarks = "UPDATED ";
-                //CHECK IF ENROLLMENT EXISTS
-               UserCourseEnrollment userCourseEnrollment = userCourseEnrollmentRepository.findByUserIdAndCourseIdAndStatusNotIn(updateEnrollmentDTO.getUserId(), updateEnrollmentDTO.getCourseId(), Arrays.asList("COMPLETED", "EXPIRED"))
-                       .orElseThrow(() -> new ResourceNotFoundException("No Enrollment Found"));
-
-               if (updateEnrollmentDTO.getDeadline() != null || updateEnrollmentDTO.getStatus() != null) {
-                   if(updateEnrollmentDTO.getStatus() != null) {
-                       if (!List.of("ENROLLED", "IN PROGRESS", "COMPLETED", "UNENROLLED")
-                               .contains(updateEnrollmentDTO.getStatus())) {
-                           throw new InvalidRequestException("Invalid Status Provided");
-                       }
-                       if (List.of("ENROLLED", "IN PROGRESS").contains(userCourseEnrollment.getStatus())) {
-                           userCourseEnrollment.setStatus(updateEnrollmentDTO.getStatus());
-                           remarks += "Status ";
-                           userCourseEnrollmentRepository.save(userCourseEnrollment);
-                       }
-                   }
-
-                   if(updateEnrollmentDTO.getDeadline() != null) {
-                       userCourseEnrollment.setDeadline(updateEnrollmentDTO.getDeadline());
-                       updateUserCourseEnrollmentHistory.setDeadline(updateEnrollmentDTO.getDeadline());
-                       remarks += "Deadline ";
-                       userCourseEnrollmentRepository.save(userCourseEnrollment);
-                   }
-
-                   updateUserCourseEnrollmentHistory.setUserId(updateEnrollmentDTO.getUserId());
-                   updateUserCourseEnrollmentHistory.setCourseId(updateEnrollmentDTO.getCourseId());
-                   updateUserCourseEnrollmentHistory.setAssignedBy(userCourseEnrollment.getAssignedBy());
-                   updateUserCourseEnrollmentHistory.setActionType("UPDATED");
-                   if(updateEnrollmentDTO.getStatus().equals("UNENROLLED")) {
-                       updateUserCourseEnrollmentHistory.setActionType("UNASSIGNED");
-                       remarks = "Course Unenrolled";
-                   }
-                   updateUserCourseEnrollmentHistory.setRecordedAt(LocalDateTime.now());
-                   updateUserCourseEnrollmentHistory.setRemarks(remarks);
-
-               }
-            }
-        }
-        return "";
-    }
+//    @Transactional
+//    @Override
+//    public String updateEnrollment(UpdateEnrollmentDTO updateEnrollmentDTO) {
+//        //UPDATE FOR USER ENROLLMENT
+//        if (updateEnrollmentDTO.getUserId() != null) {
+//            //VALIDATE USER AND MANAGER RELATIONSHIP
+//            User user = userRepository.findById(updateEnrollmentDTO.getUserId())
+//                    .orElseThrow(() -> new ResourceNotFoundException("User not found"));
+//
+//            if (!Objects.equals(user.getManagerId(), updateEnrollmentDTO.getManagerId())) {
+//                throw new InvalidRequestException("You cannot update enrollments of this user");
+//            }
+//
+//            //USER COURSE ENROLLMENT UPDATE
+//            if (updateEnrollmentDTO.getCourseId() != null) {
+//                EnrollmentHistory updateUserCourseEnrollmentHistory = new EnrollmentHistory();
+//                String remarks = "UPDATED ";
+//                //CHECK IF ENROLLMENT EXISTS
+//               UserCourseEnrollment userCourseEnrollment = userCourseEnrollmentRepository.findByUserIdAndCourseIdAndStatusNotIn(updateEnrollmentDTO.getUserId(), updateEnrollmentDTO.getCourseId(), Arrays.asList("COMPLETED", "EXPIRED"))
+//                       .orElseThrow(() -> new ResourceNotFoundException("No Enrollment Found"));
+//
+//               if (updateEnrollmentDTO.getDeadline() != null || updateEnrollmentDTO.getStatus() != null) {
+//                   if(updateEnrollmentDTO.getStatus() != null) {
+//                       if (!List.of("ENROLLED", "IN PROGRESS", "COMPLETED", "UNENROLLED")
+//                               .contains(updateEnrollmentDTO.getStatus())) {
+//                           throw new InvalidRequestException("Invalid Status Provided");
+//                       }
+//                       if (List.of("ENROLLED", "IN PROGRESS").contains(userCourseEnrollment.getStatus())) {
+//                           userCourseEnrollment.setStatus(updateEnrollmentDTO.getStatus());
+//                           remarks += "Status ";
+//                           userCourseEnrollmentRepository.save(userCourseEnrollment);
+//                       }
+//                   }
+//
+//                   if(updateEnrollmentDTO.getDeadline() != null) {
+//                       userCourseEnrollment.setDeadline(updateEnrollmentDTO.getDeadline());
+//                       updateUserCourseEnrollmentHistory.setDeadline(updateEnrollmentDTO.getDeadline());
+//                       remarks += "Deadline ";
+//                       userCourseEnrollmentRepository.save(userCourseEnrollment);
+//                   }
+//
+//                   updateUserCourseEnrollmentHistory.setUserId(updateEnrollmentDTO.getUserId());
+//                   updateUserCourseEnrollmentHistory.setCourseId(updateEnrollmentDTO.getCourseId());
+//                   updateUserCourseEnrollmentHistory.setAssignedBy(userCourseEnrollment.getAssignedBy());
+//                   updateUserCourseEnrollmentHistory.setStatus("UPDATED");
+//                   if(updateEnrollmentDTO.getStatus().equals("UNENROLLED")) {
+//                       updateUserCourseEnrollmentHistory.setStatus("UNASSIGNED");
+//                       remarks = "Course Unenrolled";
+//                   }
+//                   updateUserCourseEnrollmentHistory.setRecordedAt(LocalDateTime.now());
+//                   updateUserCourseEnrollmentHistory.setRemarks(remarks);
+//
+//               }
+//            }
+//        }
+//        return "";
+//    }
 
     private String processUserEnrollment(EnrollmentDTO enrollmentDTO, LocalDateTime now) {
         // Verify user and manager relationship
@@ -179,7 +181,7 @@ public class EnrollmentServiceImpl implements EnrollmentService {
                 enrollmentDTO.getDeadline(),
                 enrollmentDTO.getAssignedBy(),
                 now,
-                "ASSIGNED"
+                "ENROLLED"
         );
     }
 
@@ -217,7 +219,7 @@ public class EnrollmentServiceImpl implements EnrollmentService {
                 enrollmentDTO.getDeadline(),
                 enrollmentDTO.getAssignedBy(),
                 now,
-                "ASSIGNED"
+                "ENROLLED"
         );
 
         // Process all courses in the bundle
@@ -240,7 +242,7 @@ public class EnrollmentServiceImpl implements EnrollmentService {
                     enrollmentDTO.getDeadline(),
                     enrollmentDTO.getAssignedBy(),
                     now,
-                    "ASSIGNED"
+                    "ENROLLED"
             );
         }
     }
@@ -312,7 +314,7 @@ public class EnrollmentServiceImpl implements EnrollmentService {
                 enrollmentDTO.getDeadline(),
                 enrollmentDTO.getAssignedBy(),
                 now,
-                "ASSIGNED"
+                "ENROLLED"
         );
 
         // Enroll each user in the group
@@ -333,7 +335,7 @@ public class EnrollmentServiceImpl implements EnrollmentService {
                     enrollmentDTO.getDeadline(),
                     enrollmentDTO.getAssignedBy(),
                     now,
-                    "ASSIGNED"
+                    "ENROLLED"
             );
         }
     }
@@ -375,7 +377,7 @@ public class EnrollmentServiceImpl implements EnrollmentService {
                 enrollmentDTO.getDeadline(),
                 enrollmentDTO.getAssignedBy(),
                 now,
-                "ASSIGNED"
+                "ENROLLED"
         );
 
         // Process course enrollments for all users in group
@@ -397,7 +399,7 @@ public class EnrollmentServiceImpl implements EnrollmentService {
                         enrollmentDTO.getDeadline(),
                         enrollmentDTO.getAssignedBy(),
                         now,
-                        "ASSIGNED"
+                        "ENROLLED"
                 );
             }
         }
@@ -406,6 +408,40 @@ public class EnrollmentServiceImpl implements EnrollmentService {
     public long countEnrollments() {
         return enrollmentRepository.count();
     }
+
+    @Override
+    public EnrollmentDashBoardStatsDTO getEnrollmentStats() {
+        try {
+            EnrollmentDashBoardStatsDTO enrollmentDashBoardStatsDTO = new EnrollmentDashBoardStatsDTO();
+            Long usersEnrolled = userCourseEnrollmentRepository.countByStatusNotIn(List.of("COMPLETED", "EXPIRED", "UNENROLLED")) + userBundleEnrollmentRepository.countByStatusNotIn(List.of("COMPLETED", "EXPIRED", "UNENROLLED"));
+            Long groupsEnrolled = groupCourseEnrollmentRepository.countByStatusNotIn(List.of("COMPLETED", "EXPIRED", "UNENROLLED")) + groupBundleEnrollmentRepository.countByStatusNotIn(List.of("COMPLETED", "EXPIRED", "UNENROLLED"));
+            Long popularCourseId = enrollmentRepository.findMostFrequentEnrolledCourseId();
+            Long courseCompletions = enrollmentHistoryRepository.countByStatusIn(List.of("COMPLETED"));
+            if(usersEnrolled == 0 || groupsEnrolled == 0 || popularCourseId == 0) {
+                throw new ResourceNotFoundException("No Enrollments");
+            }
+            String popularCourse = Objects.requireNonNull(courseMicroserviceClient.getCourseNameById(popularCourseId).getBody());
+            Long totalEnrollments =  usersEnrolled + groupsEnrolled;
+            enrollmentDashBoardStatsDTO.setUsersEnrolled(45L);
+            enrollmentDashBoardStatsDTO.setGroupsEnrolled(74L);
+            enrollmentDashBoardStatsDTO.setTotalEnrollments(85L);
+            enrollmentDashBoardStatsDTO.setTopEnrolledCourse("HOO");
+            return enrollmentDashBoardStatsDTO;
+        } catch (FeignException e) {
+            throw new RuntimeException("Error contacting course service");
+        }
+        catch (Exception e) {
+            throw new RuntimeException("Something went wrong", e);
+        }
+    }
+
+
+
+
+
+
+
+
 
     // Helper methods
     private List<CourseBundleDTO> getCoursesInBundle(Long bundleId) {
@@ -445,7 +481,7 @@ public class EnrollmentServiceImpl implements EnrollmentService {
         history.setBundleId(bundleId);
         history.setDeadline(deadline);
         history.setAssignedBy(assignedBy);
-        history.setActionType(actionType);
+        history.setStatus(actionType);
         history.setRecordedAt(recordedAt);
         enrollmentHistoryRepository.save(history);
     }
