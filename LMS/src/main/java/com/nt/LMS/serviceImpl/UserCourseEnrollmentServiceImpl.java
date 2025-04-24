@@ -46,14 +46,12 @@ public class UserCourseEnrollmentServiceImpl implements UserCourseEnrollmentServ
                 User owner = userRepository.findById(courseInfo.getOwnerId())
                         .orElseThrow(() -> new ResourceNotFoundException("Owner not found"));
 
-                // Count active enrollments
                 long activeEnrollmentCount = userCourseEnrollmentRepository
                         .countByCourseIdAndStatusNotIn(
                                 courseInfo.getCourseId(),
                                 List.of("EXPIRED", "UNENROLLED", "COMPLETED")
                         );
 
-                // Prepare Course DTO
                 UserCourseEnrollmentOutDTO courseDTO = new UserCourseEnrollmentOutDTO();
                 courseDTO.setCourseName(courseInfo.getTitle());
                 courseDTO.setOwnerId(owner.getUserId());
@@ -61,12 +59,10 @@ public class UserCourseEnrollmentServiceImpl implements UserCourseEnrollmentServ
                 courseDTO.setActive(courseInfo.isActive());
                 courseDTO.setIndividualEnrollments(activeEnrollmentCount);
 
-                // Build enrolled user list
                 List<UserCourseEnrollment> enrollments = userCourseEnrollmentRepository.findByCourseId(courseInfo.getCourseId());
                 List<CourseEnrolledUserDTO> enrolledUsersDTO = new ArrayList<>();
 
                 for (UserCourseEnrollment enrollment : enrollments) {
-                    // Fetch enrolled user (NOT course owner)
                     User user = userRepository.findById(enrollment.getUserId())
                             .orElseThrow(() -> new ResourceNotFoundException("User not found"));
 
@@ -75,8 +71,7 @@ public class UserCourseEnrollmentServiceImpl implements UserCourseEnrollmentServ
                     enrolledDTO.setUserName(user.getFirstName() + " " + user.getLastName());
                     enrolledDTO.setEnrollmentDate(enrollment.getAssignedAt());
                     enrolledDTO.setDeadline(enrollment.getDeadline());
-                    enrolledDTO.setProgress(98L); // Placeholder
-
+                    enrolledDTO.setProgress(98L);
                     enrolledUsersDTO.add(enrolledDTO);
                 }
 
