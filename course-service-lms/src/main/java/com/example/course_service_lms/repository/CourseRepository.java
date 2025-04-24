@@ -2,8 +2,10 @@ package com.example.course_service_lms.repository;
 
 import com.example.course_service_lms.entity.Course;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 
+import java.util.List;
 import java.util.Optional;
 
 /**
@@ -33,4 +35,12 @@ public interface CourseRepository extends JpaRepository<Course, Long> {
      * @return {@code true} if a course with the ID exists, {@code false} otherwise
      */
     boolean existsById(Long id);
+
+    @Query(value = """
+        SELECT c.title, c.description, c.level
+                    FROM course c
+                    ORDER BY c.course_id DESC
+                    LIMIT 5
+    """, nativeQuery = true)
+    List<Object[]> fetchRecentCourseSummaries();
 }

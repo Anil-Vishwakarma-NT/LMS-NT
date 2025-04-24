@@ -2,6 +2,7 @@ package com.example.course_service_lms.serviceImpl;
 
 import com.example.course_service_lms.converters.CourseConvertors;
 import com.example.course_service_lms.dto.CourseDTO;
+import com.example.course_service_lms.dto.CourseSummaryDTO;
 import com.example.course_service_lms.entity.Course;
 import com.example.course_service_lms.entity.CourseLevel;
 import com.example.course_service_lms.exception.ResourceAlreadyExistsException;
@@ -17,6 +18,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 import static com.example.course_service_lms.constants.BundleConstants.GENERAL_ERROR;
 import static com.example.course_service_lms.constants.CourseConstants.COURSE_ALREADY_EXISTS;
@@ -157,8 +159,8 @@ public class CourseImpl implements CourseService {
      * Updates an existing course.
      * Checks for duplicate title and owner combinations before updating.
      *
-     * @param courseId   the ID of the course to update
-     * @param courseDTO  the updated course details
+     * @param courseId  the ID of the course to update
+     * @param courseDTO the updated course details
      * @return a confirmation message
      * @throws ResourceNotFoundException if the course to update is not found
      * @throws ResourceNotValidException if the updated title and owner combination already exists for another course
@@ -216,10 +218,23 @@ public class CourseImpl implements CourseService {
     public boolean courseExistsById(final Long courseId) {
         return courseRepository.existsById(courseId);
     }
+
     @Override
     public long countCourses() {
         return courseRepository.count();
     }
 
+    @Override
+    public List<CourseSummaryDTO> getRecentCourseSummaries() {
+        List<Object[]> results = courseRepository.fetchRecentCourseSummaries();
 
+        return results.stream().map(obj -> {
+            CourseSummaryDTO dto = new CourseSummaryDTO();
+            dto.setTitle((String) obj[0]);
+            dto.setDescription((String) obj[1]);
+            dto.setLevel(CourseLevel.valueOf((String) obj[2]));
+            return dto;
+        }).collect(Collectors.toList());
+
+    }
 }

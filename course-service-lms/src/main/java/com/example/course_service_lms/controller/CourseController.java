@@ -1,6 +1,7 @@
 package com.example.course_service_lms.controller;
 
 import com.example.course_service_lms.dto.CourseDTO;
+import com.example.course_service_lms.dto.CourseSummaryDTO;
 import com.example.course_service_lms.dto.MessageOutDTO;
 import com.example.course_service_lms.entity.Course;
 import com.example.course_service_lms.service.CourseService;
@@ -119,6 +120,10 @@ public class CourseController {
         long count = courseService.countCourses();
         log.info("Total course count retrieved: {}", count);
         return ResponseEntity.ok(new MessageOutDTO(""+count));
+    }
+    @GetMapping("/recent")
+    public ResponseEntity<List<CourseSummaryDTO>> getRecentCourseSummaries() {
+        return ResponseEntity.ok(courseService.getRecentCourseSummaries());
     }
 
 }
