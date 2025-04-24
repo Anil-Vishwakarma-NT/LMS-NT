@@ -22,6 +22,7 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 import static com.example.course_service_lms.constants.BundleConstants.GENERAL_ERROR;
 import static com.example.course_service_lms.constants.CourseConstants.COURSE_ALREADY_EXISTS;
@@ -187,7 +188,7 @@ public class CourseImpl implements CourseService {
                 throw new ResourceNotFoundException(COURSE_NOT_FOUND);
             }
             List<CourseInfoDTO> courseDTOS = new ArrayList<>();
-            for(Course course : courses) {
+            for (Course course : courses) {
                 CourseInfoDTO courseDTO = new CourseInfoDTO();
                 courseDTO.setTitle(course.getTitle());
                 courseDTO.setDescription(course.getDescription());
@@ -210,8 +211,8 @@ public class CourseImpl implements CourseService {
      * Updates an existing course.
      * Checks for duplicate title and owner combinations before updating.
      *
-     * @param courseId   the ID of the course to update
-     * @param updateCourseDTO  the updated course details
+     * @param courseId        the ID of the course to update
+     * @param updateCourseDTO the updated course details
      * @return a confirmation message
      * @throws ResourceNotFoundException if the course to update is not found
      * @throws ResourceNotValidException if the updated title and owner combination already exists for another course
@@ -271,6 +272,7 @@ public class CourseImpl implements CourseService {
     public boolean courseExistsById(final Long courseId) {
         return courseRepository.existsById(courseId);
     }
+
     @Override
     public long countCourses() {
         return courseRepository.count();
@@ -288,4 +290,5 @@ public class CourseImpl implements CourseService {
             return dto;
         }).collect(Collectors.toList());
 
+    }
 }
