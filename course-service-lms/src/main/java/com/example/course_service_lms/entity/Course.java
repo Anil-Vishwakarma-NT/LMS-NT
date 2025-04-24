@@ -10,6 +10,7 @@ import jakarta.persistence.Id;
 import jakarta.persistence.Table;
 import lombok.Data;
 
+import java.time.LocalDateTime;
 import java.util.Objects;
 
 /**
@@ -66,6 +67,12 @@ public class Course {
     @Column(name = "level")
     private CourseLevel level;
 
+    @Column(name = "is_active")
+    private boolean isActive;
+
+    @Column(name = "updated_at")
+    private LocalDateTime updatedAt;
+
     /**
      * All-args constructor used for manually creating a Course instance.
      *
@@ -76,14 +83,15 @@ public class Course {
      * @param image        the image path or URL
      * @param level        the course difficulty level
      */
-    public Course(final long courseId, final long ownerId, final String title,
-                  final String description, final String image, final CourseLevel level) {
+    public Course(long courseId, long ownerId, String title, String description, String image, CourseLevel level, boolean isActive, LocalDateTime updatedAt) {
         this.courseId = courseId;
         this.ownerId = ownerId;
         this.title = title;
         this.description = description;
         this.image = image;
         this.level = level;
+        this.isActive = isActive;
+        this.updatedAt = updatedAt;
     }
 
     /**
@@ -92,34 +100,17 @@ public class Course {
     public Course() {
     }
 
-    /**
-     * Checks equality based on all fields of the course.
-     *
-     * @param o the object to compare
-     * @return {@code true} if the courses are equal; otherwise {@code false}
-     */
     @Override
-    public boolean equals(final Object o) {
-        if (o == null || getClass() != o.getClass()) {
-            return false;
-        }
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
         Course course = (Course) o;
-        return courseId == course.courseId
-                && ownerId == course.ownerId
-                && Objects.equals(title, course.title)
-                && Objects.equals(description, course.description)
-                && Objects.equals(image, course.image)
-                && level == course.level;
+        return courseId == course.courseId && ownerId == course.ownerId && isActive == course.isActive && Objects.equals(title, course.title) && Objects.equals(description, course.description) && Objects.equals(image, course.image) && level == course.level && Objects.equals(updatedAt, course.updatedAt);
     }
 
-    /**
-     * Generates a hash code based on all fields of the course.
-     *
-     * @return the hash code
-     */
     @Override
     public int hashCode() {
-        return Objects.hash(courseId, ownerId, title, description, image, level);
+        return Objects.hash(courseId, ownerId, title, description, image, level, isActive, updatedAt);
     }
 }
 

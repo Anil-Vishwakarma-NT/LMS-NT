@@ -4,6 +4,8 @@ import com.example.course_service_lms.dto.CourseDTO;
 import com.example.course_service_lms.entity.Course;
 import com.example.course_service_lms.entity.CourseLevel;
 import com.example.course_service_lms.utils.StringUtils;
+
+import java.time.LocalDateTime;
 import java.util.Locale;
 
 /**
@@ -31,6 +33,8 @@ public final class CourseConvertors {
         course.setDescription(StringUtils.toProperCase(courseDTO.getDescription()));
         course.setLevel(CourseLevel.valueOf(courseDTO.getCourseLevel().toUpperCase(Locale.ROOT)));
         course.setImage(courseDTO.getImage());
+        course.setActive(courseDTO.isActive());
+        course.setUpdatedAt(LocalDateTime.now());
         return course;
     }
 }
