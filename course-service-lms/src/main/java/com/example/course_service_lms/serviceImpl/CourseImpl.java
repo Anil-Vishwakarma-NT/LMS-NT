@@ -2,6 +2,7 @@ package com.example.course_service_lms.serviceImpl;
 
 import com.example.course_service_lms.converters.CourseConvertors;
 import com.example.course_service_lms.dto.CourseDTO;
+import com.example.course_service_lms.dto.CourseSummaryDTO;
 import com.example.course_service_lms.dto.CourseInfoDTO;
 import com.example.course_service_lms.dto.UpdateCourseDTO;
 import com.example.course_service_lms.entity.Course;
@@ -275,5 +276,16 @@ public class CourseImpl implements CourseService {
         return courseRepository.count();
     }
 
+    @Override
+    public List<CourseSummaryDTO> getRecentCourseSummaries() {
+        List<Object[]> results = courseRepository.fetchRecentCourseSummaries();
+
+        return results.stream().map(obj -> {
+            CourseSummaryDTO dto = new CourseSummaryDTO();
+            dto.setTitle((String) obj[0]);
+            dto.setDescription((String) obj[1]);
+            dto.setLevel(CourseLevel.valueOf((String) obj[2]));
+            return dto;
+        }).collect(Collectors.toList());
 
 }
