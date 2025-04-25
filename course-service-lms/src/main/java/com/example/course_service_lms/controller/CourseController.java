@@ -91,7 +91,7 @@ public class CourseController {
     /**
      * Updates an existing course by its ID.
      *
-     * @param id ID of the course to update.
+     * @param id              ID of the course to update.
      * @param updateCourseDTO DTO containing updated course information.
      * @return ResponseEntity containing a confirmation message.
      */
@@ -121,8 +121,9 @@ public class CourseController {
         log.info("Received request to get total course count.");
         long count = courseService.countCourses();
         log.info("Total course count retrieved: {}", count);
-        return ResponseEntity.ok(new MessageOutDTO(""+count));
+        return ResponseEntity.ok(new MessageOutDTO("" + count));
     }
+
     @GetMapping("/recent")
     public ResponseEntity<List<CourseSummaryDTO>> getRecentCourseSummaries() {
         return ResponseEntity.ok(courseService.getRecentCourseSummaries());
@@ -141,3 +142,4 @@ public class CourseController {
         List<CourseInfoDTO> courseDTOS = courseService.getCoursesInfo();
         return ResponseEntity.ok(courseDTOS);
     }
+}
