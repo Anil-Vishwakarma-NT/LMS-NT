@@ -64,4 +64,6 @@ public interface BundleService {
     boolean existsByBundleId(Long id);
 
     long countBundles();
+
+    String getBundleNameById(Long bundleId);
 }

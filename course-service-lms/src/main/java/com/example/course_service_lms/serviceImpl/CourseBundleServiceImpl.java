@@ -310,6 +310,7 @@ public class CourseBundleServiceImpl implements CourseBundleService {
                 Bundle bundle = bundleRepository.findById(courseBundle.getBundleId())
                         .orElseThrow(() -> new ResourceNotFoundException("Bundle not found"));
                 Long countCoursesInBundle = courseBundleRepository.countByBundleId(bundle.getBundleId());
+                bundleInfoDTO.setBundleId(courseBundle.getBundleId());
                 bundleInfoDTO.setBundleName(bundle.getBundleName());
                 bundleInfoDTO.setTotalCourses(countCoursesInBundle);
                 bundleInfoDTO.setActive(bundle.isActive());

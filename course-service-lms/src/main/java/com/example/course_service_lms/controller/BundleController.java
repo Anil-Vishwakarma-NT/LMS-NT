@@ -120,4 +120,11 @@ public class BundleController {
         log.info("Total Bundle count retrieved: {}", count);
         return ResponseEntity.ok(new MessageOutDTO(""+count));
     }
+    @GetMapping("/{id}/name")
+    public ResponseEntity<String> getCourseNameById(@PathVariable("id") Long id) {
+        log.info("Received request to get bundle name.");
+        String bundleName = bundleService.getBundleNameById(id);
+        log.info("Bundle name retrieved");
+        return ResponseEntity.ok(bundleName);
+    }
 }

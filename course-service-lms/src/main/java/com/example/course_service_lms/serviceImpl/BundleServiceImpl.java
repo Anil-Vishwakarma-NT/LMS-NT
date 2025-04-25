@@ -220,5 +220,18 @@ public class BundleServiceImpl implements BundleService {
         return bundleRepository.count();
     }
 
+    @Override
+    public String getBundleNameById(Long bundleId) {
+        try {
+            Bundle bundle = bundleRepository.findById(bundleId)
+                    .orElseThrow(() -> new ResourceNotFoundException("Bundle not found"));
+            return bundle.getBundleName();
+        } catch(ResourceNotFoundException e) {
+            throw e;
+        } catch (Exception e) {
+            throw new RuntimeException("Something went wrong ", e);
+        }
+    }
+
 }
 
