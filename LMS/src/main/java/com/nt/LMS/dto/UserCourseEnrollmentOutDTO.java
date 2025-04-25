@@ -2,7 +2,6 @@ package com.nt.LMS.dto;
 
 import lombok.Data;
 
-import java.time.LocalDateTime;
 import java.util.List;
 
 @Data
@@ -12,5 +11,5 @@ public class UserCourseEnrollmentOutDTO {
     private String courseName;
     private String ownerName;
     private boolean isActive;
-    private List<CourseEnrolledUserDTO> courseEnrolledUserDTOList;
+    private List<EnrolledUserDTO> enrolledUserDTOList;
 }

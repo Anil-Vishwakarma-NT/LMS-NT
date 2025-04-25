@@ -5,8 +5,9 @@ import lombok.Data;
 import java.time.LocalDateTime;
 
 @Data
-public class CourseEnrolledUserDTO {
+public class EnrolledUserDTO {
     private Long userId;
+    private String assignedByName;
     private String userName;
     private Long progress;
     private LocalDateTime enrollmentDate;

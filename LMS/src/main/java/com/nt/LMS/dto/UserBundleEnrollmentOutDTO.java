@@ -3,14 +3,16 @@ package com.nt.LMS.dto;
 import lombok.Data;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 @Data
 public class UserBundleEnrollmentOutDTO {
-    private Long userId;
-    private Long BundleId;
-    private Long assignedById;
-    private String userName;
-    private String BundleName;
-    private String assignedByName;
-    private LocalDateTime deadline;
+
+    private Long individualEnrollments;
+
+    private Long bundleName;
+
+    private Long isActive;
+
+    private List<EnrolledUserDTO> enrolledUserDTOList;
 }

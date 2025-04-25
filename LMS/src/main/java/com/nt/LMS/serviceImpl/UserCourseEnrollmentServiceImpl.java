@@ -1,6 +1,6 @@
 package com.nt.LMS.serviceImpl;
 
-import com.nt.LMS.dto.CourseEnrolledUserDTO;
+import com.nt.LMS.dto.EnrolledUserDTO;
 import com.nt.LMS.dto.CourseInfoDTO;
 import com.nt.LMS.dto.UserCourseEnrollmentOutDTO;
 import com.nt.LMS.entities.User;
@@ -16,7 +16,6 @@ import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 
 @Service
 public class UserCourseEnrollmentServiceImpl implements UserCourseEnrollmentService {
@@ -60,22 +59,25 @@ public class UserCourseEnrollmentServiceImpl implements UserCourseEnrollmentServ
                 courseDTO.setIndividualEnrollments(activeEnrollmentCount);
 
                 List<UserCourseEnrollment> enrollments = userCourseEnrollmentRepository.findByCourseId(courseInfo.getCourseId());
-                List<CourseEnrolledUserDTO> enrolledUsersDTO = new ArrayList<>();
+                List<EnrolledUserDTO> enrolledUsersDTO = new ArrayList<>();
 
                 for (UserCourseEnrollment enrollment : enrollments) {
                     User user = userRepository.findById(enrollment.getUserId())
                             .orElseThrow(() -> new ResourceNotFoundException("User not found"));
+                    User assignedByName = userRepository.findById(enrollment.getAssignedBy())
+                            .orElseThrow(() -> new ResourceNotFoundException("Assigner not found"));
 
-                    CourseEnrolledUserDTO enrolledDTO = new CourseEnrolledUserDTO();
+                    EnrolledUserDTO enrolledDTO = new EnrolledUserDTO();
                     enrolledDTO.setUserId(user.getUserId());
                     enrolledDTO.setUserName(user.getFirstName() + " " + user.getLastName());
                     enrolledDTO.setEnrollmentDate(enrollment.getAssignedAt());
                     enrolledDTO.setDeadline(enrollment.getDeadline());
                     enrolledDTO.setProgress(98L);
+                    enrolledDTO.setAssignedByName(assignedByName.getFirstName() + assignedByName.getLastName());
                     enrolledUsersDTO.add(enrolledDTO);
                 }
 
-                courseDTO.setCourseEnrolledUserDTOList(enrolledUsersDTO);
+                courseDTO.setEnrolledUserDTOList(enrolledUsersDTO);
                 responseList.add(courseDTO);
             }
 
