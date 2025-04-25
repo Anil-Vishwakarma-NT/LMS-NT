@@ -37,4 +37,6 @@ public class EnrollmentController {
     public ResponseEntity<EnrollmentDashBoardStatsDTO> getEnrollmentStats() {
         return ResponseEntity.ok(enrollmentService.getEnrollmentStats());
     }
+
+
 }
