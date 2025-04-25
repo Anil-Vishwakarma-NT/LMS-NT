@@ -1,5 +1,6 @@
 package com.example.course_service_lms.controller;
 
+import com.example.course_service_lms.dto.BundleInfoDTO;
 import com.example.course_service_lms.dto.CourseBundleDTO;
 import com.example.course_service_lms.dto.CourseBundlePostDTO;
 import com.example.course_service_lms.dto.UpdateCourseBundleDTO;
@@ -110,4 +111,9 @@ public class CourseBundleController {
         return ResponseEntity.ok(courseBundles);
     }
 
+    @GetMapping("/info")
+    public ResponseEntity<List<BundleInfoDTO>> getALlBundleInfo() {
+        List<BundleInfoDTO> bundleInfoDTOS = courseBundleService.getBundlesInfo();
+        return ResponseEntity.ok(bundleInfoDTOS);
+    }
 }
