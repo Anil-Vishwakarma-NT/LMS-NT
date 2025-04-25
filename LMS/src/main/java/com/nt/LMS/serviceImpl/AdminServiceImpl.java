@@ -174,7 +174,7 @@ public final class AdminServiceImpl implements AdminService {
                             }
                     );
 
-                    UserOutDTO userDto = userDTOConverter.userToOutDto(user, managerName);
+                    UserOutDTO userDto = userDTOConverter.userToOutDto(user, managerName,role.getName());
                     userDtos.add(userDto);
                 }
             }
@@ -218,7 +218,7 @@ public final class AdminServiceImpl implements AdminService {
                             }
                     );
 
-                    UserOutDTO userDto = userDTOConverter.userToOutDto(user, managerName);
+                    UserOutDTO userDto = userDTOConverter.userToOutDto(user, managerName,role.getName());
                     userDtos.add(userDto);
                 }
             }
@@ -292,7 +292,8 @@ public final class AdminServiceImpl implements AdminService {
 
             List<UserOutDTO> response = new ArrayList<>();
             for (User user : users) {
-                UserOutDTO userDto = userDTOConverter.userToOutDto(user, managerName);
+
+                UserOutDTO userDto = userDTOConverter.userToOutDto(user, managerName , "employee");
                 response.add(userDto);
             }
 
@@ -313,10 +314,15 @@ public final class AdminServiceImpl implements AdminService {
                 throw new ResourceNotFoundException(UserConstants.USER_NOT_FOUND);
             });
 
-            user.setFirstName(registerDto.getFirstName());
-            user.setLastName(registerDto.getLastName());
-            user.setUserName(registerDto.getUserName());
-            user.setEmail(registerDto.getEmail());
+            if(!registerDto.getFirstName().isEmpty())
+                user.setFirstName(registerDto.getFirstName());
+            if(!registerDto.getLastName().isEmpty())
+                user.setLastName(registerDto.getLastName());
+            if(!registerDto.getUserName().isEmpty())
+                user.setUserName(registerDto.getUserName());
+            if(!registerDto.getEmail().isEmpty())
+                user.setEmail(registerDto.getEmail());
+            if(registerDto.getRoleId() != null)
             user.setRoleId(registerDto.getRoleId());
 
             userRepository.save(user);

@@ -44,6 +44,12 @@ public class UserOutDTO {
     private String manager;
 
     /**
+     * The manager of the user.
+     * Can be null if the user does not have a manager.
+     */
+    private String role;
+
+    /**
      * The message associated with the user.
      * Can be used for status messages or notifications.
      */
