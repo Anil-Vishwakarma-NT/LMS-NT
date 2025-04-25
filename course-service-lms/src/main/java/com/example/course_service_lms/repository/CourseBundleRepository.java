@@ -32,4 +32,6 @@ public interface CourseBundleRepository extends JpaRepository<CourseBundle, Long
      * @return a list of {@link CourseBundle} entries belonging to the specified bundle
      */
     List<CourseBundle> findByBundleId(Long bundleId);
+
+    long countByBundleId(Long bundleId);
 }

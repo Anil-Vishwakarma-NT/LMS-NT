@@ -1,9 +1,6 @@
 package com.example.course_service_lms.serviceImpl;
 
-import com.example.course_service_lms.dto.CourseBundleDTO;
-import com.example.course_service_lms.dto.CourseBundlePostDTO;
-import com.example.course_service_lms.dto.UpdateCourseBundleDTO;
-import com.example.course_service_lms.dto.UpdateCourseContentDTO;
+import com.example.course_service_lms.dto.*;
 import com.example.course_service_lms.entity.Bundle;
 import com.example.course_service_lms.entity.Course;
 import com.example.course_service_lms.entity.CourseBundle;
@@ -297,6 +294,34 @@ public class CourseBundleServiceImpl implements CourseBundleService {
         } catch (Exception e) {
             log.error("Unexpected error occurred while creating course-bundle mapping: {}", e.getMessage());
             throw new RuntimeException(FAILED_TO_CREATE_COURSE_BUNDLE, e);
+        }
+    }
+
+    @Override
+    public List<BundleInfoDTO> getBundlesInfo() {
+        try {
+            List<CourseBundle> courseBundles = courseBundleRepository.findAll();
+            if(courseBundles.isEmpty()) {
+                throw new ResourceNotFoundException("No courses added in bundle");
+            }
+            List<BundleInfoDTO> bundleInfoDTOS = new ArrayList<>();
+            for(CourseBundle courseBundle : courseBundles) {
+                BundleInfoDTO bundleInfoDTO = new BundleInfoDTO();
+                Bundle bundle = bundleRepository.findById(courseBundle.getBundleId())
+                        .orElseThrow(() -> new ResourceNotFoundException("Bundle not found"));
+                Long countCoursesInBundle = courseBundleRepository.countByBundleId(bundle.getBundleId());
+                bundleInfoDTO.setBundleName(bundle.getBundleName());
+                bundleInfoDTO.setTotalCourses(countCoursesInBundle);
+                bundleInfoDTO.setActive(bundle.isActive());
+                bundleInfoDTO.setCreatedAt(bundle.getCreatedAt());
+                bundleInfoDTO.setUpdatedAt(bundle.getUpdatedAt());
+                bundleInfoDTOS.add(bundleInfoDTO);
+            }
+            return bundleInfoDTOS;
+        } catch (ResourceNotFoundException e) {
+            throw e;
+        } catch (Exception e) {
+            throw new RuntimeException("Something went wrong", e);
         }
     }
 
