@@ -5,6 +5,7 @@ import com.nt.LMS.dto.GroupOutDTO;
 import com.nt.LMS.dto.MessageOutDto;
 import com.nt.LMS.dto.UserOutDTO;
 import com.nt.LMS.repository.UserRepository;
+import com.nt.LMS.service.GroupService;
 import com.nt.LMS.serviceImpl.GroupServiceImpl;
 import jakarta.validation.Valid;
 import lombok.extern.slf4j.Slf4j;
@@ -144,5 +145,14 @@ public final class GroupController {
         List<GroupOutDTO> groups = groupService.getAllGroups();
         log.info("Fetched {} groups", groups.size());
         return ResponseEntity.ok(groups);
+    }
+    @GetMapping("/count")
+    public ResponseEntity<MessageOutDto> getGroupCount() {
+        log.info("Received request to get total Group count.");
+        long count = groupService.countGroups();
+        log.info("Total Group count retrieved: {}", count);
+        MessageOutDto message =new MessageOutDto();
+        message.setMessage(""+count);
+        return ResponseEntity.ok(message);
     }
 }

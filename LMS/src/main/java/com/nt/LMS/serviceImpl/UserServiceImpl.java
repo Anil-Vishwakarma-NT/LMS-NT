@@ -1,6 +1,7 @@
 package com.nt.LMS.serviceImpl;
 
 import com.nt.LMS.constants.UserConstants;
+import com.nt.LMS.dto.UsersDetailsViewDTO;
 import com.nt.LMS.entities.Role;
 import com.nt.LMS.entities.User;
 import com.nt.LMS.repository.RoleRepository;
@@ -12,7 +13,10 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 
+import java.sql.Timestamp;
+import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 /**
  * Implementation of the UserService interface that handles user-related operations.
@@ -61,4 +65,28 @@ public final class UserServiceImpl implements UserService {  // Made the class f
                 .authorities(role.get().getName())
                 .build();
     }
+
+    @Override
+    public long CountUsers() {
+        return userRepository.count();
+    }
+
+    @Override
+    public List<UsersDetailsViewDTO> getRecentUserDetails() {
+        List<Object[]> results = userRepository.fetchRecentUserDetails();
+
+        return results.stream().map(obj -> {
+            UsersDetailsViewDTO dto = new UsersDetailsViewDTO();
+            dto.setFullName((String) obj[0]);
+            dto.setEmail((String) obj[1]);
+            dto.setRole((String) obj[2]);
+            dto.setManagerName((String) obj[3]);
+            dto.setCreatedAt((Timestamp) obj[4]);
+            return dto;
+        }).collect(Collectors.toList());
+    }
+
 }
+
+
+

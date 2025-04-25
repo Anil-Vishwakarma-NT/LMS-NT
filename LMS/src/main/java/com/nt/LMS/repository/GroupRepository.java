@@ -28,4 +28,6 @@ public interface GroupRepository extends JpaRepository<Group, Long> {
      * @return A list of groups created by the given creator.
      */
     List<Group> findByCreatorId(long creatorId);
+    boolean existsById(long groupId);
+
 }

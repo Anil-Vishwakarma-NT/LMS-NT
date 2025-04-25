@@ -13,8 +13,13 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.web.bind.annotation.*;
-
+import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.GetMapping;
 import java.util.List;
 
 /**
@@ -147,5 +152,20 @@ public final class AdminController {
         );
     }
 
+    @PreAuthorize("permitAll()")
+    @GetMapping("/count")
+    public ResponseEntity<MessageOutDto> getTotalUserCount() {
+        log.info("Fetching total user count");
+        long count = userService.CountUsers();
+        log.info("Total user count retrieved: {}", count);
+        MessageOutDto message =new MessageOutDto();
+        message.setMessage(""+count);
+        return ResponseEntity.ok(message);
+    }
+
+    @GetMapping("/users/recent")
+    public ResponseEntity<List<UsersDetailsViewDTO>> getRecentUsers() {
+        return ResponseEntity.ok(userService.getRecentUserDetails());
+    }
 
 }

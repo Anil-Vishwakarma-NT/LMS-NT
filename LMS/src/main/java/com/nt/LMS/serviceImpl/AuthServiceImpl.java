@@ -93,7 +93,7 @@ public class AuthServiceImpl implements AuthService {
             );
         } catch (Exception ex) {
             log.error("Authentication failed for email: {}", loginDto.getEmail());
-            throw new InvalidRequestException(UserConstants.INVALID_CREDENTIALS);
+            throw new InvalidRequestException(UserConstants.INVALID_CREDENTIALS+" "+ex);
         }
 
         UserDetails userDetails = userDetailsService.loadUserByUsername(loginDto.getEmail());
