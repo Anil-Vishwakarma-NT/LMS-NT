@@ -5,6 +5,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 
+import java.awt.print.Pageable;
 import java.util.List;
 import java.util.Optional;
 
@@ -36,11 +37,5 @@ public interface CourseRepository extends JpaRepository<Course, Long> {
      */
     boolean existsById(Long id);
 
-    @Query(value = """
-        SELECT c.title, c.description, c.level
-                    FROM course c
-                    ORDER BY c.course_id DESC
-                    LIMIT 5
-    """, nativeQuery = true)
-    List<Object[]> fetchRecentCourseSummaries();
+    List<Course> findTop5ByOrderByCreatedAtDesc();
 }
