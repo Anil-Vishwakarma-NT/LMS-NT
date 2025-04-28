@@ -1,9 +1,6 @@
 package com.example.course_service_lms.controller;
 
-import com.example.course_service_lms.dto.BundleInfoDTO;
-import com.example.course_service_lms.dto.CourseBundleDTO;
-import com.example.course_service_lms.dto.CourseBundlePostDTO;
-import com.example.course_service_lms.dto.UpdateCourseBundleDTO;
+import com.example.course_service_lms.dto.*;
 import com.example.course_service_lms.entity.CourseBundle;
 import com.example.course_service_lms.service.CourseBundleService;
 import lombok.RequiredArgsConstructor;
@@ -115,5 +112,11 @@ public class CourseBundleController {
     public ResponseEntity<List<BundleInfoDTO>> getALlBundleInfo() {
         List<BundleInfoDTO> bundleInfoDTOS = courseBundleService.getBundlesInfo();
         return ResponseEntity.ok(bundleInfoDTOS);
+    }
+
+    @GetMapping("/recent")
+    public ResponseEntity<List<BundleSummaryDTO>> getRecentBundles() {
+        List<BundleSummaryDTO> bundleSummaries = courseBundleService.getRecentBundleSummaries();
+        return ResponseEntity.ok(bundleSummaries);
     }
 }
