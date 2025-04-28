@@ -100,11 +100,16 @@ public class AuthServiceImpl implements AuthService {
         String accessToken = jwtUtil.generateAccessToken(userDetails);
         String refreshToken = jwtUtil.generateRefreshToken(userDetails);
 
-        User user = userRepository.findByEmail(loginDto.getEmail())
+        User user = userRepository.findByEmailIgnoreCase(loginDto.getEmail())
                 .orElseThrow(() -> {
                     log.error("User not found with email: {}", loginDto.getEmail());
                     return new ResourceNotFoundException(UserConstants.USER_NOT_FOUND);
                 });
+
+        if (!user.is_active()) {
+            log.warn("Login blocked - user is deactivated: {}", loginDto.getEmail());
+            throw new InvalidRequestException(UserConstants.USER_DELETED);
+        }
 
         refreshTokenRepository.deleteByUserId(user.getUserId());
         log.debug("Old refresh token removed for user: {}", user.getEmail());
@@ -170,7 +175,7 @@ public class AuthServiceImpl implements AuthService {
     public MessageOutDto logout(final String email) {
         log.info("Logout request for user: {}", email);
 
-        User user = userRepository.findByEmail(email)
+        User user = userRepository.findByEmailIgnoreCase(email)
                 .orElseThrow(() -> {
                     log.error("Logout failed - user not found: {}", email);
                     return new ResourceNotFoundException(UserConstants.USER_NOT_FOUND);

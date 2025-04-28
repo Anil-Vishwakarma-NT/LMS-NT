@@ -53,9 +53,19 @@ public final class UserConstants {
     public static final String USERNAME_ALREADY_EXISTS = "Username already exists";
 
     /**
+     * Message indicating that the role does not exist.
+     */
+    public static final String INVALID_ROLE = "Role does not exists";
+
+    /**
      * Message indicating that the user has been deleted successfully.
      */
     public static final String USER_DELETION_MESSAGE = "User deleted successfully";
+
+    /**
+     * Message indicating that the user has been deleted successfully.
+     */
+    public static final String USER_DELETED = "This user is not able to login";
 
     /**
      * Message indicating that there was an error while fetching entries from the database.

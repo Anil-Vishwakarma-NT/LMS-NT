@@ -1,7 +1,6 @@
 package com.nt.LMS.serviceImpl;
 
 import com.nt.LMS.converter.UserDTOConverter;
-import com.nt.LMS.dto.UserInDTO;
 import com.nt.LMS.dto.UserOutDTO;
 import com.nt.LMS.exception.ResourceNotFoundException;
 import com.nt.LMS.constants.UserConstants;
@@ -69,7 +68,7 @@ public final class AdminServiceImpl implements AdminService {
     public MessageOutDto register(final RegisterDto registerDto) {
         log.info("Attempting to register user with email: {}", registerDto.getEmail());
 
-        if (userRepository.findByEmail(registerDto.getEmail()).isPresent()) {
+        if (userRepository.findByEmailIgnoreCase(registerDto.getEmail()).isPresent()) {
             log.warn("Registration failed - user with email {} already exists", registerDto.getEmail());
             throw new ResourceConflictException(UserConstants.USER_ALREADY_EXISTS);
         }
@@ -77,6 +76,11 @@ public final class AdminServiceImpl implements AdminService {
         if (userRepository.findByUserNameIgnoreCase(registerDto.getUserName()).isPresent()) {
             log.warn("Registration failed - username {} already exists", registerDto.getUserName());
             throw new ResourceConflictException(UserConstants.USERNAME_ALREADY_EXISTS);
+        }
+
+        if (!roleRepository.findById(registerDto.getRoleId()).isPresent() || registerDto.getRoleId() == 1) {
+            log.warn("Registration failed - role with ID {} does not exist", registerDto.getRoleId());
+            throw new ResourceNotFoundException(UserConstants.INVALID_ROLE + " : " + registerDto.getRoleId());
         }
 
         User user = new User();

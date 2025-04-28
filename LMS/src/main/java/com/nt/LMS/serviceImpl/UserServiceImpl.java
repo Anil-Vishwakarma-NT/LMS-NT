@@ -48,7 +48,7 @@ public final class UserServiceImpl implements UserService {  // Made the class f
     @Override
     public UserDetails loadUserByUsername(final String email) throws UsernameNotFoundException {  // Marked email as final
         // Fetch the user by email
-        User user = userRepository.findByEmail(email)
+        User user = userRepository.findByEmailIgnoreCase(email)
                 .orElseThrow(() -> new UsernameNotFoundException(UserConstants.USER_NOT_FOUND + " : " + email));
 
         // Fetch the role of the user
