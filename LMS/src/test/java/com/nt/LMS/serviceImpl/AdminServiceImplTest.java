@@ -301,10 +301,10 @@ class AdminServiceImplTest {
     @Test
     void getAllUsers_ShouldReturnUserDtos_WhenUsersExist() {
         // Arrange
-        User user1 = new User(1L,"John", "John", "Doe","JohnDoe@gmail.com","JohnDoe", 2L,3L,null ,null); // User with manager ID 2
-        User user2 = new User(2L, "Jane","Jane", "Doe","JaneDoe@gmail.com","JaneDoe", 3L,3L,null,null); // User with manager ID 3
-        User manager1 = new User(2L, "Manager" , "Manager", "One","ManagerOne@gmail.com","ManagerOne", 1L,2L,null,null); // Manager for user1
-        User manager2 = new User(3L, "Manager" , "Manager", "Two", "ManagerTwo@gmail.com","ManagerTwo",1L,2L,null,null); // Manager for user2
+        User user1 = new User(1L,"John", "John", "Doe","JohnDoe@gmail.com","JohnDoe", 2L,3L,null ,null,true); // User with manager ID 2
+        User user2 = new User(2L, "Jane","Jane", "Doe","JaneDoe@gmail.com","JaneDoe", 3L,3L,null,null ,true); // User with manager ID 3
+        User manager1 = new User(2L, "Manager" , "Manager", "One","ManagerOne@gmail.com","ManagerOne", 1L,2L,null,null,true); // Manager for user1
+        User manager2 = new User(3L, "Manager" , "Manager", "Two", "ManagerTwo@gmail.com","ManagerTwo",1L,2L,null,null,true); // Manager for user2
 
         // Create corresponding UserOutDTOs
         UserOutDTO userDto1 = new UserOutDTO(1L, "John","John", "Doe","JohnDoe@gmail.com", "Manager One" ,null);
@@ -320,7 +320,7 @@ class AdminServiceImplTest {
         when(userDTOConverter.userToOutDto(user2, "Manager Two")).thenReturn(userDto2);
 
         // Act
-        List<UserOutDTO> result = adminService.getAllUsers();
+        List<UserOutDTO> result = adminService.getAllActiveUsers();
 
         // Assert
         assertEquals(2, result.size());
@@ -340,7 +340,7 @@ class AdminServiceImplTest {
         when(userRepository.findAll()).thenReturn(Collections.emptyList());
 
         // Act
-        List<UserOutDTO> result = adminService.getAllUsers();
+        List<UserOutDTO> result = adminService.getAllActiveUsers();
 
         // Assert
         assertTrue(result.isEmpty());
@@ -352,7 +352,7 @@ class AdminServiceImplTest {
     @Test
     void getAllUsers_ShouldThrowException_WhenManagerNotFound() {
         // Arrange
-        User user = new User(1L,"John", "John", "Doe","JohnDoe@gmail.com","JohnDoe", 2L,3L,null ,null); // User with manager ID 2
+        User user = new User(1L,"John", "John", "Doe","JohnDoe@gmail.com","JohnDoe", 2L,3L,null ,null,true); // User with manager ID 2
 
         // Mock repository behavior
         when(userRepository.findAll()).thenReturn(Collections.singletonList(user));
@@ -360,7 +360,7 @@ class AdminServiceImplTest {
 
         // Act & Assert
         Exception ex = assertThrows(RuntimeException.class, () -> {
-            adminService.getAllUsers();
+            adminService.getAllActiveUsers();
         });
 
         assertTrue(ex.getCause() instanceof  ResourceNotFoundException);
@@ -378,7 +378,7 @@ class AdminServiceImplTest {
 
         // Act & Assert
         RuntimeException ex = assertThrows(RuntimeException.class, () -> {
-            adminService.getAllUsers();
+            adminService.getAllActiveUsers();
         });
 
         assertEquals(DATABASE_ERROR, ex.getMessage());
@@ -390,10 +390,10 @@ class AdminServiceImplTest {
     @Test
     void getAllUsers_ShouldHandleMixedValidAndInvalidManagers() {
         // Arrange
-        User user1 = new User(1L, "John", "John", "Doe", "JohnDoe@gmail.com", "JohnDoe", 2L, 3L, null, null);
-        User user2 = new User(3L, "Jane", "Jane", "Doe", "JaneDoe@gmail.com", "JaneDoe", 3L, 4L, null, null);
+        User user1 = new User(1L, "John", "John", "Doe", "JohnDoe@gmail.com", "JohnDoe", 2L, 3L, null, null,true);
+        User user2 = new User(3L, "Jane", "Jane", "Doe", "JaneDoe@gmail.com", "JaneDoe", 3L, 4L, null, null,true);
 
-        User manager1 = new User(2L, "Manager", "Manager", "One", "ManagerOne@gmail.com", "ManagerOne", 1L, 2L, null, null);
+        User manager1 = new User(2L, "Manager", "Manager", "One", "ManagerOne@gmail.com", "ManagerOne", 1L, 2L, null, null,true);
 
         when(userRepository.findAll()).thenReturn(Arrays.asList(user1, user2));
         when(userRepository.findById(user1.getManagerId())).thenReturn(Optional.of(manager1));
@@ -404,7 +404,7 @@ class AdminServiceImplTest {
 
         // Act & Assert
         Exception ex = assertThrows(RuntimeException.class, () -> {
-            adminService.getAllUsers();
+            adminService.getAllActiveUsers();
         });
 
         assertTrue(ex.getCause() instanceof ResourceNotFoundException);
@@ -459,71 +459,6 @@ class AdminServiceImplTest {
     //--------------------
     //GetEmployees
     //---------------------
-    @Test
-    void getEmployees_ShouldReturnEmployeeList_WhenManagerAndEmployeesExist() {
-        // Arrange
-        String managerEmail = "manager@example.com";
-        User manager = new User(1L, "Alice", "Alice", "Smith", managerEmail, "alice123", 0L, 2L, null, null);
-
-        User employee = new User(2L, "Bob", "Bob", "Jones", "bob@example.com", "bobjones", 1L, 3L, null, null);
-        UserOutDTO userOutDTO = new UserOutDTO(); // You can populate as needed
-
-        when(userRepository.findByEmail(managerEmail)).thenReturn(Optional.of(manager));
-        when(userRepository.findByManagerId(manager.getUserId())).thenReturn(List.of(employee));
-        when(userDTOConverter.userToOutDto(employee, "AliceSmith")).thenReturn(userOutDTO);
-
-        // Act
-        List<UserOutDTO> result = adminService.getEmployees(managerEmail);
-
-        // Assert
-        assertEquals(1, result.size());
-        assertEquals(userOutDTO, result.get(0));
-        verify(userRepository).findByEmail(managerEmail);
-        verify(userRepository).findByManagerId(manager.getUserId());
-        verify(userDTOConverter).userToOutDto(employee, "AliceSmith");
-    }
-
-    @Test
-    void getEmployees_ShouldReturnEmptyList_WhenNoEmployeesFound() {
-        // Arrange
-        String managerEmail = "manager@example.com";
-        User manager = new User(1L, "Alice", "Alice", "Smith", managerEmail, "alice123", 0L, 2L, null, null);
-
-        when(userRepository.findByEmail(managerEmail)).thenReturn(Optional.of(manager));
-        when(userRepository.findByManagerId(manager.getUserId())).thenReturn(Collections.emptyList());
-
-        // Act
-        List<UserOutDTO> result = adminService.getEmployees(managerEmail);
-
-        // Assert
-        assertTrue(result.isEmpty());
-        verify(userRepository).findByEmail(managerEmail);
-        verify(userRepository).findByManagerId(manager.getUserId());
-        verify(userDTOConverter, never()).userToOutDto(any(), any());
-    }
-
-    @Test
-    void getEmployees_ShouldThrowException_WhenManagerNotFound() {
-        // Arrange
-        String email = "invalid@example.com";
-        when(userRepository.findByEmail(email)).thenReturn(Optional.empty());
-
-        // Act & Assert
-        Exception ex = assertThrows(RuntimeException.class, () -> {
-            adminService.getEmployees(email);
-        });
-
-        // Print the actual exception for debugging
-        ex.printStackTrace();
-
-        assertTrue(ex.getCause() instanceof ResourceNotFoundException);
-        assertEquals(USER_NOT_FOUND, ex.getCause().getMessage());
-
-        verify(userRepository).findByEmail(email);
-        verify(userRepository, never()).findByManagerId(anyLong());
-        verify(userDTOConverter, never()).userToOutDto(any(), any());
-    }
-
 
 
 

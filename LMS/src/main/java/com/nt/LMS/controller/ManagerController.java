@@ -3,6 +3,7 @@ package com.nt.LMS.controller;
 import com.nt.LMS.dto.UserOutDTO;
 import com.nt.LMS.serviceImpl.AdminServiceImpl;
 import com.nt.LMS.serviceImpl.GroupServiceImpl;
+import com.nt.LMS.serviceImpl.ManagerServiceImpl;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -28,7 +29,7 @@ public class ManagerController {
      * Service class to handle admin related operations.
      */
     @Autowired
-    private AdminServiceImpl adminService;
+    private ManagerServiceImpl managerService;
 
     /**
      * Service class to handle group related operations.
@@ -47,7 +48,7 @@ public class ManagerController {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         String email = authentication.getName();
         log.info("Manager with email {} is requesting the list of their employees", email);
-        List<UserOutDTO> employees = adminService.getEmployees(email);
+        List<UserOutDTO> employees = managerService.getEmployees(email);
 
         if (employees.isEmpty()) {
             return new ResponseEntity<>(employees, HttpStatus.NO_CONTENT);

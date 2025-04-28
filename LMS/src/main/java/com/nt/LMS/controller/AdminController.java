@@ -76,11 +76,27 @@ public final class AdminController {
      *
      * @return list of all employees
      */
-    @GetMapping("/employees")
+    @GetMapping("/active-employees")
     public ResponseEntity<List<UserOutDTO>> getAllEmployees() {
         log.info("Fetching all employees");
-        List<UserOutDTO> employees = adminService.getAllUsers();
+        List<UserOutDTO> employees = adminService.getAllActiveUsers();
         log.info("Fetched {} employees", employees.size());
+        if (employees.isEmpty()) {
+            return new ResponseEntity<>(employees, HttpStatus.NO_CONTENT);
+        }
+        return new ResponseEntity<>(employees, HttpStatus.OK);
+    }
+
+    /**
+     * Gets all inactive employees.
+     *
+     * @return list of all employees
+     */
+    @GetMapping("/inactive-employees")
+    public ResponseEntity<List<UserOutDTO>> getAllInactiveEmployees() {
+        log.info("Fetching all inactive employees");
+        List<UserOutDTO> employees = adminService.getAllInactiveUsers();
+        log.info("Fetched {} inactive employees", employees.size());
         if (employees.isEmpty()) {
             return new ResponseEntity<>(employees, HttpStatus.NO_CONTENT);
         }
@@ -115,6 +131,16 @@ public final class AdminController {
         log.info("Received request to change role for user with ID: {}", userDto.getUserId());
         return new ResponseEntity<>(
                 adminService.changeUserRole(userDto.getUserId(), userDto.getRole()),
+                HttpStatus.OK
+        );
+    }
+
+    @PutMapping("/update-user/{userId}")
+    public ResponseEntity<MessageOutDto> updateUser(@PathVariable final long userId , @RequestBody final RegisterDto registerDto){
+
+        log.info("Received request to update user details");
+        return new ResponseEntity<>(
+                adminService.updateUserDetails(registerDto,userId),
                 HttpStatus.OK
         );
     }

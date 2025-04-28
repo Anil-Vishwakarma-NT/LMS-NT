@@ -32,7 +32,14 @@ public interface AdminService {
      *
      * @return list of user DTOs
      */
-    List<UserOutDTO> getAllUsers();
+    List<UserOutDTO> getAllActiveUsers();
+
+    /**
+     * Gets a list of all inactive users.
+     *
+     * @return list of user DTOs.
+     */
+    List<UserOutDTO> getAllInactiveUsers();
 
     /**
      * Changes the role of a user.
@@ -51,11 +58,7 @@ public interface AdminService {
      */
     List<UserOutDTO> getManagerEmployee(long userId);
 
-    /**
-     * Gets employees by username.
-     *
-     * @param username the username to filter by
-     * @return list of user DTOs
-     */
-    List<UserOutDTO> getEmployees(String username);
+
+
+
 }

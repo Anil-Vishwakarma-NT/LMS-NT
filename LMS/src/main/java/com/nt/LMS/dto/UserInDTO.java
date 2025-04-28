@@ -32,4 +32,12 @@ public class UserInDTO {
             message = "Role name must contain only alphabets."
     )
     private String role;
+
+
+//    private String userName;
+//    private String firstName;
+//    private String lastName;
+//    private String email;
+
+
 }
