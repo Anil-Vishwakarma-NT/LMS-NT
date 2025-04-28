@@ -1,9 +1,6 @@
 package com.nt.LMS.controller;
 
-import com.nt.LMS.dto.GroupInDTO;
-import com.nt.LMS.dto.GroupOutDTO;
-import com.nt.LMS.dto.MessageOutDto;
-import com.nt.LMS.dto.UserOutDTO;
+import com.nt.LMS.dto.*;
 import com.nt.LMS.repository.UserRepository;
 import com.nt.LMS.service.GroupService;
 import com.nt.LMS.serviceImpl.GroupServiceImpl;
@@ -154,5 +151,11 @@ public final class GroupController {
         MessageOutDto message =new MessageOutDto();
         message.setMessage(""+count);
         return ResponseEntity.ok(message);
+    }
+
+    @GetMapping("/recent")
+    public ResponseEntity<List<GroupSummaryDTO>> getRecentGroups() {
+        List<GroupSummaryDTO> groupSummaries = groupService.getRecentGroupSummaries();
+        return ResponseEntity.ok(groupSummaries);
     }
 }
