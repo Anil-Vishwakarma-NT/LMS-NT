@@ -55,6 +55,8 @@ public class CourseBundleServiceImpl implements CourseBundleService {
     @Autowired
     private final CourseBundleRepository courseBundleRepository;
 
+    @Autowired
+    private final BundleRepository bundleRepository;
     /**
      * Repository for performing CRUD operations on {@link Course} entity.
      */
@@ -64,8 +66,6 @@ public class CourseBundleServiceImpl implements CourseBundleService {
     /**
      * Repository for performing CRUD operations on {@link Bundle} entity.
      */
-    @Autowired
-    private final BundleRepository bundleRepository;
 
     /**
      * Retrieves all course-bundle mappings from the repository.
@@ -300,12 +300,12 @@ public class CourseBundleServiceImpl implements CourseBundleService {
     @Override
     public List<BundleInfoDTO> getBundlesInfo() {
         try {
-            List<CourseBundle> courseBundles = courseBundleRepository.findAll();
+            List<Bundle> courseBundles = bundleRepository.findAll();
             if(courseBundles.isEmpty()) {
                 throw new ResourceNotFoundException("No courses added in bundle");
             }
             List<BundleInfoDTO> bundleInfoDTOS = new ArrayList<>();
-            for(CourseBundle courseBundle : courseBundles) {
+            for(Bundle courseBundle : courseBundles) {
                 BundleInfoDTO bundleInfoDTO = new BundleInfoDTO();
                 Bundle bundle = bundleRepository.findById(courseBundle.getBundleId())
                         .orElseThrow(() -> new ResourceNotFoundException("Bundle not found"));

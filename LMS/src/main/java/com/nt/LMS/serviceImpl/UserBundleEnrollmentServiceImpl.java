@@ -45,22 +45,23 @@ public class UserBundleEnrollmentServiceImpl implements UserBundleEnrollmentServ
                 userBundleEnrollmentOutDTO.setTotalCourses(bundleInfoDTO.getTotalCourses());
                 userBundleEnrollmentOutDTO.setActive(bundleInfoDTO.isActive());
                 userBundleEnrollmentOutDTO.setAverageCompletion(98F);
-                
+
                 List<UserBundleEnrollment> userBundleEnrollments = userBundleEnrollmentRepository.findByBundleId(bundleInfoDTO.getBundleId());
-                if(userBundleEnrollments == null || userBundleEnrollments.isEmpty()) {
-                    throw new ResourceNotFoundException("No bundle enrollments for user");
+                if (userBundleEnrollments != null && !userBundleEnrollments.isEmpty()) {
+                    //throw new ResourceNotFoundException("No bundle enrollments for user");
+                    List<EnrolledUserDTO> enrolledUserDTOS = new ArrayList<>();
+                    for (UserBundleEnrollment userBundleEnrollment : userBundleEnrollments) {
+                        User user = userRepository.findById(userBundleEnrollment.getUserId())
+                                .orElseThrow(() -> new ResourceNotFoundException("User not found"));
+                        User assignedByName = userRepository.findById(userBundleEnrollment.getAssignedBy())
+                                .orElseThrow(() -> new ResourceNotFoundException("Assigner not found"));
+                        EnrolledUserDTO enrolledDTO = getEnrolledUserDTO(userBundleEnrollment, user, assignedByName);
+                        enrolledUserDTOS.add(enrolledDTO);
+                    }
+                    userBundleEnrollmentOutDTO.setEnrolledUserDTOList(enrolledUserDTOS);
+                    userBundleEnrollmentOutDTO.setIndividualEnrollments(individualEnrollments);
+                    userBundleEnrollmentOutDTOS.add(userBundleEnrollmentOutDTO);
                 }
-                List<EnrolledUserDTO> enrolledUserDTOS = new ArrayList<>();
-                for(UserBundleEnrollment userBundleEnrollment : userBundleEnrollments) {
-                    User user = userRepository.findById(userBundleEnrollment.getUserId())
-                            .orElseThrow(() -> new ResourceNotFoundException("User not found"));
-                    User assignedByName = userRepository.findById(userBundleEnrollment.getAssignedBy())
-                            .orElseThrow(() -> new ResourceNotFoundException("Assigner not found"));
-                    EnrolledUserDTO enrolledDTO = getEnrolledUserDTO(userBundleEnrollment, user, assignedByName);
-                    enrolledUserDTOS.add(enrolledDTO);
-                }
-                userBundleEnrollmentOutDTO.setEnrolledUserDTOList(enrolledUserDTOS);
-                userBundleEnrollmentOutDTOS.add(userBundleEnrollmentOutDTO);
             }
             return userBundleEnrollmentOutDTOS;
         } catch(ResourceNotFoundException e) {

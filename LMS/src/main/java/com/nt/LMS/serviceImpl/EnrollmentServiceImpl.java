@@ -425,7 +425,10 @@ public class EnrollmentServiceImpl implements EnrollmentService {
             enrollmentDashBoardStatsDTO.setUsersEnrolled(45L);
             enrollmentDashBoardStatsDTO.setGroupsEnrolled(74L);
             enrollmentDashBoardStatsDTO.setTotalEnrollments(85L);
+            enrollmentDashBoardStatsDTO.setCourseCompletions(46L);
             enrollmentDashBoardStatsDTO.setTopEnrolledCourse("HOO");
+            enrollmentDashBoardStatsDTO.setUpcomingDeadlines(7L);
+            enrollmentDashBoardStatsDTO.setCompletionRate(99L);
             return enrollmentDashBoardStatsDTO;
         } catch (FeignException e) {
             throw new RuntimeException("Error contacting course service");
