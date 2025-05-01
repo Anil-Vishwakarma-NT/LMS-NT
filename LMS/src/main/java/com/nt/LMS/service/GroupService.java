@@ -1,6 +1,7 @@
 package com.nt.LMS.service;
 
 import com.nt.LMS.dto.GroupOutDTO;
+import com.nt.LMS.dto.GroupSummaryDTO;
 import com.nt.LMS.dto.MessageOutDto;
 import com.nt.LMS.dto.UserOutDTO;
 
@@ -70,4 +71,11 @@ public interface GroupService {
     List<GroupOutDTO> getAllGroups();
 
     long countGroups();
+
+    /**
+     * Retrieves summaries of the 5 most recent groups.
+     *
+     * @return a list containing summaries of the most recently created groups with member counts
+     */
+    List<GroupSummaryDTO> getRecentGroupSummaries();
 }

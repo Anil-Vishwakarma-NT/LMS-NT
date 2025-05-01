@@ -20,6 +20,7 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 import static com.example.course_service_lms.constants.CourseBundleConstants.BUNDLE_NOT_FOUND;
 import static com.example.course_service_lms.constants.CourseBundleConstants.COURSE_BUNDLE_ALREADY_EXISTS;
@@ -349,5 +350,26 @@ public class CourseBundleServiceImpl implements CourseBundleService {
             throw new RuntimeException("Something went wrong");
         }
     }
+
+    @Override
+    public List<BundleSummaryDTO> getRecentBundleSummaries() {
+        // Get the 5 most recent bundles
+        List<Bundle> recentBundles = bundleRepository.findTop5ByOrderByCreatedAtDesc();
+
+        // Create the DTOs with course counts
+        return recentBundles.stream()
+                .map(bundle -> {
+                    long courseCount = courseBundleRepository.countByBundleId(bundle.getBundleId());
+                    return new BundleSummaryDTO(
+                            bundle.getBundleId(),
+                            bundle.getBundleName(),
+                            courseCount,
+                            bundle.getCreatedAt(),
+                            bundle.getUpdatedAt()
+                    );
+                })
+                .collect(Collectors.toList());
+    }
+
 
 }

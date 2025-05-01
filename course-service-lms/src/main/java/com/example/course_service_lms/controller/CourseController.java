@@ -122,8 +122,9 @@ public class CourseController {
     }
 
     @GetMapping("/recent")
-    public ResponseEntity<List<CourseSummaryDTO>> getRecentCourseSummaries() {
-        return ResponseEntity.ok(courseService.getRecentCourseSummaries());
+    public ResponseEntity<List<CourseSummaryDTO>> getRecentCourses() {
+        List<CourseSummaryDTO> recentCourses = courseService.getRecentCourseSummaries();
+        return ResponseEntity.ok(recentCourses);
     }
 
     @GetMapping("/{id}/name")
