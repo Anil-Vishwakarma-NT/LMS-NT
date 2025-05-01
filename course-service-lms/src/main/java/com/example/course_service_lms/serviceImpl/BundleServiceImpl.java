@@ -1,6 +1,7 @@
 package com.example.course_service_lms.serviceImpl;
 
 import com.example.course_service_lms.dto.BundleDTO;
+import com.example.course_service_lms.dto.BundleSummaryDTO;
 import com.example.course_service_lms.dto.UpdateBundleDTO;
 import com.example.course_service_lms.entity.Bundle;
 import com.example.course_service_lms.exception.ResourceAlreadyExistsException;
@@ -14,6 +15,7 @@ import org.springframework.stereotype.Service;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 import static com.example.course_service_lms.constants.BundleConstants.BUNDLE_ALREADY_EXISTS;
 import static com.example.course_service_lms.constants.BundleConstants.BUNDLE_NOT_FOUND_BY_ID;
@@ -36,6 +38,7 @@ public class BundleServiceImpl implements BundleService {
      */
     @Autowired
     private BundleRepository bundleRepository;
+
 
     /**
      * Creates a new bundle based on the provided DTO.
@@ -218,6 +221,19 @@ public class BundleServiceImpl implements BundleService {
     @Override
     public long countBundles() {
         return bundleRepository.count();
+    }
+
+    @Override
+    public String getBundleNameById(Long bundleId) {
+        try {
+            Bundle bundle = bundleRepository.findById(bundleId)
+                    .orElseThrow(() -> new ResourceNotFoundException("Bundle not found"));
+            return bundle.getBundleName();
+        } catch(ResourceNotFoundException e) {
+            throw e;
+        } catch (Exception e) {
+            throw new RuntimeException("Something went wrong ", e);
+        }
     }
 
 }

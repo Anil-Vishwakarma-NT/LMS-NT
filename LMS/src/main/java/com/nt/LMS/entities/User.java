@@ -81,6 +81,7 @@ public class User {
     @Column(name = "created_at")
     private Date createdAt;
 
+
     /**
      * The timestamp when the user's details were last updated.
      */

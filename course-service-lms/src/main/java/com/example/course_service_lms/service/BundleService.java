@@ -1,6 +1,7 @@
 package com.example.course_service_lms.service;
 
 import com.example.course_service_lms.dto.BundleDTO;
+import com.example.course_service_lms.dto.BundleSummaryDTO;
 import com.example.course_service_lms.dto.UpdateBundleDTO;
 import com.example.course_service_lms.entity.Bundle;
 
@@ -64,4 +65,13 @@ public interface BundleService {
     boolean existsByBundleId(Long id);
 
     long countBundles();
+
+    String getBundleNameById(Long bundleId);
+
+    /**
+     * Retrieves summaries of the 5 most recent bundles with course counts
+     *
+     * @return a list containing summaries of the most recently created bundles with course counts
+     */
+
 }

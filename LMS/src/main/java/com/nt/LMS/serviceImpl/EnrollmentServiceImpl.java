@@ -1,9 +1,6 @@
 package com.nt.LMS.serviceImpl;
 
-import com.nt.LMS.dto.CourseBundleDTO;
-import com.nt.LMS.dto.EnrollmentDTO;
-import com.nt.LMS.dto.EnrollmentDashBoardStatsDTO;
-import com.nt.LMS.dto.UpdateEnrollmentDTO;
+import com.nt.LMS.dto.*;
 import com.nt.LMS.entities.*;
 import com.nt.LMS.exception.InvalidRequestException;
 import com.nt.LMS.exception.ResourceConflictException;
@@ -13,6 +10,7 @@ import com.nt.LMS.repository.*;
 import com.nt.LMS.service.EnrollmentService;
 import feign.FeignException;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -119,6 +117,8 @@ public class EnrollmentServiceImpl implements EnrollmentService {
 //        }
 //        return "";
 //    }
+
+
 
     private String processUserEnrollment(EnrollmentDTO enrollmentDTO, LocalDateTime now) {
         // Verify user and manager relationship
@@ -417,7 +417,7 @@ public class EnrollmentServiceImpl implements EnrollmentService {
             Long groupsEnrolled = groupCourseEnrollmentRepository.countByStatusNotIn(List.of("COMPLETED", "EXPIRED", "UNENROLLED")) + groupBundleEnrollmentRepository.countByStatusNotIn(List.of("COMPLETED", "EXPIRED", "UNENROLLED"));
             Long popularCourseId = enrollmentRepository.findMostFrequentEnrolledCourseId();
             Long courseCompletions = enrollmentHistoryRepository.countByStatusIn(List.of("COMPLETED"));
-            if(usersEnrolled == 0 || groupsEnrolled == 0 || popularCourseId == 0) {
+            if(usersEnrolled == 0 && groupsEnrolled == 0 && popularCourseId == 0) {
                 throw new ResourceNotFoundException("No Enrollments");
             }
             String popularCourse = Objects.requireNonNull(courseMicroserviceClient.getCourseNameById(popularCourseId).getBody());
@@ -425,7 +425,10 @@ public class EnrollmentServiceImpl implements EnrollmentService {
             enrollmentDashBoardStatsDTO.setUsersEnrolled(45L);
             enrollmentDashBoardStatsDTO.setGroupsEnrolled(74L);
             enrollmentDashBoardStatsDTO.setTotalEnrollments(85L);
+            enrollmentDashBoardStatsDTO.setCourseCompletions(46L);
             enrollmentDashBoardStatsDTO.setTopEnrolledCourse("HOO");
+            enrollmentDashBoardStatsDTO.setUpcomingDeadlines(7L);
+            enrollmentDashBoardStatsDTO.setCompletionRate(99L);
             return enrollmentDashBoardStatsDTO;
         } catch (FeignException e) {
             throw new RuntimeException("Error contacting course service");
@@ -435,12 +438,74 @@ public class EnrollmentServiceImpl implements EnrollmentService {
         }
     }
 
+    @Override
+    public List<UserEnrollmentsDTO> getEnrollmentsForUser() {
+        List<User> users = userRepository.findAll();
+        if(users.isEmpty()) {
+            throw new ResourceNotFoundException("No users found");
+        }
+        List<UserEnrollmentsDTO> userEnrollmentsDTOS = new ArrayList<>();
+        LocalDateTime now = LocalDateTime.now();
+        for(User user : users) {
+            int upcomingDeadlines = 0;
+            UserEnrollmentsDTO userEnrollmentsDTO = new UserEnrollmentsDTO();
+            long courseEnrollments = userCourseEnrollmentRepository.countByUserIdAndStatusNotIn(user.getUserId(), List.of("EXPIRED", "UNENROLLED", "COMPLETED"));
+            long bundleEnrollments = userBundleEnrollmentRepository.countByUserIdAndStatusNotIn(user.getUserId(), List.of("EXPIRED", "UNENROLLED", "COMPLETED"));
+            if (courseEnrollments != 0) {
+                List<UserCourseEnrollment> userCourseEnrollments = userCourseEnrollmentRepository.findByUserId(user.getUserId());
+                List<EnrolledCoursesDTO> enrolledCoursesDTOS = new ArrayList<>();
+                for(UserCourseEnrollment userCourseEnrollment : userCourseEnrollments) {
+                    ResponseEntity<String> response = courseMicroserviceClient.getCourseNameById(userCourseEnrollment.getCourseId());
+                    String courseName = (response != null && response.getBody() != null) ? response.getBody() : "Unknown Course";
+                    EnrolledCoursesDTO enrolledCoursesDTO = new EnrolledCoursesDTO();
+                    enrolledCoursesDTO.setCourseId(userCourseEnrollment.getCourseId());
+                    enrolledCoursesDTO.setCourseName(courseName);
+                    enrolledCoursesDTO.setEnrollmentDate(userCourseEnrollment.getAssignedAt());
+                    enrolledCoursesDTO.setDeadline(userCourseEnrollment.getDeadline());
+                    enrolledCoursesDTO.setProgress(98F);
+                    enrolledCoursesDTOS.add(enrolledCoursesDTO);
 
+                    LocalDateTime deadline = enrolledCoursesDTO.getDeadline();
 
+                    if (deadline != null && !deadline.isBefore(now) && deadline.isBefore(now.plusDays(7))) {
+                        upcomingDeadlines += 1;
+                    }
+                }
+                userEnrollmentsDTO.setEnrolledCoursesList(enrolledCoursesDTOS);
+            }
+            if (bundleEnrollments != 0) {
+                List<UserBundleEnrollment> userBundleEnrollments = userBundleEnrollmentRepository.findByUserId(user.getUserId());
+                List<EnrolledBundlesDTO> enrolledBundlesDTOS = new ArrayList<>();
+                for(UserBundleEnrollment userBundleEnrollment : userBundleEnrollments) {
+                    ResponseEntity<String> response = courseMicroserviceClient.getBundleNameById(userBundleEnrollment.getBundleId());
+                    String bundleName = (response != null && response.getBody() != null) ? response.getBody() : "Unknown Course";
+                    EnrolledBundlesDTO enrolledBundlesDTO = new EnrolledBundlesDTO();
+                    enrolledBundlesDTO.setBundleName(bundleName);
+                    enrolledBundlesDTO.setBundleId(userBundleEnrollment.getBundleId());
+                    enrolledBundlesDTO.setEnrollmentDate(userBundleEnrollment.getAssignedAt());
+                    enrolledBundlesDTO.setProgress(98F);
+                    enrolledBundlesDTO.setDeadline(userBundleEnrollment.getDeadline());
+                    enrolledBundlesDTOS.add(enrolledBundlesDTO);
 
+                    LocalDateTime deadline = enrolledBundlesDTO.getDeadline();
 
-
-
+                    if (deadline != null && !deadline.isBefore(now) && deadline.isBefore(now.plusDays(7))) {
+                        upcomingDeadlines += 1;
+                    }
+                }
+                userEnrollmentsDTO.setEnrolledBundlesList(enrolledBundlesDTOS);
+            }
+            userEnrollmentsDTO.setUserId(user.getUserId());
+            userEnrollmentsDTO.setUserName(user.getFirstName() + " " + user.getLastName());
+            userEnrollmentsDTO.setStatus(true);
+            userEnrollmentsDTO.setCourseEnrollments(courseEnrollments);
+            userEnrollmentsDTO.setBundleEnrollments(bundleEnrollments);
+            userEnrollmentsDTO.setAverageCompletion(98F);
+            userEnrollmentsDTO.setUpcomingDeadlines(upcomingDeadlines);
+            userEnrollmentsDTOS.add(userEnrollmentsDTO);
+        }
+        return userEnrollmentsDTOS;
+    }
 
 
     // Helper methods

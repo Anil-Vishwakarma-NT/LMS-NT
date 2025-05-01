@@ -144,6 +144,8 @@ public final class AdminController {
         );
     }
 
+
+
     @PreAuthorize("permitAll()")
     @GetMapping("/count")
     public ResponseEntity<MessageOutDto> getTotalUserCount() {

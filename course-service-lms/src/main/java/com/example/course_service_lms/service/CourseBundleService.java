@@ -1,8 +1,6 @@
 package com.example.course_service_lms.service;
 
-import com.example.course_service_lms.dto.CourseBundleDTO;
-import com.example.course_service_lms.dto.CourseBundlePostDTO;
-import com.example.course_service_lms.dto.UpdateCourseBundleDTO;
+import com.example.course_service_lms.dto.*;
 import com.example.course_service_lms.entity.CourseBundle;
 
 import java.util.List;
@@ -62,4 +60,7 @@ public interface CourseBundleService {
      * @return the created {@link CourseBundlePostDTO}
      */
     CourseBundle createCourseBundle(CourseBundlePostDTO courseBundlePostDTO);
+
+    List<BundleInfoDTO> getBundlesInfo();
+    List<BundleSummaryDTO> getRecentBundleSummaries();
 }

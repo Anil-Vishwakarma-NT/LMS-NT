@@ -16,6 +16,7 @@ import com.example.course_service_lms.service.CourseService;
 import com.example.course_service_lms.utils.StringUtils;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
@@ -280,15 +281,19 @@ public class CourseImpl implements CourseService {
 
     @Override
     public List<CourseSummaryDTO> getRecentCourseSummaries() {
-        List<Object[]> results = courseRepository.fetchRecentCourseSummaries();
-
-        return results.stream().map(obj -> {
-            CourseSummaryDTO dto = new CourseSummaryDTO();
-            dto.setTitle((String) obj[0]);
-            dto.setDescription((String) obj[1]);
-            dto.setLevel(CourseLevel.valueOf((String) obj[2]));
-            return dto;
-        }).collect(Collectors.toList());
-
+        List<Course> courses = courseRepository.findTop5ByOrderByCreatedAtDesc();
+        if(courses == null || courses.isEmpty()) {
+            throw new ResourceNotFoundException("No courses found");
+        }
+        return courses.stream()
+                .map(course -> new CourseSummaryDTO(
+                        course.getTitle(),
+                        course.getDescription(),
+                        course.getLevel(),
+                        course.getCreatedAt(),
+                        course.getUpdatedAt()))
+                .collect(Collectors.toList());
     }
+
+
 }

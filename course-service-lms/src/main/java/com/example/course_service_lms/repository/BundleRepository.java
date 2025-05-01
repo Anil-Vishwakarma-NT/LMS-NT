@@ -4,6 +4,8 @@ import com.example.course_service_lms.entity.Bundle;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
+import java.util.List;
+
 /**
  * Repository interface for managing {@link Bundle} entities.
  * <p>
@@ -31,4 +33,11 @@ public interface BundleRepository extends JpaRepository<Bundle, Long> {
      * @return {@code true} if a bundle with the given ID exists, {@code false} otherwise
      */
     boolean existsById(Long id);
+
+    /**
+     * Finds the 5 most recent bundles ordered by creation date.
+     *
+     * @return a list of the 5 most recently created bundles
+     */
+    List<Bundle> findTop5ByOrderByCreatedAtDesc();
 }

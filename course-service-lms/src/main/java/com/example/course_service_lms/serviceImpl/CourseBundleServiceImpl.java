@@ -1,9 +1,6 @@
 package com.example.course_service_lms.serviceImpl;
 
-import com.example.course_service_lms.dto.CourseBundleDTO;
-import com.example.course_service_lms.dto.CourseBundlePostDTO;
-import com.example.course_service_lms.dto.UpdateCourseBundleDTO;
-import com.example.course_service_lms.dto.UpdateCourseContentDTO;
+import com.example.course_service_lms.dto.*;
 import com.example.course_service_lms.entity.Bundle;
 import com.example.course_service_lms.entity.Course;
 import com.example.course_service_lms.entity.CourseBundle;
@@ -23,6 +20,7 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 import static com.example.course_service_lms.constants.CourseBundleConstants.BUNDLE_NOT_FOUND;
 import static com.example.course_service_lms.constants.CourseBundleConstants.COURSE_BUNDLE_ALREADY_EXISTS;
@@ -58,6 +56,8 @@ public class CourseBundleServiceImpl implements CourseBundleService {
     @Autowired
     private final CourseBundleRepository courseBundleRepository;
 
+    @Autowired
+    private final BundleRepository bundleRepository;
     /**
      * Repository for performing CRUD operations on {@link Course} entity.
      */
@@ -67,8 +67,6 @@ public class CourseBundleServiceImpl implements CourseBundleService {
     /**
      * Repository for performing CRUD operations on {@link Bundle} entity.
      */
-    @Autowired
-    private final BundleRepository bundleRepository;
 
     /**
      * Retrieves all course-bundle mappings from the repository.
@@ -300,6 +298,35 @@ public class CourseBundleServiceImpl implements CourseBundleService {
         }
     }
 
+    @Override
+    public List<BundleInfoDTO> getBundlesInfo() {
+        try {
+            List<Bundle> courseBundles = bundleRepository.findAll();
+            if(courseBundles.isEmpty()) {
+                throw new ResourceNotFoundException("No courses added in bundle");
+            }
+            List<BundleInfoDTO> bundleInfoDTOS = new ArrayList<>();
+            for(Bundle courseBundle : courseBundles) {
+                BundleInfoDTO bundleInfoDTO = new BundleInfoDTO();
+                Bundle bundle = bundleRepository.findById(courseBundle.getBundleId())
+                        .orElseThrow(() -> new ResourceNotFoundException("Bundle not found"));
+                Long countCoursesInBundle = courseBundleRepository.countByBundleId(bundle.getBundleId());
+                bundleInfoDTO.setBundleId(courseBundle.getBundleId());
+                bundleInfoDTO.setBundleName(bundle.getBundleName());
+                bundleInfoDTO.setTotalCourses(countCoursesInBundle);
+                bundleInfoDTO.setActive(bundle.isActive());
+                bundleInfoDTO.setCreatedAt(bundle.getCreatedAt());
+                bundleInfoDTO.setUpdatedAt(bundle.getUpdatedAt());
+                bundleInfoDTOS.add(bundleInfoDTO);
+            }
+            return bundleInfoDTOS;
+        } catch (ResourceNotFoundException e) {
+            throw e;
+        } catch (Exception e) {
+            throw new RuntimeException("Something went wrong", e);
+        }
+    }
+
     /**
      * Retrieves all courses belonging to a specific bundle.
      *
@@ -323,5 +350,26 @@ public class CourseBundleServiceImpl implements CourseBundleService {
             throw new RuntimeException("Something went wrong");
         }
     }
+
+    @Override
+    public List<BundleSummaryDTO> getRecentBundleSummaries() {
+        // Get the 5 most recent bundles
+        List<Bundle> recentBundles = bundleRepository.findTop5ByOrderByCreatedAtDesc();
+
+        // Create the DTOs with course counts
+        return recentBundles.stream()
+                .map(bundle -> {
+                    long courseCount = courseBundleRepository.countByBundleId(bundle.getBundleId());
+                    return new BundleSummaryDTO(
+                            bundle.getBundleId(),
+                            bundle.getBundleName(),
+                            courseCount,
+                            bundle.getCreatedAt(),
+                            bundle.getUpdatedAt()
+                    );
+                })
+                .collect(Collectors.toList());
+    }
+
 
 }

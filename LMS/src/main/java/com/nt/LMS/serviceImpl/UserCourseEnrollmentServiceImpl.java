@@ -40,8 +40,6 @@ public class UserCourseEnrollmentServiceImpl implements UserCourseEnrollmentServ
             List<UserCourseEnrollmentOutDTO> responseList = new ArrayList<>();
 
             for (CourseInfoDTO courseInfo : courseInfoDTOLists) {
-
-                // Fetch course owner
                 User owner = userRepository.findById(courseInfo.getOwnerId())
                         .orElseThrow(() -> new ResourceNotFoundException("Owner not found"));
 
@@ -67,13 +65,7 @@ public class UserCourseEnrollmentServiceImpl implements UserCourseEnrollmentServ
                     User assignedByName = userRepository.findById(enrollment.getAssignedBy())
                             .orElseThrow(() -> new ResourceNotFoundException("Assigner not found"));
 
-                    EnrolledUserDTO enrolledDTO = new EnrolledUserDTO();
-                    enrolledDTO.setUserId(user.getUserId());
-                    enrolledDTO.setUserName(user.getFirstName() + " " + user.getLastName());
-                    enrolledDTO.setEnrollmentDate(enrollment.getAssignedAt());
-                    enrolledDTO.setDeadline(enrollment.getDeadline());
-                    enrolledDTO.setProgress(98L);
-                    enrolledDTO.setAssignedByName(assignedByName.getFirstName() + assignedByName.getLastName());
+                    EnrolledUserDTO enrolledDTO = getEnrolledUserDTO(enrollment, user, assignedByName);
                     enrolledUsersDTO.add(enrolledDTO);
                 }
 
@@ -90,6 +82,17 @@ public class UserCourseEnrollmentServiceImpl implements UserCourseEnrollmentServ
         } catch (Exception e) {
             throw new RuntimeException("Something went wrong", e);
         }
+    }
+
+    private static EnrolledUserDTO getEnrolledUserDTO(UserCourseEnrollment enrollment, User user, User assignedByName) {
+        EnrolledUserDTO enrolledDTO = new EnrolledUserDTO();
+        enrolledDTO.setUserId(user.getUserId());
+        enrolledDTO.setUserName(user.getFirstName() + " " + user.getLastName());
+        enrolledDTO.setEnrollmentDate(enrollment.getAssignedAt());
+        enrolledDTO.setDeadline(enrollment.getDeadline());
+        enrolledDTO.setProgress(98F);
+        enrolledDTO.setAssignedByName(assignedByName.getFirstName() + assignedByName.getLastName());
+        return enrolledDTO;
     }
 
 

@@ -8,11 +8,15 @@ import java.util.List;
 @Data
 public class UserBundleEnrollmentOutDTO {
 
+    private String bundleName;
+
+    private Long totalCourses;
+
     private Long individualEnrollments;
 
-    private Long bundleName;
+    private Float averageCompletion;
 
-    private Long isActive;
+    private boolean isActive;
 
     private List<EnrolledUserDTO> enrolledUserDTOList;
 }
