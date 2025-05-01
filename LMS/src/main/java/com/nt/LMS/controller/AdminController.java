@@ -134,7 +134,7 @@ public final class AdminController {
         );
     }
 
-    @PutMapping("/update-user/{userId}")
+    @PatchMapping("/update-user/{userId}")
     public ResponseEntity<MessageOutDto> updateUser(@PathVariable final long userId , @RequestBody final RegisterDto registerDto){
 
         log.info("Received request to update user details");
