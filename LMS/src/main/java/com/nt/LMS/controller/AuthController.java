@@ -47,6 +47,7 @@ public final class AuthController {
      */
     @PostMapping("/refresh-token")
     public TokenResponseDto refreshToken(final HttpServletRequest request) {
+        System.out.println("@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@");
         final String refreshToken = request.getHeader("Refresh-Token");
         return authService.refreshToken(refreshToken);
     }

@@ -15,6 +15,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
+import java.sql.SQLOutput;
 import java.util.List;
 
 /**
@@ -82,6 +83,7 @@ public final class AdminController {
     public ResponseEntity<List<UserOutDTO>> getAllEmployees() {
         log.info("Fetching all employees");
         List<UserOutDTO> employees = adminService.getAllActiveUsers();
+        System.out.println(employees);
         log.info("Fetched {} employees", employees.size());
         if (employees.isEmpty()) {
             return new ResponseEntity<>(employees, HttpStatus.NO_CONTENT);
