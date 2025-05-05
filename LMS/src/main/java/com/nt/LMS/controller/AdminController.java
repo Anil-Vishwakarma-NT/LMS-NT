@@ -1,9 +1,6 @@
 package com.nt.LMS.controller;
 
-import com.nt.LMS.dto.RegisterDto;
-import com.nt.LMS.dto.MessageOutDto;
-import com.nt.LMS.dto.UserOutDTO;
-import com.nt.LMS.dto.UserInDTO;
+import com.nt.LMS.dto.*;
 import com.nt.LMS.serviceImpl.GroupServiceImpl;
 import com.nt.LMS.serviceImpl.UserServiceImpl;
 import com.nt.LMS.serviceImpl.AdminServiceImpl;
@@ -139,7 +136,7 @@ public final class AdminController {
         );
     }
 
-    @PutMapping("/update-user/{userId}")
+    @PatchMapping("/update-user/{userId}")
     public ResponseEntity<MessageOutDto> updateUser(@PathVariable final long userId , @RequestBody final RegisterDto registerDto){
 
         log.info("Received request to update user details");
@@ -149,5 +146,22 @@ public final class AdminController {
         );
     }
 
+
+
+    @PreAuthorize("permitAll()")
+    @GetMapping("/count")
+    public ResponseEntity<MessageOutDto> getTotalUserCount() {
+        log.info("Fetching total user count");
+        long count = userService.CountUsers();
+        log.info("Total user count retrieved: {}", count);
+        MessageOutDto message =new MessageOutDto();
+        message.setMessage(""+count);
+        return ResponseEntity.ok(message);
+    }
+
+    @GetMapping("/users/recent")
+    public ResponseEntity<List<UsersDetailsViewDTO>> getRecentUsers() {
+        return ResponseEntity.ok(userService.getRecentUserDetails());
+    }
 
 }

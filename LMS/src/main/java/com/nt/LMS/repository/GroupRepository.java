@@ -28,4 +28,13 @@ public interface GroupRepository extends JpaRepository<Group, Long> {
      * @return A list of groups created by the given creator.
      */
     List<Group> findByCreatorId(long creatorId);
+    boolean existsById(long groupId);
+
+    /**
+     * Finds the 5 most recent groups ordered by group ID in descending order.
+     *
+     * @return a list of the 5 most recently created groups
+     */
+    List<Group> findTop5ByOrderByGroupIdDesc();
+
 }

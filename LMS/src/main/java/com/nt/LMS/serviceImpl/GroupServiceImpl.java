@@ -4,6 +4,7 @@ import com.nt.LMS.constants.UserConstants;
 import com.nt.LMS.converter.GroupDTOConverter;
 import com.nt.LMS.converter.UserDTOConverter;
 import com.nt.LMS.dto.GroupOutDTO;
+import com.nt.LMS.dto.GroupSummaryDTO;
 import com.nt.LMS.dto.MessageOutDto;
 import com.nt.LMS.dto.UserOutDTO;
 import com.nt.LMS.entities.Group;
@@ -17,11 +18,14 @@ import com.nt.LMS.repository.UserRepository;
 import com.nt.LMS.service.GroupService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
+import org.springframework.web.bind.annotation.GetMapping;
 
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import static com.nt.LMS.constants.GroupConstants.GROUP_CREATED;
 import static com.nt.LMS.constants.GroupConstants.GROUP_DELETED;
@@ -202,7 +206,7 @@ public class GroupServiceImpl implements GroupService {
                         .orElseThrow(() -> new ResourceNotFoundException(USER_NOT_FOUND));
 
                 UserOutDTO dto = userDTOConverter.userToOutDto(user,
-                        manager.getFirstName() + " " + manager.getLastName());
+                        manager.getFirstName() + " " + manager.getLastName(),"employee");
                 response.add(dto);
             }
 
@@ -274,5 +278,44 @@ public class GroupServiceImpl implements GroupService {
             log.error("Error fetching all groups", e);
             throw new RuntimeException(e);
         }
+    }
+    @Override
+    public long countGroups() {
+        return groupRepository.count();
+    }
+
+
+    @Override
+    public List<GroupSummaryDTO> getRecentGroupSummaries() {
+        // Get the 5 most recent groups
+        List<Group> recentGroups = groupRepository.findTop5ByOrderByGroupIdDesc();
+        return convertToGroupSummaries(recentGroups);
+    }
+
+    /**
+     * Converts a list of Group entities to GroupSummaryDTOs with member counts using streams.
+     *
+     * @param groups the list of groups to convert
+     * @return a list of GroupSummaryDTOs
+     */
+    private List<GroupSummaryDTO> convertToGroupSummaries(List<Group> groups) {
+        return groups.stream()
+                .map(group -> {
+                    // Get member count
+                    long memberCount = userGroupRepository.findAllByGroupId(group.getGroupId()).size();
+
+                    // Get creator name - assuming you have a method to get user by ID
+                    String creatorName = userRepository.findById(group.getCreatorId())
+                            .map(user -> user.getFirstName() + " " + user.getLastName())
+                            .orElseThrow(() -> new ResourceNotFoundException("Creator not found"));
+
+                    return new GroupSummaryDTO(
+                            group.getGroupId(),
+                            group.getGroupName(),
+                            creatorName,
+                            memberCount
+                    );
+                })
+                .collect(Collectors.toList());
     }
 }

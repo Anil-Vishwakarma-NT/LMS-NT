@@ -80,7 +80,7 @@ public class AuthServiceImpl implements AuthService {
         log.info("Attempting login for email: {}", loginDto.getEmail());
 
         if (loginDto.getEmail() == null || loginDto.getPassword() == null) {
-            log.warn("Login failed - email or password is null");
+            log.warn("Login failed - email or password is null ***************");
             throw new InvalidRequestException(UserConstants.EMAIL_NOT_NULL_MESSAGE);
         }
 
@@ -92,8 +92,8 @@ public class AuthServiceImpl implements AuthService {
                     )
             );
         } catch (Exception ex) {
-            log.error("Authentication failed for email: {}", loginDto.getEmail());
-            throw new InvalidRequestException(UserConstants.INVALID_CREDENTIALS);
+            log.error("Authentication failed for email: {} ***************", loginDto.getEmail());
+            throw new InvalidRequestException(UserConstants.INVALID_CREDENTIALS+" "+ex);
         }
 
         UserDetails userDetails = userDetailsService.loadUserByUsername(loginDto.getEmail());

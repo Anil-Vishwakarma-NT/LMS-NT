@@ -92,7 +92,7 @@ public final class UserConstants {
     /**
      * The ID of the administrator user.
      */
-    private static final Long ADMIN_ID = 9L;
+    private static final Long ADMIN_ID = 2L;
 
     /**
      * to access admin id.
@@ -109,4 +109,6 @@ public final class UserConstants {
     private UserConstants() {
         throw new UnsupportedOperationException("Utility class cannot be instantiated.");
     }
+
+    public static String INVALID_REQUEST = "Invalid request , can not proceed.";
 }

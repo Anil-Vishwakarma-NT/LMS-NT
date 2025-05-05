@@ -38,6 +38,8 @@ public class SecurityConfig {
                 .csrf(csrf -> csrf.disable())
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers("/api/auth/**").permitAll()
+                        .requestMatchers("/api/enrollment/**").permitAll()
+                        .requestMatchers("/api/users/enrollments/**").permitAll()
                         .requestMatchers("/admin/**").hasAuthority("admin")
                         .requestMatchers("/employee/**").hasAnyAuthority("employee", "admin")
                         .requestMatchers("/manager/**").hasAnyAuthority("manager", "admin")
@@ -64,7 +66,7 @@ public class SecurityConfig {
         authProvider.setPasswordEncoder(passwordEncoder());
         return authProvider;
     }
-
+    //by default strength for generation of paaword is 10 in bcrypt password encoder.
     @Bean
     public PasswordEncoder passwordEncoder() {
         return new BCryptPasswordEncoder();
