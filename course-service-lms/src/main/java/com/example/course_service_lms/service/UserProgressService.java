@@ -8,4 +8,8 @@ public interface UserProgressService {
 
     Double getCourseProgress(int userId, int courseId);
 
+    Integer getLastPosition(int userId, int courseId, int contentId);
+
+    Double getContentProgress(int userId, int courseId, int contentId);
+
 }

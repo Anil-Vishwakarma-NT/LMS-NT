@@ -120,4 +120,21 @@ public class UserProgressServiceImpl implements UserProgressService {
         return (progressRecord != null) ? progressRecord.getCourseCompletionPercentage() : 0.0;
     }
 
+    @Override
+    public Integer getLastPosition(int userId, int courseId, int contentId) {
+        log.info("Fetching last position for UserId: {}, CourseId: {}, ContentId: {}", userId, courseId, contentId);
+
+        Double lastPosition = userProgressRepository.findLastPosition(userId, courseId, contentId);
+
+        return (lastPosition != null) ? lastPosition.intValue() : 0;
+    }
+
+    public Double getContentProgress(int userId, int courseId, int contentId) {
+        UserProgress progressRecord = userProgressRepository.findContentProgress(userId, courseId, contentId);
+
+        return (progressRecord != null) ? progressRecord.getContentCompletionPercentage() : 0.0;
+    }
+
+
 }
+

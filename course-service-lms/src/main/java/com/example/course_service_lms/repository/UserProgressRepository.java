@@ -22,4 +22,14 @@ public interface UserProgressRepository extends JpaRepository<UserProgress, Inte
 
     @Query("SELECT u FROM UserProgress u WHERE u.userId = :userId AND u.courseId = :courseId ORDER BY u.progressId ASC LIMIT 1")
     UserProgress findSingleCourseProgress(int userId, int courseId);
+
+    @Query("SELECT u.lastPosition FROM UserProgress u WHERE u.userId = :userId AND u.courseId = :courseId AND u.contentId = :contentId")
+    Double findLastPosition(int userId, int courseId, int contentId);
+
+    @Query("SELECT u.contentType FROM UserProgress u WHERE u.userId = :userId AND u.contentId = :contentId")
+    String findContentType(@Param("userId") int userId, @Param("contentId") int contentId);
+
+    @Query("SELECT u FROM UserProgress u WHERE u.userId = :userId AND u.courseId = :courseId and u.contentId = :contentId ORDER BY u.progressId ASC")
+    UserProgress findContentProgress(int userId, int courseId, int contentId);
+
 }
