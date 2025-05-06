@@ -12,12 +12,14 @@ import com.nt.LMS.repository.UserCourseEnrollmentRepository;
 import com.nt.LMS.repository.UserRepository;
 import com.nt.LMS.service.UserCourseEnrollmentService;
 import feign.FeignException;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
 import java.util.List;
 
+@Slf4j
 @Service
 public class UserCourseEnrollmentServiceImpl implements UserCourseEnrollmentService {
 
@@ -101,6 +103,7 @@ public class UserCourseEnrollmentServiceImpl implements UserCourseEnrollmentServ
     public List<UserEnrollDetails> getUserEnrolledCourses(Long userId) {
         List<UserCourseEnrollment> enrollments = userCourseEnrollmentRepository.findByUserId(userId);
         if (enrollments.isEmpty()) {
+            log.warn("No enrolled courses found for user ID: " + userId);
             throw new ResourceNotFoundException("No enrolled courses found for user ID: " + userId);
         }
 
