@@ -37,13 +37,13 @@ public final class JwtUtil {
      * The expiration time for access tokens (1 hour).
      */
 //    private final long accessTokenExpiration = 1000 * 60 * 60; // 1 hour
-    private final long accessTokenExpiration = 1000 * 60;
+    private final long accessTokenExpiration = 1000 * 60 * 1;
 
     /**
      * The expiration time for refresh tokens (1 day).
      */
 //    private final long refreshTokenExpiration = 1000 * 60 * 60 * 24; // 1 day
-    private final long refreshTokenExpiration = 1000 * 60 * 5;
+    private final long refreshTokenExpiration = 1000 * 60 * 2;
     /**
      * Constructs a JwtUtil instance with the provided secret.
      *
@@ -60,6 +60,7 @@ public final class JwtUtil {
      * @return the extracted username
      */
     public String extractUsername(final String token) {
+
         return extractClaim(token, Claims::getSubject);
     }
 
@@ -156,7 +157,14 @@ public final class JwtUtil {
      */
     public boolean validateToken(final String token, final UserDetails userDetails) {
         final String username = extractUsername(token);
-        return (username.equals(userDetails.getUsername()) && !isTokenExpired(token));
+        if (!username.equals(userDetails.getUsername())) {
+            return false;
+        }
+        if (isTokenExpired(token)) {
+            System.out.println("Token is expired 3333333333333333333333333");
+            throw new ExpiredJwtException(null, null, "JWT token expired"); // <--- manual throw
+        }
+        return true;
     }
 
     /**
@@ -166,6 +174,7 @@ public final class JwtUtil {
      * @return true if the token is expired, false otherwise
      */
     private boolean isTokenExpired(final String token) {
+        System.out.println("checking the token ............");
         return extractClaim(token, Claims::getExpiration).before(new Date());
     }
 }
