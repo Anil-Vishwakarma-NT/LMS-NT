@@ -24,6 +24,8 @@ public class UserProgressController {
     public Double getCourseProgress(@RequestParam int userId, @RequestParam int courseId) {
         return userProgressService.getCourseProgress(userId, courseId);
     }
+
+
 }
 
 
