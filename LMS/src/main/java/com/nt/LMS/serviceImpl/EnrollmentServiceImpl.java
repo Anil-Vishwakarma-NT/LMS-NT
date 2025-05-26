@@ -462,7 +462,9 @@ public class EnrollmentServiceImpl implements EnrollmentService {
                     enrolledCoursesDTO.setCourseName(courseName);
                     enrolledCoursesDTO.setEnrollmentDate(userCourseEnrollment.getAssignedAt());
                     enrolledCoursesDTO.setDeadline(userCourseEnrollment.getDeadline());
-                    enrolledCoursesDTO.setProgress(98F);
+                    //enrolledCoursesDTO.setProgress(98F);
+                    Double progress = courseMicroserviceClient.getCourseProgress((int) user.getUserId(), userCourseEnrollment.getCourseId().intValue()).getBody();
+                    enrolledCoursesDTO.setProgress(progress != null ? progress.floatValue() : 0F);
                     enrolledCoursesDTOS.add(enrolledCoursesDTO);
 
                     LocalDateTime deadline = enrolledCoursesDTO.getDeadline();
