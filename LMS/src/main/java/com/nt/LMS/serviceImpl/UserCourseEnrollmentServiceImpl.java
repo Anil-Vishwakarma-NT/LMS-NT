@@ -13,6 +13,7 @@ import com.nt.LMS.repository.UserRepository;
 import com.nt.LMS.service.UserCourseEnrollmentService;
 import feign.FeignException;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
@@ -66,7 +67,19 @@ public class UserCourseEnrollmentServiceImpl implements UserCourseEnrollmentServ
                     User assignedByName = userRepository.findById(enrollment.getAssignedBy())
                             .orElseThrow(() -> new ResourceNotFoundException("Assigner not found"));
 
-                    EnrolledUserDTO enrolledDTO = getEnrolledUserDTO(enrollment, user, assignedByName);
+                    Double progress = 0.0;
+                    try {
+                        ResponseEntity<Double> progressResponse = courseMicroserviceClient.getCourseProgress(
+                                enrollment.getUserId().intValue(), enrollment.getCourseId().intValue());
+                        if (progressResponse.getBody() != null) {
+                            progress = progressResponse.getBody();
+                        }
+                    } catch (Exception ex) {
+                        // Log the exception if necessary, but continue with default progress
+                        progress = 0.0;
+                    }
+
+                    EnrolledUserDTO enrolledDTO = getEnrolledUserDTO(enrollment, user, assignedByName, progress);
                     enrolledUsersDTO.add(enrolledDTO);
                 }
 
@@ -85,13 +98,13 @@ public class UserCourseEnrollmentServiceImpl implements UserCourseEnrollmentServ
         }
     }
 
-    private static EnrolledUserDTO getEnrolledUserDTO(UserCourseEnrollment enrollment, User user, User assignedByName) {
+    private static EnrolledUserDTO getEnrolledUserDTO(UserCourseEnrollment enrollment, User user, User assignedByName,double progress) {
         EnrolledUserDTO enrolledDTO = new EnrolledUserDTO();
         enrolledDTO.setUserId(user.getUserId());
         enrolledDTO.setUserName(user.getFirstName() + " " + user.getLastName());
         enrolledDTO.setEnrollmentDate(enrollment.getAssignedAt());
         enrolledDTO.setDeadline(enrollment.getDeadline());
-        enrolledDTO.setProgress(98F);
+        enrolledDTO.setProgress(progress);
         enrolledDTO.setAssignedByName(assignedByName.getFirstName() + assignedByName.getLastName());
         return enrolledDTO;
     }

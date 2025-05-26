@@ -79,7 +79,7 @@ public class UserBundleEnrollmentServiceImpl implements UserBundleEnrollmentServ
         enrolledDTO.setUserName(user.getFirstName() + " " + user.getLastName());
         enrolledDTO.setEnrollmentDate(userBundleEnrollment.getAssignedAt());
         enrolledDTO.setDeadline(userBundleEnrollment.getDeadline());
-        enrolledDTO.setProgress(98F);
+        enrolledDTO.setProgress(98.0);
         enrolledDTO.setAssignedByName(assignedByName.getFirstName() + assignedByName.getLastName());
         return enrolledDTO;
     }

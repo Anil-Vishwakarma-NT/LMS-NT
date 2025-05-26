@@ -417,7 +417,7 @@ public class EnrollmentServiceImpl implements EnrollmentService {
             Long groupsEnrolled = groupCourseEnrollmentRepository.countByStatusNotIn(List.of("COMPLETED", "EXPIRED", "UNENROLLED")) + groupBundleEnrollmentRepository.countByStatusNotIn(List.of("COMPLETED", "EXPIRED", "UNENROLLED"));
             Long popularCourseId = enrollmentRepository.findMostFrequentEnrolledCourseId();
             Long courseCompletions = enrollmentHistoryRepository.countByStatusIn(List.of("COMPLETED"));
-            if(usersEnrolled == 0 && groupsEnrolled == 0 && popularCourseId == 0) {
+            if(usersEnrolled == 0 && groupsEnrolled == 0) {
                 throw new ResourceNotFoundException("No Enrollments");
             }
             String popularCourse = Objects.requireNonNull(courseMicroserviceClient.getCourseNameById(popularCourseId).getBody());
@@ -426,7 +426,7 @@ public class EnrollmentServiceImpl implements EnrollmentService {
             enrollmentDashBoardStatsDTO.setGroupsEnrolled(74L);
             enrollmentDashBoardStatsDTO.setTotalEnrollments(85L);
             enrollmentDashBoardStatsDTO.setCourseCompletions(46L);
-            enrollmentDashBoardStatsDTO.setTopEnrolledCourse("HOO");
+            enrollmentDashBoardStatsDTO.setTopEnrolledCourse("N/A");
             enrollmentDashBoardStatsDTO.setUpcomingDeadlines(7L);
             enrollmentDashBoardStatsDTO.setCompletionRate(99L);
             return enrollmentDashBoardStatsDTO;

@@ -9,7 +9,7 @@ public class EnrolledUserDTO {
     private Long userId;
     private String assignedByName;
     private String userName;
-    private Float progress;
+    private Double progress;
     private LocalDateTime enrollmentDate;
     private LocalDateTime deadline;
 }

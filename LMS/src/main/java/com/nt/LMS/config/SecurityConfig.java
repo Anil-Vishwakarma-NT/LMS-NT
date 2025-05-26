@@ -43,7 +43,7 @@ public class SecurityConfig {
                         .requestMatchers("/admin/**").permitAll()
                         .requestMatchers("/employee/**").hasAnyAuthority("employee", "admin")
                         .requestMatchers("/manager/**").hasAnyAuthority("manager", "admin")
-                        .requestMatchers("/group/all-groups").hasAuthority("admin")
+                        .requestMatchers("/group/all-groups").permitAll()
                         .requestMatchers("/group/**").permitAll()
                         .anyRequest().authenticated()
                 )
