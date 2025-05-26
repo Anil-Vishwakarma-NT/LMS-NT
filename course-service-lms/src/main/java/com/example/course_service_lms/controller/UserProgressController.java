@@ -26,7 +26,18 @@ public class UserProgressController {
     }
 
 
+    @GetMapping("/last-position")
+    public Integer getLastPosition(@RequestParam int userId, @RequestParam int courseId, @RequestParam int contentId) {
+        return userProgressService.getLastPosition(userId, courseId, contentId);
+    }
+
+    @GetMapping("/content")
+    public Double getCourseProgress(@RequestParam int userId, @RequestParam int courseId, @RequestParam int contentId) {
+        return userProgressService.getContentProgress(userId, courseId, contentId);
+    }
+
 }
+
 
 
 
