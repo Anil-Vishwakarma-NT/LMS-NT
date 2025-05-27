@@ -65,7 +65,7 @@ public class UserProgressServiceImpl implements UserProgressService {
         allProgressRecords.forEach(record -> {
             record.setCourseCompletionPercentage(courseCompletionPercentage);
             record.setCourseCompleted(courseCompletionPercentage >= 100);
-            userProgressRepository.save(record); // ✅ Ensure all records are updated
+            userProgressRepository.save(record);
         });
 
         log.info("Updated Course Completion Status for all records.");
