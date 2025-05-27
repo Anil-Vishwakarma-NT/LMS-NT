@@ -51,7 +51,7 @@ public class ManagerServiceImpl implements ManagerService {
 
             List<UserOutDTO> response = new ArrayList<>();
             for (User u : users) {
-                UserOutDTO userDto = userDTOConverter.userToOutDto(u, managerName);
+                UserOutDTO userDto = userDTOConverter.userToOutDto(u, managerName , "employee");
                 response.add(userDto);
             }
 

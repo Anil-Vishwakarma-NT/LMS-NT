@@ -6,6 +6,7 @@ import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 
 import java.util.List;
+import java.util.Map;
 
 public interface UserService extends UserDetailsService {
 
@@ -14,4 +15,5 @@ public interface UserService extends UserDetailsService {
     public long CountUsers();
     List<UsersDetailsViewDTO> getRecentUserDetails();
 
+    public Map<String , Long> userStatistics(long userId);
 }

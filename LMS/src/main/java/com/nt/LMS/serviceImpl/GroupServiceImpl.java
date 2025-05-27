@@ -206,7 +206,7 @@ public class GroupServiceImpl implements GroupService {
                         .orElseThrow(() -> new ResourceNotFoundException(USER_NOT_FOUND));
 
                 UserOutDTO dto = userDTOConverter.userToOutDto(user,
-                        manager.getFirstName() + " " + manager.getLastName());
+                        manager.getFirstName() + " " + manager.getLastName(),"employee");
                 response.add(dto);
             }
 

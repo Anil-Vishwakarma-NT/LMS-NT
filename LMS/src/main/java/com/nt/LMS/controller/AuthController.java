@@ -7,7 +7,13 @@ import com.nt.LMS.service.AuthService;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+
 
 /**
  * Controller to handle authentication-related endpoints.
@@ -15,7 +21,6 @@ import org.springframework.web.bind.annotation.*;
 @Slf4j
 @RestController
 @RequestMapping("/api/auth")
-@CrossOrigin("http://localhost:3000")
 public final class AuthController {
 
     /**
@@ -50,11 +55,12 @@ public final class AuthController {
     /**
      * Endpoint to logout a user and invalidate refresh token.
      *
-     * @param email The email of the user to logout.
      * @return Message indicating successful logout.
      */
     @PostMapping("/logout")
-    public MessageOutDto logout(@RequestParam final String email) {
+    public MessageOutDto logout() {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        String email = authentication.getName();
         return authService.logout(email);
     }
 }

@@ -21,7 +21,6 @@ import java.util.List;
 @Slf4j
 @RestController
 @RequestMapping("/admin")
-@CrossOrigin("http://localhost:3000")
 public final class AdminController {
 
     /**
@@ -135,7 +134,7 @@ public final class AdminController {
         );
     }
 
-    @PutMapping("/update-user/{userId}")
+    @PatchMapping("/update-user/{userId}")
     public ResponseEntity<MessageOutDto> updateUser(@PathVariable final long userId , @RequestBody final RegisterDto registerDto){
 
         log.info("Received request to update user details");
@@ -144,6 +143,8 @@ public final class AdminController {
                 HttpStatus.OK
         );
     }
+
+
 
     @PreAuthorize("permitAll()")
     @GetMapping("/count")

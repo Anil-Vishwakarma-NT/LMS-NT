@@ -3,6 +3,7 @@ package com.nt.LMS.serviceImpl;
 import com.nt.LMS.converter.UserDTOConverter;
 import com.nt.LMS.dto.UserInDTO;
 import com.nt.LMS.dto.UserOutDTO;
+import com.nt.LMS.exception.InvalidRequestException;
 import com.nt.LMS.exception.ResourceNotFoundException;
 import com.nt.LMS.constants.UserConstants;
 import com.nt.LMS.dto.MessageOutDto;
@@ -23,6 +24,7 @@ import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 
+import static com.nt.LMS.constants.UserConstants.INVALID_REQUEST;
 import static com.nt.LMS.constants.UserConstants.USER_UPDATED_SUCCESSFULLY;
 
 /**
@@ -104,41 +106,46 @@ public final class AdminServiceImpl implements AdminService {
     @Override
     public MessageOutDto employeeDeletion(final long id) {
         log.info("Attempting to delete user with ID: {}", id);
-        User user = userRepository.findById(id)
-                .orElseThrow(() -> {
-                    log.error("User with ID {} not found", id);
-                    return new ResourceNotFoundException(UserConstants.USER_NOT_FOUND);
-                });
+        if(id != UserConstants.getAdminId()) {
+            User user = userRepository.findById(id)
+                    .orElseThrow(() -> {
+                        log.error("User with ID {} not found", id);
+                        return new ResourceNotFoundException(UserConstants.USER_NOT_FOUND);
+                    });
 
-        Role role = roleRepository.findById(user.getRoleId())
-                .orElseThrow(() -> {
-                    log.error("Role with ID {} not found for user ID {}", user.getRoleId(), id);
-                    return new IllegalStateException(UserConstants.INVALID_USER_ROLE);
-                });
+            Role role = roleRepository.findById(user.getRoleId())
+                    .orElseThrow(() -> {
+                        log.error("Role with ID {} not found for user ID {}", user.getRoleId(), id);
+                        return new IllegalStateException(UserConstants.INVALID_USER_ROLE);
+                    });
 
-        String roleName = role.getName();
+            String roleName = role.getName();
 
-        if ("employee".equalsIgnoreCase(roleName)) {
-            user.set_active(false);
-            userRepository.save(user);
-            log.info("Employee with ID {} deleted successfully", id);
-        } else if ("manager".equalsIgnoreCase(roleName)) {
-            log.info("Changing manager for the deleted manager with ID: {}", id);
+            if ("employee".equalsIgnoreCase(roleName)) {
+                user.set_active(false);
+                userRepository.save(user);
+                log.info("Employee with ID {} deleted successfully", id);
+            } else if ("manager".equalsIgnoreCase(roleName)) {
+                log.info("Changing manager for the deleted manager with ID: {}", id);
 
-            List<User> subordinates = userRepository.findByManagerId(user.getUserId());
-            if (!subordinates.isEmpty()) {
-                for (User u : subordinates) {
-                    u.setManagerId(UserConstants.getAdminId());
+                List<User> subordinates = userRepository.findByManagerId(user.getUserId());
+                if (!subordinates.isEmpty()) {
+                    for (User u : subordinates) {
+                        u.setManagerId(UserConstants.getAdminId());
+                    }
+                    userRepository.saveAll(subordinates);
                 }
-                userRepository.saveAll(subordinates);
-            }
 
-            user.set_active(false);
-            userRepository.save(user);
-            log.info("Manager with ID {} deleted successfully", id);
-        } else {
+                user.set_active(false);
+                userRepository.save(user);
+                log.info("Manager with ID {} deleted successfully", id);
+            }
+        else {
             log.error("Invalid role for user with ID {}: {}", id, roleName);
             throw new IllegalStateException(UserConstants.INVALID_USER_ROLE);
+        }}
+        else{
+            throw new InvalidRequestException(INVALID_REQUEST);
         }
         return new MessageOutDto(UserConstants.USER_DELETION_MESSAGE);
     }
@@ -174,7 +181,7 @@ public final class AdminServiceImpl implements AdminService {
                             }
                     );
 
-                    UserOutDTO userDto = userDTOConverter.userToOutDto(user, managerName);
+                    UserOutDTO userDto = userDTOConverter.userToOutDto(user, managerName,role.getName());
                     userDtos.add(userDto);
                 }
             }
@@ -218,7 +225,7 @@ public final class AdminServiceImpl implements AdminService {
                             }
                     );
 
-                    UserOutDTO userDto = userDTOConverter.userToOutDto(user, managerName);
+                    UserOutDTO userDto = userDTOConverter.userToOutDto(user, managerName,role.getName());
                     userDtos.add(userDto);
                 }
             }
@@ -245,6 +252,7 @@ public final class AdminServiceImpl implements AdminService {
     public MessageOutDto changeUserRole(final long userId, final String newRoleName) {
         log.info("Attempting to change role for user with ID: {} to role: {}", userId, newRoleName);
         try {
+            if(userId != UserConstants.getAdminId()){
             User user = userRepository.findById(userId)
                     .orElseThrow(() -> {
                         log.error("User with ID {} not found", userId);
@@ -261,12 +269,17 @@ public final class AdminServiceImpl implements AdminService {
             user.setUpdatedAt(new Date());
             userRepository.save(user);
             log.info("Successfully changed role for user with ID: {} to {}", userId, newRoleName);
-            return new MessageOutDto(UserConstants.UPDATED);
+            return new MessageOutDto(UserConstants.UPDATED);}
+            else{
+                throw new InvalidRequestException(INVALID_REQUEST);
+            }
         } catch (Exception e) {
             log.error("Error changing role for user with ID: {}", userId, e);
             throw new RuntimeException(UserConstants.ERROR, e);
         }
     }
+
+
 
     /**
      * Fetches employees under a manager.
@@ -278,26 +291,32 @@ public final class AdminServiceImpl implements AdminService {
     public List<UserOutDTO> getManagerEmployee(final long userId) {
         log.info("Fetching employees for manager with ID: {}", userId);
         try {
-            User manager = userRepository.findById(userId).orElseThrow(() -> {
-                log.error("Manager with ID {} not found", userId);
-                throw new ResourceNotFoundException(UserConstants.USER_NOT_FOUND);
-            });
+            if(userId != UserConstants.getAdminId()) {
+                User manager = userRepository.findById(userId).orElseThrow(() -> {
+                    log.error("Manager with ID {} not found", userId);
+                    throw new ResourceNotFoundException(UserConstants.USER_NOT_FOUND);
+                });
 
-            String managerName = manager.getFirstName() + manager.getLastName();
-            List<User> users = userRepository.findByManagerId(userId);
-            if (users.isEmpty()) {
-                log.warn("No employees found");
-                return Collections.emptyList();
+                String managerName = manager.getFirstName() + manager.getLastName();
+                List<User> users = userRepository.findByManagerId(userId);
+                if (users.isEmpty()) {
+                    log.warn("No employees found");
+                    return Collections.emptyList();
+                }
+
+                List<UserOutDTO> response = new ArrayList<>();
+                for (User user : users) {
+
+                    UserOutDTO userDto = userDTOConverter.userToOutDto(user, managerName, "employee");
+                    response.add(userDto);
+                }
+
+                log.info("Successfully fetched {} employees for manager with ID: {}", response.size(), userId);
+                return response;
             }
-
-            List<UserOutDTO> response = new ArrayList<>();
-            for (User user : users) {
-                UserOutDTO userDto = userDTOConverter.userToOutDto(user, managerName);
-                response.add(userDto);
+            else {
+                throw new InvalidRequestException(INVALID_REQUEST);
             }
-
-            log.info("Successfully fetched {} employees for manager with ID: {}", response.size(), userId);
-            return response;
         } catch (Exception e) {
             log.error("Error fetching employees for manager with ID: {}", userId, e);
             throw new RuntimeException(UserConstants.ERROR, e);
@@ -308,27 +327,35 @@ public final class AdminServiceImpl implements AdminService {
     public MessageOutDto updateUserDetails(RegisterDto registerDto , long userId ){
         log.info("updating user information");
         try {
-            User user = userRepository.findById(userId).orElseThrow(() -> {
-                log.error("User with ID {} not found", userId);
-                throw new ResourceNotFoundException(UserConstants.USER_NOT_FOUND);
-            });
+            if (userId != UserConstants.getAdminId()) {
+                User user = userRepository.findById(userId).orElseThrow(() -> {
+                    log.error("User with ID {} not found", userId);
+                    throw new ResourceNotFoundException(UserConstants.USER_NOT_FOUND);
+                });
 
-            user.setFirstName(registerDto.getFirstName());
-            user.setLastName(registerDto.getLastName());
-            user.setUserName(registerDto.getUserName());
-            user.setEmail(registerDto.getEmail());
-            user.setRoleId(registerDto.getRoleId());
+                if (!registerDto.getFirstName().isEmpty())
+                    user.setFirstName(registerDto.getFirstName());
+                if (!registerDto.getLastName().isEmpty())
+                    user.setLastName(registerDto.getLastName());
+                if (!registerDto.getUserName().isEmpty())
+                    user.setUserName(registerDto.getUserName());
+                if (!registerDto.getEmail().isEmpty())
+                    user.setEmail(registerDto.getEmail());
+                if (registerDto.getRoleId() != null)
+                    user.setRoleId(registerDto.getRoleId());
 
-            userRepository.save(user);
+                userRepository.save(user);
 
-            return new MessageOutDto(USER_UPDATED_SUCCESSFULLY);
+                return new MessageOutDto(USER_UPDATED_SUCCESSFULLY);
+            }
+            else{
+                throw new InvalidRequestException(INVALID_REQUEST);
+            }
         }
         catch(Exception e){
             log.error("Error fetching employees for manager with ID: {}", userId, e);
             throw new RuntimeException(UserConstants.ERROR, e);
         }
     }
-
-
 
 }

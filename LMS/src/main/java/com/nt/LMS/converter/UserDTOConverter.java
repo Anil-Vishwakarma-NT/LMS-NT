@@ -18,13 +18,15 @@ public final class UserDTOConverter {
      * @param manager the manager's name, can be null if not available.
      * @return a {@link UserOutDTO} representing the user entity.
      */
-    public UserOutDTO userToOutDto(final User user, final String manager) {
+    public UserOutDTO userToOutDto(final User user, final String manager , final String rolename) {
         UserOutDTO userout = new UserOutDTO();
         userout.setUserId(user.getUserId());
         userout.setUsername(user.getUserName());
         userout.setEmail(user.getEmail());
         userout.setFirstName(user.getFirstName());
         userout.setLastName(user.getLastName());
+        if(rolename !=null)
+            userout.setRole(rolename);
 
         if (manager != null) {
             userout.setManager(manager);
