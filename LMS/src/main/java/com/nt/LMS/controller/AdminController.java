@@ -150,7 +150,7 @@ public final class AdminController {
     @GetMapping("/count")
     public ResponseEntity<MessageOutDto> getTotalUserCount() {
         log.info("Fetching total user count");
-        long count = userService.CountUsers();
+        long count = userService.countActiveUsers();
         log.info("Total user count retrieved: {}", count);
         MessageOutDto message =new MessageOutDto();
         message.setMessage(""+count);

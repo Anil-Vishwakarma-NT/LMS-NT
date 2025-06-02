@@ -82,7 +82,7 @@ public final class UserConstants {
     /**
      * The ID of the administrator user.
      */
-    private static final Long ADMIN_ID = 2L;
+    private static final Long ADMIN_ID = 1L;
 
     /**
      * to access admin id.

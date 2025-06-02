@@ -19,6 +19,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 @Slf4j
 @Service
@@ -45,13 +46,19 @@ public class UserCourseEnrollmentServiceImpl implements UserCourseEnrollmentServ
 
             for (CourseInfoDTO courseInfo : courseInfoDTOLists) {
                 User owner = userRepository.findById(courseInfo.getOwnerId())
-                        .orElseThrow(() -> new ResourceNotFoundException("Owner not found"));
+                        .filter(User::isActive)
+                        .orElseThrow(() -> new ResourceNotFoundException("Active owner not found"));
 
-                long activeEnrollmentCount = userCourseEnrollmentRepository
-                        .countByCourseIdAndStatusNotIn(
-                                courseInfo.getCourseId(),
-                                List.of("EXPIRED", "UNENROLLED", "COMPLETED")
-                        );
+                List<UserCourseEnrollment> indivisualEnrollments = userCourseEnrollmentRepository
+                        .findByCourseId(courseInfo.getCourseId());
+
+                long activeEnrollmentCount = indivisualEnrollments.stream()
+                        .filter(enrollment -> !List.of("EXPIRED", "UNENROLLED", "COMPLETED").contains(enrollment.getStatus()))
+                        .map(enrollment -> userRepository.findById(enrollment.getUserId()))
+                        .filter(Optional::isPresent)
+                        .map(Optional::get)
+                        .filter(user -> user.isActive() && user.getUserId() != 1) // optional: exclude user ID 1
+                        .count();
 
                 UserCourseEnrollmentOutDTO courseDTO = new UserCourseEnrollmentOutDTO();
                 courseDTO.setCourseName(courseInfo.getTitle());
@@ -64,10 +71,17 @@ public class UserCourseEnrollmentServiceImpl implements UserCourseEnrollmentServ
                 List<EnrolledUserDTO> enrolledUsersDTO = new ArrayList<>();
 
                 for (UserCourseEnrollment enrollment : enrollments) {
-                    User user = userRepository.findById(enrollment.getUserId())
-                            .orElseThrow(() -> new ResourceNotFoundException("User not found"));
-                    User assignedByName = userRepository.findById(enrollment.getAssignedBy())
-                            .orElseThrow(() -> new ResourceNotFoundException("Assigner not found"));
+                    Optional<User> userOpt = userRepository.findById(enrollment.getUserId())
+                            .filter(user -> user.isActive() && user.getUserId() != 1);
+                    Optional<User> assignedByOpt = userRepository.findById(enrollment.getAssignedBy())
+                            .filter(User::isActive);
+
+                    if (userOpt.isEmpty() || assignedByOpt.isEmpty()) {
+                        continue; // Skip inactive users or assigners
+                    }
+
+                    User user = userOpt.get();
+                    User assignedByName = assignedByOpt.get();
 
                     Double progress = 0.0;
                     try {

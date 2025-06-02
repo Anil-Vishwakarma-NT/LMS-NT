@@ -94,7 +94,7 @@ public class User {
      * The status for the user
      */
     @Column(name ="is_active" , nullable =false ,columnDefinition = "Boolean Default True")
-    private boolean is_active=true;
+    private boolean active=true;
 
 //    @Column(name = "is_loggedIn" , nullable=false,columnDefinition = "Boolean default false")
 //    private boolean is_loggedIn = false;

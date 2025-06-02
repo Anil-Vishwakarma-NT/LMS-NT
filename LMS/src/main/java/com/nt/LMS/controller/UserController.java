@@ -27,11 +27,16 @@ public class UserController {
     private UserRepository userRepository;
 
     @GetMapping("/getUserId")
-    public ResponseEntity<Long> getUserIdByEmail(@RequestParam String email) {
+    public ResponseEntity<UserOutDTO> getUserIdByEmail(@RequestParam String email) {
         Optional<User> user = userRepository.findByEmail(email);
 
         if (user.isPresent()) {
-            return ResponseEntity.ok(user.get().getUserId());
+            UserOutDTO userOutDTO = new UserOutDTO();
+            userOutDTO.setUserId(user.get().getUserId());
+            userOutDTO.setFirstName(user.get().getFirstName());
+            userOutDTO.setLastName(user.get().getLastName());
+
+            return ResponseEntity.ok(userOutDTO);
         } else {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(null);
         }
