@@ -87,7 +87,7 @@ public class GroupServiceImpl implements GroupService {
     public MessageOutDto createGroup(final String groupName, final String username) {
         try {
             log.info("Attempting to create a group with name: {} by user: {}", groupName, username);
-            User user = userRepository.findByEmail(username)
+            User user = userRepository.findByEmailIgnoreCase(username)
                     .orElseThrow(() -> new UnauthorizedAccessException(USER_NOT_FOUND));
 
             Group group = new Group(groupName, user.getUserId());
@@ -226,7 +226,7 @@ public class GroupServiceImpl implements GroupService {
     @Override
     public List<GroupOutDTO> getGroups(final String email) {
         try {
-            User user = userRepository.findByEmail(email)
+            User user = userRepository.findByEmailIgnoreCase(email)
                     .orElseThrow(() -> new ResourceNotFoundException(USER_NOT_FOUND));
 
             List<GroupOutDTO> groupOutList = new ArrayList<>();

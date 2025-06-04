@@ -12,6 +12,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
+import java.sql.SQLOutput;
 import java.util.List;
 
 /**
@@ -63,6 +64,7 @@ public final class AdminController {
      * @return success message
      */
     @DeleteMapping("/remove-user/{userId}")
+    @PreAuthorize("hasAuthority('admin')")
     public ResponseEntity<MessageOutDto> deleteEmployee(@PathVariable final long userId) {
         log.info("Received request to delete user with ID: {}", userId);
         MessageOutDto msg = adminService.employeeDeletion(userId);
@@ -76,9 +78,11 @@ public final class AdminController {
      * @return list of all employees
      */
     @GetMapping("/active-employees")
+    @PreAuthorize("hasAuthority('admin')")
     public ResponseEntity<List<UserOutDTO>> getAllEmployees() {
         log.info("Fetching all employees");
         List<UserOutDTO> employees = adminService.getAllActiveUsers();
+        System.out.println(employees);
         log.info("Fetched {} employees", employees.size());
         if (employees.isEmpty()) {
             return new ResponseEntity<>(employees, HttpStatus.NO_CONTENT);
@@ -92,6 +96,7 @@ public final class AdminController {
      * @return list of all employees
      */
     @GetMapping("/inactive-employees")
+    @PreAuthorize("hasAuthority('admin')")
     public ResponseEntity<List<UserOutDTO>> getAllInactiveEmployees() {
         log.info("Fetching all inactive employees");
         List<UserOutDTO> employees = adminService.getAllInactiveUsers();
@@ -109,6 +114,7 @@ public final class AdminController {
      * @return list of employees
      */
     @GetMapping("/manager-employee/{userId}")
+    @PreAuthorize("hasAuthority('admin')")
     public ResponseEntity<List<UserOutDTO>> getManagerEmployee(@PathVariable final long userId) {
         log.info("Fetching employees for manager with ID: {}", userId);
         List<UserOutDTO> employees = adminService.getManagerEmployee(userId);
@@ -126,6 +132,7 @@ public final class AdminController {
      * @return success message
      */
     @PostMapping("/change-role")
+    @PreAuthorize("hasAuthority('admin')")
     public ResponseEntity<MessageOutDto> changeRole(@RequestBody @Valid final UserInDTO userDto) {
         log.info("Received request to change role for user with ID: {}", userDto.getUserId());
         return new ResponseEntity<>(
@@ -135,6 +142,7 @@ public final class AdminController {
     }
 
     @PatchMapping("/update-user/{userId}")
+    @PreAuthorize("hasAuthority('admin')")
     public ResponseEntity<MessageOutDto> updateUser(@PathVariable final long userId , @RequestBody final RegisterDto registerDto){
 
         log.info("Received request to update user details");

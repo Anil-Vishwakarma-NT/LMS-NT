@@ -36,7 +36,7 @@ public class ManagerServiceImpl implements ManagerService {
     public List<UserOutDTO> getEmployees(final String username) {
         log.info("Fetching employees for manager with email: {}", username);
         try {
-            User manager = userRepository.findByEmail(username)
+            User manager = userRepository.findByEmailIgnoreCase(username)
                     .orElseThrow(() -> {
                         log.error("Manager with email {} not found", username);
                         throw new ResourceNotFoundException(UserConstants.USER_NOT_FOUND);

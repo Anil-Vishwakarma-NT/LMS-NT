@@ -28,7 +28,7 @@ public class UserController {
 
     @GetMapping("/getUserId")
     public ResponseEntity<UserOutDTO> getUserIdByEmail(@RequestParam String email) {
-        Optional<User> user = userRepository.findByEmail(email);
+        Optional<User> user = userRepository.findByEmailIgnoreCase(email);
 
         if (user.isPresent()) {
             UserOutDTO userOutDTO = new UserOutDTO();
