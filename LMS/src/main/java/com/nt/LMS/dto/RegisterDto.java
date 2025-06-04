@@ -20,6 +20,7 @@ public class RegisterDto {
      * First name of the user. It must contain only alphabets.
      */
     @NotBlank(message = "First name is required")
+    @Size(min = 1, message = "First name cannot be empty or just spaces.")
     @Pattern(
             regexp = "^[a-zA-Z]+$",
             message = "First name must contain only alphabets."

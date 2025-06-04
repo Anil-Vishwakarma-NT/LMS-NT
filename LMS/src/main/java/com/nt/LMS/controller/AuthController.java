@@ -5,6 +5,7 @@ import com.nt.LMS.dto.MessageOutDto;
 import com.nt.LMS.dto.TokenResponseDto;
 import com.nt.LMS.service.AuthService;
 import jakarta.servlet.http.HttpServletRequest;
+import jakarta.validation.Valid;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.Authentication;
@@ -36,7 +37,7 @@ public final class AuthController {
      * @return Access and refresh tokens.
      */
     @PostMapping("/login")
-    public TokenResponseDto login(@RequestBody final LoginDto loginDto) {
+    public TokenResponseDto login(@Valid @RequestBody final LoginDto loginDto) {
         return authService.login(loginDto);
     }
 
@@ -48,6 +49,7 @@ public final class AuthController {
      */
     @PostMapping("/refresh-token")
     public TokenResponseDto refreshToken(final HttpServletRequest request) {
+        System.out.println("@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@");
         final String refreshToken = request.getHeader("Refresh-Token");
         return authService.refreshToken(refreshToken);
     }
