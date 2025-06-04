@@ -2,8 +2,13 @@ plugins {
 	id 'java'
 	id 'org.springframework.boot' version '3.4.4'
 	id 'io.spring.dependency-management' version '1.1.7'
+	id 'jacoco'
+	id 'checkstyle'
+	id 'pmd'
 }
-
+jacoco {
+	toolVersion = "0.8.11"
+}
 group = 'com.nt'
 version = '0.0.1-SNAPSHOT'
 
@@ -13,6 +18,22 @@ java {
 	}
 }
 
+checkstyle {
+	toolVersion = '10.3' // or whatever version you prefer
+	configFile = file("config/checkstyle/checkstyle.xml")
+	configDirectory.set(file("config/checkstyle"))
+	ignoreFailures = false // Set to true if you don't want build to fail on violations
+	showViolations = true
+}
+
+pmd {
+	toolVersion = "6.55.0" // or latest version
+	ignoreFailures = false
+	consoleOutput = true
+	ruleSets = [] // disables built-in rulesets
+	ruleSetFiles = files("config/pmd/ruleset.xml") // custom rules
+}
+
 repositories {
 	mavenCentral()
 }
@@ -20,11 +41,52 @@ repositories {
 dependencies {
 	implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
 	implementation 'org.springframework.boot:spring-boot-starter-web'
+	implementation 'org.springframework.boot:spring-boot-starter-security'
+
+	implementation 'io.jsonwebtoken:jjwt-api:0.11.5'
+	runtimeOnly 'io.jsonwebtoken:jjwt-impl:0.11.5'
+	runtimeOnly 'io.jsonwebtoken:jjwt-jackson:0.11.5' // Required for JSON processing
+
 	runtimeOnly 'org.postgresql:postgresql'
 	testImplementation 'org.springframework.boot:spring-boot-starter-test'
 	testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
+	compileOnly 'org.projectlombok:lombok:1.18.22'
+	annotationProcessor 'org.projectlombok:lombok:1.18.22'
+
+	implementation 'org.projectlombok:lombok'
+	annotationProcessor 'org.projectlombok:lombok'
+
+	implementation 'org.springframework.boot:spring-boot-starter-validation'
+//	implementation 'javax.validation:javax.validation-api:2.0.1.Final'
+	implementation 'org.hibernate.validator:hibernate-validator:6.1.5.Final'
+	implementation("org.springframework.cloud:spring-cloud-starter-openfeign:4.2.1")
+
+	testImplementation 'org.junit.jupiter:junit-jupiter:5.10.0'
+	testImplementation 'org.mockito:mockito-core:5.6.0'
+	testImplementation 'org.mockito:mockito-junit-jupiter:5.6.0'
+
 }
 
-tasks.named('test') {
+test {
 	useJUnitPlatform()
+	finalizedBy jacocoTestReport // report is always generated after tests run
 }
+jacocoTestReport {
+	dependsOn test // tests are required to run before generating the report
+	reports {
+		xml.required = true
+		html.required = true
+		csv.required = false
+	}
+}
+	tasks.named('test') {
+		useJUnitPlatform()
+	}
+tasks.named("pmdTest").configure {
+	enabled = false
+}
+
+tasks.named("checkstyleTest").configure {
+	enabled = false
+}
+
