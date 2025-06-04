@@ -57,7 +57,7 @@ class AdminServiceImplTest {
         registerDto.setPassword("password");
         registerDto.setRoleId(1L);
 
-        when(userRepository.findByEmail(registerDto.getEmail())).thenReturn(Optional.empty());
+        when(userRepository.findByEmailIgnoreCase(registerDto.getEmail())).thenReturn(Optional.empty());
         when(userRepository.findByUserNameIgnoreCase(registerDto.getUserName())).thenReturn(Optional.empty());
         when(passwordEncoder.encode(registerDto.getPassword())).thenReturn("encodedPassword");
 
@@ -72,7 +72,7 @@ class AdminServiceImplTest {
         RegisterDto registerDto = new RegisterDto();
         registerDto.setEmail("test@example.com");
 
-        when(userRepository.findByEmail(registerDto.getEmail())).thenReturn(Optional.of(new User()));
+        when(userRepository.findByEmailIgnoreCase(registerDto.getEmail())).thenReturn(Optional.of(new User()));
 
         ResourceConflictException ex = assertThrows(ResourceConflictException.class, () -> {
             adminService.register(registerDto);

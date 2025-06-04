@@ -100,11 +100,16 @@ public class AuthServiceImpl implements AuthService {
         String accessToken = jwtUtil.generateAccessToken(userDetails);
         String refreshToken = jwtUtil.generateRefreshToken(userDetails);
 
-        User user = userRepository.findByEmail(loginDto.getEmail())
+        User user = userRepository.findByEmailIgnoreCase(loginDto.getEmail())
                 .orElseThrow(() -> {
                     log.error("User not found with email: {}", loginDto.getEmail());
                     return new ResourceNotFoundException(UserConstants.USER_NOT_FOUND);
                 });
+
+        if (!user.isActive()) {
+            log.warn("Login blocked - user is deactivated: {}", loginDto.getEmail());
+            throw new InvalidRequestException(UserConstants.USER_DELETED);
+        }
 
         refreshTokenRepository.deleteByUserId(user.getUserId());
         log.debug("Old refresh token removed for user: {}", user.getEmail());
@@ -136,18 +141,21 @@ public class AuthServiceImpl implements AuthService {
 
         Optional<RefreshToken> refreshTokenEntity = refreshTokenRepository.findByToken(refreshToken);
 
-        if (refreshTokenEntity.isPresent()
-                && refreshTokenEntity.get().getExpiryDate() != null
-                && refreshTokenEntity.get().getExpiryDate().isBefore(Instant.now())) {
+        if (refreshTokenEntity.isEmpty()) {
+            log.warn("Refresh token not found in the database");
+            throw new InvalidRequestException(UserConstants.REFRESH_TOKEN_CREDENTIALS);
+        }
 
-            refreshTokenRepository.deleteById(refreshTokenEntity.get().getId());
+        RefreshToken token = refreshTokenEntity.get();
+
+        if (token.getExpiryDate() != null && token.getExpiryDate().isBefore(Instant.now())) {
+            refreshTokenRepository.deleteById(token.getId());
             log.warn("Refresh token expired and deleted");
             throw new InvalidRequestException(UserConstants.REFRESH_TOKEN_EXPIRE_MASSAGE);
         }
 
-        User user = userRepository.findById(refreshTokenEntity.get().getUserId())
+        User user = userRepository.findById(token.getUserId())
                 .orElseThrow(() -> new InvalidRequestException(UserConstants.USER_NOT_FOUND));
-
 
         log.debug("Found valid refresh token for user: {}", user.getEmail());
 
@@ -156,8 +164,9 @@ public class AuthServiceImpl implements AuthService {
 
         log.info("New access token generated for user: {}", user.getEmail());
 
-        return new TokenResponseDto(newAccessToken, refreshToken, "Bearer" );
+        return new TokenResponseDto(newAccessToken, refreshToken, "Bearer");
     }
+
 
     /**
      * Logs out a user by deleting their refresh token.
@@ -170,7 +179,7 @@ public class AuthServiceImpl implements AuthService {
     public MessageOutDto logout(final String email) {
         log.info("Logout request for user: {}", email);
 
-        User user = userRepository.findByEmail(email)
+        User user = userRepository.findByEmailIgnoreCase(email)
                 .orElseThrow(() -> {
                     log.error("Logout failed - user not found: {}", email);
                     return new ResourceNotFoundException(UserConstants.USER_NOT_FOUND);

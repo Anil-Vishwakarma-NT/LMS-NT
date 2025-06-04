@@ -45,7 +45,7 @@ public final class GroupController {
      * @return success message.
      */
     @PostMapping("/create-group")
-    public ResponseEntity<MessageOutDto> createGroup(@RequestBody @Valid final GroupInDTO groupInDTO) {
+    public ResponseEntity<MessageOutDto> createGroup(@Valid @RequestBody final GroupInDTO groupInDTO) {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         String username = authentication.getName();
         log.info("Attempting to create a group with name: {}", groupInDTO.getGroupName());
@@ -71,7 +71,7 @@ public final class GroupController {
      * @return success message.
      */
     @PostMapping("/add-user")
-    public ResponseEntity<MessageOutDto> addUserToGroup(@RequestBody @Valid final GroupInDTO groupInDTO) {
+    public ResponseEntity<MessageOutDto> addUserToGroup(@Valid @RequestBody final GroupInDTO groupInDTO) {
         log.info("Attempting to add user with ID: {} to group with ID: {}", groupInDTO.getUserId(), groupInDTO.getGroupId());
         return new ResponseEntity<>(groupService.addUserToGroup(groupInDTO.getUserId(), groupInDTO.getGroupId()), HttpStatus.OK);
     }
@@ -83,7 +83,7 @@ public final class GroupController {
      * @return success message.
      */
     @DeleteMapping("/remove-user")
-    public ResponseEntity<MessageOutDto> removeUserFromGroup(@RequestBody @Valid final GroupInDTO groupdto) {
+    public ResponseEntity<MessageOutDto> removeUserFromGroup(@Valid @RequestBody final GroupInDTO groupdto) {
         log.info("Attempting to remove user with ID: {} from group with ID: {}", groupdto.getUserId(), groupdto.getGroupId());
         return new ResponseEntity<>(groupService.removeUserFromGroup(groupdto.getUserId(), groupdto.getGroupId()), HttpStatus.OK);
     }
