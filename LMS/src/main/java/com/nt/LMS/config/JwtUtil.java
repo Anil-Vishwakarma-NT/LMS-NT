@@ -36,7 +36,7 @@ public final class JwtUtil {
     /**
      * The expiration time for access tokens (1 hour).
      */
-    private final long accessTokenExpiration = 1000 * 60 * 60; // 1 hour
+    private final long accessTokenExpiration = 1000 * 60 * 60 * 10; // 10 hour
 
     /**
      * The expiration time for refresh tokens (1 day).

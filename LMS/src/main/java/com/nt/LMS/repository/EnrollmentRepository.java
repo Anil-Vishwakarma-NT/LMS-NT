@@ -26,6 +26,13 @@ public interface EnrollmentRepository extends JpaRepository<Enrollment, Long> {
     @Query(value = "SELECT COUNT(*) FROM enrollment e WHERE e.user_id = :userId", nativeQuery = true)
     long getAllUserEnrols(@Param("userId") long userId);
 
+    @Query(value = """
+    SELECT COUNT(*) 
+    FROM enrollment e
+    JOIN users u ON e.user_id = u.user_id
+    WHERE u.is_active = true AND u.user_id <> 1
+    """, nativeQuery = true)
+    long count();
 
 
 }

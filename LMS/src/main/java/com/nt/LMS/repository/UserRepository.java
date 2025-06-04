@@ -46,18 +46,19 @@ public interface UserRepository extends JpaRepository<User, Long> {
     List<User> findByManagerId(long managerId);
     boolean existsById(long id);
     @Query(value = """
-     SELECT
-                  CONCAT(u.firstname, ' ', u.lastname) AS fullName,
-                  u.email AS email,
-                  r.name AS role,
-                  CONCAT(m.firstname, ' ', m.lastname) AS managerName,
-                  u.created_at AS createdAt
-              FROM users u
-              LEFT JOIN role r ON u.role_id = r.role_id
-              LEFT JOIN users m ON u.manager_id = m.user_id
-              ORDER BY u.created_at DESC
-              LIMIT 5
-     """, nativeQuery = true)
-          List<Object[]> fetchRecentUserDetails();
+    SELECT
+        CONCAT(u.firstname, ' ', u.lastname) AS fullName,
+        u.email AS email,
+        r.name AS role,
+        CONCAT(m.firstname, ' ', m.lastname) AS managerName,
+        u.created_at AS createdAt
+    FROM users u
+    LEFT JOIN role r ON u.role_id = r.role_id
+    LEFT JOIN users m ON u.manager_id = m.user_id
+    WHERE u.is_active = true AND u.user_id <> 1
+    ORDER BY u.created_at DESC
+    LIMIT 5
+    """, nativeQuery = true)
+    List<Object[]> fetchRecentUserDetails();
 
 }

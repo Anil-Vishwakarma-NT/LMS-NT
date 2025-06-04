@@ -80,8 +80,11 @@ public final class UserServiceImpl implements UserService {  // Made the class f
     }
 
     @Override
-    public long CountUsers() {
-        return userRepository.count();
+    public long countActiveUsers() {
+        return userRepository.findAll()
+                .stream()
+                .filter(user -> user.isActive() && user.getUserId() != 1)
+                .count();
     }
 
     @Override

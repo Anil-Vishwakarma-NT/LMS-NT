@@ -417,16 +417,28 @@ public class EnrollmentServiceImpl implements EnrollmentService {
             Long groupsEnrolled = groupCourseEnrollmentRepository.countByStatusNotIn(List.of("COMPLETED", "EXPIRED", "UNENROLLED")) + groupBundleEnrollmentRepository.countByStatusNotIn(List.of("COMPLETED", "EXPIRED", "UNENROLLED"));
             Long popularCourseId = enrollmentRepository.findMostFrequentEnrolledCourseId();
             Long courseCompletions = enrollmentHistoryRepository.countByStatusIn(List.of("COMPLETED"));
-            if(usersEnrolled == 0 && groupsEnrolled == 0 && popularCourseId == 0) {
+            if(usersEnrolled == 0 && groupsEnrolled == 0) {
                 throw new ResourceNotFoundException("No Enrollments");
             }
+
+            List<UserCourseEnrollment> enrollments = userCourseEnrollmentRepository.findAll();
+
+            long totalActiveUsers = enrollments.stream()
+                    .map(UserCourseEnrollment::getUserId)
+                    .distinct() // optional: ensures each user is counted only once
+                    .map(userRepository::findById)
+                    .filter(Optional::isPresent)
+                    .map(Optional::get)
+                    .filter(user -> user.isActive() && user.getUserId() != 1)
+                    .count();
+
             String popularCourse = Objects.requireNonNull(courseMicroserviceClient.getCourseNameById(popularCourseId).getBody());
             Long totalEnrollments =  usersEnrolled + groupsEnrolled;
-            enrollmentDashBoardStatsDTO.setUsersEnrolled(45L);
-            enrollmentDashBoardStatsDTO.setGroupsEnrolled(74L);
-            enrollmentDashBoardStatsDTO.setTotalEnrollments(85L);
+            enrollmentDashBoardStatsDTO.setUsersEnrolled(totalActiveUsers);
+            enrollmentDashBoardStatsDTO.setGroupsEnrolled(0L);
+            enrollmentDashBoardStatsDTO.setTotalEnrollments(enrollmentRepository.count());
             enrollmentDashBoardStatsDTO.setCourseCompletions(46L);
-            enrollmentDashBoardStatsDTO.setTopEnrolledCourse("HOO");
+            enrollmentDashBoardStatsDTO.setTopEnrolledCourse("N/A");
             enrollmentDashBoardStatsDTO.setUpcomingDeadlines(7L);
             enrollmentDashBoardStatsDTO.setCompletionRate(99L);
             return enrollmentDashBoardStatsDTO;
@@ -440,7 +452,10 @@ public class EnrollmentServiceImpl implements EnrollmentService {
 
     @Override
     public List<UserEnrollmentsDTO> getEnrollmentsForUser() {
-        List<User> users = userRepository.findAll();
+        List<User> users = userRepository.findAll()
+                .stream()
+                .filter(user -> user.isActive() && user.getUserId() != 1)
+                .collect(Collectors.toList());
         if(users.isEmpty()) {
             throw new ResourceNotFoundException("No users found");
         }
@@ -481,11 +496,12 @@ public class EnrollmentServiceImpl implements EnrollmentService {
                 for(UserBundleEnrollment userBundleEnrollment : userBundleEnrollments) {
                     ResponseEntity<String> response = courseMicroserviceClient.getBundleNameById(userBundleEnrollment.getBundleId());
                     String bundleName = (response != null && response.getBody() != null) ? response.getBody() : "Unknown Course";
+
                     EnrolledBundlesDTO enrolledBundlesDTO = new EnrolledBundlesDTO();
                     enrolledBundlesDTO.setBundleName(bundleName);
                     enrolledBundlesDTO.setBundleId(userBundleEnrollment.getBundleId());
                     enrolledBundlesDTO.setEnrollmentDate(userBundleEnrollment.getAssignedAt());
-                    enrolledBundlesDTO.setProgress(98F);
+                    enrolledBundlesDTO.setProgress(50F);
                     enrolledBundlesDTO.setDeadline(userBundleEnrollment.getDeadline());
                     enrolledBundlesDTOS.add(enrolledBundlesDTO);
 
@@ -502,7 +518,7 @@ public class EnrollmentServiceImpl implements EnrollmentService {
             userEnrollmentsDTO.setStatus(true);
             userEnrollmentsDTO.setCourseEnrollments(courseEnrollments);
             userEnrollmentsDTO.setBundleEnrollments(bundleEnrollments);
-            userEnrollmentsDTO.setAverageCompletion(98F);
+            userEnrollmentsDTO.setAverageCompletion(50F);
             userEnrollmentsDTO.setUpcomingDeadlines(upcomingDeadlines);
             userEnrollmentsDTOS.add(userEnrollmentsDTO);
         }

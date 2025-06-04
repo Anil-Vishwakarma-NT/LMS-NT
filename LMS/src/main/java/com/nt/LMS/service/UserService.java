@@ -12,7 +12,7 @@ public interface UserService extends UserDetailsService {
 
     @Override
     UserDetails loadUserByUsername(String email) throws UsernameNotFoundException;
-    public long CountUsers();
+    public long countActiveUsers();
     List<UsersDetailsViewDTO> getRecentUserDetails();
 
     public Map<String , Long> userStatistics(long userId);

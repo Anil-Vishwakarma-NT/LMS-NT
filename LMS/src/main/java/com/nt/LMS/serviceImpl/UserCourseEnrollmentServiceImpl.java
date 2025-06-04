@@ -14,10 +14,12 @@ import com.nt.LMS.service.UserCourseEnrollmentService;
 import feign.FeignException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 @Slf4j
 @Service
@@ -44,13 +46,19 @@ public class UserCourseEnrollmentServiceImpl implements UserCourseEnrollmentServ
 
             for (CourseInfoDTO courseInfo : courseInfoDTOLists) {
                 User owner = userRepository.findById(courseInfo.getOwnerId())
-                        .orElseThrow(() -> new ResourceNotFoundException("Owner not found"));
+                        .filter(User::isActive)
+                        .orElseThrow(() -> new ResourceNotFoundException("Active owner not found"));
 
-                long activeEnrollmentCount = userCourseEnrollmentRepository
-                        .countByCourseIdAndStatusNotIn(
-                                courseInfo.getCourseId(),
-                                List.of("EXPIRED", "UNENROLLED", "COMPLETED")
-                        );
+                List<UserCourseEnrollment> indivisualEnrollments = userCourseEnrollmentRepository
+                        .findByCourseId(courseInfo.getCourseId());
+
+                long activeEnrollmentCount = indivisualEnrollments.stream()
+                        .filter(enrollment -> !List.of("EXPIRED", "UNENROLLED", "COMPLETED").contains(enrollment.getStatus()))
+                        .map(enrollment -> userRepository.findById(enrollment.getUserId()))
+                        .filter(Optional::isPresent)
+                        .map(Optional::get)
+                        .filter(user -> user.isActive() && user.getUserId() != 1) // optional: exclude user ID 1
+                        .count();
 
                 UserCourseEnrollmentOutDTO courseDTO = new UserCourseEnrollmentOutDTO();
                 courseDTO.setCourseName(courseInfo.getTitle());
@@ -63,12 +71,31 @@ public class UserCourseEnrollmentServiceImpl implements UserCourseEnrollmentServ
                 List<EnrolledUserDTO> enrolledUsersDTO = new ArrayList<>();
 
                 for (UserCourseEnrollment enrollment : enrollments) {
-                    User user = userRepository.findById(enrollment.getUserId())
-                            .orElseThrow(() -> new ResourceNotFoundException("User not found"));
-                    User assignedByName = userRepository.findById(enrollment.getAssignedBy())
-                            .orElseThrow(() -> new ResourceNotFoundException("Assigner not found"));
+                    Optional<User> userOpt = userRepository.findById(enrollment.getUserId())
+                            .filter(user -> user.isActive() && user.getUserId() != 1);
+                    Optional<User> assignedByOpt = userRepository.findById(enrollment.getAssignedBy())
+                            .filter(User::isActive);
 
-                    EnrolledUserDTO enrolledDTO = getEnrolledUserDTO(enrollment, user, assignedByName);
+                    if (userOpt.isEmpty() || assignedByOpt.isEmpty()) {
+                        continue; // Skip inactive users or assigners
+                    }
+
+                    User user = userOpt.get();
+                    User assignedByName = assignedByOpt.get();
+
+                    Double progress = 0.0;
+                    try {
+                        ResponseEntity<Double> progressResponse = courseMicroserviceClient.getCourseProgress(
+                                enrollment.getUserId().intValue(), enrollment.getCourseId().intValue());
+                        if (progressResponse.getBody() != null) {
+                            progress = progressResponse.getBody();
+                        }
+                    } catch (Exception ex) {
+                        // Log the exception if necessary, but continue with default progress
+                        progress = 0.0;
+                    }
+
+                    EnrolledUserDTO enrolledDTO = getEnrolledUserDTO(enrollment, user, assignedByName, progress);
                     enrolledUsersDTO.add(enrolledDTO);
                 }
 
@@ -87,13 +114,13 @@ public class UserCourseEnrollmentServiceImpl implements UserCourseEnrollmentServ
         }
     }
 
-    private static EnrolledUserDTO getEnrolledUserDTO(UserCourseEnrollment enrollment, User user, User assignedByName) {
+    private static EnrolledUserDTO getEnrolledUserDTO(UserCourseEnrollment enrollment, User user, User assignedByName,double progress) {
         EnrolledUserDTO enrolledDTO = new EnrolledUserDTO();
         enrolledDTO.setUserId(user.getUserId());
         enrolledDTO.setUserName(user.getFirstName() + " " + user.getLastName());
         enrolledDTO.setEnrollmentDate(enrollment.getAssignedAt());
         enrolledDTO.setDeadline(enrollment.getDeadline());
-        enrolledDTO.setProgress(98F);
+        enrolledDTO.setProgress(progress);
         enrolledDTO.setAssignedByName(assignedByName.getFirstName() + assignedByName.getLastName());
         return enrolledDTO;
     }

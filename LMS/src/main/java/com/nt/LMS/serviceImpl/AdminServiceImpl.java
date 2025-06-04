@@ -122,7 +122,7 @@ public final class AdminServiceImpl implements AdminService {
             String roleName = role.getName();
 
             if ("employee".equalsIgnoreCase(roleName)) {
-                user.set_active(false);
+                user.setActive(false);
                 userRepository.save(user);
                 log.info("Employee with ID {} deleted successfully", id);
             } else if ("manager".equalsIgnoreCase(roleName)) {
@@ -136,7 +136,7 @@ public final class AdminServiceImpl implements AdminService {
                     userRepository.saveAll(subordinates);
                 }
 
-                user.set_active(false);
+                user.setActive(false);
                 userRepository.save(user);
                 log.info("Manager with ID {} deleted successfully", id);
             }
@@ -167,7 +167,7 @@ public final class AdminServiceImpl implements AdminService {
 
             List<UserOutDTO> userDtos = new ArrayList<>();
             for (User user : employees) {
-                if (user.is_active() && (user.getUserId() != UserConstants.getAdminId()) ) {
+                if (user.isActive() && (user.getUserId() != UserConstants.getAdminId()) ) {
                     User manager = userRepository.findById(user.getManagerId())
                             .orElseThrow(() -> {
                                 log.error("Manager with ID {} not found", user.getManagerId());
@@ -211,7 +211,7 @@ public final class AdminServiceImpl implements AdminService {
 
             List<UserOutDTO> userDtos = new ArrayList<>();
             for (User user : employees) {
-                if (!user.is_active() && (user.getUserId() != UserConstants.getAdminId()) ) {
+                if (!user.isActive() && (user.getUserId() != UserConstants.getAdminId()) ) {
                     User manager = userRepository.findById(user.getManagerId())
                             .orElseThrow(() -> {
                                 log.error("Manager with ID {} not found", user.getManagerId());
