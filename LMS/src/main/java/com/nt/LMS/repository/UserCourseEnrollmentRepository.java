@@ -5,6 +5,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 
@@ -17,4 +18,5 @@ public interface UserCourseEnrollmentRepository extends JpaRepository<UserCourse
     long countByStatusNotIn(List<String> statuses);
     long countByCourseIdAndStatusNotIn(Long courseId, List<String> statuses);
     long countByUserIdAndStatusNotIn(Long userId, List<String> statuses);
+    long countByDeadlineBetween(LocalDateTime before, LocalDateTime after);
 }
