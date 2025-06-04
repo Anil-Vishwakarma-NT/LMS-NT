@@ -57,46 +57,27 @@ public class JwtFilter extends OncePerRequestFilter {
         String token = null;
         String username = null;
 
-        try {
-            // Extract token if present
-            if (authorizationHeader != null && authorizationHeader.startsWith("Bearer ")) {
-                token = authorizationHeader.substring(BEARER_PREFIX_LENGTH); // Typically 7 for "Bearer "
-                username = jwtUtil.extractUsername(token);
-            }
-
-            // If username is present and the security context is not already authenticated
-            if (username != null && SecurityContextHolder.getContext().getAuthentication() == null) {
-                // Load user details and validate the token
-                UserDetails userDetails = this.userDetailsService.loadUserByUsername(username);
-
-                if (jwtUtil.validateToken(token, userDetails)) {
-                    // Create authentication token and set it in the security context
-                    UsernamePasswordAuthenticationToken authenticationToken =
-                            new UsernamePasswordAuthenticationToken(userDetails, null, userDetails.getAuthorities());
-
-                    authenticationToken.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
-                    SecurityContextHolder.getContext().setAuthentication(authenticationToken);
-                } else {
-                    // Token is invalid (e.g., signature doesn't match)
-                    System.out.println("%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%");
-                    System.out.println(HttpServletResponse.SC_UNAUTHORIZED);
-                    response.sendError(HttpServletResponse.SC_UNAUTHORIZED, "Invalid JWT token");
-                    return;
-                }
-            }
-
-            filterChain.doFilter(request, response);
-
-        } catch (io.jsonwebtoken.ExpiredJwtException e) {
-            System.out.println("444444444444444444444444444444444444444444444444444444444444444444");
-            response.sendError(HttpServletResponse.SC_UNAUTHORIZED, "JWT token has expired");
-            return;
-        } catch (io.jsonwebtoken.MalformedJwtException | io.jsonwebtoken.SignatureException |
-                 IllegalArgumentException e) {
-            System.out.println("555555555555555555555555555555555555555555555555555555555");
-            response.sendError(HttpServletResponse.SC_UNAUTHORIZED, "Invalid JWT token");
-
+        // Extract token if present
+        if (authorizationHeader != null && authorizationHeader.startsWith("Bearer ")) {
+            token = authorizationHeader.substring(BEARER_PREFIX_LENGTH); // Bearer prefix length is 7
+            username = jwtUtil.extractUsername(token);
         }
-    }
 
+        // If username is present and the security context is not already authenticated
+        if (username != null && SecurityContextHolder.getContext().getAuthentication() == null) {
+            // Load user details and validate the token
+            UserDetails userDetails = this.userDetailsService.loadUserByUsername(username);
+
+            if (jwtUtil.validateToken(token, userDetails)) {
+                // Create authentication token and set it in the security context
+                UsernamePasswordAuthenticationToken authenticationToken =
+                        new UsernamePasswordAuthenticationToken(userDetails, null,
+                                userDetails.getAuthorities());
+
+                authenticationToken.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
+                SecurityContextHolder.getContext().setAuthentication(authenticationToken);
+            }
+        }
+        filterChain.doFilter(request, response);  // Continue with the filter chain
+    }
 }
