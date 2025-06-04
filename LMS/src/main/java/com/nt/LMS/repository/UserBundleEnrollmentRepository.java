@@ -5,6 +5,7 @@ import com.nt.LMS.entities.UserCourseEnrollment;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 
@@ -17,4 +18,5 @@ public interface UserBundleEnrollmentRepository extends JpaRepository<UserBundle
     long countByStatusNotIn(List<String> statuses);
     long countByBundleIdAndStatusNotIn(Long bundleId, List<String> statuses);
     long countByUserIdAndStatusNotIn(Long userId, List<String> statuses);
+    long countByDeadlineBetween(LocalDateTime before, LocalDateTime after);
 }
