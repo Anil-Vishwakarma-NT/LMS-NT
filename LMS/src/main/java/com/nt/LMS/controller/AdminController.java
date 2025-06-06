@@ -50,9 +50,9 @@ public final class AdminController {
      */
     @PostMapping("/register")
     @PreAuthorize("hasAuthority('admin')")
-    public ResponseEntity<MessageOutDto> register(@Valid @RequestBody final RegisterDto registerDto) {
+    public ResponseEntity<StandardResponseOutDTO> register(@Valid @RequestBody final RegisterDto registerDto) {
         log.info("Admin registration request received for: {}", registerDto.getEmail());
-        MessageOutDto response = adminService.register(registerDto);
+        StandardResponseOutDTO response = adminService.register(registerDto);
         log.info("Admin registered successfully: {}", registerDto.getEmail());
         return new ResponseEntity<>(response, HttpStatus.CREATED);
     }
@@ -65,11 +65,12 @@ public final class AdminController {
      */
     @DeleteMapping("/remove-user/{userId}")
     @PreAuthorize("hasAuthority('admin')")
-    public ResponseEntity<MessageOutDto> deleteEmployee(@PathVariable final long userId) {
+    public ResponseEntity<StandardResponseOutDTO<MessageOutDto>> deleteEmployee(@PathVariable final long userId) {
         log.info("Received request to delete user with ID: {}", userId);
-        MessageOutDto msg = adminService.employeeDeletion(userId);
+
+        StandardResponseOutDTO response = adminService.employeeDeletion(userId);
         log.info("User with ID: {} deleted successfully", userId);
-        return new ResponseEntity<>(msg, HttpStatus.OK);
+        return new ResponseEntity<>(response, HttpStatus.OK);
     }
 
     /**
@@ -79,15 +80,14 @@ public final class AdminController {
      */
     @GetMapping("/active-employees")
     @PreAuthorize("hasAuthority('admin')")
-    public ResponseEntity<List<UserOutDTO>> getAllEmployees() {
+    public ResponseEntity<StandardResponseOutDTO<List<UserOutDTO>>> getAllEmployees() {
         log.info("Fetching all employees");
-        List<UserOutDTO> employees = adminService.getAllActiveUsers();
-        System.out.println(employees);
-        log.info("Fetched {} employees", employees.size());
-        if (employees.isEmpty()) {
-            return new ResponseEntity<>(employees, HttpStatus.NO_CONTENT);
+        StandardResponseOutDTO<List<UserOutDTO>> response = adminService.getAllActiveUsers();
+        log.info("Fetched {} employees", response.getData().size());
+        if (response.getData().isEmpty()) {
+            return new ResponseEntity<>(response, HttpStatus.NO_CONTENT);
         }
-        return new ResponseEntity<>(employees, HttpStatus.OK);
+        return new ResponseEntity<>(response, HttpStatus.OK);
     }
 
     /**
@@ -97,14 +97,14 @@ public final class AdminController {
      */
     @GetMapping("/inactive-employees")
     @PreAuthorize("hasAuthority('admin')")
-    public ResponseEntity<List<UserOutDTO>> getAllInactiveEmployees() {
+    public ResponseEntity<StandardResponseOutDTO<List<UserOutDTO>>> getAllInactiveEmployees() {
         log.info("Fetching all inactive employees");
-        List<UserOutDTO> employees = adminService.getAllInactiveUsers();
-        log.info("Fetched {} inactive employees", employees.size());
-        if (employees.isEmpty()) {
-            return new ResponseEntity<>(employees, HttpStatus.NO_CONTENT);
+        StandardResponseOutDTO<List<UserOutDTO>> response = adminService.getAllInactiveUsers();
+        log.info("Fetched {} inactive employees", response.getData().size());
+        if (response.getData().isEmpty()) {
+            return new ResponseEntity<>(response, HttpStatus.NO_CONTENT);
         }
-        return new ResponseEntity<>(employees, HttpStatus.OK);
+        return new ResponseEntity<>(response, HttpStatus.OK);
     }
 
     /**
@@ -115,14 +115,14 @@ public final class AdminController {
      */
     @GetMapping("/manager-employee/{userId}")
     @PreAuthorize("hasAuthority('admin')")
-    public ResponseEntity<List<UserOutDTO>> getManagerEmployee(@PathVariable final long userId) {
+    public ResponseEntity<StandardResponseOutDTO<List<UserOutDTO>>> getManagerEmployee(@PathVariable final long userId) {
         log.info("Fetching employees for manager with ID: {}", userId);
-        List<UserOutDTO> employees = adminService.getManagerEmployee(userId);
-        if (employees.isEmpty()) {
-            return new ResponseEntity<>(employees, HttpStatus.NO_CONTENT);
+        StandardResponseOutDTO<List<UserOutDTO>> response = adminService.getManagerEmployee(userId);
+        if (response.getData().isEmpty()) {
+            return new ResponseEntity<>(response, HttpStatus.NO_CONTENT);
         }
-        log.info("Fetched {} employees for manager with ID: {}", employees.size(), userId);
-        return new ResponseEntity<>(employees, HttpStatus.OK);
+        log.info("Fetched {} employees for manager with ID: {}", response.getData().size(), userId);
+        return new ResponseEntity<>(response, HttpStatus.OK);
     }
 
     /**
@@ -133,12 +133,10 @@ public final class AdminController {
      */
     @PostMapping("/change-role")
     @PreAuthorize("hasAuthority('admin')")
-    public ResponseEntity<MessageOutDto> changeRole(@RequestBody @Valid final UserInDTO userDto) {
+    public ResponseEntity<StandardResponseOutDTO<MessageOutDto>> changeRole(@RequestBody @Valid final UserInDTO userDto) {
         log.info("Received request to change role for user with ID: {}", userDto.getUserId());
-        return new ResponseEntity<>(
-                adminService.changeUserRole(userDto.getUserId(), userDto.getRole()),
-                HttpStatus.OK
-        );
+        StandardResponseOutDTO standardResponseOutDTO = adminService.changeUserRole(userDto.getUserId(),userDto.getRole());
+        return new ResponseEntity<>(standardResponseOutDTO,HttpStatus.OK);
     }
 
     @PatchMapping("/update-user/{userId}")

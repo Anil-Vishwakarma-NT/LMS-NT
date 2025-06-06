@@ -1,5 +1,6 @@
 package com.nt.LMS.controller;
 
+import com.nt.LMS.dto.StandardResponseOutDTO;
 import com.nt.LMS.dto.UserOutDTO;
 import com.nt.LMS.serviceImpl.AdminServiceImpl;
 import com.nt.LMS.serviceImpl.GroupServiceImpl;
@@ -44,17 +45,17 @@ public class ManagerController {
      * of NO_CONTENT if no employees are found.
      */
     @GetMapping("/manager-employees")
-    public ResponseEntity<List<UserOutDTO>> getManagerEmp() {
+    public ResponseEntity<StandardResponseOutDTO<List<UserOutDTO>>> getManagerEmp() {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         String email = authentication.getName();
         log.info("Manager with email {} is requesting the list of their employees", email);
-        List<UserOutDTO> employees = managerService.getEmployees(email);
+        StandardResponseOutDTO<List<UserOutDTO>> employees = managerService.getEmployees(email);
 
-        if (employees.isEmpty()) {
+        if (employees.getData().isEmpty()) {
             return new ResponseEntity<>(employees, HttpStatus.NO_CONTENT);
         }
 
-        log.info("Fetched {} employees for manager with email {}", employees.size(), email);
+        log.info("Fetched {} employees for manager with email {}", employees.getData().size(), email);
         return new ResponseEntity<>(employees, HttpStatus.OK);
     }
 }
