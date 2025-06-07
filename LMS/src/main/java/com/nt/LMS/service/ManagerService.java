@@ -1,5 +1,6 @@
 package com.nt.LMS.service;
 
+import com.nt.LMS.dto.StandardResponseOutDTO;
 import com.nt.LMS.dto.UserOutDTO;
 
 import java.util.List;
@@ -12,5 +13,5 @@ public interface ManagerService {
      * @param username the username to filter by
      * @return list of user DTOs
      */
-    List<UserOutDTO> getEmployees(String username);
+    StandardResponseOutDTO<List<UserOutDTO>> getEmployees(String username);
 }

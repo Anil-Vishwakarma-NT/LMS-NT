@@ -2,12 +2,16 @@ package com.nt.LMS.controller;
 
 import com.nt.LMS.dto.LoginDto;
 import com.nt.LMS.dto.MessageOutDto;
+import com.nt.LMS.dto.StandardResponseOutDTO;
 import com.nt.LMS.dto.TokenResponseDto;
 import com.nt.LMS.service.AuthService;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.RestController;
@@ -37,8 +41,9 @@ public final class AuthController {
      * @return Access and refresh tokens.
      */
     @PostMapping("/login")
-    public TokenResponseDto login(@Valid @RequestBody final LoginDto loginDto) {
-        return authService.login(loginDto);
+    public ResponseEntity<StandardResponseOutDTO<TokenResponseDto>> login(@Valid @RequestBody final LoginDto loginDto) {
+        StandardResponseOutDTO<TokenResponseDto> response = authService.login(loginDto);
+        return new ResponseEntity<>(response, HttpStatus.OK);
     }
 
     /**
@@ -48,10 +53,10 @@ public final class AuthController {
      * @return A new access token and the same refresh token.
      */
     @PostMapping("/refresh-token")
-    public TokenResponseDto refreshToken(final HttpServletRequest request) {
-        System.out.println("@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@");
+    public ResponseEntity<StandardResponseOutDTO<TokenResponseDto>> refreshToken(final HttpServletRequest request) {
         final String refreshToken = request.getHeader("Refresh-Token");
-        return authService.refreshToken(refreshToken);
+           StandardResponseOutDTO response = authService.refreshToken(refreshToken);
+           return new ResponseEntity<>(response,HttpStatus.CREATED);
     }
 
     /**
@@ -60,9 +65,10 @@ public final class AuthController {
      * @return Message indicating successful logout.
      */
     @PostMapping("/logout")
-    public MessageOutDto logout() {
+    public ResponseEntity<StandardResponseOutDTO<MessageOutDto>> logout() {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         String email = authentication.getName();
-        return authService.logout(email);
+        StandardResponseOutDTO response = authService.logout(email);
+        return new ResponseEntity<>(response,HttpStatus.OK);
     }
 }

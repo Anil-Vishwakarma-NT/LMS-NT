@@ -2,6 +2,7 @@ package com.nt.LMS.service;
 
 import com.nt.LMS.dto.MessageOutDto;
 import com.nt.LMS.dto.RegisterDto;
+import com.nt.LMS.dto.StandardResponseOutDTO;
 import com.nt.LMS.dto.UserOutDTO;
 
 import java.util.List;
@@ -17,7 +18,7 @@ public interface AdminService {
      * @param registerDto the registration details
      * @return a message response
      */
-    MessageOutDto register(RegisterDto registerDto);
+    StandardResponseOutDTO<MessageOutDto> register(RegisterDto registerDto);
 
     /**
      * Deletes an employee by their ID.
@@ -25,21 +26,21 @@ public interface AdminService {
      * @param id the employee ID
      * @return a message response
      */
-    MessageOutDto employeeDeletion(long id);
+    StandardResponseOutDTO<MessageOutDto> employeeDeletion(long id);
 
     /**
      * Gets a list of all users.
      *
      * @return list of user DTOs
      */
-    List<UserOutDTO> getAllActiveUsers();
+    StandardResponseOutDTO<List<UserOutDTO>> getAllActiveUsers();
 
     /**
      * Gets a list of all inactive users.
      *
      * @return list of user DTOs.
      */
-    List<UserOutDTO> getAllInactiveUsers();
+    StandardResponseOutDTO<List<UserOutDTO>> getAllInactiveUsers();
 
     /**
      * Changes the role of a user.
@@ -48,7 +49,7 @@ public interface AdminService {
      * @param newRoleName the new role name
      * @return a message response
      */
-    MessageOutDto changeUserRole(long userId, String newRoleName);
+    StandardResponseOutDTO<MessageOutDto> changeUserRole(long userId, String newRoleName);
 
     /**
      * Gets employees under a specific manager.
@@ -56,7 +57,7 @@ public interface AdminService {
      * @param userId the manager's user ID
      * @return list of user DTOs
      */
-    List<UserOutDTO> getManagerEmployee(long userId);
+    StandardResponseOutDTO<List<UserOutDTO>> getManagerEmployee(long userId);
 
 
 
