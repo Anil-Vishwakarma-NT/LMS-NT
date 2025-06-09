@@ -1,4 +1,4 @@
-package com.example.course_service_lms.dto;
+package com.example.course_service_lms.inDTO;
 
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotBlank;
@@ -6,14 +6,13 @@ import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 import lombok.Data;
 
-import java.time.LocalDateTime;
 import java.util.Objects;
 
 import static com.example.course_service_lms.constants.BundleConstants.INT_VALUE_3;
 import static com.example.course_service_lms.constants.CourseConstants.*;
 
 @Data
-public class UpdateCourseDTO {
+public class UpdateCourseInDTO {
 
     /**
      * The title of the course.
@@ -49,7 +48,7 @@ public class UpdateCourseDTO {
     @NotNull(message = "Is Active field is required")
     private boolean isActive;
 
-    public UpdateCourseDTO(String title, Long ownerId, String description, String courseLevel, String image, boolean isActive) {
+    public UpdateCourseInDTO(String title, Long ownerId, String description, String courseLevel, String image, boolean isActive) {
         this.title = title;
         this.ownerId = ownerId;
         this.description = description;
@@ -61,7 +60,7 @@ public class UpdateCourseDTO {
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
-        UpdateCourseDTO that = (UpdateCourseDTO) o;
+        UpdateCourseInDTO that = (UpdateCourseInDTO) o;
         return isActive == that.isActive && Objects.equals(title, that.title) && Objects.equals(ownerId, that.ownerId) && Objects.equals(description, that.description) && Objects.equals(courseLevel, that.courseLevel);
     }
 

@@ -1,6 +1,5 @@
-package com.example.course_service_lms.dto;
+package com.example.course_service_lms.outDTO;
 
-import com.example.course_service_lms.entity.CourseLevel;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -13,10 +12,10 @@ import java.time.LocalDateTime;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class CourseSummaryDTO {
+public class CourseSummaryOutDTO {
     private String title;
     private String description;
-    private CourseLevel level;
+    private String level;
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
 }

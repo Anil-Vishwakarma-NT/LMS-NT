@@ -1,4 +1,4 @@
-package com.example.course_service_lms.dto;
+package com.example.course_service_lms.inDTO;
 
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotBlank;
@@ -6,7 +6,6 @@ import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 import lombok.Data;
 
-import java.time.LocalDateTime;
 import java.util.Objects;
 
 import static com.example.course_service_lms.constants.BundleConstants.INT_VALUE_3;
@@ -34,7 +33,7 @@ import static com.example.course_service_lms.constants.CourseConstants.TITLE_MIN
  * </ul>
  */
 @Data
-public class CourseDTO {
+public class CourseInDTO {
 
     /**
      * The title of the course.
@@ -78,7 +77,7 @@ public class CourseDTO {
      * @param description  Description of the course
      * @param courseLevel  Level of the course (e.g., BEGINNER)
      */
-    public CourseDTO(String title, Long ownerId, String description, String courseLevel, boolean isActive) {
+    public CourseInDTO(String title, Long ownerId, String description, String courseLevel, boolean isActive) {
         this.title = title;
         this.ownerId = ownerId;
         this.description = description;
@@ -89,7 +88,7 @@ public class CourseDTO {
     /**
      * No-args constructor required by serialization frameworks.
      */
-    public CourseDTO() {
+    public CourseInDTO() {
     }
 
     /**
@@ -102,8 +101,8 @@ public class CourseDTO {
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
-        CourseDTO courseDTO = (CourseDTO) o;
-        return isActive == courseDTO.isActive && Objects.equals(title, courseDTO.title) && Objects.equals(ownerId, courseDTO.ownerId) && Objects.equals(description, courseDTO.description) && Objects.equals(courseLevel, courseDTO.courseLevel);
+        CourseInDTO courseInDTO = (CourseInDTO) o;
+        return isActive == courseInDTO.isActive && Objects.equals(title, courseInDTO.title) && Objects.equals(ownerId, courseInDTO.ownerId) && Objects.equals(description, courseInDTO.description) && Objects.equals(courseLevel, courseInDTO.courseLevel);
     }
 
     @Override

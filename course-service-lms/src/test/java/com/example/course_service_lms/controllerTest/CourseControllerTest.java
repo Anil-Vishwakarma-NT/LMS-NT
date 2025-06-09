@@ -1,8 +1,10 @@
 package com.example.course_service_lms.controllerTest;
 
 import com.example.course_service_lms.controller.CourseController;
-import com.example.course_service_lms.dto.CourseDTO;
+import com.example.course_service_lms.inDTO.CourseInDTO;
 import com.example.course_service_lms.entity.Course;
+import com.example.course_service_lms.outDTO.CourseOutDTO;
+import com.example.course_service_lms.outDTO.StandardResponseOutDTO;
 import com.example.course_service_lms.service.CourseService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -33,20 +35,20 @@ public class CourseControllerTest {
 
     @Test
     void testCreateCourse() {
-        CourseDTO courseDTO = new CourseDTO();
-        courseDTO.setTitle("Java Basics");
+        CourseInDTO courseInDTO = new CourseInDTO();
+        courseInDTO.setTitle("Java Basics");
 
         Course course = new Course();
         course.setCourseId(1L);
         course.setTitle("Java Basics");
 
-        when(courseService.createCourse(courseDTO)).thenReturn(course);
+        when(courseService.createCourse(courseInDTO)).thenReturn(course);
 
-        ResponseEntity<Course> response = courseController.createCourse(courseDTO);
+        ResponseEntity<StandardResponseOutDTO<CourseOutDTO>> response = courseController.createCourse(courseInDTO);
 
         assertEquals(200, response.getStatusCodeValue());
         assertNotNull(response.getBody());
-        assertEquals("Java Basics", response.getBody().getTitle());
+        assertEquals("Java Basics", response.getBody().getData().getTitle());
     }
 
     @Test
@@ -91,23 +93,23 @@ public class CourseControllerTest {
 
         when(courseService.deleteCourse(courseId)).thenReturn(expectedMsg);
 
-        ResponseEntity<String> response = courseController.deleteCourse(courseId);
+        ResponseEntity<StandardResponseOutDTO<Void>> response = courseController.deleteCourse(courseId);
 
         assertEquals(200, response.getStatusCodeValue());
-        assertEquals(expectedMsg, response.getBody());
+        assertEquals(expectedMsg, response.getBody().getMessage());
     }
 
     @Test
     void testUpdateCourse() {
         Long courseId = 1L;
-        CourseDTO courseDTO = new CourseDTO();
-        courseDTO.setTitle("Updated Course");
+        CourseInDTO courseInDTO = new CourseInDTO();
+        courseInDTO.setTitle("Updated Course");
 
         String updateResponse = "Course updated successfully";
 
-        when(courseService.updateCourse(courseId, courseDTO)).thenReturn(updateResponse);
+        when(courseService.updateCourse(courseId, courseInDTO)).thenReturn(updateResponse);
 
-        ResponseEntity<String> response = courseController.updateCourse(courseId, courseDTO);
+        ResponseEntity<String> response = courseController.updateCourse(courseId, courseInDTO);
 
         assertEquals(200, response.getStatusCodeValue());
         assertEquals(updateResponse, response.getBody());

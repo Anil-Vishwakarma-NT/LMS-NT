@@ -4,7 +4,6 @@ import com.example.course_service_lms.dto.CourseBundleDTO;
 import com.example.course_service_lms.dto.CourseBundlePostDTO;
 import com.example.course_service_lms.entity.Bundle;
 import com.example.course_service_lms.entity.Course;
-import com.example.course_service_lms.entity.CourseLevel;
 import com.example.course_service_lms.entity.CourseBundle;
 import com.example.course_service_lms.exception.ResourceAlreadyExistsException;
 import com.example.course_service_lms.exception.ResourceNotFoundException;
