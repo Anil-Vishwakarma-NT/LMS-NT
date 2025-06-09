@@ -455,7 +455,7 @@ public class EnrollmentServiceImpl implements EnrollmentService {
 
     // Helper methods
     private List<CourseBundleDTO> getCoursesInBundle(Long bundleId) {
-        List<CourseBundleDTO> courseBundles = courseMicroserviceClient.getAllCoursesByBundleId(bundleId).getBody();
+        List<CourseBundleDTO> courseBundles = Objects.requireNonNull(courseMicroserviceClient.getAllCoursesByBundleId(bundleId).getBody()).getData();
         if (CollectionUtils.isEmpty(courseBundles)) {
             throw new ResourceNotFoundException("No courses found in bundle with ID: " + bundleId);
         }
