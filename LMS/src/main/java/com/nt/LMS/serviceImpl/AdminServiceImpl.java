@@ -1,7 +1,7 @@
 package com.nt.LMS.serviceImpl;
 
 import com.nt.LMS.converter.UserDTOConverter;
-import com.nt.LMS.dto.UserInDTO;
+import com.nt.LMS.dto.StandardResponseOutDTO;
 import com.nt.LMS.dto.UserOutDTO;
 import com.nt.LMS.exception.InvalidRequestException;
 import com.nt.LMS.exception.ResourceNotFoundException;
@@ -68,7 +68,7 @@ public final class AdminServiceImpl implements AdminService {
      * @return a message response
      */
     @Override
-    public MessageOutDto register(final RegisterDto registerDto) {
+    public StandardResponseOutDTO<MessageOutDto> register(final RegisterDto registerDto) {
         log.info("Attempting to register user with email: {}", registerDto.getEmail());
 
         if (userRepository.findByEmailIgnoreCase(registerDto.getEmail()).isPresent()) {
@@ -99,7 +99,8 @@ public final class AdminServiceImpl implements AdminService {
         userRepository.save(user);
 
         log.info("User registered successfully with email: {}", registerDto.getEmail());
-        return new MessageOutDto(UserConstants.USER_REGISTRATION_SUCCESS);
+        MessageOutDto messageOutDto = new MessageOutDto(UserConstants.USER_REGISTRATION_SUCCESS);
+        return StandardResponseOutDTO.success(messageOutDto,"User Registration Successfully");
     }
 
     /**
@@ -109,7 +110,7 @@ public final class AdminServiceImpl implements AdminService {
      * @return a message response
      */
     @Override
-    public MessageOutDto employeeDeletion(final long id) {
+    public StandardResponseOutDTO<MessageOutDto> employeeDeletion(final long id) {
         log.info("Attempting to delete user with ID: {}", id);
         if(id != UserConstants.getAdminId()) {
             User user = userRepository.findById(id)
@@ -152,7 +153,8 @@ public final class AdminServiceImpl implements AdminService {
         else{
             throw new InvalidRequestException(INVALID_REQUEST);
         }
-        return new MessageOutDto(UserConstants.USER_DELETION_MESSAGE);
+        MessageOutDto messageOutDto = new MessageOutDto(UserConstants.USER_DELETION_MESSAGE);
+        return StandardResponseOutDTO.success(messageOutDto,null);
     }
 
     /**
@@ -161,14 +163,14 @@ public final class AdminServiceImpl implements AdminService {
      * @return a list of UserOutDTO
      */
     @Override
-    public List<UserOutDTO> getAllActiveUsers() {
+    public StandardResponseOutDTO<List<UserOutDTO>> getAllActiveUsers() {
         log.info("Fetching all users");
         try {
             List<User> employees = userRepository.findAll();
 //            System.out.println(employees);
             if (employees.isEmpty()) {
                 log.warn("No employees found");
-                return Collections.emptyList();
+                return StandardResponseOutDTO.success(Collections.emptyList(),"No user found");
             }
 
             List<UserOutDTO> userDtos = new ArrayList<>();
@@ -193,7 +195,7 @@ public final class AdminServiceImpl implements AdminService {
             }
 
                 log.info("Successfully fetched {} users", userDtos.size());
-                return userDtos;
+                return StandardResponseOutDTO.success(userDtos,"User fetched Successfully");
             } catch(Exception e){
                 log.error("Error fetching users", e);
                 throw new RuntimeException(UserConstants.DATABASE_ERROR, e);
@@ -206,13 +208,13 @@ public final class AdminServiceImpl implements AdminService {
      * @return list of UserOutDto
      */
     @Override
-    public List<UserOutDTO> getAllInactiveUsers(){
+    public StandardResponseOutDTO<List<UserOutDTO>> getAllInactiveUsers(){
         log.info("Fetching all  inactive users");
         try {
             List<User> employees = userRepository.findAll();
             if (employees.isEmpty()) {
                 log.warn("No employees found");
-                return Collections.emptyList();
+                return StandardResponseOutDTO.success(Collections.emptyList(),"User does not exist");
             }
 
             List<UserOutDTO> userDtos = new ArrayList<>();
@@ -237,7 +239,7 @@ public final class AdminServiceImpl implements AdminService {
             }
 
             log.info("Successfully fetched {} inactive users", userDtos.size());
-            return userDtos;
+            return StandardResponseOutDTO.success(userDtos,"User fetched Successfully");
         } catch(Exception e){
             log.error("Error fetching users", e);
             throw new RuntimeException(UserConstants.DATABASE_ERROR, e);
@@ -255,7 +257,7 @@ public final class AdminServiceImpl implements AdminService {
      * @return a message response
      */
     @Override
-    public MessageOutDto changeUserRole(final long userId, final String newRoleName) {
+    public StandardResponseOutDTO<MessageOutDto> changeUserRole(final long userId, final String newRoleName) {
         log.info("Attempting to change role for user with ID: {} to role: {}", userId, newRoleName);
         try {
             if(userId != UserConstants.getAdminId()){
@@ -275,7 +277,9 @@ public final class AdminServiceImpl implements AdminService {
             user.setUpdatedAt(new Date());
             userRepository.save(user);
             log.info("Successfully changed role for user with ID: {} to {}", userId, newRoleName);
-            return new MessageOutDto(UserConstants.UPDATED);}
+            MessageOutDto messageOutDto =  new MessageOutDto(UserConstants.UPDATED);
+            return StandardResponseOutDTO.success(messageOutDto,UserConstants.UPDATED);
+            }
             else{
                 throw new InvalidRequestException(INVALID_REQUEST);
             }
@@ -294,7 +298,7 @@ public final class AdminServiceImpl implements AdminService {
      * @return a list of UserOutDTO
      */
     @Override
-    public List<UserOutDTO> getManagerEmployee(final long userId) {
+    public StandardResponseOutDTO<List<UserOutDTO>> getManagerEmployee(final long userId) {
         log.info("Fetching employees for manager with ID: {}", userId);
         try {
             if(userId != UserConstants.getAdminId()) {
@@ -307,7 +311,7 @@ public final class AdminServiceImpl implements AdminService {
                 List<User> users = userRepository.findByManagerId(userId);
                 if (users.isEmpty()) {
                     log.warn("No employees found");
-                    return Collections.emptyList();
+                    return StandardResponseOutDTO.success(Collections.emptyList(),UserConstants.USER_NOT_FOUND);
                 }
 
                 List<UserOutDTO> response = new ArrayList<>();
@@ -318,7 +322,7 @@ public final class AdminServiceImpl implements AdminService {
                 }
 
                 log.info("Successfully fetched {} employees for manager with ID: {}", response.size(), userId);
-                return response;
+                return StandardResponseOutDTO.success(response,"Successfully fetched employee for Manager");
             }
             else {
                 throw new InvalidRequestException(INVALID_REQUEST);
@@ -330,7 +334,7 @@ public final class AdminServiceImpl implements AdminService {
     }
 
 
-    public MessageOutDto updateUserDetails(UserInDTO registerDto , long userId ){
+    public MessageOutDto updateUserDetails(RegisterDto registerDto , long userId ){
         log.info("updating user information");
         try {
             if (userId != UserConstants.getAdminId()) {
@@ -347,8 +351,8 @@ public final class AdminServiceImpl implements AdminService {
                     user.setUserName(registerDto.getUserName());
                 if (!registerDto.getEmail().isEmpty())
                     user.setEmail(registerDto.getEmail());
-//                if (registerDto.getRole() != null)
-//                    user.setRoleId(registerDto.getRole());
+                if (registerDto.getRoleId() != null)
+                    user.setRoleId(registerDto.getRoleId());
 
                 userRepository.save(user);
 

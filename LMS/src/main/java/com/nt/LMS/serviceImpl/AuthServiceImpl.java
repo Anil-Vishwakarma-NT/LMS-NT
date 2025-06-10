@@ -4,6 +4,7 @@ import com.nt.LMS.config.JwtUtil;
 import com.nt.LMS.constants.UserConstants;
 import com.nt.LMS.dto.LoginDto;
 import com.nt.LMS.dto.MessageOutDto;
+import com.nt.LMS.dto.StandardResponseOutDTO;
 import com.nt.LMS.dto.TokenResponseDto;
 import com.nt.LMS.entities.RefreshToken;
 import com.nt.LMS.entities.User;
@@ -76,7 +77,7 @@ public class AuthServiceImpl implements AuthService {
      * @return access and refresh tokens
      */
     @Override
-    public TokenResponseDto login(final LoginDto loginDto) {
+    public StandardResponseOutDTO<TokenResponseDto> login(final LoginDto loginDto) {
         log.info("Attempting login for email: {}", loginDto.getEmail());
 
         if (loginDto.getEmail() == null || loginDto.getPassword() == null) {
@@ -121,7 +122,8 @@ public class AuthServiceImpl implements AuthService {
         refreshTokenRepository.save(refreshTokenEntity);
         log.info("Refresh token stored for user: {}", user.getEmail());
 
-        return new TokenResponseDto(accessToken, refreshToken, "Bearer" );
+        TokenResponseDto tokenResponseDto = new TokenResponseDto(accessToken, refreshToken, "Bearer" );
+        return StandardResponseOutDTO.success(tokenResponseDto, "User Logged in successfully");
     }
 
     /**
@@ -131,7 +133,7 @@ public class AuthServiceImpl implements AuthService {
      * @return new access token and same refresh token
      */
     @Override
-    public TokenResponseDto refreshToken(final String refreshToken) {
+    public StandardResponseOutDTO<TokenResponseDto> refreshToken(final String refreshToken) {
         log.info("Refreshing access token using refresh token");
 
         if (refreshToken == null || refreshToken.isEmpty()) {
@@ -164,7 +166,8 @@ public class AuthServiceImpl implements AuthService {
 
         log.info("New access token generated for user: {}", user.getEmail());
 
-        return new TokenResponseDto(newAccessToken, refreshToken, "Bearer");
+        TokenResponseDto tokenResponseDto = new TokenResponseDto(newAccessToken, refreshToken, "Bearer");
+        return StandardResponseOutDTO.success(tokenResponseDto,"New Access Token generated for user");
     }
 
 
@@ -176,7 +179,7 @@ public class AuthServiceImpl implements AuthService {
      */
     @Override
     @Transactional
-    public MessageOutDto logout(final String email) {
+    public StandardResponseOutDTO<MessageOutDto> logout(final String email) {
         log.info("Logout request for user: {}", email);
 
         User user = userRepository.findByEmailIgnoreCase(email)
@@ -188,6 +191,7 @@ public class AuthServiceImpl implements AuthService {
         refreshTokenRepository.deleteByUserId(user.getUserId());
         log.info("Refresh token deleted for user: {}", email);
 
-        return new MessageOutDto(UserConstants.USER_LOGOUT_MESSAGE);
+        MessageOutDto messageOutDto = new MessageOutDto(UserConstants.USER_LOGOUT_MESSAGE);
+        return StandardResponseOutDTO.success(messageOutDto,UserConstants.USER_LOGOUT_MESSAGE);
     }
 }

@@ -2,6 +2,7 @@ package com.nt.LMS.service;
 
 import com.nt.LMS.dto.LoginDto;
 import com.nt.LMS.dto.MessageOutDto;
+import com.nt.LMS.dto.StandardResponseOutDTO;
 import com.nt.LMS.dto.TokenResponseDto;
 
 /**
@@ -16,7 +17,7 @@ public interface AuthService {
      * @param loginDto the login credentials
      * @return a token response containing access and refresh tokens
      */
-    TokenResponseDto login(LoginDto loginDto);
+    StandardResponseOutDTO<TokenResponseDto> login(LoginDto loginDto);
 
     /**
      * Generates a new access token using the provided refresh token.
@@ -24,7 +25,7 @@ public interface AuthService {
      * @param refreshToken the refresh token
      * @return a new token response
      */
-    TokenResponseDto refreshToken(String refreshToken);
+    StandardResponseOutDTO<TokenResponseDto> refreshToken(String refreshToken);
 
     /**
      * Logs the user out by invalidating the refresh token.
@@ -32,5 +33,5 @@ public interface AuthService {
      * @param email the user's email address
      * @return a message indicating logout success
      */
-    MessageOutDto logout(String email);
+    StandardResponseOutDTO<MessageOutDto> logout(String email);
 }
