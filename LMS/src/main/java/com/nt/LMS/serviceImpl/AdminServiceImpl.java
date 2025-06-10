@@ -1,6 +1,7 @@
 package com.nt.LMS.serviceImpl;
 
 import com.nt.LMS.converter.UserDTOConverter;
+import com.nt.LMS.dto.UserInDTO;
 import com.nt.LMS.dto.UserOutDTO;
 import com.nt.LMS.exception.InvalidRequestException;
 import com.nt.LMS.exception.ResourceNotFoundException;
@@ -329,7 +330,7 @@ public final class AdminServiceImpl implements AdminService {
     }
 
 
-    public MessageOutDto updateUserDetails(RegisterDto registerDto , long userId ){
+    public MessageOutDto updateUserDetails(UserInDTO registerDto , long userId ){
         log.info("updating user information");
         try {
             if (userId != UserConstants.getAdminId()) {
@@ -346,8 +347,8 @@ public final class AdminServiceImpl implements AdminService {
                     user.setUserName(registerDto.getUserName());
                 if (!registerDto.getEmail().isEmpty())
                     user.setEmail(registerDto.getEmail());
-                if (registerDto.getRoleId() != null)
-                    user.setRoleId(registerDto.getRoleId());
+//                if (registerDto.getRole() != null)
+//                    user.setRoleId(registerDto.getRole());
 
                 userRepository.save(user);
 

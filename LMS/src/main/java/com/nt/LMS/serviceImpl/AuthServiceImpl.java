@@ -6,7 +6,6 @@ import com.nt.LMS.dto.LoginDto;
 import com.nt.LMS.dto.MessageOutDto;
 import com.nt.LMS.dto.TokenResponseDto;
 import com.nt.LMS.entities.RefreshToken;
-import com.nt.LMS.entities.Role;
 import com.nt.LMS.entities.User;
 import com.nt.LMS.exception.InvalidRequestException;
 import com.nt.LMS.exception.ResourceNotFoundException;
@@ -23,6 +22,7 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 
 import java.time.Instant;
+import java.util.Base64;
 import java.util.Optional;
 
 import static com.nt.LMS.constants.AuthConstants.REFRESH_TOKEN_EXPIRY_SECONDS;
@@ -83,12 +83,12 @@ public class AuthServiceImpl implements AuthService {
             log.warn("Login failed - email or password is null ***************");
             throw new InvalidRequestException(UserConstants.EMAIL_NOT_NULL_MESSAGE);
         }
-
         try {
+            String decodedPass = new String (Base64.getDecoder().decode(loginDto.getPassword()));
             authenticationManager.authenticate(
                     new UsernamePasswordAuthenticationToken(
                             loginDto.getEmail(),
-                            loginDto.getPassword()
+                            decodedPass
                     )
             );
         } catch (Exception ex) {

@@ -141,9 +141,9 @@ public final class AdminController {
         );
     }
 
-    @PatchMapping("/update-user/{userId}")
+    @PutMapping("/update-user/{userId}")
     @PreAuthorize("hasAuthority('admin')")
-    public ResponseEntity<MessageOutDto> updateUser(@PathVariable final long userId , @RequestBody final RegisterDto registerDto){
+    public ResponseEntity<MessageOutDto> updateUser(@PathVariable final long userId , @RequestBody final UserInDTO registerDto){
 
         log.info("Received request to update user details");
         return new ResponseEntity<>(
