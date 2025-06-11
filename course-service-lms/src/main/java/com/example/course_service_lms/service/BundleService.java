@@ -1,15 +1,13 @@
 package com.example.course_service_lms.service;
 
 import com.example.course_service_lms.dto.BundleDTO;
-import com.example.course_service_lms.dto.BundleSummaryDTO;
+import com.example.course_service_lms.dto.BundleOutDTO;
 import com.example.course_service_lms.dto.UpdateBundleDTO;
-import com.example.course_service_lms.entity.Bundle;
 
 import java.util.List;
-import java.util.Optional;
 
 /**
- * Service interface for handling business logic related to {@link Bundle} entities.
+ * Service interface for handling business logic related to Bundle entities.
  * <p>
  * Provides methods for creating, retrieving, updating, and deleting course bundles,
  * as well as checking for their existence by ID.
@@ -21,31 +19,32 @@ public interface BundleService {
      * Creates a new bundle based on the provided {@link BundleDTO}.
      *
      * @param bundleDTO the data transfer object containing bundle details
-     * @return the newly created {@link Bundle} entity
+     * @return the newly created {@link BundleOutDTO}
      */
-    Bundle createBundle(BundleDTO bundleDTO);
+    BundleOutDTO createBundle(BundleDTO bundleDTO);
 
     /**
      * Retrieves all existing bundles.
      *
-     * @return a list of all {@link Bundle} entities
+     * @return a list of all {@link BundleOutDTO}
      */
-    List<Bundle> getAllBundles();
+    List<BundleOutDTO> getAllBundles();
 
     /**
      * Retrieves a bundle by its ID.
      *
      * @param id the ID of the bundle to retrieve
-     * @return an {@link Optional} containing the bundle if found, or empty otherwise
+     * @return the {@link BundleOutDTO} if found
+     * @throws com.example.course_service_lms.exception.ResourceNotFoundException if bundle not found
      */
-    Optional<Bundle> getBundleById(Long id);
+    BundleOutDTO getBundleById(Long id);
 
     /**
      * Updates the details of an existing bundle.
      *
      * @param bundleId the ID of the bundle to update
      * @param updateBundleDTO the updated bundle data
-     * @return the updated {@link BundleDTO}
+     * @return success message
      */
     String updateBundle(Long bundleId, UpdateBundleDTO updateBundleDTO);
 
@@ -64,14 +63,18 @@ public interface BundleService {
      */
     boolean existsByBundleId(Long id);
 
+    /**
+     * Counts the total number of bundles.
+     *
+     * @return the total count of bundles
+     */
     long countBundles();
 
-    String getBundleNameById(Long bundleId);
-
     /**
-     * Retrieves summaries of the 5 most recent bundles with course counts
+     * Retrieves the bundle name by bundle ID.
      *
-     * @return a list containing summaries of the most recently created bundles with course counts
+     * @param bundleId the ID of the bundle
+     * @return the bundle name
      */
-
+    String getBundleNameById(Long bundleId);
 }

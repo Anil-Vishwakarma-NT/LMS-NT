@@ -1,7 +1,8 @@
 package com.example.course_service_lms.serviceImpl;
 
+import com.example.course_service_lms.converters.BundleConverter;
 import com.example.course_service_lms.dto.BundleDTO;
-import com.example.course_service_lms.dto.BundleSummaryDTO;
+import com.example.course_service_lms.dto.BundleOutDTO;
 import com.example.course_service_lms.dto.UpdateBundleDTO;
 import com.example.course_service_lms.entity.Bundle;
 import com.example.course_service_lms.exception.ResourceAlreadyExistsException;
@@ -12,9 +13,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.time.LocalDateTime;
 import java.util.List;
-import java.util.Optional;
 import java.util.stream.Collectors;
 
 import static com.example.course_service_lms.constants.BundleConstants.BUNDLE_ALREADY_EXISTS;
@@ -39,6 +38,11 @@ public class BundleServiceImpl implements BundleService {
     @Autowired
     private BundleRepository bundleRepository;
 
+    /**
+     * Converter for handling Bundle entity and DTO conversions.
+     */
+    @Autowired
+    private BundleConverter bundleConverter;
 
     /**
      * Creates a new bundle based on the provided DTO.
@@ -47,12 +51,12 @@ public class BundleServiceImpl implements BundleService {
      * </p>
      *
      * @param bundleDTO the DTO containing the bundle details
-     * @return the created {@link Bundle} entity
+     * @return the created {@link BundleOutDTO}
      * @throws ResourceAlreadyExistsException if a bundle with the same name already exists
      * @throws RuntimeException if there is a general error during bundle creation
      */
     @Override
-    public Bundle createBundle(final BundleDTO bundleDTO) {
+    public BundleOutDTO createBundle(final BundleDTO bundleDTO) {
         try {
             log.info("Attempting to create a new bundle: {}", bundleDTO.getBundleName());
 
@@ -61,22 +65,20 @@ public class BundleServiceImpl implements BundleService {
                 log.error("Bundle with name '{}' already exists", bundleDTO.getBundleName());
                 throw new ResourceAlreadyExistsException(String.format(BUNDLE_ALREADY_EXISTS, bundleDTO.getBundleName()));
             }
-            // Convert DTO to Entity
-            Bundle bundle = new Bundle();
-            bundle.setBundleName(bundleDTO.getBundleName());
-            bundle.setCreatedAt(LocalDateTime.now());
-            bundle.setUpdatedAt(LocalDateTime.now());
-            bundle.setActive(true);
+
+            // Convert DTO to Entity using converter
+            Bundle bundle = bundleConverter.toEntity(bundleDTO);
 
             // Save bundle entity
             Bundle savedBundle = bundleRepository.save(bundle);
             log.info("Bundle '{}' created successfully with ID: {}", savedBundle.getBundleName(), savedBundle.getBundleId());
 
-            // Convert Entity to DTO before returning
-            return savedBundle;
+            // Convert entity to output DTO
+            return bundleConverter.toOutDTO(savedBundle);
         } catch (ResourceAlreadyExistsException e) {
             throw e;
         } catch (Exception e) {
+            log.error("Error creating bundle: {}", e.getMessage(), e);
             throw new RuntimeException(GENERAL_ERROR, e);
         }
     }
@@ -84,11 +86,11 @@ public class BundleServiceImpl implements BundleService {
     /**
      * Retrieves all available bundles.
      *
-     * @return a list of all {@link Bundle} entities
+     * @return a list of all {@link BundleOutDTO}
      * @throws ResourceNotFoundException if no bundles are found in the system
      */
     @Override
-    public List<Bundle> getAllBundles() {
+    public List<BundleOutDTO> getAllBundles() {
         log.info("Fetching all bundles");
 
         List<Bundle> bundles = bundleRepository.findAll();
@@ -99,34 +101,40 @@ public class BundleServiceImpl implements BundleService {
         }
 
         log.info("Successfully retrieved {} bundles", bundles.size());
-        return bundles;
+
+        // Convert entities to output DTOs
+        return bundles.stream()
+                .map(bundleConverter::toOutDTO)
+                .collect(Collectors.toList());
     }
 
     /**
      * Retrieves a bundle by its ID.
      *
      * @param bundleId the ID of the bundle to retrieve
-     * @return an {@link Optional} containing the bundle if found, or empty if not
-     * @throws ResourceNotFoundException if the bundle with the specified ID does not exist
+     * @return the {@link BundleOutDTO} if found
+     * @throws ResourceNotFoundException if bundle not found
      */
     @Override
-    public Optional<Bundle> getBundleById(final Long bundleId) {
+    public BundleOutDTO getBundleById(final Long bundleId) {
         try {
             log.info("Fetching bundle with ID: {}", bundleId);
 
-            Optional<Bundle> optionalBundle = bundleRepository.findById(bundleId);
+            Bundle bundle = bundleRepository.findById(bundleId)
+                    .orElseThrow(() -> {
+                        log.warn("Bundle with ID {} not found", bundleId);
+                        return new ResourceNotFoundException(String.format(BUNDLE_NOT_FOUND_BY_ID, bundleId));
+                    });
 
-            if (!optionalBundle.isPresent()) {
-                log.error("Bundle with ID {} not found", bundleId);
-                throw new ResourceNotFoundException(String.format(BUNDLE_NOT_FOUND_BY_ID, bundleId));
-            }
+            log.info("Successfully retrieved bundle: {}", bundle.getBundleName());
 
-            log.info("Successfully retrieved bundle: {}", optionalBundle.get().getBundleName());
-            return optionalBundle;
+            // Convert entity to output DTO
+            return bundleConverter.toOutDTO(bundle);
         } catch (ResourceNotFoundException e) {
             throw e;
         } catch (Exception e) {
-            throw new RuntimeException(GENERAL_ERROR);
+            log.error("Error fetching bundle with ID {}: {}", bundleId, e.getMessage(), e);
+            throw new RuntimeException(GENERAL_ERROR, e);
         }
     }
 
@@ -138,7 +146,7 @@ public class BundleServiceImpl implements BundleService {
      *
      * @param bundleId  the ID of the bundle to update
      * @param updateBundleDTO the DTO containing the updated bundle data
-     * @return the updated {@link BundleDTO}
+     * @return success message
      * @throws ResourceNotFoundException if the bundle with the specified ID does not exist
      * @throws ResourceAlreadyExistsException if the new bundle name already exists for a different bundle
      * @throws RuntimeException if there is a general error during the update
@@ -147,8 +155,8 @@ public class BundleServiceImpl implements BundleService {
     public String updateBundle(final Long bundleId, final UpdateBundleDTO updateBundleDTO) {
         try {
             log.info("Attempting to update bundle with ID: {}", bundleId);
+
             // Check if the bundle exists
-            // noinspection unused
             Bundle existingBundle = bundleRepository.findById(bundleId).orElseThrow(() -> {
                 log.error("Bundle with ID {} not found", bundleId);
                 return new ResourceNotFoundException(String.format(BUNDLE_NOT_FOUND_BY_ID, bundleId));
@@ -161,21 +169,18 @@ public class BundleServiceImpl implements BundleService {
                 throw new ResourceAlreadyExistsException(String.format(BUNDLE_ALREADY_EXISTS, updateBundleDTO.getBundleName()));
             }
 
-            // Update the bundle entity
-            existingBundle.setBundleName(updateBundleDTO.getBundleName());
-            existingBundle.setActive(updateBundleDTO.isActive());
-            existingBundle.setUpdatedAt(LocalDateTime.now());
-            Bundle updatedBundle = bundleRepository.save(existingBundle);
-            log.info("Successfully updated bundle with ID: {}", updatedBundle.getBundleId());
+            // Update the bundle entity using converter
+            Bundle updatedBundle = bundleConverter.updateEntity(existingBundle, updateBundleDTO);
+            bundleRepository.save(updatedBundle);
 
-            // Convert to DTO before returning
-            return "Bundle Updated SuccessFully";
-        } catch (ResourceNotFoundException e) {
-            throw e;
-        } catch (ResourceAlreadyExistsException e) {
+            log.info("Successfully updated bundle with ID: {}", updatedBundle.getBundleId());
+            return "Bundle Updated Successfully";
+
+        } catch (ResourceNotFoundException | ResourceAlreadyExistsException e) {
             throw e;
         } catch (Exception e) {
-            throw new RuntimeException(GENERAL_ERROR);
+            log.error("Error updating bundle with ID {}: {}", bundleId, e.getMessage(), e);
+            throw new RuntimeException(GENERAL_ERROR, e);
         }
     }
 
@@ -192,18 +197,20 @@ public class BundleServiceImpl implements BundleService {
             log.info("Attempting to delete bundle with ID: {}", id);
 
             // Check if the bundle exists
-            // noinspection unused
             Bundle existingBundle = bundleRepository.findById(id).orElseThrow(() -> {
                 log.error("Bundle with ID {} not found", id);
                 return new ResourceNotFoundException(String.format(BUNDLE_NOT_FOUND_BY_ID, id));
             });
+
             // Delete the bundle
             bundleRepository.delete(existingBundle);
             log.info("Successfully deleted bundle with ID: {}", id);
+
         } catch (ResourceNotFoundException e) {
             throw e;
         } catch (Exception e) {
-            throw new RuntimeException(GENERAL_ERROR);
+            log.error("Error deleting bundle with ID {}: {}", id, e.getMessage(), e);
+            throw new RuntimeException(GENERAL_ERROR, e);
         }
     }
 
@@ -215,26 +222,58 @@ public class BundleServiceImpl implements BundleService {
      */
     @Override
     public boolean existsByBundleId(final Long id) {
-        return bundleRepository.existsById(id);
-    }
-
-    @Override
-    public long countBundles() {
-        return bundleRepository.count();
-    }
-
-    @Override
-    public String getBundleNameById(Long bundleId) {
         try {
-            Bundle bundle = bundleRepository.findById(bundleId)
-                    .orElseThrow(() -> new ResourceNotFoundException("Bundle not found"));
-            return bundle.getBundleName();
-        } catch(ResourceNotFoundException e) {
-            throw e;
+            log.debug("Checking existence of bundle with ID: {}", id);
+            return bundleRepository.existsById(id);
         } catch (Exception e) {
-            throw new RuntimeException("Something went wrong ", e);
+            log.error("Error checking bundle existence for ID {}: {}", id, e.getMessage(), e);
+            return false;
         }
     }
 
-}
+    /**
+     * Counts the total number of bundles.
+     *
+     * @return the total count of bundles
+     */
+    @Override
+    public long countBundles() {
+        try {
+            log.debug("Counting total bundles");
+            return bundleRepository.count();
+        } catch (Exception e) {
+            log.error("Error counting bundles: {}", e.getMessage(), e);
+            return 0;
+        }
+    }
 
+    /**
+     * Retrieves the bundle name by bundle ID.
+     *
+     * @param bundleId the ID of the bundle
+     * @return the bundle name
+     * @throws ResourceNotFoundException if the bundle is not found
+     * @throws RuntimeException if there is a general error
+     */
+    @Override
+    public String getBundleNameById(Long bundleId) {
+        try {
+            log.info("Fetching bundle name for ID: {}", bundleId);
+
+            Bundle bundle = bundleRepository.findById(bundleId)
+                    .orElseThrow(() -> {
+                        log.error("Bundle with ID {} not found", bundleId);
+                        return new ResourceNotFoundException(String.format(BUNDLE_NOT_FOUND_BY_ID, bundleId));
+                    });
+
+            log.info("Successfully retrieved bundle name: {}", bundle.getBundleName());
+            return bundle.getBundleName();
+
+        } catch (ResourceNotFoundException e) {
+            throw e;
+        } catch (Exception e) {
+            log.error("Error fetching bundle name for ID {}: {}", bundleId, e.getMessage(), e);
+            throw new RuntimeException("Something went wrong while fetching bundle name", e);
+        }
+    }
+}
