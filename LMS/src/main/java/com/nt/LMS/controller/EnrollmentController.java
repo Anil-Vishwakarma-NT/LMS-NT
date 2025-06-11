@@ -1,6 +1,5 @@
 package com.nt.LMS.controller;
 
-import com.nt.LMS.dto.*;
 import com.nt.LMS.inDTO.EnrollmentInDTO;
 import com.nt.LMS.outDTO.*;
 import com.nt.LMS.service.EnrollmentService;
@@ -67,8 +66,8 @@ public class EnrollmentController {
     }
 
     @GetMapping("/user/{userId}/enrolled-courses")
-    public ResponseEntity<List<UserEnrollDetails>> getUserEnrolledCourses(@PathVariable Long userId) {
-        List<UserEnrollDetails> enrollments = userCourseEnrollmentService.getUserEnrolledCourses(userId);
+    public ResponseEntity<List<UserEnrollDetailsOutDTO>> getUserEnrolledCourses(@PathVariable Long userId) {
+        List<UserEnrollDetailsOutDTO> enrollments = userCourseEnrollmentService.getUserEnrolledCourses(userId);
         return ResponseEntity.ok(enrollments);
     }
 }

@@ -3,7 +3,7 @@ package com.nt.LMS.serviceImpl;
 import com.nt.LMS.outDTO.EnrolledUserOutDTO;
 import com.nt.LMS.outDTO.CourseInfoOutDTO;
 import com.nt.LMS.outDTO.UserCourseEnrollmentOutDTO;
-import com.nt.LMS.dto.UserEnrollDetails;
+import com.nt.LMS.outDTO.UserEnrollDetailsOutDTO;
 import com.nt.LMS.entities.User;
 import com.nt.LMS.entities.UserCourseEnrollment;
 import com.nt.LMS.exception.ResourceNotFoundException;
@@ -127,16 +127,16 @@ public class UserCourseEnrollmentServiceImpl implements UserCourseEnrollmentServ
 
 
     @Override
-    public List<UserEnrollDetails> getUserEnrolledCourses(Long userId) {
+    public List<UserEnrollDetailsOutDTO> getUserEnrolledCourses(Long userId) {
         List<UserCourseEnrollment> enrollments = userCourseEnrollmentRepository.findByUserId(userId);
         if (enrollments.isEmpty()) {
             log.warn("No enrolled courses found for user ID: " + userId);
             throw new ResourceNotFoundException("No enrolled courses found for user ID: " + userId);
         }
 
-        List<UserEnrollDetails> responseList = new ArrayList<>();
+        List<UserEnrollDetailsOutDTO> responseList = new ArrayList<>();
         for (UserCourseEnrollment enrollment : enrollments) {
-            UserEnrollDetails dto = new UserEnrollDetails();
+            UserEnrollDetailsOutDTO dto = new UserEnrollDetailsOutDTO();
             dto.setCourseId(enrollment.getCourseId());
             dto.setAssignedById(enrollment.getAssignedBy());
             dto.setEnrollmentDate(enrollment.getAssignedAt());
