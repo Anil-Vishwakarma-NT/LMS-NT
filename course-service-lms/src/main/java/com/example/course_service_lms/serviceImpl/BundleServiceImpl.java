@@ -152,7 +152,7 @@ public class BundleServiceImpl implements BundleService {
      * @throws RuntimeException if there is a general error during the update
      */
     @Override
-    public String updateBundle(final Long bundleId, final UpdateBundleDTO updateBundleDTO) {
+    public BundleOutDTO updateBundle(final Long bundleId, final UpdateBundleDTO updateBundleDTO) {
         try {
             log.info("Attempting to update bundle with ID: {}", bundleId);
 
@@ -171,10 +171,13 @@ public class BundleServiceImpl implements BundleService {
 
             // Update the bundle entity using converter
             Bundle updatedBundle = bundleConverter.updateEntity(existingBundle, updateBundleDTO);
-            bundleRepository.save(updatedBundle);
+            Bundle savedBundle = bundleRepository.save(updatedBundle);
 
-            log.info("Successfully updated bundle with ID: {}", updatedBundle.getBundleId());
-            return "Bundle Updated Successfully";
+            // Convert the saved bundle to BundleOutDTO
+            BundleOutDTO bundleOutDTO = bundleConverter.toOutDTO(savedBundle);
+
+            log.info("Successfully updated bundle with ID: {}", savedBundle.getBundleId());
+            return bundleOutDTO;
 
         } catch (ResourceNotFoundException | ResourceAlreadyExistsException e) {
             throw e;
