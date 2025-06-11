@@ -2,8 +2,8 @@ package com.example.course_service_lms.controller;
 
 import com.example.course_service_lms.dto.BundleDTO;
 import com.example.course_service_lms.dto.BundleOutDTO;
-import com.example.course_service_lms.dto.StandardResponseOutDTO;
 import com.example.course_service_lms.dto.UpdateBundleDTO;
+import com.example.course_service_lms.outDTO.StandardResponseOutDTO;
 import com.example.course_service_lms.service.BundleService;
 import jakarta.validation.Valid;
 import lombok.extern.slf4j.Slf4j;
