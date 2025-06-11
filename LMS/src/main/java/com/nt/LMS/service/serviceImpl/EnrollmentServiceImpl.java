@@ -8,7 +8,6 @@ import com.nt.LMS.exception.ResourceConflictException;
 import com.nt.LMS.exception.ResourceNotFoundException;
 import com.nt.LMS.feignClient.CourseMicroserviceClient;
 import com.nt.LMS.dto.inDTO.EnrollmentInDTO;
-import com.nt.LMS.outDTO.*;
 import com.nt.LMS.repository.*;
 import com.nt.LMS.service.EnrollmentService;
 import feign.FeignException;
