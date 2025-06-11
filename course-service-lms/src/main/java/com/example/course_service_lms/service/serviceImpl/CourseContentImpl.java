@@ -3,122 +3,140 @@ package com.example.course_service_lms.service.serviceImpl;
 import com.example.course_service_lms.converters.CourseContentConverters;
 import com.example.course_service_lms.dto.inDTO.CourseContentInDTO;
 import com.example.course_service_lms.dto.inDTO.UpdateCourseContentInDTO;
+import com.example.course_service_lms.dto.outDTO.CourseContentOutDTO;
 import com.example.course_service_lms.entity.CourseContent;
 import com.example.course_service_lms.exception.ResourceAlreadyExistsException;
 import com.example.course_service_lms.exception.ResourceNotFoundException;
 import com.example.course_service_lms.repository.CourseContentRepository;
 import com.example.course_service_lms.repository.CourseRepository;
 import com.example.course_service_lms.service.CourseContentService;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 
 import static com.example.course_service_lms.constants.BundleConstants.GENERAL_ERROR;
-import static com.example.course_service_lms.constants.CourseContentConstants.CONTENT_NOT_FOUND;
-import static com.example.course_service_lms.constants.CourseContentConstants.COURSE_CONTENT_ALREADY_PRESENT;
-import static com.example.course_service_lms.constants.CourseContentConstants.COURSE_CONTENT_DELETED;
-import static com.example.course_service_lms.constants.CourseContentConstants.COURSE_CONTENT_DUPLICATE;
-import static com.example.course_service_lms.constants.CourseContentConstants.COURSE_CONTENT_NOT_FOUND;
-import static com.example.course_service_lms.constants.CourseContentConstants.COURSE_CONTENT_UPDATED;
-import static com.example.course_service_lms.constants.CourseContentConstants.COURSE_NOT_FOUND;
-import static com.example.course_service_lms.constants.CourseContentConstants.NO_COURSE_CONTENTS_FOUND;
+import static com.example.course_service_lms.constants.CourseContentConstants.*;
 
 /**
- * Implementation of the {@link CourseContentService} interface that handles operations related to course content.
+ * Optimized implementation of the {@link CourseContentService} interface that handles operations related to course content.
  * Provides functionality for creating, updating, deleting, and retrieving course content records.
  * Validates inputs and handles exceptions appropriately.
  *
  * @see CourseContentService
  */
+@Slf4j
 @Service
+@Transactional
 public class CourseContentImpl implements CourseContentService {
 
-    /**
-     * Repository to interact with CourseContent data source.
-     */
-    @Autowired
-    private CourseContentRepository courseContentRepository;
+    private final CourseContentRepository courseContentRepository;
+    private final CourseRepository courseRepository;
 
     /**
-     * Repository to interact with Course data source.
+     * Constructor-based dependency injection for better testability and immutability.
+     *
+     * @param courseContentRepository repository for course content operations
+     * @param courseRepository repository for course operations
      */
     @Autowired
-    private CourseRepository courseRepository;
+    public CourseContentImpl(CourseContentRepository courseContentRepository,
+                             CourseRepository courseRepository) {
+        this.courseContentRepository = courseContentRepository;
+        this.courseRepository = courseRepository;
+    }
 
     /**
-     * Creates a new CourseContent.
+     * Creates a new CourseContent and returns the created content as DTO.
      *
      * @param courseContentInDTO the DTO containing course content data
-     * @return the saved CourseContent
-     * @throws ResourceAlreadyExistsException if   a course content with the same title already exists for the course
-     * @throws ResourceNotFoundException if  the course does not exist
+     * @return the created CourseContentOutDTO
+     * @throws ResourceAlreadyExistsException if a course content with the same title already exists for the course
+     * @throws ResourceNotFoundException if the course does not exist
      */
     @Override
-    public CourseContent createCourseContent(final CourseContentInDTO courseContentInDTO) {
+    public CourseContentOutDTO createCourseContent(final CourseContentInDTO courseContentInDTO) {
         try {
-            Optional<CourseContent> existingCourse = courseContentRepository.findByTitleIgnoreCaseAndCourseId(
+            log.debug("Creating course content with title: {} for course ID: {}",
                     courseContentInDTO.getTitle(), courseContentInDTO.getCourseId());
-            if (existingCourse.isPresent()) {
-                throw new ResourceAlreadyExistsException(COURSE_CONTENT_ALREADY_PRESENT);
-            }
-            boolean courseExists = courseRepository.existsById(courseContentInDTO.getCourseId());
-            if  (!courseExists) {
-                throw new ResourceNotFoundException(COURSE_NOT_FOUND);
-            }
-            CourseContent courseContent = CourseContentConverters.courseContentDtoToCourseContent(courseContentInDTO);
-            courseContent.setCreatedAt(LocalDateTime.now());
-            courseContent.setUpdatedAt(LocalDateTime.now());
-            return courseContentRepository.save(courseContent);
+
+            validateCourseContentCreation(courseContentInDTO);
+
+            CourseContent courseContent = CourseContentConverters.courseContentInDtoToEntity(courseContentInDTO);
+            setAuditFields(courseContent);
+
+            CourseContent savedContent = courseContentRepository.save(courseContent);
+            log.info("Successfully created course content with ID: {}", savedContent.getCourseContentId());
+
+            return CourseContentConverters.entityToOutDto(savedContent);
+
         } catch (ResourceAlreadyExistsException | ResourceNotFoundException e) {
+            log.error("Validation error while creating course content: {}", e.getMessage());
             throw e;
         } catch (Exception e) {
-            throw new RuntimeException(GENERAL_ERROR);
+            log.error("Unexpected error while creating course content", e);
+            throw new RuntimeException(GENERAL_ERROR, e);
         }
     }
 
     /**
-     * Retrieves all course content records.
+     * Retrieves all course content records as DTOs.
      *
-     * @return list of CourseContent
-     * @throws ResourceNotFoundException if  no course contents are found
+     * @return list of CourseContentOutDTO
+     * @throws ResourceNotFoundException if no course contents are found
      */
     @Override
-    public List<CourseContent> getAllCourseContents() {
+    @Transactional(readOnly = true)
+    public List<CourseContentOutDTO> getAllCourseContents() {
         try {
+            log.debug("Retrieving all course contents");
+
             List<CourseContent> courseContents = courseContentRepository.findAll();
-            if  (courseContents.isEmpty()) {
+            if (courseContents.isEmpty()) {
+                log.warn("No course contents found");
                 throw new ResourceNotFoundException(CONTENT_NOT_FOUND);
             }
-            return courseContents;
+
+            log.info("Found {} course contents", courseContents.size());
+            return CourseContentConverters.entityListToOutDtoList(courseContents);
+
         } catch (ResourceNotFoundException e) {
             throw e;
         } catch (Exception e) {
-            throw new RuntimeException(GENERAL_ERROR);
+            log.error("Unexpected error while retrieving all course contents", e);
+            throw new RuntimeException(GENERAL_ERROR, e);
         }
     }
 
     /**
-     * Retrieves a course content by its ID.
+     * Retrieves a course content by its ID as DTO.
      *
      * @param courseContentId the ID of the course content
-     * @return Optional containing CourseContent if  found
-     * @throws ResourceNotFoundException if  course content is not found
+     * @return CourseContentOutDTO if found
+     * @throws ResourceNotFoundException if course content is not found
      */
     @Override
-    public Optional<CourseContent> getCourseContentById(final Long courseContentId) {
+    @Transactional(readOnly = true)
+    public CourseContentOutDTO getCourseContentById(final Long courseContentId) {
         try {
-            Optional<CourseContent> courseContent = courseContentRepository.findById(courseContentId);
-            if  (courseContent.isEmpty()) {
-                throw new ResourceNotFoundException(COURSE_CONTENT_NOT_FOUND);
-            }
-            return courseContent;
+            log.debug("Retrieving course content with ID: {}", courseContentId);
+
+            CourseContent courseContent = courseContentRepository.findById(courseContentId)
+                    .orElseThrow(() -> new ResourceNotFoundException(COURSE_CONTENT_NOT_FOUND));
+
+            log.info("Found course content with ID: {}", courseContentId);
+            return CourseContentConverters.entityToOutDto(courseContent);
+
         } catch (ResourceNotFoundException e) {
+            log.warn("Course content not found with ID: {}", courseContentId);
             throw e;
         } catch (Exception e) {
-            throw new RuntimeException(GENERAL_ERROR);
+            log.error("Unexpected error while retrieving course content with ID: {}", courseContentId, e);
+            throw new RuntimeException(GENERAL_ERROR, e);
         }
     }
 
@@ -127,99 +145,151 @@ public class CourseContentImpl implements CourseContentService {
      *
      * @param courseContentId the ID of the course content to delete
      * @return success message upon deletion
-     * @throws ResourceNotFoundException of course content is not found
+     * @throws ResourceNotFoundException if course content is not found
      */
     @Override
     public String deleteCourseContent(final Long courseContentId) {
         try {
-            Optional<CourseContent> courseContent = courseContentRepository.findById(courseContentId);
-            if  (courseContent.isEmpty()) {
-                throw new ResourceNotFoundException(COURSE_CONTENT_NOT_FOUND);
-            }
-            courseContentRepository.delete(courseContent.get());
+            log.debug("Deleting course content with ID: {}", courseContentId);
+
+            CourseContent courseContent = courseContentRepository.findById(courseContentId)
+                    .orElseThrow(() -> new ResourceNotFoundException(COURSE_CONTENT_NOT_FOUND));
+
+            courseContentRepository.delete(courseContent);
+            log.info("Successfully deleted course content with ID: {}", courseContentId);
+
             return COURSE_CONTENT_DELETED;
+
         } catch (ResourceNotFoundException e) {
+            log.warn("Cannot delete - course content not found with ID: {}", courseContentId);
             throw e;
         } catch (Exception e) {
-            throw new RuntimeException(GENERAL_ERROR);
+            log.error("Unexpected error while deleting course content with ID: {}", courseContentId, e);
+            throw new RuntimeException(GENERAL_ERROR, e);
         }
     }
 
     /**
-     * Updates an existing course content by ID.
+     * Updates an existing course content by ID and returns the updated content as DTO.
      *
-     * @param courseId ID of the course content to update
+     * @param courseContentId ID of the course content to update
      * @param updateCourseContentInDTO the updated data
-     * @return success message upon update
-     * @throws ResourceNotFoundException of course content or course is not found
-     * @throws ResourceAlreadyExistsException if  updated title and course combination already exists
+     * @return updated CourseContentOutDTO
+     * @throws ResourceNotFoundException if course content or course is not found
+     * @throws ResourceAlreadyExistsException if updated title and course combination already exists
      */
     @Override
-    public String updateCourseContent(final Long courseId, final UpdateCourseContentInDTO updateCourseContentInDTO) {
+    public CourseContentOutDTO updateCourseContent(final Long courseContentId,
+                                                   final UpdateCourseContentInDTO updateCourseContentInDTO) {
         try {
-            Optional<CourseContent> courseContentOptional = courseContentRepository.findById(courseId);
-            if  (courseContentOptional.isEmpty()) {
-                throw new ResourceNotFoundException(COURSE_CONTENT_NOT_FOUND);
-            }
-            boolean courseExists = courseRepository.existsById(updateCourseContentInDTO.getCourseId());
-            if  (!courseExists) {
-                throw new ResourceNotFoundException(COURSE_NOT_FOUND);
-            }
-            CourseContent existingCourseContent = courseContentOptional.get();
+            log.debug("Updating course content with ID: {}", courseContentId);
 
-            boolean isTitleChanged = !existingCourseContent.getTitle().equalsIgnoreCase(updateCourseContentInDTO.getTitle());
-            boolean isCourseIdChanged = !(existingCourseContent.getCourseId() == updateCourseContentInDTO.getCourseId());
+            CourseContent existingContent = courseContentRepository.findById(courseContentId)
+                    .orElseThrow(() -> new ResourceNotFoundException(COURSE_CONTENT_NOT_FOUND));
 
-            if  (isTitleChanged || isCourseIdChanged) {
-                Optional<CourseContent> duplicate = courseContentRepository.findByTitleIgnoreCaseAndCourseId(
-                        updateCourseContentInDTO.getTitle(), updateCourseContentInDTO.getCourseId());
+            validateCourseContentUpdate(existingContent, updateCourseContentInDTO, courseContentId);
 
-                if  (duplicate.isPresent() && !(duplicate.get().getCourseId() == courseId)) {
-                    throw new ResourceAlreadyExistsException(COURSE_CONTENT_DUPLICATE);
-                }
-            }
+            CourseContentConverters.updateEntityFromDto(existingContent, updateCourseContentInDTO);
+            existingContent.setUpdatedAt(LocalDateTime.now());
 
-            existingCourseContent.setCourseId(updateCourseContentInDTO.getCourseId());
-            existingCourseContent.setTitle(updateCourseContentInDTO.getTitle());
-            existingCourseContent.setDescription(updateCourseContentInDTO.getDescription());
-            existingCourseContent.setResourceLink(updateCourseContentInDTO.getResourceLink());
-            existingCourseContent.setUpdatedAt(LocalDateTime.now());
-            existingCourseContent.setActive(updateCourseContentInDTO.isActive());
+            CourseContent updatedContent = courseContentRepository.save(existingContent);
+            log.info("Successfully updated course content with ID: {}", courseContentId);
 
-            courseContentRepository.save(existingCourseContent);
-            return COURSE_CONTENT_UPDATED;
+            return CourseContentConverters.entityToOutDto(updatedContent);
 
         } catch (ResourceNotFoundException | ResourceAlreadyExistsException e) {
+            log.error("Validation error while updating course content: {}", e.getMessage());
             throw e;
         } catch (Exception e) {
-            throw new RuntimeException(GENERAL_ERROR);
+            log.error("Unexpected error while updating course content with ID: {}", courseContentId, e);
+            throw new RuntimeException(GENERAL_ERROR, e);
         }
     }
 
     /**
-     * Retrieves all course content associated with a specif ic course.
+     * Retrieves all course content associated with a specific course as DTOs.
      *
      * @param courseId the ID of the course
-     * @return list of course contents for the course
-     * @throws ResourceNotFoundException of course or its content is not found
+     * @return list of CourseContentOutDTO for the course
+     * @throws ResourceNotFoundException if course or its content is not found
      */
     @Override
-    public List<CourseContent> getAllCourseContentByCourseId(final Long courseId) {
+    @Transactional(readOnly = true)
+    public List<CourseContentOutDTO> getAllCourseContentByCourseId(final Long courseId) {
         try {
-            boolean courseExists = courseRepository.existsById(courseId);
-            if  (!courseExists) {
-                throw new ResourceNotFoundException(CONTENT_NOT_FOUND);
+            log.debug("Retrieving course contents for course ID: {}", courseId);
+
+            if (!courseRepository.existsById(courseId)) {
+                log.warn("Course not found with ID: {}", courseId);
+                throw new ResourceNotFoundException(COURSE_NOT_FOUND);
             }
+
             List<CourseContent> courseContents = courseContentRepository.findByCourseId(courseId);
             if (courseContents.isEmpty()) {
+                log.warn("No course contents found for course ID: {}", courseId);
                 throw new ResourceNotFoundException(NO_COURSE_CONTENTS_FOUND);
             }
-            return courseContents;
+
+            log.info("Found {} course contents for course ID: {}", courseContents.size(), courseId);
+            return CourseContentConverters.entityListToOutDtoList(courseContents);
+
         } catch (ResourceNotFoundException e) {
             throw e;
         } catch (Exception e) {
-            throw new RuntimeException(GENERAL_ERROR);
+            log.error("Unexpected error while retrieving course contents for course ID: {}", courseId, e);
+            throw new RuntimeException(GENERAL_ERROR, e);
         }
     }
 
+    /**
+     * Validates course content creation requirements.
+     */
+    private void validateCourseContentCreation(final CourseContentInDTO courseContentInDTO) {
+        // Check if course content with same title already exists for the course
+        Optional<CourseContent> existingContent = courseContentRepository
+                .findByTitleIgnoreCaseAndCourseId(courseContentInDTO.getTitle(), courseContentInDTO.getCourseId());
+
+        if (existingContent.isPresent()) {
+            throw new ResourceAlreadyExistsException(COURSE_CONTENT_ALREADY_PRESENT);
+        }
+
+        // Check if course exists
+        if (!courseRepository.existsById(courseContentInDTO.getCourseId())) {
+            throw new ResourceNotFoundException(COURSE_NOT_FOUND);
+        }
+    }
+
+    /**
+     * Validates course content update requirements.
+     */
+    private void validateCourseContentUpdate(final CourseContent existingContent,
+                                             final UpdateCourseContentInDTO updateDto,
+                                             final Long courseContentId) {
+        // Check if course exists
+        if (!courseRepository.existsById(updateDto.getCourseId())) {
+            throw new ResourceNotFoundException(COURSE_NOT_FOUND);
+        }
+
+        // Check for duplicate title-course combination only if title or course ID changed
+        boolean isTitleChanged = !existingContent.getTitle().equalsIgnoreCase(updateDto.getTitle());
+        boolean isCourseIdChanged = existingContent.getCourseId() != updateDto.getCourseId();
+
+        if (isTitleChanged || isCourseIdChanged) {
+            Optional<CourseContent> duplicate = courseContentRepository
+                    .findByTitleIgnoreCaseAndCourseId(updateDto.getTitle(), updateDto.getCourseId());
+
+            if (duplicate.isPresent() && duplicate.get().getCourseContentId() != courseContentId) {
+                throw new ResourceAlreadyExistsException(COURSE_CONTENT_DUPLICATE);
+            }
+        }
+    }
+
+    /**
+     * Sets audit fields for new course content.
+     */
+    private void setAuditFields(final CourseContent courseContent) {
+        LocalDateTime now = LocalDateTime.now();
+        courseContent.setCreatedAt(now);
+        courseContent.setUpdatedAt(now);
+    }
 }
