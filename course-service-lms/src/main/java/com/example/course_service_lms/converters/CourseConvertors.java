@@ -2,7 +2,7 @@ package com.example.course_service_lms.converters;
 
 import com.example.course_service_lms.inDTO.CourseInDTO;
 import com.example.course_service_lms.inDTO.UpdateCourseInDTO;
-import com.example.course_service_lms.dto.CourseInfoOutDTO;
+import com.example.course_service_lms.outDTO.CourseInfoOutDTO;
 import com.example.course_service_lms.outDTO.CourseOutDTO;
 import com.example.course_service_lms.outDTO.CourseSummaryOutDTO;
 import com.example.course_service_lms.entity.Course;

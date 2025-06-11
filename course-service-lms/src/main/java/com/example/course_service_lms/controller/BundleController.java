@@ -1,8 +1,8 @@
 package com.example.course_service_lms.controller;
 
-import com.example.course_service_lms.dto.BundleDTO;
-import com.example.course_service_lms.dto.BundleOutDTO;
-import com.example.course_service_lms.dto.UpdateBundleDTO;
+import com.example.course_service_lms.inDTO.BundleInDTO;
+import com.example.course_service_lms.outDTO.BundleOutDTO;
+import com.example.course_service_lms.inDTO.UpdateBundleInDTO;
 import com.example.course_service_lms.outDTO.StandardResponseOutDTO;
 import com.example.course_service_lms.service.BundleService;
 import jakarta.validation.Valid;
@@ -33,13 +33,13 @@ public class BundleController {
     /**
      * Creates a new course bundle.
      *
-     * @param bundleDTO DTO containing the details of the bundle to be created.
+     * @param bundleInDTO DTO containing the details of the bundle to be created.
      * @return ResponseEntity containing the StandardResponseOutDTO with created BundleOutDTO.
      */
     @PostMapping
-    public ResponseEntity<StandardResponseOutDTO<BundleOutDTO>> createBundle(@Valid @RequestBody final BundleDTO bundleDTO) {
-        log.info("Received request to create bundle: {}", bundleDTO.getBundleName());
-        BundleOutDTO createdBundle = bundleService.createBundle(bundleDTO);
+    public ResponseEntity<StandardResponseOutDTO<BundleOutDTO>> createBundle(@Valid @RequestBody final BundleInDTO bundleInDTO) {
+        log.info("Received request to create bundle: {}", bundleInDTO.getBundleName());
+        BundleOutDTO createdBundle = bundleService.createBundle(bundleInDTO);
         return ResponseEntity.status(HttpStatus.CREATED)
                 .body(StandardResponseOutDTO.success(createdBundle, "Bundle created successfully"));
     }
@@ -73,14 +73,14 @@ public class BundleController {
      * Updates an existing bundle with the given ID.
      *
      * @param id The ID of the bundle to be updated.
-     * @param updateBundleDTO DTO containing updated details of the bundle.
+     * @param updateBundleInDTO DTO containing updated details of the bundle.
      * @return ResponseEntity containing StandardResponseOutDTO with update confirmation.
      */
     @PutMapping("/{id}")
     public ResponseEntity<StandardResponseOutDTO<BundleOutDTO>> updateBundle(@PathVariable final Long id,
-                                                                             @Valid @RequestBody final UpdateBundleDTO updateBundleDTO) {
+                                                                             @Valid @RequestBody final UpdateBundleInDTO updateBundleInDTO) {
         log.info("Received request to update bundle with ID: {}", id);
-        BundleOutDTO bundleOutDTO = bundleService.updateBundle(id, updateBundleDTO);
+        BundleOutDTO bundleOutDTO = bundleService.updateBundle(id, updateBundleInDTO);
         return ResponseEntity.ok(StandardResponseOutDTO.success(bundleOutDTO, "Bundle updated successfully"));
     }
 

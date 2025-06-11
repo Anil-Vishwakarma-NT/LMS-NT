@@ -4,7 +4,7 @@ import com.example.course_service_lms.converters.CourseConvertors;
 import com.example.course_service_lms.inDTO.CourseInDTO;
 import com.example.course_service_lms.outDTO.CourseOutDTO;
 import com.example.course_service_lms.outDTO.CourseSummaryOutDTO;
-import com.example.course_service_lms.dto.CourseInfoOutDTO;
+import com.example.course_service_lms.outDTO.CourseInfoOutDTO;
 import com.example.course_service_lms.inDTO.UpdateCourseInDTO;
 import com.example.course_service_lms.entity.Course;
 import com.example.course_service_lms.exception.ResourceAlreadyExistsException;
@@ -18,7 +18,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;

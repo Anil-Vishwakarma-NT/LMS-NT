@@ -2,6 +2,8 @@ package com.example.course_service_lms.service;
 
 import com.example.course_service_lms.dto.*;
 import com.example.course_service_lms.entity.CourseBundle;
+import com.example.course_service_lms.outDTO.BundleInfoOutDTO;
+import com.example.course_service_lms.outDTO.BundleSummaryOutDTO;
 
 import java.util.List;
 
@@ -61,6 +63,6 @@ public interface CourseBundleService {
      */
     CourseBundle createCourseBundle(CourseBundlePostDTO courseBundlePostDTO);
 
-    List<BundleInfoDTO> getBundlesInfo();
-    List<BundleSummaryDTO> getRecentBundleSummaries();
+    List<BundleInfoOutDTO> getBundlesInfo();
+    List<BundleSummaryOutDTO> getRecentBundleSummaries();
 }

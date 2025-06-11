@@ -1,8 +1,8 @@
 package com.example.course_service_lms.service;
 
-import com.example.course_service_lms.dto.BundleDTO;
-import com.example.course_service_lms.dto.BundleOutDTO;
-import com.example.course_service_lms.dto.UpdateBundleDTO;
+import com.example.course_service_lms.inDTO.BundleInDTO;
+import com.example.course_service_lms.outDTO.BundleOutDTO;
+import com.example.course_service_lms.inDTO.UpdateBundleInDTO;
 
 import java.util.List;
 
@@ -16,12 +16,12 @@ import java.util.List;
 public interface BundleService {
 
     /**
-     * Creates a new bundle based on the provided {@link BundleDTO}.
+     * Creates a new bundle based on the provided {@link BundleInDTO}.
      *
-     * @param bundleDTO the data transfer object containing bundle details
+     * @param bundleInDTO the data transfer object containing bundle details
      * @return the newly created {@link BundleOutDTO}
      */
-    BundleOutDTO createBundle(BundleDTO bundleDTO);
+    BundleOutDTO createBundle(BundleInDTO bundleInDTO);
 
     /**
      * Retrieves all existing bundles.
@@ -43,10 +43,10 @@ public interface BundleService {
      * Updates the details of an existing bundle.
      *
      * @param bundleId the ID of the bundle to update
-     * @param updateBundleDTO the updated bundle data
+     * @param updateBundleInDTO the updated bundle data
      * @return success message
      */
-    BundleOutDTO updateBundle(Long bundleId, UpdateBundleDTO updateBundleDTO);
+    BundleOutDTO updateBundle(Long bundleId, UpdateBundleInDTO updateBundleInDTO);
 
     /**
      * Deletes the bundle with the given ID.

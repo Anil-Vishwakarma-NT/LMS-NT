@@ -1,4 +1,4 @@
-package com.example.course_service_lms.dto;
+package com.example.course_service_lms.outDTO;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -12,7 +12,7 @@ import java.time.LocalDateTime;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class BundleSummaryDTO {
+public class BundleSummaryOutDTO {
     private Long bundleId;
     private String bundleName;
     private Long courseCount;

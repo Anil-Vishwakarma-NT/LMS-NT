@@ -1,9 +1,9 @@
 package com.example.course_service_lms.serviceImpl;
 
 import com.example.course_service_lms.converters.BundleConverter;
-import com.example.course_service_lms.dto.BundleDTO;
-import com.example.course_service_lms.dto.BundleOutDTO;
-import com.example.course_service_lms.dto.UpdateBundleDTO;
+import com.example.course_service_lms.inDTO.BundleInDTO;
+import com.example.course_service_lms.outDTO.BundleOutDTO;
+import com.example.course_service_lms.inDTO.UpdateBundleInDTO;
 import com.example.course_service_lms.entity.Bundle;
 import com.example.course_service_lms.exception.ResourceAlreadyExistsException;
 import com.example.course_service_lms.exception.ResourceNotFoundException;
@@ -50,24 +50,24 @@ public class BundleServiceImpl implements BundleService {
      * Checks for duplicate bundle name before saving the new bundle.
      * </p>
      *
-     * @param bundleDTO the DTO containing the bundle details
+     * @param bundleInDTO the DTO containing the bundle details
      * @return the created {@link BundleOutDTO}
      * @throws ResourceAlreadyExistsException if a bundle with the same name already exists
      * @throws RuntimeException if there is a general error during bundle creation
      */
     @Override
-    public BundleOutDTO createBundle(final BundleDTO bundleDTO) {
+    public BundleOutDTO createBundle(final BundleInDTO bundleInDTO) {
         try {
-            log.info("Attempting to create a new bundle: {}", bundleDTO.getBundleName());
+            log.info("Attempting to create a new bundle: {}", bundleInDTO.getBundleName());
 
             // Check for duplicate bundle name
-            if (bundleRepository.existsByBundleName(bundleDTO.getBundleName())) {
-                log.error("Bundle with name '{}' already exists", bundleDTO.getBundleName());
-                throw new ResourceAlreadyExistsException(String.format(BUNDLE_ALREADY_EXISTS, bundleDTO.getBundleName()));
+            if (bundleRepository.existsByBundleName(bundleInDTO.getBundleName())) {
+                log.error("Bundle with name '{}' already exists", bundleInDTO.getBundleName());
+                throw new ResourceAlreadyExistsException(String.format(BUNDLE_ALREADY_EXISTS, bundleInDTO.getBundleName()));
             }
 
             // Convert DTO to Entity using converter
-            Bundle bundle = bundleConverter.toEntity(bundleDTO);
+            Bundle bundle = bundleConverter.toEntity(bundleInDTO);
 
             // Save bundle entity
             Bundle savedBundle = bundleRepository.save(bundle);
@@ -145,14 +145,14 @@ public class BundleServiceImpl implements BundleService {
      * </p>
      *
      * @param bundleId  the ID of the bundle to update
-     * @param updateBundleDTO the DTO containing the updated bundle data
+     * @param updateBundleInDTO the DTO containing the updated bundle data
      * @return success message
      * @throws ResourceNotFoundException if the bundle with the specified ID does not exist
      * @throws ResourceAlreadyExistsException if the new bundle name already exists for a different bundle
      * @throws RuntimeException if there is a general error during the update
      */
     @Override
-    public BundleOutDTO updateBundle(final Long bundleId, final UpdateBundleDTO updateBundleDTO) {
+    public BundleOutDTO updateBundle(final Long bundleId, final UpdateBundleInDTO updateBundleInDTO) {
         try {
             log.info("Attempting to update bundle with ID: {}", bundleId);
 
@@ -163,14 +163,14 @@ public class BundleServiceImpl implements BundleService {
             });
 
             // Validate if the updated name is unique (excluding the same bundle)
-            if (bundleRepository.existsByBundleName(updateBundleDTO.getBundleName())
-                    && !existingBundle.getBundleName().equalsIgnoreCase(updateBundleDTO.getBundleName())) {
-                log.error("Bundle with name '{}' already exists", updateBundleDTO.getBundleName());
-                throw new ResourceAlreadyExistsException(String.format(BUNDLE_ALREADY_EXISTS, updateBundleDTO.getBundleName()));
+            if (bundleRepository.existsByBundleName(updateBundleInDTO.getBundleName())
+                    && !existingBundle.getBundleName().equalsIgnoreCase(updateBundleInDTO.getBundleName())) {
+                log.error("Bundle with name '{}' already exists", updateBundleInDTO.getBundleName());
+                throw new ResourceAlreadyExistsException(String.format(BUNDLE_ALREADY_EXISTS, updateBundleInDTO.getBundleName()));
             }
 
             // Update the bundle entity using converter
-            Bundle updatedBundle = bundleConverter.updateEntity(existingBundle, updateBundleDTO);
+            Bundle updatedBundle = bundleConverter.updateEntity(existingBundle, updateBundleInDTO);
             Bundle savedBundle = bundleRepository.save(updatedBundle);
 
             // Convert the saved bundle to BundleOutDTO

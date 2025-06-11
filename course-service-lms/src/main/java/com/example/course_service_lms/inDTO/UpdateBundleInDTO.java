@@ -1,17 +1,13 @@
-package com.example.course_service_lms.dto;
+package com.example.course_service_lms.inDTO;
 
 import jakarta.validation.constraints.*;
 import lombok.Data;
 
-import java.time.LocalDateTime;
-import java.util.Objects;
-
 import static com.example.course_service_lms.constants.BundleConstants.*;
 import static com.example.course_service_lms.constants.BundleConstants.BUNDLE_NAME_INVALID;
-import static com.example.course_service_lms.constants.CourseConstants.*;
 
 @Data
-public class UpdateBundleDTO {
+public class UpdateBundleInDTO {
     @NotBlank(message = BUNDLE_NAME_NOT_BLANK)
     @Size(min = INT_VALUE_3, message = BUNDLE_NAME_MIN_LENGTH)
     @Pattern(

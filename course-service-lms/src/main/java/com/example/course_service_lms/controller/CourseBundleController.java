@@ -2,6 +2,8 @@ package com.example.course_service_lms.controller;
 
 import com.example.course_service_lms.dto.*;
 import com.example.course_service_lms.entity.CourseBundle;
+import com.example.course_service_lms.outDTO.BundleInfoOutDTO;
+import com.example.course_service_lms.outDTO.BundleSummaryOutDTO;
 import com.example.course_service_lms.service.CourseBundleService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -109,14 +111,14 @@ public class CourseBundleController {
     }
 
     @GetMapping("/info")
-    public ResponseEntity<StandardResponseOutDTO<List<BundleInfoDTO>>> getALlBundleInfo() {
-        List<BundleInfoDTO> bundleInfoDTOS = courseBundleService.getBundlesInfo();
-        return ResponseEntity.ok(StandardResponseOutDTO.success(bundleInfoDTOS, "Bundles info retrieved successfully."));
+    public ResponseEntity<StandardResponseOutDTO<List<BundleInfoOutDTO>>> getALlBundleInfo() {
+        List<BundleInfoOutDTO> bundleInfoOutDTOS = courseBundleService.getBundlesInfo();
+        return ResponseEntity.ok(StandardResponseOutDTO.success(bundleInfoOutDTOS, "Bundles info retrieved successfully."));
     }
 
     @GetMapping("/recent")
-    public ResponseEntity<StandardResponseOutDTO<List<BundleSummaryDTO>>> getRecentBundles() {
-        List<BundleSummaryDTO> bundleSummaries = courseBundleService.getRecentBundleSummaries();
+    public ResponseEntity<StandardResponseOutDTO<List<BundleSummaryOutDTO>>> getRecentBundles() {
+        List<BundleSummaryOutDTO> bundleSummaries = courseBundleService.getRecentBundleSummaries();
         return ResponseEntity.ok(StandardResponseOutDTO.success(bundleSummaries, "Recent bundles retrieved successfully."));
     }
 }

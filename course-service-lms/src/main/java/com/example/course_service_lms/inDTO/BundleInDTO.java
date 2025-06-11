@@ -1,4 +1,4 @@
-package com.example.course_service_lms.dto;
+package com.example.course_service_lms.inDTO;
 
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
@@ -6,7 +6,6 @@ import jakarta.validation.constraints.Pattern;
 import jakarta.validation.constraints.Size;
 import lombok.Data;
 
-import java.time.LocalDateTime;
 import java.util.Objects;
 
 import static com.example.course_service_lms.constants.BundleConstants.BUNDLE_NAME_INVALID;
@@ -30,7 +29,7 @@ import static com.example.course_service_lms.constants.BundleConstants.BUNDLE_NA
  * </ul>
  */
 @Data
-public class BundleDTO {
+public class BundleInDTO {
 
     /**
      * The name of the bundle.
@@ -55,7 +54,7 @@ public class BundleDTO {
     @NotNull(message = "Is Active field is required")
     private boolean isActive;
 
-    public BundleDTO(String bundleName, boolean isActive) {
+    public BundleInDTO(String bundleName, boolean isActive) {
         this.bundleName = bundleName;
         this.isActive = isActive;
     }
@@ -64,8 +63,8 @@ public class BundleDTO {
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
-        BundleDTO bundleDTO = (BundleDTO) o;
-        return isActive == bundleDTO.isActive && Objects.equals(bundleName, bundleDTO.bundleName);
+        BundleInDTO bundleInDTO = (BundleInDTO) o;
+        return isActive == bundleInDTO.isActive && Objects.equals(bundleName, bundleInDTO.bundleName);
     }
 
     @Override
@@ -76,6 +75,6 @@ public class BundleDTO {
     /**
      * No-args constructor for frameworks and serialization tools.
      */
-    public BundleDTO() {
+    public BundleInDTO() {
     }
 }

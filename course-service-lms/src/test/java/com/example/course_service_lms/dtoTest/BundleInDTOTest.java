@@ -1,6 +1,6 @@
 package com.example.course_service_lms.dtoTest;
 
-import com.example.course_service_lms.dto.BundleDTO;
+import com.example.course_service_lms.inDTO.BundleInDTO;
 import jakarta.validation.ConstraintViolation;
 import jakarta.validation.Validation;
 import jakarta.validation.Validator;
@@ -12,7 +12,7 @@ import java.util.Set;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-class BundleDTOTest {
+class BundleInDTOTest {
 
     private Validator validator;
 
@@ -24,57 +24,57 @@ class BundleDTOTest {
 
     @Test
     void testValidBundleName() {
-        BundleDTO dto = new BundleDTO("JavaBundle");
-        Set<ConstraintViolation<BundleDTO>> violations = validator.validate(dto);
+        BundleInDTO dto = new BundleInDTO("JavaBundle");
+        Set<ConstraintViolation<BundleInDTO>> violations = validator.validate(dto);
         assertTrue(violations.isEmpty(), "Expected no validation errors");
     }
 
     @Test
     void testNoArgsConstructor() {
-        BundleDTO bundleDTO = new BundleDTO();
-        assertNotNull(bundleDTO);
-        assertNull(bundleDTO.getBundleName());
+        BundleInDTO bundleInDTO = new BundleInDTO();
+        assertNotNull(bundleInDTO);
+        assertNull(bundleInDTO.getBundleName());
     }
 
     @Test
     void testAllArgsConstructor() {
         String name = "JavaBundle";
-        BundleDTO bundleDTO = new BundleDTO(name);
+        BundleInDTO bundleInDTO = new BundleInDTO(name);
 
-        assertNotNull(bundleDTO);
-        assertEquals(name, bundleDTO.getBundleName());
+        assertNotNull(bundleInDTO);
+        assertEquals(name, bundleInDTO.getBundleName());
     }
 
 
 
     @Test
     void testTooShortBundleName() {
-        BundleDTO dto = new BundleDTO("AB");
-        Set<ConstraintViolation<BundleDTO>> violations = validator.validate(dto);
+        BundleInDTO dto = new BundleInDTO("AB");
+        Set<ConstraintViolation<BundleInDTO>> violations = validator.validate(dto);
         assertFalse(violations.isEmpty());
         assertEquals("Bundle Name must be at least 3 characters long", violations.iterator().next().getMessage());
     }
 
     @Test
     void testInvalidPatternStartingWithNumber() {
-        BundleDTO dto = new BundleDTO("1Java");
-        Set<ConstraintViolation<BundleDTO>> violations = validator.validate(dto);
+        BundleInDTO dto = new BundleInDTO("1Java");
+        Set<ConstraintViolation<BundleInDTO>> violations = validator.validate(dto);
         assertFalse(violations.isEmpty());
         assertEquals("Bundle Name invalid", violations.iterator().next().getMessage());
     }
 
     @Test
     void testInvalidPatternStartingWithSpace() {
-        BundleDTO dto = new BundleDTO(" Java");
-        Set<ConstraintViolation<BundleDTO>> violations = validator.validate(dto);
+        BundleInDTO dto = new BundleInDTO(" Java");
+        Set<ConstraintViolation<BundleInDTO>> violations = validator.validate(dto);
         assertFalse(violations.isEmpty());
         assertEquals("Bundle Name invalid", violations.iterator().next().getMessage());
     }
 
     @Test
     void testInvalidPatternEndingWithSpace() {
-        BundleDTO dto = new BundleDTO("Java ");
-        Set<ConstraintViolation<BundleDTO>> violations = validator.validate(dto);
+        BundleInDTO dto = new BundleInDTO("Java ");
+        Set<ConstraintViolation<BundleInDTO>> violations = validator.validate(dto);
         assertFalse(violations.isEmpty());
         assertEquals("Bundle Name invalid", violations.iterator().next().getMessage());
     }

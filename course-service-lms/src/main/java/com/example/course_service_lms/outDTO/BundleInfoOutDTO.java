@@ -1,11 +1,11 @@
-package com.example.course_service_lms.dto;
+package com.example.course_service_lms.outDTO;
 
 import lombok.Data;
 
 import java.time.LocalDateTime;
 
 @Data
-public class BundleInfoDTO {
+public class BundleInfoOutDTO {
     private Long BundleId;
     private String bundleName;
     private Long totalCourses;

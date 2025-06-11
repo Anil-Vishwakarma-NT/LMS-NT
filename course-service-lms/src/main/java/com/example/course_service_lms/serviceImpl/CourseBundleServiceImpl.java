@@ -7,6 +7,8 @@ import com.example.course_service_lms.entity.CourseBundle;
 import com.example.course_service_lms.exception.ResourceAlreadyExistsException;
 import com.example.course_service_lms.exception.ResourceNotFoundException;
 import com.example.course_service_lms.exception.ResourceNotValidException;
+import com.example.course_service_lms.outDTO.BundleInfoOutDTO;
+import com.example.course_service_lms.outDTO.BundleSummaryOutDTO;
 import com.example.course_service_lms.repository.CourseBundleRepository;
 import com.example.course_service_lms.repository.CourseRepository;
 import com.example.course_service_lms.repository.BundleRepository;
@@ -36,7 +38,6 @@ import static com.example.course_service_lms.constants.CourseBundleConstants.INV
 import static com.example.course_service_lms.constants.CourseBundleConstants.NO_COURSE_BUNDLES_FOUND;
 import static com.example.course_service_lms.converters.CourseBundleConvertor.convertDTOToEntityPost;
 import static com.example.course_service_lms.converters.CourseBundleConvertor.convertEntityToDTO;
-import static com.example.course_service_lms.converters.CourseBundleConvertor.convertEntityToDTOPost;
 
 /**
  * Implementation of the {@link CourseBundleService} interface that handles operations related to course-bundle mappings.
@@ -299,27 +300,27 @@ public class CourseBundleServiceImpl implements CourseBundleService {
     }
 
     @Override
-    public List<BundleInfoDTO> getBundlesInfo() {
+    public List<BundleInfoOutDTO> getBundlesInfo() {
         try {
             List<Bundle> courseBundles = bundleRepository.findAll();
             if(courseBundles.isEmpty()) {
                 throw new ResourceNotFoundException("No courses added in bundle");
             }
-            List<BundleInfoDTO> bundleInfoDTOS = new ArrayList<>();
+            List<BundleInfoOutDTO> bundleInfoOutDTOS = new ArrayList<>();
             for(Bundle courseBundle : courseBundles) {
-                BundleInfoDTO bundleInfoDTO = new BundleInfoDTO();
+                BundleInfoOutDTO bundleInfoOutDTO = new BundleInfoOutDTO();
                 Bundle bundle = bundleRepository.findById(courseBundle.getBundleId())
                         .orElseThrow(() -> new ResourceNotFoundException("Bundle not found"));
                 Long countCoursesInBundle = courseBundleRepository.countByBundleId(bundle.getBundleId());
-                bundleInfoDTO.setBundleId(courseBundle.getBundleId());
-                bundleInfoDTO.setBundleName(bundle.getBundleName());
-                bundleInfoDTO.setTotalCourses(countCoursesInBundle);
-                bundleInfoDTO.setActive(bundle.isActive());
-                bundleInfoDTO.setCreatedAt(bundle.getCreatedAt());
-                bundleInfoDTO.setUpdatedAt(bundle.getUpdatedAt());
-                bundleInfoDTOS.add(bundleInfoDTO);
+                bundleInfoOutDTO.setBundleId(courseBundle.getBundleId());
+                bundleInfoOutDTO.setBundleName(bundle.getBundleName());
+                bundleInfoOutDTO.setTotalCourses(countCoursesInBundle);
+                bundleInfoOutDTO.setActive(bundle.isActive());
+                bundleInfoOutDTO.setCreatedAt(bundle.getCreatedAt());
+                bundleInfoOutDTO.setUpdatedAt(bundle.getUpdatedAt());
+                bundleInfoOutDTOS.add(bundleInfoOutDTO);
             }
-            return bundleInfoDTOS;
+            return bundleInfoOutDTOS;
         } catch (ResourceNotFoundException e) {
             throw e;
         } catch (Exception e) {
@@ -352,7 +353,7 @@ public class CourseBundleServiceImpl implements CourseBundleService {
     }
 
     @Override
-    public List<BundleSummaryDTO> getRecentBundleSummaries() {
+    public List<BundleSummaryOutDTO> getRecentBundleSummaries() {
         // Get the 5 most recent bundles
         List<Bundle> recentBundles = bundleRepository.findTop5ByOrderByCreatedAtDesc();
 
@@ -360,7 +361,7 @@ public class CourseBundleServiceImpl implements CourseBundleService {
         return recentBundles.stream()
                 .map(bundle -> {
                     long courseCount = courseBundleRepository.countByBundleId(bundle.getBundleId());
-                    return new BundleSummaryDTO(
+                    return new BundleSummaryOutDTO(
                             bundle.getBundleId(),
                             bundle.getBundleName(),
                             courseCount,

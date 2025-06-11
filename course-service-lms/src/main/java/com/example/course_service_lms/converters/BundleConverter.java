@@ -1,8 +1,8 @@
 package com.example.course_service_lms.converters;
 
-import com.example.course_service_lms.dto.BundleDTO;
-import com.example.course_service_lms.dto.BundleOutDTO;
-import com.example.course_service_lms.dto.UpdateBundleDTO;
+import com.example.course_service_lms.inDTO.BundleInDTO;
+import com.example.course_service_lms.outDTO.BundleOutDTO;
+import com.example.course_service_lms.inDTO.UpdateBundleInDTO;
 import com.example.course_service_lms.entity.Bundle;
 import org.springframework.stereotype.Component;
 
@@ -18,17 +18,17 @@ public class BundleConverter {
     /**
      * Converts BundleDTO to Bundle entity for creation.
      *
-     * @param bundleDTO the DTO to convert
+     * @param bundleInDTO the DTO to convert
      * @return new Bundle entity
      */
-    public Bundle toEntity(BundleDTO bundleDTO) {
-        if (bundleDTO == null) {
+    public Bundle toEntity(BundleInDTO bundleInDTO) {
+        if (bundleInDTO == null) {
             return null;
         }
 
         Bundle bundle = new Bundle();
-        bundle.setBundleName(bundleDTO.getBundleName());
-        bundle.setActive(bundleDTO.isActive());
+        bundle.setBundleName(bundleInDTO.getBundleName());
+        bundle.setActive(bundleInDTO.isActive());
         bundle.setCreatedAt(LocalDateTime.now());
         bundle.setUpdatedAt(LocalDateTime.now());
 
@@ -39,16 +39,16 @@ public class BundleConverter {
      * Updates existing Bundle entity with UpdateBundleDTO data.
      *
      * @param existingBundle the bundle to update
-     * @param updateBundleDTO the update data
+     * @param updateBundleInDTO the update data
      * @return updated Bundle entity
      */
-    public Bundle updateEntity(Bundle existingBundle, UpdateBundleDTO updateBundleDTO) {
-        if (existingBundle == null || updateBundleDTO == null) {
+    public Bundle updateEntity(Bundle existingBundle, UpdateBundleInDTO updateBundleInDTO) {
+        if (existingBundle == null || updateBundleInDTO == null) {
             return existingBundle;
         }
 
-        existingBundle.setBundleName(updateBundleDTO.getBundleName());
-        existingBundle.setActive(updateBundleDTO.isActive());
+        existingBundle.setBundleName(updateBundleInDTO.getBundleName());
+        existingBundle.setActive(updateBundleInDTO.isActive());
         existingBundle.setUpdatedAt(LocalDateTime.now());
 
         return existingBundle;
@@ -60,12 +60,12 @@ public class BundleConverter {
      * @param bundle the entity to convert
      * @return BundleDTO
      */
-    public BundleDTO toDTO(Bundle bundle) {
+    public BundleInDTO toDTO(Bundle bundle) {
         if (bundle == null) {
             return null;
         }
 
-        return new BundleDTO(bundle.getBundleName(), bundle.isActive());
+        return new BundleInDTO(bundle.getBundleName(), bundle.isActive());
     }
 
     /**

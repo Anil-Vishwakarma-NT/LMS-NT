@@ -1,6 +1,6 @@
 package com.example.course_service_lms.serviceImplTest;
 
-import com.example.course_service_lms.dto.BundleDTO;
+import com.example.course_service_lms.inDTO.BundleInDTO;
 import com.example.course_service_lms.entity.Bundle;
 import com.example.course_service_lms.exception.ResourceAlreadyExistsException;
 import com.example.course_service_lms.exception.ResourceNotFoundException;
@@ -30,7 +30,7 @@ class BundleServiceImplTest {
     // CREATE
     @Test
     void testCreateBundle_Success() {
-        BundleDTO dto = new BundleDTO("JavaBundle");
+        BundleInDTO dto = new BundleInDTO("JavaBundle");
         when(bundleRepository.existsByBundleName(dto.getBundleName())).thenReturn(false);
 
         Bundle savedBundle = new Bundle();
@@ -48,7 +48,7 @@ class BundleServiceImplTest {
 
     @Test
     void testCreateBundle_DuplicateName_ThrowsException() {
-        BundleDTO dto = new BundleDTO("ExistingBundle");
+        BundleInDTO dto = new BundleInDTO("ExistingBundle");
 
         when(bundleRepository.existsByBundleName(dto.getBundleName())).thenReturn(true);
 
@@ -97,14 +97,14 @@ class BundleServiceImplTest {
     @Test
     void testUpdateBundle_Success() {
         Long bundleId = 1L;
-        BundleDTO dto = new BundleDTO("UpdatedName");
+        BundleInDTO dto = new BundleInDTO("UpdatedName");
 
         Bundle existing = new Bundle(bundleId, "OldName");
         when(bundleRepository.findById(bundleId)).thenReturn(Optional.of(existing));
         when(bundleRepository.existsByBundleName("UpdatedName")).thenReturn(false);
         when(bundleRepository.save(any(Bundle.class))).thenAnswer(i -> i.getArgument(0));
 
-        BundleDTO updated = bundleService.updateBundle(bundleId, dto);
+        BundleInDTO updated = bundleService.updateBundle(bundleId, dto);
 
         assertEquals("UpdatedName", updated.getBundleName());
     }
@@ -112,7 +112,7 @@ class BundleServiceImplTest {
     @Test
     void testUpdateBundle_NameAlreadyExists_ThrowsException() {
         Long bundleId = 1L;
-        BundleDTO dto = new BundleDTO("ExistingBundle");
+        BundleInDTO dto = new BundleInDTO("ExistingBundle");
 
         Bundle existing = new Bundle(bundleId, "DifferentOldName");
         when(bundleRepository.findById(bundleId)).thenReturn(Optional.of(existing));
@@ -124,7 +124,7 @@ class BundleServiceImplTest {
     @Test
     void testUpdateBundle_NotFound_ThrowsException() {
         when(bundleRepository.findById(anyLong())).thenReturn(Optional.empty());
-        assertThrows(ResourceNotFoundException.class, () -> bundleService.updateBundle(1L, new BundleDTO("Any")));
+        assertThrows(ResourceNotFoundException.class, () -> bundleService.updateBundle(1L, new BundleInDTO("Any")));
     }
 
     // DELETE
