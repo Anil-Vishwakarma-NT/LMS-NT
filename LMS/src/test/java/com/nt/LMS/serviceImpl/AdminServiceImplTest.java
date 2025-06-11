@@ -3,8 +3,9 @@ package com.nt.LMS.serviceImpl;
 import com.nt.LMS.constants.UserConstants;
 import com.nt.LMS.converter.UserDTOConverter;
 import com.nt.LMS.dto.RegisterDto;
-import com.nt.LMS.outDTO.MessageOutDto;
-import com.nt.LMS.outDTO.UserOutDTO;
+import com.nt.LMS.dto.MessageOutDto;
+import com.nt.LMS.dto.StandardResponseOutDTO;
+import com.nt.LMS.dto.UserOutDTO;
 import com.nt.LMS.entities.Role;
 import com.nt.LMS.entities.User;
 import com.nt.LMS.exception.ResourceConflictException;
@@ -61,7 +62,7 @@ class AdminServiceImplTest {
         when(userRepository.findByUserNameIgnoreCase(registerDto.getUserName())).thenReturn(Optional.empty());
         when(passwordEncoder.encode(registerDto.getPassword())).thenReturn("encodedPassword");
 
-        MessageOutDto result = adminService.register(registerDto);
+        StandardResponseOutDTO result = adminService.register(registerDto);
 
         assertEquals(USER_REGISTRATION_SUCCESS, result.getMessage());
         verify(userRepository).save(any(User.class));
@@ -87,7 +88,7 @@ class AdminServiceImplTest {
         registerDto.setEmail("unique@example.com");
         registerDto.setUserName("existingUser");
 
-        when(userRepository.findByEmail(registerDto.getEmail())).thenReturn(Optional.empty());
+        when(userRepository.findByEmailIgnoreCase(registerDto.getEmail())).thenReturn(Optional.empty());
         when(userRepository.findByUserNameIgnoreCase(registerDto.getUserName())).thenReturn(Optional.of(new User()));
 
         ResourceConflictException ex = assertThrows(ResourceConflictException.class, () -> {
@@ -177,7 +178,7 @@ class AdminServiceImplTest {
         when(userRepository.findById(userId)).thenReturn(Optional.of(user));
         when(roleRepository.findById(1L)).thenReturn(Optional.of(role));
 
-        MessageOutDto result = adminService.employeeDeletion(userId);
+        StandardResponseOutDTO<MessageOutDto> result = adminService.employeeDeletion(userId);
 
         assertEquals(USER_DELETION_MESSAGE, result.getMessage());
         verify(userRepository).deleteById(userId);
@@ -206,7 +207,7 @@ class AdminServiceImplTest {
         when(userRepository.findByManagerId(userId)).thenReturn(subordinates);
 
         // Act
-        MessageOutDto result = adminService.employeeDeletion(userId);
+        StandardResponseOutDTO<MessageOutDto> result = adminService.employeeDeletion(userId);
 
         // Assert
         assertEquals(USER_DELETION_MESSAGE, result.getMessage());
@@ -283,7 +284,7 @@ class AdminServiceImplTest {
         when(userRepository.findByManagerId(userId)).thenReturn(Collections.emptyList());
 
         // Act
-        MessageOutDto result = adminService.employeeDeletion(userId);
+        StandardResponseOutDTO<MessageOutDto> result = adminService.employeeDeletion(userId);
 
         // Assert
         assertEquals(USER_DELETION_MESSAGE, result.getMessage());
@@ -307,8 +308,8 @@ class AdminServiceImplTest {
         User manager2 = new User(3L, "Manager" , "Manager", "Two", "ManagerTwo@gmail.com","ManagerTwo",1L,2L,null,null,true); // Manager for user2
 
         // Create corresponding UserOutDTOs
-        UserOutDTO userDto1 = new UserOutDTO(1L, "John","John", "Doe","JohnDoe@gmail.com", "Manager One" ,null);
-        UserOutDTO userDto2 = new UserOutDTO(2L,"Jane", "Jane", "Doe","JaneDoe@gmail.com", "Manager Two",null);
+        UserOutDTO userDto1 = new UserOutDTO(1L, "John","John", "Doe","JohnDoe@gmail.com", "Manager One" ,"Employee",null);
+        UserOutDTO userDto2 = new UserOutDTO(2L,"Jane", "Jane", "Doe","JaneDoe@gmail.com", "Manager Two","Employee", null);
 
         // Mock repository behavior
         when(userRepository.findAll()).thenReturn(Arrays.asList(user1, user2));
@@ -316,8 +317,8 @@ class AdminServiceImplTest {
         when(userRepository.findById(user2.getManagerId())).thenReturn(Optional.of(manager2));
 
         // Mock userDTOConverter behavior
-        when(userDTOConverter.userToOutDto(user1, "Manager One")).thenReturn(userDto1);
-        when(userDTOConverter.userToOutDto(user2, "Manager Two")).thenReturn(userDto2);
+        when(userDTOConverter.userToOutDto(user1, "Manager One","Employee")).thenReturn(userDto1);
+        when(userDTOConverter.userToOutDto(user2, "Manager Two","Employee")).thenReturn(userDto2);
 
         // Act
         List<UserOutDTO> result = adminService.getAllActiveUsers();
@@ -330,8 +331,8 @@ class AdminServiceImplTest {
         verify(userRepository).findAll();
         verify(userRepository).findById(user1.getManagerId());
         verify(userRepository).findById(user2.getManagerId());
-        verify(userDTOConverter).userToOutDto(user1, "Manager One");
-        verify(userDTOConverter).userToOutDto(user2, "Manager Two");
+        verify(userDTOConverter).userToOutDto(user1, "Manager One","Employee");
+        verify(userDTOConverter).userToOutDto(user2, "Manager Two","Employee");
     }
 
     @Test
@@ -346,7 +347,7 @@ class AdminServiceImplTest {
         assertTrue(result.isEmpty());
 
         verify(userRepository).findAll();
-        verify(userDTOConverter, never()).userToOutDto(any(), any()); // Ensure converter is not called
+        verify(userDTOConverter, never()).userToOutDto(any(), any(),any()); // Ensure converter is not called
     }
 
     @Test
@@ -368,7 +369,7 @@ class AdminServiceImplTest {
 
         verify(userRepository).findAll();
         verify(userRepository).findById(user.getManagerId());
-        verify(userDTOConverter, never()).userToOutDto(any(), any());
+        verify(userDTOConverter, never()).userToOutDto(any(), any(),any());
     }
 
     @Test
@@ -384,7 +385,7 @@ class AdminServiceImplTest {
         assertEquals(DATABASE_ERROR, ex.getMessage());
 
         verify(userRepository).findAll();
-        verify(userDTOConverter, never()).userToOutDto(any(), any());
+        verify(userDTOConverter, never()).userToOutDto(any(), any(),any());
     }
 
     @Test
@@ -400,7 +401,7 @@ class AdminServiceImplTest {
         when(userRepository.findById(user2.getManagerId())).thenReturn(Optional.empty());
 
         // You may want to mock converter for user1
-        when(userDTOConverter.userToOutDto(eq(user1), eq("Manager One"))).thenReturn(new UserOutDTO());
+        when(userDTOConverter.userToOutDto(eq(user1), eq("Manager One"),eq("Employee"))).thenReturn(new UserOutDTO());
 
         // Act & Assert
         Exception ex = assertThrows(RuntimeException.class, () -> {
@@ -410,7 +411,7 @@ class AdminServiceImplTest {
         assertTrue(ex.getCause() instanceof ResourceNotFoundException);
         assertEquals(USER_NOT_FOUND, ex.getCause().getMessage());
 
-        verify(userDTOConverter, times(1)).userToOutDto(eq(user1), eq("Manager One"));
+        verify(userDTOConverter, times(1)).userToOutDto(eq(user1), eq("Manager One"),eq("Employee"));
     }
 
 
@@ -436,13 +437,13 @@ class AdminServiceImplTest {
 
         when(userRepository.findById(managerId)).thenReturn(Optional.of(manager));
         when(userRepository.findByManagerId(managerId)).thenReturn(List.of(emp));
-        when(userDTOConverter.userToOutDto(eq(emp), anyString())).thenReturn(userOutDTO);
+        when(userDTOConverter.userToOutDto(eq(emp), anyString(),eq("Employee"))).thenReturn(userOutDTO);
 
         List<UserOutDTO> result = adminService.getManagerEmployee(managerId);
 
         assertFalse(result.isEmpty());
         assertEquals(1, result.size());
-        verify(userDTOConverter).userToOutDto(emp, "JaneSmith");
+        verify(userDTOConverter).userToOutDto(emp, "JaneSmith","Employee");
     }
 
     @Test

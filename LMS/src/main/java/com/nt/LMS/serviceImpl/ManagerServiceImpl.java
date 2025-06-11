@@ -2,7 +2,8 @@ package com.nt.LMS.serviceImpl;
 
 import com.nt.LMS.constants.UserConstants;
 import com.nt.LMS.converter.UserDTOConverter;
-import com.nt.LMS.outDTO.UserOutDTO;
+import com.nt.LMS.dto.StandardResponseOutDTO;
+import com.nt.LMS.dto.UserOutDTO;
 import com.nt.LMS.entities.User;
 import com.nt.LMS.exception.ResourceNotFoundException;
 import com.nt.LMS.repository.UserRepository;
@@ -33,7 +34,7 @@ public class ManagerServiceImpl implements ManagerService {
      * @return a list of UserOutDTO
      */
     @Override
-    public List<UserOutDTO> getEmployees(final String username) {
+    public StandardResponseOutDTO<List<UserOutDTO>> getEmployees(final String username) {
         log.info("Fetching employees for manager with email: {}", username);
         try {
             User manager = userRepository.findByEmailIgnoreCase(username)
@@ -46,7 +47,7 @@ public class ManagerServiceImpl implements ManagerService {
             List<User> users = userRepository.findByManagerId(manager.getUserId());
             if (users.isEmpty()) {
                 log.warn("No employees found");
-                return Collections.emptyList();
+                return StandardResponseOutDTO.success(Collections.emptyList(),UserConstants.USER_NOT_FOUND);
             }
 
             List<UserOutDTO> response = new ArrayList<>();
@@ -56,7 +57,7 @@ public class ManagerServiceImpl implements ManagerService {
             }
 
             log.info("Successfully fetched {} employees for manager with email: {}", response.size(), username);
-            return response;
+            return StandardResponseOutDTO.success(response,"Successfully fetched employees for manager");
         } catch (Exception e) {
             log.error("Error fetching employees for manager with email: {}", username, e);
             throw new RuntimeException(UserConstants.ERROR, e);

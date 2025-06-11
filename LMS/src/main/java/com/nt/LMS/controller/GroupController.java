@@ -1,11 +1,8 @@
 package com.nt.LMS.controller;
 
-import com.nt.LMS.inDTO.GroupInDTO;
-import com.nt.LMS.outDTO.GroupOutDTO;
-import com.nt.LMS.outDTO.GroupSummaryOutDTO;
-import com.nt.LMS.outDTO.MessageOutDto;
-import com.nt.LMS.outDTO.UserOutDTO;
+import com.nt.LMS.dto.*;
 import com.nt.LMS.repository.UserRepository;
+import com.nt.LMS.service.GroupService;
 import com.nt.LMS.serviceImpl.GroupServiceImpl;
 import jakarta.validation.Valid;
 import lombok.extern.slf4j.Slf4j;
@@ -24,6 +21,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
+
+import static org.springframework.http.HttpStatus.CREATED;
 
 /**
  * Controller for handling group-related operations.
@@ -48,11 +47,12 @@ public final class GroupController {
      * @return success message.
      */
     @PostMapping("/create-group")
-    public ResponseEntity<MessageOutDto> createGroup(@Valid @RequestBody final GroupInDTO groupInDTO) {
+    public ResponseEntity<StandardResponseOutDTO<MessageOutDto>> createGroup(@Valid @RequestBody final GroupInDTO groupInDTO) {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         String username = authentication.getName();
         log.info("Attempting to create a group with name: {}", groupInDTO.getGroupName());
-        return new ResponseEntity<>(groupService.createGroup(groupInDTO.getGroupName(), username), HttpStatus.CREATED);
+        StandardResponseOutDTO<MessageOutDto> response = groupService.createGroup(groupInDTO.getGroupName(), username);
+        return new ResponseEntity<>(response, HttpStatus.CREATED);
     }
 
     /**
@@ -62,9 +62,10 @@ public final class GroupController {
      * @return success message.
      */
     @DeleteMapping("/{groupId}")
-    public ResponseEntity<MessageOutDto> deleteGroup(@PathVariable final long groupId) {
+    public ResponseEntity<StandardResponseOutDTO<MessageOutDto>> deleteGroup(@PathVariable final long groupId) {
         log.info("Attempting to delete group with ID: {}", groupId);
-        return new ResponseEntity<>(groupService.delGroup(groupId), HttpStatus.OK);
+        StandardResponseOutDTO<MessageOutDto> response = groupService.deleteGroup(groupId);
+        return new ResponseEntity<>(response, HttpStatus.OK);
     }
 
     /**
@@ -74,9 +75,10 @@ public final class GroupController {
      * @return success message.
      */
     @PostMapping("/add-user")
-    public ResponseEntity<MessageOutDto> addUserToGroup(@Valid @RequestBody final GroupInDTO groupInDTO) {
+    public ResponseEntity<StandardResponseOutDTO<MessageOutDto>> addUserToGroup(@Valid @RequestBody final GroupInDTO groupInDTO) {
         log.info("Attempting to add user with ID: {} to group with ID: {}", groupInDTO.getUserId(), groupInDTO.getGroupId());
-        return new ResponseEntity<>(groupService.addUserToGroup(groupInDTO.getUserId(), groupInDTO.getGroupId()), HttpStatus.OK);
+        StandardResponseOutDTO<MessageOutDto> response = groupService.addUserToGroup(groupInDTO.getUserId(), groupInDTO.getGroupId());
+        return new ResponseEntity<>(response, HttpStatus.OK);
     }
 
     /**
@@ -86,9 +88,10 @@ public final class GroupController {
      * @return success message.
      */
     @DeleteMapping("/remove-user")
-    public ResponseEntity<MessageOutDto> removeUserFromGroup(@Valid @RequestBody final GroupInDTO groupdto) {
+    public ResponseEntity<StandardResponseOutDTO<MessageOutDto>> removeUserFromGroup(@Valid @RequestBody final GroupInDTO groupdto) {
         log.info("Attempting to remove user with ID: {} from group with ID: {}", groupdto.getUserId(), groupdto.getGroupId());
-        return new ResponseEntity<>(groupService.removeUserFromGroup(groupdto.getUserId(), groupdto.getGroupId()), HttpStatus.OK);
+        StandardResponseOutDTO<MessageOutDto> response = groupService.removeUserFromGroup(groupdto.getUserId(), groupdto.getGroupId());
+        return new ResponseEntity<>(response, HttpStatus.OK);
     }
 
     /**
@@ -98,17 +101,17 @@ public final class GroupController {
      * @return list of users.
      */
     @GetMapping("/group-emps/{groupId}")
-    public ResponseEntity<List<UserOutDTO>> getUsersInGroup(@PathVariable final long groupId) {
+    public ResponseEntity<StandardResponseOutDTO<List<UserOutDTO>>> getUsersInGroup(@PathVariable final long groupId) {
         log.info("Fetching users in group with ID: {}", groupId);
-        List<UserOutDTO> users = groupService.getUsersInGroup(groupId);
+        StandardResponseOutDTO<List<UserOutDTO>> response = groupService.getUsersInGroup(groupId);
 
-        if (users.isEmpty()) {
+        if (response.getData().isEmpty()) {
             log.warn("No users found in group with ID: {}", groupId);
-            return new ResponseEntity<>(users, HttpStatus.NO_CONTENT);
+            return new ResponseEntity<>(response, HttpStatus.NO_CONTENT);
         }
 
-        log.info("Users found in group with ID: {}: {}", groupId, users.size());
-        return new ResponseEntity<>(users, HttpStatus.OK);
+        log.info("Users found in group with ID: {}: {}", groupId, response.getData().size());
+        return new ResponseEntity<>(response, HttpStatus.OK);
     }
 
     /**
@@ -117,20 +120,20 @@ public final class GroupController {
      * @return list of groups.
      */
     @GetMapping("/groups")
-    public ResponseEntity<List<GroupOutDTO>> getGroups() {
+    public ResponseEntity<StandardResponseOutDTO<List<GroupOutDTO>>> getGroups() {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         String username = authentication.getName();
 
         log.info("Fetching groups for user: {}", username);
-        List<GroupOutDTO> groups = groupService.getGroups(username);
+        StandardResponseOutDTO<List<GroupOutDTO>> response = groupService.getGroups(username);
 
-        if (groups.isEmpty()) {
+        if (response.getData().isEmpty()) {
             log.warn("No groups found for user: {}", username);
-            return new ResponseEntity<>(groups, HttpStatus.NO_CONTENT);
+            return new ResponseEntity<>(response, HttpStatus.NO_CONTENT);
         }
 
-        log.info("Found {} groups for user: {}", groups.size(), username);
-        return ResponseEntity.ok(groups);
+        log.info("Found {} groups for user: {}", response.getData().size(), username);
+        return new ResponseEntity<>(response,HttpStatus.OK);
     }
 
     /**
@@ -140,11 +143,11 @@ public final class GroupController {
      */
     @PreAuthorize("hasAuthority('admin')")
     @GetMapping("/all-groups")
-    public ResponseEntity<List<GroupOutDTO>> getAllGroups() {
+    public ResponseEntity<StandardResponseOutDTO<List<GroupOutDTO>>> getAllGroups() {
         log.info("Fetching all groups (Admin access required)");
-        List<GroupOutDTO> groups = groupService.getAllGroups();
-        log.info("Fetched {} groups", groups.size());
-        return ResponseEntity.ok(groups);
+        StandardResponseOutDTO<List<GroupOutDTO>> response = groupService.getAllGroups();
+        log.info("Fetched {} groups", response.getData().size());
+        return new ResponseEntity<>(response,HttpStatus.OK);
     }
     @GetMapping("/count")
     public ResponseEntity<MessageOutDto> getGroupCount() {
@@ -157,8 +160,8 @@ public final class GroupController {
     }
 
     @GetMapping("/recent")
-    public ResponseEntity<List<GroupSummaryOutDTO>> getRecentGroups() {
-        List<GroupSummaryOutDTO> groupSummaries = groupService.getRecentGroupSummaries();
-        return ResponseEntity.ok(groupSummaries);
+    public ResponseEntity<StandardResponseOutDTO<List<GroupSummaryDTO>>> getRecentGroups() {
+        StandardResponseOutDTO<List<GroupSummaryDTO>> response = groupService.getRecentGroupSummaries();
+        return new ResponseEntity<>(response,HttpStatus.OK);
     }
 }

@@ -1,9 +1,6 @@
 package com.nt.LMS.controller;
 
-import com.nt.LMS.dto.RegisterDto;
-import com.nt.LMS.outDTO.MessageOutDto;
-import com.nt.LMS.outDTO.UserOutDTO;
-import com.nt.LMS.inDTO.UserInDTO;
+import com.nt.LMS.dto.*;
 import com.nt.LMS.serviceImpl.AdminServiceImpl;
 import com.nt.LMS.serviceImpl.GroupServiceImpl;
 import com.nt.LMS.serviceImpl.UserServiceImpl;
@@ -72,7 +69,7 @@ class AdminControllerTest {
         MessageOutDto messageOutDto = new MessageOutDto();
         messageOutDto.setMessage("Admin registered successfully");
 
-        when(adminService.register(registerDto)).thenReturn(messageOutDto);
+        when(adminService.register(registerDto)).thenReturn(StandardResponseOutDTO.success(messageOutDto,"Admin registered successfully"));
 
         mockMvc.perform(post("/admin/register")
                         .contentType("application/json")
@@ -91,9 +88,14 @@ class AdminControllerTest {
         long userId = 1L;
 
         MessageOutDto messageOutDto = new MessageOutDto();
+        StandardResponseOutDTO<MessageOutDto> standardResponseOutDTO = new StandardResponseOutDTO<>();
         messageOutDto.setMessage("User deleted successfully");
 
-        when(adminService.employeeDeletion(userId)).thenReturn(messageOutDto);
+        standardResponseOutDTO.setData(messageOutDto);
+        standardResponseOutDTO.setMessage(null);
+        standardResponseOutDTO.setStatus("SUCCESS");
+
+        when(adminService.employeeDeletion(userId)).thenReturn(standardResponseOutDTO);
 
         mockMvc.perform(delete("/admin/user/{userId}", userId))
                 .andExpect(status().isOk())

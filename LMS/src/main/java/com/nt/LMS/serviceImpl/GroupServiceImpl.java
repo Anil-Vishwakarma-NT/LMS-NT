@@ -1,12 +1,10 @@
 package com.nt.LMS.serviceImpl;
 
+import com.nt.LMS.constants.GroupConstants;
 import com.nt.LMS.constants.UserConstants;
 import com.nt.LMS.converter.GroupDTOConverter;
 import com.nt.LMS.converter.UserDTOConverter;
-import com.nt.LMS.outDTO.GroupOutDTO;
-import com.nt.LMS.outDTO.GroupSummaryOutDTO;
-import com.nt.LMS.outDTO.MessageOutDto;
-import com.nt.LMS.outDTO.UserOutDTO;
+import com.nt.LMS.dto.*;
 import com.nt.LMS.entities.Group;
 import com.nt.LMS.entities.User;
 import com.nt.LMS.entities.UserGroup;
@@ -18,7 +16,9 @@ import com.nt.LMS.repository.UserRepository;
 import com.nt.LMS.service.GroupService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
+import org.springframework.web.bind.annotation.GetMapping;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -82,7 +82,7 @@ public class GroupServiceImpl implements GroupService {
      * @return a success message
      */
     @Override
-    public MessageOutDto createGroup(final String groupName, final String username) {
+    public StandardResponseOutDTO<MessageOutDto> createGroup(final String groupName, final String username) {
         try {
             log.info("Attempting to create a group with name: {} by user: {}", groupName, username);
             User user = userRepository.findByEmailIgnoreCase(username)
@@ -92,7 +92,8 @@ public class GroupServiceImpl implements GroupService {
             groupRepository.save(group);
             log.info("Group '{}' created successfully by '{}'", groupName, username);
 
-            return new MessageOutDto(GROUP_CREATED);
+            MessageOutDto messageOutDto = new MessageOutDto(GROUP_CREATED);
+            return StandardResponseOutDTO.success(messageOutDto,null);
         } catch (Exception e) {
             log.error("Error while creating group '{}' by '{}'", groupName, username, e);
             throw new RuntimeException(e);
@@ -106,7 +107,7 @@ public class GroupServiceImpl implements GroupService {
      * @return a success message
      */
     @Override
-    public MessageOutDto delGroup(final long groupId) {
+    public StandardResponseOutDTO<MessageOutDto> deleteGroup(final long groupId) {
         try {
             log.info("Attempting to delete group with ID: {}", groupId);
             Group group = groupRepository.findById(groupId)
@@ -116,7 +117,8 @@ public class GroupServiceImpl implements GroupService {
             groupRepository.delete(group);
             log.info("Group with ID: {} deleted successfully", groupId);
 
-            return new MessageOutDto(GROUP_DELETED);
+            MessageOutDto messageOutDto = new MessageOutDto(GROUP_DELETED);
+            return StandardResponseOutDTO.success(messageOutDto,null);
         } catch (Exception e) {
             log.error("Error while deleting group with ID: {}", groupId, e);
             throw new RuntimeException(GROUP_FAILURE, e);
@@ -131,7 +133,7 @@ public class GroupServiceImpl implements GroupService {
      * @return a success or failure message
      */
     @Override
-    public MessageOutDto addUserToGroup(final long userId, final long groupId) {
+    public StandardResponseOutDTO<MessageOutDto> addUserToGroup(final long userId, final long groupId) {
         try {
             log.info("Adding user ID: {} to group ID: {}", userId, groupId);
 
@@ -144,13 +146,15 @@ public class GroupServiceImpl implements GroupService {
             }
 
             if (userGroupRepository.findByUserIdAndGroupId(userId, groupId).isPresent()) {
-                return new MessageOutDto(USER_ALREADY_PRESENT_IN_GROUP);
+                MessageOutDto messageOutDto = new MessageOutDto(USER_ALREADY_PRESENT_IN_GROUP);
+                return StandardResponseOutDTO.success(messageOutDto,null);
             }
 
             UserGroup userGroup = new UserGroup(userId, groupId);
             userGroupRepository.save(userGroup);
 
-            return new MessageOutDto(USER_ADDED_TO_GROUP);
+            MessageOutDto messageOutDto =  new MessageOutDto(USER_ADDED_TO_GROUP);
+            return StandardResponseOutDTO.success(messageOutDto,null);
         } catch (Exception e) {
             log.error("Error adding user ID: {} to group ID: {}", userId, groupId, e);
             throw new RuntimeException(GROUP_FAILURE, e);
@@ -165,13 +169,14 @@ public class GroupServiceImpl implements GroupService {
      * @return a success message
      */
     @Override
-    public MessageOutDto removeUserFromGroup(final long userId, final long groupId) {
+    public StandardResponseOutDTO<MessageOutDto> removeUserFromGroup(final long userId, final long groupId) {
         try {
             UserGroup userGroup = userGroupRepository.findByUserIdAndGroupId(userId, groupId)
                     .orElseThrow(() -> new ResourceNotFoundException(USER_NOT_FOUND_IN_GROUP));
 
             userGroupRepository.delete(userGroup);
-            return new MessageOutDto(USER_REMOVED_SUCCESSFULLY);
+            MessageOutDto messageOutDto = new MessageOutDto(USER_REMOVED_SUCCESSFULLY);
+            return StandardResponseOutDTO.success(messageOutDto,null);
         } catch (Exception e) {
             log.error("Error removing user ID: {} from group ID: {}", userId, groupId, e);
             throw new RuntimeException(GROUP_FAILURE, e);
@@ -185,14 +190,14 @@ public class GroupServiceImpl implements GroupService {
      * @return list of users
      */
     @Override
-    public List<UserOutDTO> getUsersInGroup(final long groupId) {
+    public StandardResponseOutDTO<List<UserOutDTO>> getUsersInGroup(final long groupId) {
         try {
             Group group = groupRepository.findById(groupId)
                     .orElseThrow(() -> new ResourceNotFoundException(GROUP_NOT_FOUND));
 
             List<UserGroup> userGroupList = userGroupRepository.findAllByGroupId(groupId);
             if (userGroupList.isEmpty()) {
-                return Collections.emptyList();
+                return StandardResponseOutDTO.success(Collections.emptyList(), USER_NOT_FOUND_IN_GROUP);
             }
 
             List<UserOutDTO> response = new ArrayList<>();
@@ -208,7 +213,7 @@ public class GroupServiceImpl implements GroupService {
                 response.add(dto);
             }
 
-            return response;
+            return StandardResponseOutDTO.success(response,"Group Employee fetched successfully");
         } catch (Exception e) {
             log.error("Error fetching users in group ID: {}", groupId, e);
             throw new RuntimeException(GROUP_FAILURE + groupId, e);
@@ -222,7 +227,7 @@ public class GroupServiceImpl implements GroupService {
      * @return list of groups
      */
     @Override
-    public List<GroupOutDTO> getGroups(final String email) {
+    public StandardResponseOutDTO<List<GroupOutDTO>> getGroups(final String email) {
         try {
             User user = userRepository.findByEmailIgnoreCase(email)
                     .orElseThrow(() -> new ResourceNotFoundException(USER_NOT_FOUND));
@@ -245,7 +250,7 @@ public class GroupServiceImpl implements GroupService {
                 }
             }
 
-            return groupOutList;
+            return StandardResponseOutDTO.success(groupOutList,"Group fetched Successfully");
         } catch (Exception e) {
             log.error("Error fetching groups for user with email: {}", email, e);
             throw new RuntimeException(e);
@@ -258,7 +263,7 @@ public class GroupServiceImpl implements GroupService {
      * @return list of all groups
      */
     @Override
-    public List<GroupOutDTO> getAllGroups() {
+    public StandardResponseOutDTO<List<GroupOutDTO>> getAllGroups() {
         try {
             List<Group> groups = groupRepository.findAll();
             List<GroupOutDTO> groupOutList = new ArrayList<>();
@@ -271,7 +276,7 @@ public class GroupServiceImpl implements GroupService {
                 groupOutList.add(gout);
             }
 
-            return groupOutList;
+            return StandardResponseOutDTO.success(groupOutList,"All Groups fetched successfully");
         } catch (Exception e) {
             log.error("Error fetching all groups", e);
             throw new RuntimeException(e);
@@ -279,15 +284,17 @@ public class GroupServiceImpl implements GroupService {
     }
     @Override
     public long countGroups() {
+
         return groupRepository.count();
     }
 
 
     @Override
-    public List<GroupSummaryOutDTO> getRecentGroupSummaries() {
+    public StandardResponseOutDTO<List<GroupSummaryDTO>> getRecentGroupSummaries() {
         // Get the 5 most recent groups
         List<Group> recentGroups = groupRepository.findTop5ByOrderByGroupIdDesc();
-        return convertToGroupSummaries(recentGroups);
+        List<GroupSummaryDTO> groupSummary =  convertToGroupSummaries(recentGroups);
+        return StandardResponseOutDTO.success(groupSummary, "Group summary feched successfully");
     }
 
     /**
@@ -296,7 +303,7 @@ public class GroupServiceImpl implements GroupService {
      * @param groups the list of groups to convert
      * @return a list of GroupSummaryDTOs
      */
-    private List<GroupSummaryOutDTO> convertToGroupSummaries(List<Group> groups) {
+    private List<GroupSummaryDTO> convertToGroupSummaries(List<Group> groups) {
         return groups.stream()
                 .map(group -> {
                     // Get member count
@@ -307,7 +314,7 @@ public class GroupServiceImpl implements GroupService {
                             .map(user -> user.getFirstName() + " " + user.getLastName())
                             .orElseThrow(() -> new ResourceNotFoundException("Creator not found"));
 
-                    return new GroupSummaryOutDTO(
+                    return new GroupSummaryDTO(
                             group.getGroupId(),
                             group.getGroupName(),
                             creatorName,
