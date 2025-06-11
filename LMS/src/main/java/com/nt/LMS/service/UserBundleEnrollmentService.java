@@ -1,6 +1,6 @@
 package com.nt.LMS.service;
 
-import com.nt.LMS.outDTO.UserBundleEnrollmentOutDTO;
+import com.nt.LMS.dto.outDTO.UserBundleEnrollmentOutDTO;
 
 import java.util.List;
 

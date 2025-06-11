@@ -1,6 +1,6 @@
 package com.example.course_service_lms.dtoTest;
 
-import com.example.course_service_lms.inDTO.BundleInDTO;
+import com.example.course_service_lms.dto.inDTO.BundleInDTO;
 import jakarta.validation.ConstraintViolation;
 import jakarta.validation.Validation;
 import jakarta.validation.Validator;

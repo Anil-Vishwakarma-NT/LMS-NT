@@ -1,10 +1,10 @@
 package com.example.course_service_lms.controllerTest;
 
 import com.example.course_service_lms.controller.CourseController;
-import com.example.course_service_lms.inDTO.CourseInDTO;
+import com.example.course_service_lms.dto.inDTO.CourseInDTO;
 import com.example.course_service_lms.entity.Course;
-import com.example.course_service_lms.outDTO.CourseOutDTO;
-import com.example.course_service_lms.outDTO.StandardResponseOutDTO;
+import com.example.course_service_lms.dto.outDTO.CourseOutDTO;
+import com.example.course_service_lms.dto.outDTO.StandardResponseOutDTO;
 import com.example.course_service_lms.service.CourseService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;

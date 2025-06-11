@@ -1,6 +1,6 @@
 package com.example.course_service_lms.dtoTest;
 
-import com.example.course_service_lms.inDTO.CourseContentInDTO;
+import com.example.course_service_lms.dto.inDTO.CourseContentInDTO;
 import org.junit.jupiter.api.Test;
 import static org.junit.jupiter.api.Assertions.*;
 

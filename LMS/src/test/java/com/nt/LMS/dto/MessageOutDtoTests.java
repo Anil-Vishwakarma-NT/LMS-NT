@@ -1,6 +1,6 @@
 package com.nt.LMS.dto;
 
-import com.nt.LMS.outDTO.MessageOutDto;
+import com.nt.LMS.dto.outDTO.MessageOutDto;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 

@@ -1,6 +1,6 @@
 package com.nt.LMS.converter;
 
-import com.nt.LMS.outDTO.UserOutDTO;
+import com.nt.LMS.dto.outDTO.UserOutDTO;
 import com.nt.LMS.entities.User;
 import org.springframework.stereotype.Component;
 

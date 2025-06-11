@@ -1,6 +1,7 @@
 package com.nt.LMS.controller;
 
-import com.nt.LMS.inDTO.EnrollmentInDTO;
+import com.nt.LMS.dto.inDTO.EnrollmentInDTO;
+import com.nt.LMS.dto.outDTO.*;
 import com.nt.LMS.outDTO.*;
 import com.nt.LMS.service.EnrollmentService;
 import com.nt.LMS.service.UserBundleEnrollmentService;

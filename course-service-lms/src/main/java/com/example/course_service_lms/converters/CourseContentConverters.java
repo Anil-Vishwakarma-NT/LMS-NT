@@ -1,6 +1,6 @@
 package com.example.course_service_lms.converters;
 
-import com.example.course_service_lms.inDTO.CourseContentInDTO;
+import com.example.course_service_lms.dto.inDTO.CourseContentInDTO;
 import com.example.course_service_lms.entity.CourseContent;
 
 /**

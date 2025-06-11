@@ -1,6 +1,6 @@
 package com.nt.LMS.controller;
 
-import com.nt.LMS.outDTO.UserCourseEnrollmentOutDTO;
+import com.nt.LMS.dto.outDTO.UserCourseEnrollmentOutDTO;
 import com.nt.LMS.service.UserCourseEnrollmentService;
 import com.nt.LMS.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;

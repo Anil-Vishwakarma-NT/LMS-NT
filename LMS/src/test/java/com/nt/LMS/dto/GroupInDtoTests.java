@@ -1,6 +1,6 @@
 package com.nt.LMS.dto;
 
-import com.nt.LMS.inDTO.GroupInDTO;
+import com.nt.LMS.dto.inDTO.GroupInDTO;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 

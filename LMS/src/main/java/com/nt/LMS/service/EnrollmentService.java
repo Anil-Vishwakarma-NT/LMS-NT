@@ -1,8 +1,8 @@
 package com.nt.LMS.service;
 
-import com.nt.LMS.inDTO.EnrollmentInDTO;
-import com.nt.LMS.outDTO.EnrollmentDashBoardStatsOutDTO;
-import com.nt.LMS.outDTO.UserEnrollmentsOutDTO;
+import com.nt.LMS.dto.inDTO.EnrollmentInDTO;
+import com.nt.LMS.dto.outDTO.EnrollmentDashBoardStatsOutDTO;
+import com.nt.LMS.dto.outDTO.UserEnrollmentsOutDTO;
 
 import java.util.List;
 

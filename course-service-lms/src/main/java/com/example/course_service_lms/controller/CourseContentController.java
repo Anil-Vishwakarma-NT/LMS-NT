@@ -1,7 +1,7 @@
 package com.example.course_service_lms.controller;
 
-import com.example.course_service_lms.inDTO.CourseContentInDTO;
-import com.example.course_service_lms.inDTO.UpdateCourseContentInDTO;
+import com.example.course_service_lms.dto.inDTO.CourseContentInDTO;
+import com.example.course_service_lms.dto.inDTO.UpdateCourseContentInDTO;
 import com.example.course_service_lms.entity.CourseContent;
 import com.example.course_service_lms.service.CourseContentService;
 import jakarta.validation.Valid;

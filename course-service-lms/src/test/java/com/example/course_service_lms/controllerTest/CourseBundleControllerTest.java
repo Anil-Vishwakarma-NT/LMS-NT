@@ -1,8 +1,8 @@
 package com.example.course_service_lms.controllerTest;
 
 import com.example.course_service_lms.controller.CourseBundleController;
-import com.example.course_service_lms.outDTO.CourseBundleOutDTO;
-import com.example.course_service_lms.inDTO.CourseBundleInDTO;
+import com.example.course_service_lms.dto.outDTO.CourseBundleOutDTO;
+import com.example.course_service_lms.dto.inDTO.CourseBundleInDTO;
 import com.example.course_service_lms.service.CourseBundleService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;

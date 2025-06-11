@@ -1,7 +1,7 @@
 package com.example.course_service_lms.serviceImplTest;
 
-import com.example.course_service_lms.outDTO.CourseBundleOutDTO;
-import com.example.course_service_lms.inDTO.CourseBundleInDTO;
+import com.example.course_service_lms.dto.outDTO.CourseBundleOutDTO;
+import com.example.course_service_lms.dto.inDTO.CourseBundleInDTO;
 import com.example.course_service_lms.entity.Bundle;
 import com.example.course_service_lms.entity.Course;
 import com.example.course_service_lms.entity.CourseBundle;
@@ -11,7 +11,7 @@ import com.example.course_service_lms.exception.ResourceNotValidException;
 import com.example.course_service_lms.repository.BundleRepository;
 import com.example.course_service_lms.repository.CourseBundleRepository;
 import com.example.course_service_lms.repository.CourseRepository;
-import com.example.course_service_lms.serviceImpl.CourseBundleServiceImpl;
+import com.example.course_service_lms.service.serviceImpl.CourseBundleServiceImpl;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;

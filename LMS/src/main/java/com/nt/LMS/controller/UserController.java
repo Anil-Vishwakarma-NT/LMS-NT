@@ -1,7 +1,7 @@
 package com.nt.LMS.controller;
 
 
-import com.nt.LMS.outDTO.UserOutDTO;
+import com.nt.LMS.dto.outDTO.UserOutDTO;
 import lombok.extern.slf4j.Slf4j;
 import com.nt.LMS.entities.User;
 import com.nt.LMS.repository.UserRepository;

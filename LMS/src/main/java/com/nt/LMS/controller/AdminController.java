@@ -1,12 +1,12 @@
 package com.nt.LMS.controller;
 
 import com.nt.LMS.dto.*;
-import com.nt.LMS.inDTO.UserInDTO;
-import com.nt.LMS.outDTO.MessageOutDto;
-import com.nt.LMS.outDTO.UserOutDTO;
-import com.nt.LMS.serviceImpl.GroupServiceImpl;
-import com.nt.LMS.serviceImpl.UserServiceImpl;
-import com.nt.LMS.serviceImpl.AdminServiceImpl;
+import com.nt.LMS.dto.inDTO.UserInDTO;
+import com.nt.LMS.dto.outDTO.MessageOutDto;
+import com.nt.LMS.dto.outDTO.UserOutDTO;
+import com.nt.LMS.service.serviceImpl.GroupServiceImpl;
+import com.nt.LMS.service.serviceImpl.UserServiceImpl;
+import com.nt.LMS.service.serviceImpl.AdminServiceImpl;
 import jakarta.validation.Valid;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;

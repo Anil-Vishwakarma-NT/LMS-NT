@@ -1,7 +1,7 @@
 package com.example.course_service_lms.controllerTest;
 
 import com.example.course_service_lms.controller.CourseContentController;
-import com.example.course_service_lms.inDTO.CourseContentInDTO;
+import com.example.course_service_lms.dto.inDTO.CourseContentInDTO;
 import com.example.course_service_lms.entity.CourseContent;
 import com.example.course_service_lms.service.CourseContentService;
 import org.junit.jupiter.api.Test;

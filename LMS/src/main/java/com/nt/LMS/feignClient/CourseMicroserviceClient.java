@@ -2,10 +2,10 @@ package com.nt.LMS.feignClient;
 
 
 import com.nt.LMS.config.FeignClientConfig;
-import com.nt.LMS.outDTO.BundleInfoOutDTO;
-import com.nt.LMS.outDTO.CourseBundleOutDTO;
-import com.nt.LMS.outDTO.CourseInfoOutDTO;
-import com.nt.LMS.outDTO.StandardResponseOutDTO;
+import com.nt.LMS.dto.outDTO.BundleInfoOutDTO;
+import com.nt.LMS.dto.outDTO.CourseBundleOutDTO;
+import com.nt.LMS.dto.outDTO.CourseInfoOutDTO;
+import com.nt.LMS.dto.outDTO.StandardResponseOutDTO;
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;

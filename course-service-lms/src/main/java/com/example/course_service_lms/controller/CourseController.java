@@ -1,11 +1,11 @@
 package com.example.course_service_lms.controller;
 
-import com.example.course_service_lms.inDTO.CourseInDTO;
-import com.example.course_service_lms.outDTO.CourseOutDTO;
-import com.example.course_service_lms.outDTO.CourseSummaryOutDTO;
-import com.example.course_service_lms.outDTO.CourseInfoOutDTO;
-import com.example.course_service_lms.inDTO.UpdateCourseInDTO;
-import com.example.course_service_lms.outDTO.StandardResponseOutDTO;
+import com.example.course_service_lms.dto.inDTO.CourseInDTO;
+import com.example.course_service_lms.dto.outDTO.CourseOutDTO;
+import com.example.course_service_lms.dto.outDTO.CourseSummaryOutDTO;
+import com.example.course_service_lms.dto.outDTO.CourseInfoOutDTO;
+import com.example.course_service_lms.dto.inDTO.UpdateCourseInDTO;
+import com.example.course_service_lms.dto.outDTO.StandardResponseOutDTO;
 import com.example.course_service_lms.service.CourseService;
 import jakarta.validation.Valid;
 import lombok.extern.slf4j.Slf4j;

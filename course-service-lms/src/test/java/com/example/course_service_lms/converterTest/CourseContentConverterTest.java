@@ -1,7 +1,7 @@
 package com.example.course_service_lms.converterTest;
 
 import com.example.course_service_lms.converters.CourseContentConverters;
-import com.example.course_service_lms.inDTO.CourseContentInDTO;
+import com.example.course_service_lms.dto.inDTO.CourseContentInDTO;
 import com.example.course_service_lms.entity.CourseContent;
 import org.junit.jupiter.api.Test;
 

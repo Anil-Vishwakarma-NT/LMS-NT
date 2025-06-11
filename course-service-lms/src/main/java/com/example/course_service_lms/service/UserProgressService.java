@@ -1,6 +1,6 @@
 package com.example.course_service_lms.service;
 
-import com.example.course_service_lms.outDTO.UserProgressOutDTO;
+import com.example.course_service_lms.dto.outDTO.UserProgressOutDTO;
 
 public interface UserProgressService {
 

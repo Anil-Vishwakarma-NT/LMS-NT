@@ -1,10 +1,10 @@
 package com.example.course_service_lms.service;
 
-import com.example.course_service_lms.inDTO.CourseInDTO;
-import com.example.course_service_lms.outDTO.CourseOutDTO;
-import com.example.course_service_lms.outDTO.CourseSummaryOutDTO;
-import com.example.course_service_lms.outDTO.CourseInfoOutDTO;
-import com.example.course_service_lms.inDTO.UpdateCourseInDTO;
+import com.example.course_service_lms.dto.inDTO.CourseInDTO;
+import com.example.course_service_lms.dto.outDTO.CourseOutDTO;
+import com.example.course_service_lms.dto.outDTO.CourseSummaryOutDTO;
+import com.example.course_service_lms.dto.outDTO.CourseInfoOutDTO;
+import com.example.course_service_lms.dto.inDTO.UpdateCourseInDTO;
 import com.example.course_service_lms.entity.Course;
 
 import java.util.List;

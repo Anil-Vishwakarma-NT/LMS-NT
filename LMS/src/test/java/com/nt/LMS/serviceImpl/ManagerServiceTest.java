@@ -1,10 +1,11 @@
 package com.nt.LMS.serviceImpl;
 
 import com.nt.LMS.converter.UserDTOConverter;
-import com.nt.LMS.outDTO.UserOutDTO;
+import com.nt.LMS.dto.outDTO.UserOutDTO;
 import com.nt.LMS.entities.User;
 import com.nt.LMS.exception.ResourceNotFoundException;
 import com.nt.LMS.repository.UserRepository;
+import com.nt.LMS.service.serviceImpl.ManagerServiceImpl;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mock;

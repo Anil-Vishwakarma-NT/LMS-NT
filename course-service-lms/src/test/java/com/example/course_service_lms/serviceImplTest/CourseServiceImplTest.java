@@ -2,13 +2,13 @@ package com.example.course_service_lms.serviceImplTest;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
-import com.example.course_service_lms.inDTO.CourseInDTO;
+import com.example.course_service_lms.dto.inDTO.CourseInDTO;
 import com.example.course_service_lms.entity.Course;
 import com.example.course_service_lms.exception.ResourceAlreadyExistsException;
 import com.example.course_service_lms.exception.ResourceNotFoundException;
 import com.example.course_service_lms.exception.ResourceNotValidException;
 import com.example.course_service_lms.repository.CourseRepository;
-import com.example.course_service_lms.serviceImpl.CourseServiceImpl;
+import com.example.course_service_lms.service.serviceImpl.CourseServiceImpl;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;

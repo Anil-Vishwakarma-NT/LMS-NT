@@ -1,6 +1,6 @@
 package com.example.course_service_lms.dtoTest;
 
-import com.example.course_service_lms.inDTO.CourseBundleInDTO;
+import com.example.course_service_lms.dto.inDTO.CourseBundleInDTO;
 import org.junit.jupiter.api.Test;
 import jakarta.validation.Validation;
 import jakarta.validation.Validator;

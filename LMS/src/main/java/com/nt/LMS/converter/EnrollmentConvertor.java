@@ -2,10 +2,10 @@ package com.nt.LMS.converter;
 
 import com.nt.LMS.entities.*;
 import com.nt.LMS.feignClient.CourseMicroserviceClient;
-import com.nt.LMS.inDTO.EnrollmentInDTO;
-import com.nt.LMS.outDTO.EnrolledBundlesOutDTO;
-import com.nt.LMS.outDTO.EnrolledCoursesOutDTO;
-import com.nt.LMS.outDTO.UserEnrollmentsOutDTO;
+import com.nt.LMS.dto.inDTO.EnrollmentInDTO;
+import com.nt.LMS.dto.outDTO.EnrolledBundlesOutDTO;
+import com.nt.LMS.dto.outDTO.EnrolledCoursesOutDTO;
+import com.nt.LMS.dto.outDTO.UserEnrollmentsOutDTO;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;

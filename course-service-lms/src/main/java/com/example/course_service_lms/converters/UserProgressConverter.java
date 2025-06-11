@@ -1,6 +1,6 @@
 package com.example.course_service_lms.converters;
 
-import com.example.course_service_lms.outDTO.UserProgressOutDTO;
+import com.example.course_service_lms.dto.outDTO.UserProgressOutDTO;
 import com.example.course_service_lms.entity.UserProgress;
 import org.springframework.stereotype.Component;
 
