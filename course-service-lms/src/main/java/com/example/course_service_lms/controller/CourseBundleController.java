@@ -40,9 +40,9 @@ public class CourseBundleController {
      * @return ResponseEntity containing the created CourseBundlePostDTO.
      */
     @PostMapping
-    public ResponseEntity<CourseBundle> createCourseBundle(@RequestBody final CourseBundlePostDTO courseBundlePostDTO) {
+    public ResponseEntity<StandardResponseOutDTO<CourseBundle>> createCourseBundle(@RequestBody final CourseBundlePostDTO courseBundlePostDTO) {
         CourseBundle createdBundle = courseBundleService.createCourseBundle(courseBundlePostDTO);
-        return ResponseEntity.status(HttpStatus.CREATED).body(createdBundle);
+        return ResponseEntity.status(HttpStatus.CREATED).body(StandardResponseOutDTO.success(createdBundle, "Course Bundle created successfully." ));
     }
 
     /**
@@ -51,9 +51,9 @@ public class CourseBundleController {
      * @return ResponseEntity containing a list of CourseBundleDTOs.
      */
     @GetMapping
-    public ResponseEntity<List<CourseBundleDTO>> getAllCourseBundles() {
+    public ResponseEntity<StandardResponseOutDTO<List<CourseBundleDTO>>> getAllCourseBundles() {
         List<CourseBundleDTO> courseBundles = courseBundleService.getAllCourseBundles();
-        return ResponseEntity.ok(courseBundles);
+        return ResponseEntity.ok(StandardResponseOutDTO.success(courseBundles, "All course bundles retrieved successfully."));
     }
 
     /**
@@ -63,9 +63,9 @@ public class CourseBundleController {
      * @return ResponseEntity containing the CourseBundleDTO.
      */
     @GetMapping("/{id}")
-    public ResponseEntity<CourseBundleDTO> getCourseBundleById(@PathVariable("id") final Long courseBundleId) {
+    public ResponseEntity<StandardResponseOutDTO<CourseBundleDTO>> getCourseBundleById(@PathVariable("id") final Long courseBundleId) {
         CourseBundleDTO courseBundle = courseBundleService.getCourseBundleById(courseBundleId);
-        return ResponseEntity.ok(courseBundle);
+        return ResponseEntity.ok(StandardResponseOutDTO.success(courseBundle, "Course Bundle with id:" + courseBundleId + " retrieved successfully."));
     }
 
     /**
@@ -75,9 +75,9 @@ public class CourseBundleController {
      * @return ResponseEntity containing a success message.
      */
     @DeleteMapping("/{id}")
-    public ResponseEntity<String> deleteCourseBundle(@PathVariable("id") final Long courseBundleId) {
+    public ResponseEntity<StandardResponseOutDTO<Void>> deleteCourseBundle(@PathVariable("id") final Long courseBundleId) {
         courseBundleService.deleteCourseBundle(courseBundleId);
-        return ResponseEntity.ok("Course-bundle with ID " + courseBundleId + " deleted successfully.");
+        return ResponseEntity.ok(StandardResponseOutDTO.success(null, "Course-bundle with ID " + courseBundleId + " deleted successfully."));
     }
 
     /**
@@ -88,11 +88,11 @@ public class CourseBundleController {
      * @return ResponseEntity containing the updated CourseBundlePostDTO.
      */
     @PutMapping("/{id}")
-    public ResponseEntity<String> updateCourseBundle(
+    public ResponseEntity<StandardResponseOutDTO<String>> updateCourseBundle(
             @PathVariable("id") final Long courseBundleId,
             @RequestBody final UpdateCourseBundleDTO updateCourseBundleDTO) {
         String response = courseBundleService.updateCourseBundle(courseBundleId, updateCourseBundleDTO);
-        return ResponseEntity.ok(response);
+        return ResponseEntity.ok(StandardResponseOutDTO.success(response, "Course bundle with id" + courseBundleId + " updated successfully."));
     }
 
     /**
@@ -102,21 +102,21 @@ public class CourseBundleController {
      * @return ResponseEntity containing a list of CourseBundle entities.
      */
     @GetMapping("/bundle/{id}")
-    public ResponseEntity<List<CourseBundle>> getAllCoursesByBundleId(@PathVariable("id") final Long bundleId) {
+    public ResponseEntity<StandardResponseOutDTO<List<CourseBundle>>> getAllCoursesByBundleId(@PathVariable("id") final Long bundleId) {
         log.info("Received request to get all courses.");
         List<CourseBundle> courseBundles = courseBundleService.getAllCoursesByBundle(bundleId);
-        return ResponseEntity.ok(courseBundles);
+        return ResponseEntity.ok(StandardResponseOutDTO.success(courseBundles, "Course bundles with id retrieved successfully."));
     }
 
     @GetMapping("/info")
-    public ResponseEntity<List<BundleInfoDTO>> getALlBundleInfo() {
+    public ResponseEntity<StandardResponseOutDTO<List<BundleInfoDTO>>> getALlBundleInfo() {
         List<BundleInfoDTO> bundleInfoDTOS = courseBundleService.getBundlesInfo();
-        return ResponseEntity.ok(bundleInfoDTOS);
+        return ResponseEntity.ok(StandardResponseOutDTO.success(bundleInfoDTOS, "Bundles info retrieved successfully."));
     }
 
     @GetMapping("/recent")
-    public ResponseEntity<List<BundleSummaryDTO>> getRecentBundles() {
+    public ResponseEntity<StandardResponseOutDTO<List<BundleSummaryDTO>>> getRecentBundles() {
         List<BundleSummaryDTO> bundleSummaries = courseBundleService.getRecentBundleSummaries();
-        return ResponseEntity.ok(bundleSummaries);
+        return ResponseEntity.ok(StandardResponseOutDTO.success(bundleSummaries, "Recent bundles retrieved successfully."));
     }
 }
