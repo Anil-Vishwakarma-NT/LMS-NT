@@ -2,14 +2,13 @@ package com.nt.LMS.serviceImpl;
 
 import com.nt.LMS.converter.GroupDTOConverter;
 import com.nt.LMS.converter.UserDTOConverter;
-import com.nt.LMS.dto.GroupOutDTO;
-import com.nt.LMS.dto.MessageOutDto;
-import com.nt.LMS.dto.UserOutDTO;
+import com.nt.LMS.outDTO.GroupOutDTO;
+import com.nt.LMS.outDTO.MessageOutDto;
+import com.nt.LMS.outDTO.UserOutDTO;
 import com.nt.LMS.entities.Group;
 import com.nt.LMS.entities.User;
 import com.nt.LMS.entities.UserGroup;
 import com.nt.LMS.exception.ResourceNotFoundException;
-import com.nt.LMS.exception.UnauthorizedAccessException;
 import com.nt.LMS.repository.GroupRepository;
 import com.nt.LMS.repository.UserGroupRepository;
 import com.nt.LMS.repository.UserRepository;

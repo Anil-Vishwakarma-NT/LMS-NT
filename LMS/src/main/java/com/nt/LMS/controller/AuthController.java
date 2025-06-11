@@ -1,7 +1,7 @@
 package com.nt.LMS.controller;
 
 import com.nt.LMS.dto.LoginDto;
-import com.nt.LMS.dto.MessageOutDto;
+import com.nt.LMS.outDTO.MessageOutDto;
 import com.nt.LMS.dto.TokenResponseDto;
 import com.nt.LMS.service.AuthService;
 import jakarta.servlet.http.HttpServletRequest;

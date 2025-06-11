@@ -1,8 +1,11 @@
 package com.nt.LMS.controller;
 
-import com.nt.LMS.dto.*;
+import com.nt.LMS.inDTO.GroupInDTO;
+import com.nt.LMS.outDTO.GroupOutDTO;
+import com.nt.LMS.outDTO.GroupSummaryOutDTO;
+import com.nt.LMS.outDTO.MessageOutDto;
+import com.nt.LMS.outDTO.UserOutDTO;
 import com.nt.LMS.repository.UserRepository;
-import com.nt.LMS.service.GroupService;
 import com.nt.LMS.serviceImpl.GroupServiceImpl;
 import jakarta.validation.Valid;
 import lombok.extern.slf4j.Slf4j;
@@ -154,8 +157,8 @@ public final class GroupController {
     }
 
     @GetMapping("/recent")
-    public ResponseEntity<List<GroupSummaryDTO>> getRecentGroups() {
-        List<GroupSummaryDTO> groupSummaries = groupService.getRecentGroupSummaries();
+    public ResponseEntity<List<GroupSummaryOutDTO>> getRecentGroups() {
+        List<GroupSummaryOutDTO> groupSummaries = groupService.getRecentGroupSummaries();
         return ResponseEntity.ok(groupSummaries);
     }
 }

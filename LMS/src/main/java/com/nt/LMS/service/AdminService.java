@@ -1,8 +1,8 @@
 package com.nt.LMS.service;
 
-import com.nt.LMS.dto.MessageOutDto;
+import com.nt.LMS.outDTO.MessageOutDto;
 import com.nt.LMS.dto.RegisterDto;
-import com.nt.LMS.dto.UserOutDTO;
+import com.nt.LMS.outDTO.UserOutDTO;
 
 import java.util.List;
 

@@ -2,7 +2,7 @@ package com.nt.LMS.serviceImpl;
 
 import com.nt.LMS.constants.UserConstants;
 import com.nt.LMS.converter.UserDTOConverter;
-import com.nt.LMS.dto.UserOutDTO;
+import com.nt.LMS.outDTO.UserOutDTO;
 import com.nt.LMS.entities.User;
 import com.nt.LMS.exception.ResourceNotFoundException;
 import com.nt.LMS.repository.UserRepository;

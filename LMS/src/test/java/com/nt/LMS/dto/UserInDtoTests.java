@@ -1,5 +1,6 @@
 package com.nt.LMS.dto;
 
+import com.nt.LMS.inDTO.UserInDTO;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 

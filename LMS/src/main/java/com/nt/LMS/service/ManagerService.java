@@ -1,6 +1,6 @@
 package com.nt.LMS.service;
 
-import com.nt.LMS.dto.UserOutDTO;
+import com.nt.LMS.outDTO.UserOutDTO;
 
 import java.util.List;
 

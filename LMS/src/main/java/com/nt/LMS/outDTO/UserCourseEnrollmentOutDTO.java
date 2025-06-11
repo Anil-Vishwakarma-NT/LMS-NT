@@ -1,4 +1,4 @@
-package com.nt.LMS.dto;
+package com.nt.LMS.outDTO;
 
 import lombok.Data;
 
@@ -11,5 +11,5 @@ public class UserCourseEnrollmentOutDTO {
     private String courseName;
     private String ownerName;
     private boolean isActive;
-    private List<EnrolledUserDTO> enrolledUserDTOList;
+    private List<EnrolledUserOutDTO> enrolledUserOutDTOList;
 }

@@ -1,13 +1,13 @@
-package com.nt.LMS.dto;
+package com.nt.LMS.inDTO;
 
 import com.nt.LMS.validation.ValidateEnrollmentDTO;
 import lombok.Data;
-import jakarta.validation.constraints.*;
+
 import java.time.LocalDateTime;
 
 @Data
 @ValidateEnrollmentDTO
-public class EnrollmentDTO {
+public class EnrollmentInDTO {
 
     private Long userId;
     private Long groupId;

@@ -1,11 +1,11 @@
-package com.nt.LMS.dto;
+package com.nt.LMS.outDTO;
 
 import lombok.Data;
 
 import java.time.LocalDateTime;
 
 @Data
-public class CourseInfoDTO {
+public class CourseInfoOutDTO {
 
     private String title;
 

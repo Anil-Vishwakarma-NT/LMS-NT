@@ -1,9 +1,9 @@
-package com.nt.LMS.dto;
+package com.nt.LMS.outDTO;
 
 import lombok.Data;
 
 @Data
-public class EnrollmentDashBoardStatsDTO {
+public class EnrollmentDashBoardStatsOutDTO {
     private Long totalEnrollments;
     private Long usersEnrolled;
     private Long groupsEnrolled;

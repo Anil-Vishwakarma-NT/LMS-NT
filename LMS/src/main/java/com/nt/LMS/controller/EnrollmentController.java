@@ -1,7 +1,8 @@
 package com.nt.LMS.controller;
 
 import com.nt.LMS.dto.*;
-import com.nt.LMS.entities.Enrollment;
+import com.nt.LMS.inDTO.EnrollmentInDTO;
+import com.nt.LMS.outDTO.*;
 import com.nt.LMS.service.EnrollmentService;
 import com.nt.LMS.service.UserBundleEnrollmentService;
 import com.nt.LMS.service.UserCourseEnrollmentService;
@@ -28,8 +29,8 @@ public class EnrollmentController {
     private UserBundleEnrollmentService userBundleEnrollmentService;
 
     @PostMapping("/enroll")
-    public ResponseEntity<String> enroll(@Valid @RequestBody EnrollmentDTO enrollmentDTO) {
-        String response = enrollmentService.enrollUser(enrollmentDTO);
+    public ResponseEntity<String> enroll(@Valid @RequestBody EnrollmentInDTO enrollmentInDTO) {
+        String response = enrollmentService.enrollUser(enrollmentInDTO);
         return ResponseEntity.ok(response);
     }
     @GetMapping("/count")
@@ -43,7 +44,7 @@ public class EnrollmentController {
     }
 
     @GetMapping("/stats")
-    public ResponseEntity<EnrollmentDashBoardStatsDTO> getEnrollmentStats() {
+    public ResponseEntity<EnrollmentDashBoardStatsOutDTO> getEnrollmentStats() {
         return ResponseEntity.ok(enrollmentService.getEnrollmentStats());
     }
 
@@ -60,9 +61,9 @@ public class EnrollmentController {
     }
 
     @GetMapping("/user-enrollments")
-    public ResponseEntity<List<UserEnrollmentsDTO>> getUserEnrollmentsFilterByUser() {
-        List<UserEnrollmentsDTO> userEnrollmentsDTOS = enrollmentService.getEnrollmentsForUser();
-        return ResponseEntity.ok(userEnrollmentsDTOS);
+    public ResponseEntity<List<UserEnrollmentsOutDTO>> getUserEnrollmentsFilterByUser() {
+        List<UserEnrollmentsOutDTO> userEnrollmentsOutDTOS = enrollmentService.getEnrollmentsForUser();
+        return ResponseEntity.ok(userEnrollmentsOutDTOS);
     }
 
     @GetMapping("/user/{userId}/enrolled-courses")

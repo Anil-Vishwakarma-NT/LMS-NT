@@ -1,8 +1,7 @@
-package com.nt.LMS.dto;
+package com.nt.LMS.outDTO;
 
 import lombok.Data;
 
-import java.time.LocalDateTime;
 import java.util.List;
 
 @Data
@@ -18,5 +17,5 @@ public class UserBundleEnrollmentOutDTO {
 
     private boolean isActive;
 
-    private List<EnrolledUserDTO> enrolledUserDTOList;
+    private List<EnrolledUserOutDTO> enrolledUserOutDTOList;
 }

@@ -1,8 +1,8 @@
 package com.nt.LMS.serviceImpl;
 
-import com.nt.LMS.dto.EnrolledUserDTO;
-import com.nt.LMS.dto.CourseInfoDTO;
-import com.nt.LMS.dto.UserCourseEnrollmentOutDTO;
+import com.nt.LMS.outDTO.EnrolledUserOutDTO;
+import com.nt.LMS.outDTO.CourseInfoOutDTO;
+import com.nt.LMS.outDTO.UserCourseEnrollmentOutDTO;
 import com.nt.LMS.dto.UserEnrollDetails;
 import com.nt.LMS.entities.User;
 import com.nt.LMS.entities.UserCourseEnrollment;
@@ -37,14 +37,14 @@ public class UserCourseEnrollmentServiceImpl implements UserCourseEnrollmentServ
     @Override
     public List<UserCourseEnrollmentOutDTO> getUserEnrollmentsByCourse() {
         try {
-            List<CourseInfoDTO> courseInfoDTOLists = courseMicroserviceClient.getCourseInfo().getBody();
-            if (courseInfoDTOLists == null || courseInfoDTOLists.isEmpty()) {
+            List<CourseInfoOutDTO> courseInfoOutDTOLists = courseMicroserviceClient.getCourseInfo().getBody();
+            if (courseInfoOutDTOLists == null || courseInfoOutDTOLists.isEmpty()) {
                 throw new ResourceNotFoundException("Course not found");
             }
 
             List<UserCourseEnrollmentOutDTO> responseList = new ArrayList<>();
 
-            for (CourseInfoDTO courseInfo : courseInfoDTOLists) {
+            for (CourseInfoOutDTO courseInfo : courseInfoOutDTOLists) {
                 User owner = userRepository.findById(courseInfo.getOwnerId())
                         .filter(User::isActive)
                         .orElseThrow(() -> new ResourceNotFoundException("Active owner not found"));
@@ -68,7 +68,7 @@ public class UserCourseEnrollmentServiceImpl implements UserCourseEnrollmentServ
                 courseDTO.setIndividualEnrollments(activeEnrollmentCount);
 
                 List<UserCourseEnrollment> enrollments = userCourseEnrollmentRepository.findByCourseId(courseInfo.getCourseId());
-                List<EnrolledUserDTO> enrolledUsersDTO = new ArrayList<>();
+                List<EnrolledUserOutDTO> enrolledUsersDTO = new ArrayList<>();
 
                 for (UserCourseEnrollment enrollment : enrollments) {
                     Optional<User> userOpt = userRepository.findById(enrollment.getUserId())
@@ -95,11 +95,11 @@ public class UserCourseEnrollmentServiceImpl implements UserCourseEnrollmentServ
                         progress = 0.0;
                     }
 
-                    EnrolledUserDTO enrolledDTO = getEnrolledUserDTO(enrollment, user, assignedByName, progress);
+                    EnrolledUserOutDTO enrolledDTO = getEnrolledUserDTO(enrollment, user, assignedByName, progress);
                     enrolledUsersDTO.add(enrolledDTO);
                 }
 
-                courseDTO.setEnrolledUserDTOList(enrolledUsersDTO);
+                courseDTO.setEnrolledUserOutDTOList(enrolledUsersDTO);
                 responseList.add(courseDTO);
             }
 
@@ -114,8 +114,8 @@ public class UserCourseEnrollmentServiceImpl implements UserCourseEnrollmentServ
         }
     }
 
-    private static EnrolledUserDTO getEnrolledUserDTO(UserCourseEnrollment enrollment, User user, User assignedByName,double progress) {
-        EnrolledUserDTO enrolledDTO = new EnrolledUserDTO();
+    private static EnrolledUserOutDTO getEnrolledUserDTO(UserCourseEnrollment enrollment, User user, User assignedByName, double progress) {
+        EnrolledUserOutDTO enrolledDTO = new EnrolledUserOutDTO();
         enrolledDTO.setUserId(user.getUserId());
         enrolledDTO.setUserName(user.getFirstName() + " " + user.getLastName());
         enrolledDTO.setEnrollmentDate(enrollment.getAssignedAt());

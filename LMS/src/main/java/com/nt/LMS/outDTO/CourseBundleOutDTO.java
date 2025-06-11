@@ -1,9 +1,9 @@
-package com.nt.LMS.dto;
+package com.nt.LMS.outDTO;
 
 import lombok.Data;
 
 @Data
-public class CourseBundleDTO {
+public class CourseBundleOutDTO {
     private long courseBundleId;
     private long bundleId;
     private long courseId;

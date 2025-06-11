@@ -1,11 +1,11 @@
-package com.nt.LMS.dto;
+package com.nt.LMS.outDTO;
 
 import lombok.Data;
 
 import java.util.List;
 
 @Data
-public class UserEnrollmentsDTO {
+public class UserEnrollmentsOutDTO {
     private Long userId;
     private String userName;
     private Long courseEnrollments;
@@ -14,6 +14,6 @@ public class UserEnrollmentsDTO {
     private Float averageCompletion;
     private Integer upcomingDeadlines;
     private boolean status;
-    private List<EnrolledCoursesDTO> enrolledCoursesList;
-    private List<EnrolledBundlesDTO> enrolledBundlesList;
+    private List<EnrolledCoursesOutDTO> enrolledCoursesList;
+    private List<EnrolledBundlesOutDTO> enrolledBundlesList;
 }

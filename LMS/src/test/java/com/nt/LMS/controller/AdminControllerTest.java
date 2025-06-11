@@ -1,9 +1,9 @@
 package com.nt.LMS.controller;
 
 import com.nt.LMS.dto.RegisterDto;
-import com.nt.LMS.dto.MessageOutDto;
-import com.nt.LMS.dto.UserOutDTO;
-import com.nt.LMS.dto.UserInDTO;
+import com.nt.LMS.outDTO.MessageOutDto;
+import com.nt.LMS.outDTO.UserOutDTO;
+import com.nt.LMS.inDTO.UserInDTO;
 import com.nt.LMS.serviceImpl.AdminServiceImpl;
 import com.nt.LMS.serviceImpl.GroupServiceImpl;
 import com.nt.LMS.serviceImpl.UserServiceImpl;

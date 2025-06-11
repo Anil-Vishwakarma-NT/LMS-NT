@@ -1,11 +1,11 @@
-package com.nt.LMS.dto;
+package com.nt.LMS.outDTO;
 
 import lombok.Data;
 
 import java.time.LocalDateTime;
 
 @Data
-public class EnrolledUserDTO {
+public class EnrolledUserOutDTO {
     private Long userId;
     private String assignedByName;
     private String userName;

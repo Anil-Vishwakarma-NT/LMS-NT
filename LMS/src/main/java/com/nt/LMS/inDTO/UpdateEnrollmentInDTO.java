@@ -1,4 +1,4 @@
-package com.nt.LMS.dto;
+package com.nt.LMS.inDTO;
 
 import com.nt.LMS.validation.ValidateEnrollmentDTO;
 import jakarta.validation.constraints.NotNull;
@@ -9,7 +9,7 @@ import java.time.LocalDateTime;
 
 @Data
 @ValidateEnrollmentDTO
-public class UpdateEnrollmentDTO {
+public class UpdateEnrollmentInDTO {
     private Long userId;
     private Long groupId;
     private Long courseId;

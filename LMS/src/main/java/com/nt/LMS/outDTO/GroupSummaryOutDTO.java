@@ -1,4 +1,4 @@
-package com.nt.LMS.dto;
+package com.nt.LMS.outDTO;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -10,7 +10,7 @@ import lombok.NoArgsConstructor;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class GroupSummaryDTO {
+public class GroupSummaryOutDTO {
     private Long groupId;
     private String groupName;
     private String creatorName;

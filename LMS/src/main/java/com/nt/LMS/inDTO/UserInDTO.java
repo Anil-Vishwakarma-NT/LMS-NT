@@ -1,4 +1,4 @@
-package com.nt.LMS.dto;
+package com.nt.LMS.inDTO;
 
 import jakarta.validation.constraints.Pattern;
 import lombok.AllArgsConstructor;
