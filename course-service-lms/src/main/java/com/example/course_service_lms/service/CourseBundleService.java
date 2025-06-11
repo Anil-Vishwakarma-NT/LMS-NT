@@ -1,9 +1,11 @@
 package com.example.course_service_lms.service;
 
-import com.example.course_service_lms.dto.*;
 import com.example.course_service_lms.entity.CourseBundle;
+import com.example.course_service_lms.inDTO.CourseBundleInDTO;
+import com.example.course_service_lms.inDTO.UpdateCourseBundleInDTO;
 import com.example.course_service_lms.outDTO.BundleInfoOutDTO;
 import com.example.course_service_lms.outDTO.BundleSummaryOutDTO;
+import com.example.course_service_lms.outDTO.CourseBundleOutDTO;
 
 import java.util.List;
 
@@ -19,17 +21,17 @@ public interface CourseBundleService {
     /**
      * Retrieves all course-bundle associations.
      *
-     * @return a list of {@link CourseBundleDTO} representing all course-bundle mappings
+     * @return a list of {@link CourseBundleOutDTO} representing all course-bundle mappings
      */
-    List<CourseBundleDTO> getAllCourseBundles();
+    List<CourseBundleOutDTO> getAllCourseBundles();
 
     /**
      * Retrieves a specific course-bundle association by its ID.
      *
      * @param courseBundleId the ID of the course-bundle mapping to retrieve
-     * @return the {@link CourseBundleDTO} for the given ID
+     * @return the {@link CourseBundleOutDTO} for the given ID
      */
-    CourseBundleDTO getCourseBundleById(Long courseBundleId);
+    CourseBundleOutDTO getCourseBundleById(Long courseBundleId);
 
     /**
      * Retrieves all course-bundle records associated with a specific bundle.
@@ -50,18 +52,18 @@ public interface CourseBundleService {
      * Updates an existing course-bundle association.
      *
      * @param courseBundleId the ID of the course-bundle record to update
-     * @param updateCourseBundleDTO the new data for the course-bundle mapping
-     * @return the updated {@link CourseBundlePostDTO}
+     * @param updateCourseBundleInDTO the new data for the course-bundle mapping
+     * @return the updated {@link CourseBundleInDTO}
      */
-    String updateCourseBundle(Long courseBundleId, UpdateCourseBundleDTO updateCourseBundleDTO);
+    String updateCourseBundle(Long courseBundleId, UpdateCourseBundleInDTO updateCourseBundleInDTO);
 
     /**
      * Creates a new course-bundle association.
      *
-     * @param courseBundlePostDTO the details of the new course-bundle mapping
-     * @return the created {@link CourseBundlePostDTO}
+     * @param courseBundleInDTO the details of the new course-bundle mapping
+     * @return the created {@link CourseBundleInDTO}
      */
-    CourseBundle createCourseBundle(CourseBundlePostDTO courseBundlePostDTO);
+    CourseBundle createCourseBundle(CourseBundleInDTO courseBundleInDTO);
 
     List<BundleInfoOutDTO> getBundlesInfo();
     List<BundleSummaryOutDTO> getRecentBundleSummaries();

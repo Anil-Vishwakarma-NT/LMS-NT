@@ -1,4 +1,4 @@
-package com.example.course_service_lms.dto;
+package com.example.course_service_lms.outDTO;
 
 import lombok.*;
 import java.time.LocalDateTime;
@@ -8,7 +8,7 @@ import java.time.LocalDateTime;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class UserProgressDTO {
+public class UserProgressOutDTO {
     private int userId;
     private int contentId;
     private int courseId; // Course ID included for tracking

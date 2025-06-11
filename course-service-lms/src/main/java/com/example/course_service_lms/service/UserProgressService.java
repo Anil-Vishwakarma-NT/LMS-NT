@@ -1,10 +1,10 @@
 package com.example.course_service_lms.service;
 
-import com.example.course_service_lms.dto.UserProgressDTO;
+import com.example.course_service_lms.outDTO.UserProgressOutDTO;
 
 public interface UserProgressService {
 
-    void updateProgress(UserProgressDTO progressDTO);
+    void updateProgress(UserProgressOutDTO progressDTO);
 
     Double getCourseProgress(int userId, int courseId);
 

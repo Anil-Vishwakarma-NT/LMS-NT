@@ -1,8 +1,8 @@
 package com.example.course_service_lms.serviceImpl;
 
 import com.example.course_service_lms.converters.CourseContentConverters;
-import com.example.course_service_lms.dto.CourseContentDTO;
-import com.example.course_service_lms.dto.UpdateCourseContentDTO;
+import com.example.course_service_lms.inDTO.CourseContentInDTO;
+import com.example.course_service_lms.inDTO.UpdateCourseContentInDTO;
 import com.example.course_service_lms.entity.CourseContent;
 import com.example.course_service_lms.exception.ResourceAlreadyExistsException;
 import com.example.course_service_lms.exception.ResourceNotFoundException;
@@ -51,24 +51,24 @@ public class CourseContentImpl implements CourseContentService {
     /**
      * Creates a new CourseContent.
      *
-     * @param courseContentDTO the DTO containing course content data
+     * @param courseContentInDTO the DTO containing course content data
      * @return the saved CourseContent
      * @throws ResourceAlreadyExistsException if   a course content with the same title already exists for the course
      * @throws ResourceNotFoundException if  the course does not exist
      */
     @Override
-    public CourseContent createCourseContent(final CourseContentDTO courseContentDTO) {
+    public CourseContent createCourseContent(final CourseContentInDTO courseContentInDTO) {
         try {
             Optional<CourseContent> existingCourse = courseContentRepository.findByTitleIgnoreCaseAndCourseId(
-                    courseContentDTO.getTitle(), courseContentDTO.getCourseId());
+                    courseContentInDTO.getTitle(), courseContentInDTO.getCourseId());
             if (existingCourse.isPresent()) {
                 throw new ResourceAlreadyExistsException(COURSE_CONTENT_ALREADY_PRESENT);
             }
-            boolean courseExists = courseRepository.existsById(courseContentDTO.getCourseId());
+            boolean courseExists = courseRepository.existsById(courseContentInDTO.getCourseId());
             if  (!courseExists) {
                 throw new ResourceNotFoundException(COURSE_NOT_FOUND);
             }
-            CourseContent courseContent = CourseContentConverters.courseContentDtoToCourseContent(courseContentDTO);
+            CourseContent courseContent = CourseContentConverters.courseContentDtoToCourseContent(courseContentInDTO);
             courseContent.setCreatedAt(LocalDateTime.now());
             courseContent.setUpdatedAt(LocalDateTime.now());
             return courseContentRepository.save(courseContent);
@@ -149,42 +149,42 @@ public class CourseContentImpl implements CourseContentService {
      * Updates an existing course content by ID.
      *
      * @param courseId ID of the course content to update
-     * @param updateCourseContentDTO the updated data
+     * @param updateCourseContentInDTO the updated data
      * @return success message upon update
      * @throws ResourceNotFoundException of course content or course is not found
      * @throws ResourceAlreadyExistsException if  updated title and course combination already exists
      */
     @Override
-    public String updateCourseContent(final Long courseId, final UpdateCourseContentDTO updateCourseContentDTO) {
+    public String updateCourseContent(final Long courseId, final UpdateCourseContentInDTO updateCourseContentInDTO) {
         try {
             Optional<CourseContent> courseContentOptional = courseContentRepository.findById(courseId);
             if  (courseContentOptional.isEmpty()) {
                 throw new ResourceNotFoundException(COURSE_CONTENT_NOT_FOUND);
             }
-            boolean courseExists = courseRepository.existsById(updateCourseContentDTO.getCourseId());
+            boolean courseExists = courseRepository.existsById(updateCourseContentInDTO.getCourseId());
             if  (!courseExists) {
                 throw new ResourceNotFoundException(COURSE_NOT_FOUND);
             }
             CourseContent existingCourseContent = courseContentOptional.get();
 
-            boolean isTitleChanged = !existingCourseContent.getTitle().equalsIgnoreCase(updateCourseContentDTO.getTitle());
-            boolean isCourseIdChanged = !(existingCourseContent.getCourseId() == updateCourseContentDTO.getCourseId());
+            boolean isTitleChanged = !existingCourseContent.getTitle().equalsIgnoreCase(updateCourseContentInDTO.getTitle());
+            boolean isCourseIdChanged = !(existingCourseContent.getCourseId() == updateCourseContentInDTO.getCourseId());
 
             if  (isTitleChanged || isCourseIdChanged) {
                 Optional<CourseContent> duplicate = courseContentRepository.findByTitleIgnoreCaseAndCourseId(
-                        updateCourseContentDTO.getTitle(), updateCourseContentDTO.getCourseId());
+                        updateCourseContentInDTO.getTitle(), updateCourseContentInDTO.getCourseId());
 
                 if  (duplicate.isPresent() && !(duplicate.get().getCourseId() == courseId)) {
                     throw new ResourceAlreadyExistsException(COURSE_CONTENT_DUPLICATE);
                 }
             }
 
-            existingCourseContent.setCourseId(updateCourseContentDTO.getCourseId());
-            existingCourseContent.setTitle(updateCourseContentDTO.getTitle());
-            existingCourseContent.setDescription(updateCourseContentDTO.getDescription());
-            existingCourseContent.setResourceLink(updateCourseContentDTO.getResourceLink());
+            existingCourseContent.setCourseId(updateCourseContentInDTO.getCourseId());
+            existingCourseContent.setTitle(updateCourseContentInDTO.getTitle());
+            existingCourseContent.setDescription(updateCourseContentInDTO.getDescription());
+            existingCourseContent.setResourceLink(updateCourseContentInDTO.getResourceLink());
             existingCourseContent.setUpdatedAt(LocalDateTime.now());
-            existingCourseContent.setActive(updateCourseContentDTO.isActive());
+            existingCourseContent.setActive(updateCourseContentInDTO.isActive());
 
             courseContentRepository.save(existingCourseContent);
             return COURSE_CONTENT_UPDATED;

@@ -1,7 +1,7 @@
 package com.example.course_service_lms.serviceImpl;
 
-import com.example.course_service_lms.dto.UserProgressDTO;
-import com.example.course_service_lms.dto.CourseContentDTO;
+import com.example.course_service_lms.outDTO.UserProgressOutDTO;
+import com.example.course_service_lms.inDTO.CourseContentInDTO;
 import com.example.course_service_lms.entity.UserProgress;
 import com.example.course_service_lms.entity.CourseContent;
 import com.example.course_service_lms.repository.UserProgressRepository;
@@ -26,7 +26,7 @@ public class UserProgressServiceImpl implements UserProgressService {
     private final UserProgressConverter userProgressConverter;
 
     @Override
-    public void updateProgress(UserProgressDTO progressDTO) {
+    public void updateProgress(UserProgressOutDTO progressDTO) {
         log.info("Received Progress Update: {}", progressDTO);
 
         Optional<UserProgress> progressOpt = userProgressRepository.findProgressByUserIdAndContentId(
@@ -71,7 +71,7 @@ public class UserProgressServiceImpl implements UserProgressService {
         log.info("Updated Course Completion Status for all records.");
     }
 
-    public List<CourseContentDTO> getUserCourseContent(int userId, long courseId) {
+    public List<CourseContentInDTO> getUserCourseContent(int userId, long courseId) {
         log.info("Fetching Course Content for CourseId: {}", courseId);
         List<CourseContent> courseContents = courseContentRepository.findByCourseId(courseId);
         List<UserProgress> userProgressList = userProgressRepository.findProgressByUserIdAndCourseId(userId, courseId);
@@ -87,7 +87,7 @@ public class UserProgressServiceImpl implements UserProgressService {
             log.info("Mapped Progress for CourseContentId {}: {}", content.getCourseContentId(),
                     progressOpt.map(UserProgress::getContentCompletionPercentage).orElse(0.0));
 
-            return new CourseContentDTO(
+            return new CourseContentInDTO(
                     content.getCourseId(),
                     content.getTitle(),
                     content.getDescription(),

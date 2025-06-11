@@ -1,17 +1,16 @@
-package com.example.course_service_lms.dto;
+package com.example.course_service_lms.inDTO;
 
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Positive;
 import lombok.Data;
 
-import java.time.LocalDateTime;
 import java.util.Objects;
 
 import static com.example.course_service_lms.constants.CourseBundleConstants.*;
 import static com.example.course_service_lms.constants.CourseBundleConstants.COURSE_ID_POSITIVE;
 
 @Data
-public class UpdateCourseBundleDTO {
+public class UpdateCourseBundleInDTO {
 
     /**
      * The ID of the bundle this course is being added to.
@@ -33,20 +32,20 @@ public class UpdateCourseBundleDTO {
     private boolean isActive;
 
 
-    public UpdateCourseBundleDTO(Long bundleId, Long courseId, boolean isActive) {
+    public UpdateCourseBundleInDTO(Long bundleId, Long courseId, boolean isActive) {
         this.bundleId = bundleId;
         this.courseId = courseId;
         this.isActive = isActive;
     }
 
-    public UpdateCourseBundleDTO() {
+    public UpdateCourseBundleInDTO() {
     }
 
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
-        UpdateCourseBundleDTO that = (UpdateCourseBundleDTO) o;
+        UpdateCourseBundleInDTO that = (UpdateCourseBundleInDTO) o;
         return isActive == that.isActive && Objects.equals(bundleId, that.bundleId) && Objects.equals(courseId, that.courseId) ;
     }
 

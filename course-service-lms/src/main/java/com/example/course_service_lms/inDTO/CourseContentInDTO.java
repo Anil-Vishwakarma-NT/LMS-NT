@@ -1,4 +1,4 @@
-package com.example.course_service_lms.dto;
+package com.example.course_service_lms.inDTO;
 
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotBlank;
@@ -7,7 +7,6 @@ import jakarta.validation.constraints.Pattern;
 import jakarta.validation.constraints.Size;
 import lombok.Data;
 
-import java.time.LocalDateTime;
 import java.util.Objects;
 
 import static com.example.course_service_lms.constants.CourseContentConstants.COURSE_ID_NOT_NULL;
@@ -19,8 +18,6 @@ import static com.example.course_service_lms.constants.CourseContentConstants.RE
 import static com.example.course_service_lms.constants.CourseContentConstants.TITLE_NOT_BLANK;
 import static com.example.course_service_lms.constants.CourseContentConstants.TITLE_SIZE_EXCEED;
 import static com.example.course_service_lms.constants.CourseContentConstants.TITLE_SIZE_EXCEED_VALUE;
-import static com.example.course_service_lms.constants.CourseContentConstants.VIDEO_LINK_INVALID;
-import static com.example.course_service_lms.constants.CourseContentConstants.VIDEO_LINK_NOT_BLANK;
 
 /**
  * Data Transfer Object (DTO) for transferring course content data between the
@@ -39,7 +36,7 @@ import static com.example.course_service_lms.constants.CourseContentConstants.VI
  * </ul>
  */
 @Data
-public class CourseContentDTO {
+public class CourseContentInDTO {
 
     /**
      * The ID of the course to which this content belongs.
@@ -80,7 +77,7 @@ public class CourseContentDTO {
     private boolean isActive;
 
 
-    public CourseContentDTO(long courseId, String title, String description, String resourceLink, boolean isActive) {
+    public CourseContentInDTO(long courseId, String title, String description, String resourceLink, boolean isActive) {
         this.courseId = courseId;
         this.title = title;
         this.description = description;
@@ -88,14 +85,14 @@ public class CourseContentDTO {
         this.isActive = isActive;
     }
 
-    public CourseContentDTO() {
+    public CourseContentInDTO() {
     }
 
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
-        CourseContentDTO that = (CourseContentDTO) o;
+        CourseContentInDTO that = (CourseContentInDTO) o;
         return courseId == that.courseId && isActive == that.isActive && Objects.equals(title, that.title) && Objects.equals(description, that.description) && Objects.equals(resourceLink, that.resourceLink);
     }
 

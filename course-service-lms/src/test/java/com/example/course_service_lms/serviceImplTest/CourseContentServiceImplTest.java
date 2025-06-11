@@ -1,7 +1,6 @@
 package com.example.course_service_lms.serviceImplTest;
 
-import com.example.course_service_lms.converters.CourseContentConverters;
-import com.example.course_service_lms.dto.CourseContentDTO;
+import com.example.course_service_lms.inDTO.CourseContentInDTO;
 import com.example.course_service_lms.entity.CourseContent;
 import com.example.course_service_lms.exception.ResourceAlreadyExistsException;
 import com.example.course_service_lms.exception.ResourceNotFoundException;
@@ -33,12 +32,12 @@ class CourseContentImplTest {
     @InjectMocks
     private CourseContentImpl courseContentService;
 
-    private CourseContentDTO validDTO;
+    private CourseContentInDTO validDTO;
     private CourseContent courseContent;
 
     @BeforeEach
     void setUp() {
-        validDTO = new CourseContentDTO();
+        validDTO = new CourseContentInDTO();
         validDTO.setCourseId(1L);
         validDTO.setTitle("Java Basics");
         validDTO.setDescription("Introduction to Java");

@@ -1,7 +1,7 @@
 package com.example.course_service_lms.converterTest;
 
-import com.example.course_service_lms.dto.CourseBundleDTO;
-import com.example.course_service_lms.dto.CourseBundlePostDTO;
+import com.example.course_service_lms.outDTO.CourseBundleOutDTO;
+import com.example.course_service_lms.inDTO.CourseBundleInDTO;
 import com.example.course_service_lms.entity.CourseBundle;
 import com.example.course_service_lms.converters.CourseBundleConvertor;
 import org.junit.jupiter.api.Test;
@@ -13,7 +13,7 @@ class CourseBundleConvertorTest {
     @Test
     void testConvertDTOToEntity() {
         // Prepare input DTO
-        CourseBundleDTO dto = new CourseBundleDTO();
+        CourseBundleOutDTO dto = new CourseBundleOutDTO();
         dto.setCourseBundleId(1L);
         dto.setBundleId(101L);
         dto.setCourseId(201L);
@@ -31,7 +31,7 @@ class CourseBundleConvertorTest {
     @Test
     void testConvertDTOToEntityForPost() {
         // Prepare input PostDTO
-        CourseBundlePostDTO postDTO = new CourseBundlePostDTO();
+        CourseBundleInDTO postDTO = new CourseBundleInDTO();
         postDTO.setCourseBundleId(2L);
         postDTO.setBundleId(102L);
         postDTO.setCourseId(202L);
@@ -55,7 +55,7 @@ class CourseBundleConvertorTest {
         entity.setCourseId(201L);
 
         // Call method
-        CourseBundleDTO result = CourseBundleConvertor.convertEntityToDTO(entity);
+        CourseBundleOutDTO result = CourseBundleConvertor.convertEntityToDTO(entity);
 
         // Verify result
         assertNotNull(result);
@@ -73,7 +73,7 @@ class CourseBundleConvertorTest {
         courseBundle.setCourseId(203L);
 
         // Call method
-        CourseBundlePostDTO result = CourseBundleConvertor.convertEntityToDTOPost(courseBundle);
+        CourseBundleInDTO result = CourseBundleConvertor.convertEntityToDTOPost(courseBundle);
 
         // Verify result
         assertNotNull(result, "Converted DTO should not be null");

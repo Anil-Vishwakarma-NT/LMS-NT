@@ -1,6 +1,6 @@
 package com.example.course_service_lms.converters;
 
-import com.example.course_service_lms.dto.CourseContentDTO;
+import com.example.course_service_lms.inDTO.CourseContentInDTO;
 import com.example.course_service_lms.entity.CourseContent;
 
 /**
@@ -13,19 +13,19 @@ public final class CourseContentConverters {
         throw new UnsupportedOperationException("This is a utility class and cannot be instantiated");
     }
     /**
-     * Converts a {@link CourseContentDTO} to a {@link CourseContent} entity.
+     * Converts a {@link CourseContentInDTO} to a {@link CourseContent} entity.
      * This method is typically used when creating or updating course content.
      *
-     * @param courseContentDTO the DTO object containing course content data
+     * @param courseContentInDTO the DTO object containing course content data
      * @return the corresponding CourseContent entity
      */
-    public static CourseContent courseContentDtoToCourseContent(final CourseContentDTO courseContentDTO) {
+    public static CourseContent courseContentDtoToCourseContent(final CourseContentInDTO courseContentInDTO) {
         CourseContent courseContent = new CourseContent();
-        courseContent.setCourseId(courseContentDTO.getCourseId());
-        courseContent.setTitle(courseContentDTO.getTitle());
-        courseContent.setDescription(courseContentDTO.getDescription());
-        courseContent.setResourceLink(courseContentDTO.getResourceLink());
-        courseContent.setActive(courseContentDTO.isActive());
+        courseContent.setCourseId(courseContentInDTO.getCourseId());
+        courseContent.setTitle(courseContentInDTO.getTitle());
+        courseContent.setDescription(courseContentInDTO.getDescription());
+        courseContent.setResourceLink(courseContentInDTO.getResourceLink());
+        courseContent.setActive(courseContentInDTO.isActive());
         return courseContent;
     }
 }

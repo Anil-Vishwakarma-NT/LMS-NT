@@ -1,14 +1,12 @@
-package com.example.course_service_lms.dto;
+package com.example.course_service_lms.inDTO;
 
 import jakarta.validation.constraints.*;
 import lombok.Data;
 
-import java.time.LocalDateTime;
-
 import static com.example.course_service_lms.constants.CourseContentConstants.*;
 
 @Data
-public class UpdateCourseContentDTO {
+public class UpdateCourseContentInDTO {
 
     /**
      * The ID of the course to which this content belongs.

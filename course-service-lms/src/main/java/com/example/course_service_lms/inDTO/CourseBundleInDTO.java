@@ -1,10 +1,9 @@
-package com.example.course_service_lms.dto;
+package com.example.course_service_lms.inDTO;
 
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Positive;
 import lombok.Data;
 
-import java.time.LocalDateTime;
 import java.util.Objects;
 
 import static com.example.course_service_lms.constants.CourseBundleConstants.BUNDLE_ID_NOT_NULL;
@@ -26,7 +25,7 @@ import static com.example.course_service_lms.constants.CourseBundleConstants.COU
  * </ul>
  */
 @Data
-public class CourseBundlePostDTO {
+public class CourseBundleInDTO {
 
     /**
      * Unique identifier for the course-bundle relationship.
@@ -56,7 +55,7 @@ public class CourseBundlePostDTO {
     /**
      * Default constructor for frameworks that require no-args constructor.
      */
-    public CourseBundlePostDTO() {
+    public CourseBundleInDTO() {
     }
 
     /**
@@ -67,7 +66,7 @@ public class CourseBundlePostDTO {
      * @param courseId       ID of the course
      */
 
-    public CourseBundlePostDTO(long courseBundleId, Long bundleId, Long courseId, boolean isActive) {
+    public CourseBundleInDTO(long courseBundleId, Long bundleId, Long courseId, boolean isActive) {
         this.courseBundleId = courseBundleId;
         this.bundleId = bundleId;
         this.courseId = courseId;
@@ -78,7 +77,7 @@ public class CourseBundlePostDTO {
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
-        CourseBundlePostDTO that = (CourseBundlePostDTO) o;
+        CourseBundleInDTO that = (CourseBundleInDTO) o;
         return courseBundleId == that.courseBundleId && isActive == that.isActive && Objects.equals(bundleId, that.bundleId) && Objects.equals(courseId, that.courseId);
     }
 

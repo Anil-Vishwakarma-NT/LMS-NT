@@ -1,15 +1,15 @@
 package com.example.course_service_lms.dtoTest;
 
-import com.example.course_service_lms.dto.CourseContentDTO;
+import com.example.course_service_lms.inDTO.CourseContentInDTO;
 import org.junit.jupiter.api.Test;
 import static org.junit.jupiter.api.Assertions.*;
 
-class CourseContentDTOTest {
+class CourseContentInDTOTest {
 
     @Test
     void testConstructorAndGetters() {
         // Given
-        CourseContentDTO dto = new CourseContentDTO(1L, "Java Basics", "Introduction to Java Programming",
+        CourseContentInDTO dto = new CourseContentInDTO(1L, "Java Basics", "Introduction to Java Programming",
                 "https://example.com/java-video", "https://example.com/java-resource");
 
         // Then
@@ -23,7 +23,7 @@ class CourseContentDTOTest {
     @Test
     void testSetters() {
         // Given
-        CourseContentDTO dto = new CourseContentDTO();
+        CourseContentInDTO dto = new CourseContentInDTO();
 
         // When
         dto.setCourseId(2L);
@@ -43,11 +43,11 @@ class CourseContentDTOTest {
     @Test
     void testEqualsAndHashCode() {
         // Given
-        CourseContentDTO dto1 = new CourseContentDTO(1L, "Java Basics", "Introduction to Java Programming",
+        CourseContentInDTO dto1 = new CourseContentInDTO(1L, "Java Basics", "Introduction to Java Programming",
                 "https://example.com/java-video", "https://example.com/java-resource");
-        CourseContentDTO dto2 = new CourseContentDTO(1L, "Java Basics", "Introduction to Java Programming",
+        CourseContentInDTO dto2 = new CourseContentInDTO(1L, "Java Basics", "Introduction to Java Programming",
                 "https://example.com/java-video", "https://example.com/java-resource");
-        CourseContentDTO dto3 = new CourseContentDTO(2L, "Advanced Java", "Deep dive into Java concepts",
+        CourseContentInDTO dto3 = new CourseContentInDTO(2L, "Advanced Java", "Deep dive into Java concepts",
                 "https://example.com/advanced-java-video", "https://example.com/advanced-java-resource");
 
         // Then
@@ -60,7 +60,7 @@ class CourseContentDTOTest {
     @Test
     void testNoArgsConstructor() {
         // Given
-        CourseContentDTO dto = new CourseContentDTO();
+        CourseContentInDTO dto = new CourseContentInDTO();
 
         // Then
         assertNotNull(dto);

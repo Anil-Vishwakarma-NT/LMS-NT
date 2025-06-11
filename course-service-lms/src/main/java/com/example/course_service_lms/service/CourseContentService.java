@@ -1,8 +1,8 @@
 package com.example.course_service_lms.service;
 
 
-import com.example.course_service_lms.dto.CourseContentDTO;
-import com.example.course_service_lms.dto.UpdateCourseContentDTO;
+import com.example.course_service_lms.inDTO.CourseContentInDTO;
+import com.example.course_service_lms.inDTO.UpdateCourseContentInDTO;
 import com.example.course_service_lms.entity.CourseContent;
 
 import java.util.List;
@@ -20,10 +20,10 @@ public interface CourseContentService {
     /**
      * Creates new course content.
      *
-     * @param courseContentDTO the data transfer object containing content details
+     * @param courseContentInDTO the data transfer object containing content details
      * @return the created {@link CourseContent} entity
      */
-    CourseContent createCourseContent(CourseContentDTO courseContentDTO);
+    CourseContent createCourseContent(CourseContentInDTO courseContentInDTO);
 
     /**
      * Retrieves all course content records.
@@ -52,10 +52,10 @@ public interface CourseContentService {
      * Updates course content for a given course ID.
      *
      * @param courseId the ID of the course whose content is to be updated
-     * @param updateCourseContentDTO the updated content data
+     * @param updateCourseContentInDTO the updated content data
      * @return a success message indicating the outcome
      */
-    String updateCourseContent(Long courseId, UpdateCourseContentDTO updateCourseContentDTO);
+    String updateCourseContent(Long courseId, UpdateCourseContentInDTO updateCourseContentInDTO);
 
     /**
      * Retrieves all course content items associated with a specific course.

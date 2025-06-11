@@ -1,6 +1,6 @@
 package com.example.course_service_lms.dtoTest;
 
-import com.example.course_service_lms.dto.CourseBundleDTO;
+import com.example.course_service_lms.outDTO.CourseBundleOutDTO;
 import org.junit.jupiter.api.Test;
 
 import jakarta.validation.Validation;
@@ -23,7 +23,7 @@ class CourseBundleInDTOTest {
         String courseName = "Java Basics";
 
         // When
-        CourseBundleDTO dto = new CourseBundleDTO(courseBundleId, bundleId, bundleName, courseId, courseName);
+        CourseBundleOutDTO dto = new CourseBundleOutDTO(courseBundleId, bundleId, bundleName, courseId, courseName);
 
         // Then
         assertThat(dto.getCourseBundleId()).isEqualTo(courseBundleId);
@@ -36,7 +36,7 @@ class CourseBundleInDTOTest {
     @Test
     void testGettersAndSetters() {
         // Given
-        CourseBundleDTO dto = new CourseBundleDTO();
+        CourseBundleOutDTO dto = new CourseBundleOutDTO();
         long courseBundleId = 5L;
         Long bundleId = 10L;
         String bundleName = "Advanced Programming";
@@ -61,9 +61,9 @@ class CourseBundleInDTOTest {
     @Test
     void testEquals() {
         // Given
-        CourseBundleDTO dto1 = new CourseBundleDTO(1L, 2L, "Beginner Programming Bundle", 3L, "Java Basics");
-        CourseBundleDTO dto2 = new CourseBundleDTO(1L, 2L, "Beginner Programming Bundle", 3L, "Java Basics");
-        CourseBundleDTO dto3 = new CourseBundleDTO(4L, 5L, "Intermediate Programming", 6L, "Spring Boot");
+        CourseBundleOutDTO dto1 = new CourseBundleOutDTO(1L, 2L, "Beginner Programming Bundle", 3L, "Java Basics");
+        CourseBundleOutDTO dto2 = new CourseBundleOutDTO(1L, 2L, "Beginner Programming Bundle", 3L, "Java Basics");
+        CourseBundleOutDTO dto3 = new CourseBundleOutDTO(4L, 5L, "Intermediate Programming", 6L, "Spring Boot");
 
         // Then
         assertThat(dto1).isEqualTo(dto2); // Equal objects
@@ -74,9 +74,9 @@ class CourseBundleInDTOTest {
     @Test
     void testHashCode() {
         // Given
-        CourseBundleDTO dto1 = new CourseBundleDTO(1L, 2L, "Beginner Programming Bundle", 3L, "Java Basics");
-        CourseBundleDTO dto2 = new CourseBundleDTO(1L, 2L, "Beginner Programming Bundle", 3L, "Java Basics");
-        CourseBundleDTO dto3 = new CourseBundleDTO(4L, 5L, "Intermediate Programming", 6L, "Spring Boot");
+        CourseBundleOutDTO dto1 = new CourseBundleOutDTO(1L, 2L, "Beginner Programming Bundle", 3L, "Java Basics");
+        CourseBundleOutDTO dto2 = new CourseBundleOutDTO(1L, 2L, "Beginner Programming Bundle", 3L, "Java Basics");
+        CourseBundleOutDTO dto3 = new CourseBundleOutDTO(4L, 5L, "Intermediate Programming", 6L, "Spring Boot");
 
         // Then
         assertThat(dto1.hashCode()).isEqualTo(dto2.hashCode()); // Hash codes match
@@ -86,7 +86,7 @@ class CourseBundleInDTOTest {
     @Test
     void testNoArgsConstructor() {
         // When
-        CourseBundleDTO dto = new CourseBundleDTO();
+        CourseBundleOutDTO dto = new CourseBundleOutDTO();
 
         // Then
         assertThat(dto.getCourseBundleId()).isEqualTo(0L);
@@ -99,12 +99,12 @@ class CourseBundleInDTOTest {
     @Test
     void testValidationConstraints() {
         // Given
-        CourseBundleDTO dto = new CourseBundleDTO();
+        CourseBundleOutDTO dto = new CourseBundleOutDTO();
         ValidatorFactory factory = Validation.buildDefaultValidatorFactory();
         Validator validator = factory.getValidator();
 
         // When
-        Set<ConstraintViolation<CourseBundleDTO>> violations = validator.validate(dto);
+        Set<ConstraintViolation<CourseBundleOutDTO>> violations = validator.validate(dto);
 
         // Then
         assertThat(violations).isNotEmpty(); // DTO has violations because fields are null
@@ -117,14 +117,14 @@ class CourseBundleInDTOTest {
     @Test
     void testValidationForPositiveNumbers() {
         // Given
-        CourseBundleDTO dto = new CourseBundleDTO();
+        CourseBundleOutDTO dto = new CourseBundleOutDTO();
         dto.setBundleId(-1L);
         dto.setCourseId(-1L);
         ValidatorFactory factory = Validation.buildDefaultValidatorFactory();
         Validator validator = factory.getValidator();
 
         // When
-        Set<ConstraintViolation<CourseBundleDTO>> violations = validator.validate(dto);
+        Set<ConstraintViolation<CourseBundleOutDTO>> violations = validator.validate(dto);
 
         // Then
         assertThat(violations).anyMatch(v -> v.getMessage().equals("Bundle ID must be a positive number"));

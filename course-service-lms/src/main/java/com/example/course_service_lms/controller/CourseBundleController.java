@@ -1,9 +1,12 @@
 package com.example.course_service_lms.controller;
 
-import com.example.course_service_lms.dto.*;
 import com.example.course_service_lms.entity.CourseBundle;
+import com.example.course_service_lms.inDTO.CourseBundleInDTO;
+import com.example.course_service_lms.inDTO.UpdateCourseBundleInDTO;
 import com.example.course_service_lms.outDTO.BundleInfoOutDTO;
 import com.example.course_service_lms.outDTO.BundleSummaryOutDTO;
+import com.example.course_service_lms.outDTO.CourseBundleOutDTO;
+import com.example.course_service_lms.outDTO.StandardResponseOutDTO;
 import com.example.course_service_lms.service.CourseBundleService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -38,12 +41,12 @@ public class CourseBundleController {
     /**
      * Creates a new CourseBundle (i.e., associates a Course with a Bundle).
      *
-     * @param courseBundlePostDTO DTO containing details for creating a CourseBundle.
+     * @param courseBundleInDTO DTO containing details for creating a CourseBundle.
      * @return ResponseEntity containing the created CourseBundlePostDTO.
      */
     @PostMapping
-    public ResponseEntity<StandardResponseOutDTO<CourseBundle>> createCourseBundle(@RequestBody final CourseBundlePostDTO courseBundlePostDTO) {
-        CourseBundle createdBundle = courseBundleService.createCourseBundle(courseBundlePostDTO);
+    public ResponseEntity<StandardResponseOutDTO<CourseBundle>> createCourseBundle(@RequestBody final CourseBundleInDTO courseBundleInDTO) {
+        CourseBundle createdBundle = courseBundleService.createCourseBundle(courseBundleInDTO);
         return ResponseEntity.status(HttpStatus.CREATED).body(StandardResponseOutDTO.success(createdBundle, "Course Bundle created successfully." ));
     }
 
@@ -53,8 +56,8 @@ public class CourseBundleController {
      * @return ResponseEntity containing a list of CourseBundleDTOs.
      */
     @GetMapping
-    public ResponseEntity<StandardResponseOutDTO<List<CourseBundleDTO>>> getAllCourseBundles() {
-        List<CourseBundleDTO> courseBundles = courseBundleService.getAllCourseBundles();
+    public ResponseEntity<StandardResponseOutDTO<List<CourseBundleOutDTO>>> getAllCourseBundles() {
+        List<CourseBundleOutDTO> courseBundles = courseBundleService.getAllCourseBundles();
         return ResponseEntity.ok(StandardResponseOutDTO.success(courseBundles, "All course bundles retrieved successfully."));
     }
 
@@ -65,8 +68,8 @@ public class CourseBundleController {
      * @return ResponseEntity containing the CourseBundleDTO.
      */
     @GetMapping("/{id}")
-    public ResponseEntity<StandardResponseOutDTO<CourseBundleDTO>> getCourseBundleById(@PathVariable("id") final Long courseBundleId) {
-        CourseBundleDTO courseBundle = courseBundleService.getCourseBundleById(courseBundleId);
+    public ResponseEntity<StandardResponseOutDTO<CourseBundleOutDTO>> getCourseBundleById(@PathVariable("id") final Long courseBundleId) {
+        CourseBundleOutDTO courseBundle = courseBundleService.getCourseBundleById(courseBundleId);
         return ResponseEntity.ok(StandardResponseOutDTO.success(courseBundle, "Course Bundle with id:" + courseBundleId + " retrieved successfully."));
     }
 
@@ -86,14 +89,14 @@ public class CourseBundleController {
      * Updates an existing CourseBundle with new data.
      *
      * @param courseBundleId ID of the CourseBundle to update.
-     * @param updateCourseBundleDTO DTO containing updated data for the CourseBundle.
+     * @param updateCourseBundleInDTO DTO containing updated data for the CourseBundle.
      * @return ResponseEntity containing the updated CourseBundlePostDTO.
      */
     @PutMapping("/{id}")
     public ResponseEntity<StandardResponseOutDTO<String>> updateCourseBundle(
             @PathVariable("id") final Long courseBundleId,
-            @RequestBody final UpdateCourseBundleDTO updateCourseBundleDTO) {
-        String response = courseBundleService.updateCourseBundle(courseBundleId, updateCourseBundleDTO);
+            @RequestBody final UpdateCourseBundleInDTO updateCourseBundleInDTO) {
+        String response = courseBundleService.updateCourseBundle(courseBundleId, updateCourseBundleInDTO);
         return ResponseEntity.ok(StandardResponseOutDTO.success(response, "Course bundle with id" + courseBundleId + " updated successfully."));
     }
 

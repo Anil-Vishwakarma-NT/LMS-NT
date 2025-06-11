@@ -1,14 +1,16 @@
 package com.example.course_service_lms.serviceImpl;
 
-import com.example.course_service_lms.dto.*;
 import com.example.course_service_lms.entity.Bundle;
 import com.example.course_service_lms.entity.Course;
 import com.example.course_service_lms.entity.CourseBundle;
 import com.example.course_service_lms.exception.ResourceAlreadyExistsException;
 import com.example.course_service_lms.exception.ResourceNotFoundException;
 import com.example.course_service_lms.exception.ResourceNotValidException;
+import com.example.course_service_lms.inDTO.CourseBundleInDTO;
+import com.example.course_service_lms.inDTO.UpdateCourseBundleInDTO;
 import com.example.course_service_lms.outDTO.BundleInfoOutDTO;
 import com.example.course_service_lms.outDTO.BundleSummaryOutDTO;
+import com.example.course_service_lms.outDTO.CourseBundleOutDTO;
 import com.example.course_service_lms.repository.CourseBundleRepository;
 import com.example.course_service_lms.repository.CourseRepository;
 import com.example.course_service_lms.repository.BundleRepository;
@@ -72,12 +74,12 @@ public class CourseBundleServiceImpl implements CourseBundleService {
     /**
      * Retrieves all course-bundle mappings from the repository.
      *
-     * @return a list of {@link CourseBundleDTO} objects representing all course-bundle mappings
+     * @return a list of {@link CourseBundleOutDTO} objects representing all course-bundle mappings
      * @throws ResourceNotFoundException if no course-bundle records are found
      * @throws RuntimeException if an unexpected error occurs during the process
      */
     @Override
-    public List<CourseBundleDTO> getAllCourseBundles() {
+    public List<CourseBundleOutDTO> getAllCourseBundles() {
         log.info("Fetching all course-bundle records");
         try {
             List<CourseBundle> courseBundles = courseBundleRepository.findAll();
@@ -90,16 +92,16 @@ public class CourseBundleServiceImpl implements CourseBundleService {
 
             // Convert entities to DTOs using the helper method
             // noinspection unused
-            List<CourseBundleDTO> courseBundleDTOs = new ArrayList<>();
+            List<CourseBundleOutDTO> courseBundleOutDTOS = new ArrayList<>();
             for (CourseBundle courseBundle : courseBundles) {
                 // noinspection unused
-                CourseBundleDTO courseBundleDTO = convertEntityToDTO(courseBundle);
+                CourseBundleOutDTO courseBundleOutDTO = convertEntityToDTO(courseBundle);
                 Optional<Bundle> bundle = bundleRepository.findById(courseBundle.getBundleId());
                 if (bundle.isEmpty()) {
                     throw new ResourceNotFoundException(BUNDLE_NOT_FOUND);
                 }
                 String bundleName = bundle.get().getBundleName();
-                courseBundleDTO.setBundleName(bundleName);
+                courseBundleOutDTO.setBundleName(bundleName);
 
 
                 Optional<Course> course  = courseRepository.findById(courseBundle.getBundleId());
@@ -107,13 +109,13 @@ public class CourseBundleServiceImpl implements CourseBundleService {
                     throw new ResourceNotFoundException(COURSE_NOT_FOUND);
                 }
                 String courseName = course.get().getTitle();
-                courseBundleDTO.setCourseName(courseName);
+                courseBundleOutDTO.setCourseName(courseName);
 
-                courseBundleDTOs.add(courseBundleDTO);
+                courseBundleOutDTOS.add(courseBundleOutDTO);
             }
 
-            log.info("Successfully retrieved {} course-bundle records", courseBundleDTOs.size());
-            return courseBundleDTOs;
+            log.info("Successfully retrieved {} course-bundle records", courseBundleOutDTOS.size());
+            return courseBundleOutDTOS;
 
         } catch (ResourceNotFoundException e) {
             throw e;
@@ -128,12 +130,12 @@ public class CourseBundleServiceImpl implements CourseBundleService {
      * Retrieves a specific course-bundle mapping by its ID.
      *
      * @param courseBundleId the ID of the course-bundle mapping
-     * @return the {@link CourseBundleDTO} object representing the course-bundle mapping
+     * @return the {@link CourseBundleOutDTO} object representing the course-bundle mapping
      * @throws ResourceNotFoundException if the course-bundle mapping with the given ID is not found
      * @throws RuntimeException if an unexpected error occurs during the process
      */
     @Override
-    public CourseBundleDTO getCourseBundleById(final Long courseBundleId) {
+    public CourseBundleOutDTO getCourseBundleById(final Long courseBundleId) {
         log.info("Fetching course-bundle record with ID: {}", courseBundleId);
         try {
             // noinspection unused
@@ -144,14 +146,14 @@ public class CourseBundleServiceImpl implements CourseBundleService {
                     });
 
             // Convert entity to DTO
-            CourseBundleDTO courseBundleDTO = convertEntityToDTO(courseBundle);
+            CourseBundleOutDTO courseBundleOutDTO = convertEntityToDTO(courseBundle);
 
             Optional<Bundle> bundle = bundleRepository.findById(courseBundle.getBundleId());
             if (bundle.isEmpty()) {
                 throw new ResourceNotFoundException(BUNDLE_NOT_FOUND);
             }
             String bundleName = bundle.get().getBundleName();
-            courseBundleDTO.setBundleName(bundleName);
+            courseBundleOutDTO.setBundleName(bundleName);
 
 
             Optional<Course> course  = courseRepository.findById(courseBundle.getBundleId());
@@ -159,10 +161,10 @@ public class CourseBundleServiceImpl implements CourseBundleService {
                 throw new ResourceNotFoundException(COURSE_NOT_FOUND);
             }
             String courseName = course.get().getTitle();
-            courseBundleDTO.setCourseName(courseName);
+            courseBundleOutDTO.setCourseName(courseName);
 
-            log.info("Successfully retrieved course-bundle record: {}", courseBundleDTO);
-            return courseBundleDTO;
+            log.info("Successfully retrieved course-bundle record: {}", courseBundleOutDTO);
+            return courseBundleOutDTO;
 
         }  catch (ResourceNotFoundException e) {
             throw e;
@@ -207,13 +209,13 @@ public class CourseBundleServiceImpl implements CourseBundleService {
      * Updates an existing course-bundle mapping.
      *
      * @param courseBundleId the ID of the course-bundle mapping to update
-     * @param updateCourseBundleDTO the updated data for the course-bundle mapping
-     * @return the updated {@link CourseBundlePostDTO} object
+     * @param updateCourseBundleInDTO the updated data for the course-bundle mapping
+     * @return the updated {@link CourseBundleInDTO} object
      * @throws ResourceNotFoundException if the course-bundle mapping with the given ID is not found
      * @throws RuntimeException if an unexpected error occurs during the update
      */
     @Override
-    public String updateCourseBundle(final Long courseBundleId, final UpdateCourseBundleDTO updateCourseBundleDTO) {
+    public String updateCourseBundle(final Long courseBundleId, final UpdateCourseBundleInDTO updateCourseBundleInDTO) {
         try {
             log.info("Starting process to update course-bundle record with ID: {}", courseBundleId);
             // noinspection unused
@@ -224,10 +226,10 @@ public class CourseBundleServiceImpl implements CourseBundleService {
                     });
 
             // Update entity fields using the DTO
-            existingBundle.setBundleId(updateCourseBundleDTO.getBundleId());
-            existingBundle.setCourseId(updateCourseBundleDTO.getCourseId());
+            existingBundle.setBundleId(updateCourseBundleInDTO.getBundleId());
+            existingBundle.setCourseId(updateCourseBundleInDTO.getCourseId());
             existingBundle.setUpdatedAt(LocalDateTime.now());
-            existingBundle.setActive(updateCourseBundleDTO.isActive());
+            existingBundle.setActive(updateCourseBundleInDTO.isActive());
 
             // Save updated entity to the database
             CourseBundle updatedBundle = courseBundleRepository.save(existingBundle);
@@ -248,39 +250,39 @@ public class CourseBundleServiceImpl implements CourseBundleService {
     /**
      * Creates a new course-bundle mapping.
      *
-     * @param courseBundlePostDTO the data for the new course-bundle mapping
-     * @return the created {@link CourseBundlePostDTO} object
+     * @param courseBundleInDTO the data for the new course-bundle mapping
+     * @return the created {@link CourseBundleInDTO} object
      * @throws ResourceAlreadyExistsException if the course-bundle mapping already exists
      * @throws ResourceNotValidException if the provided bundle ID or course ID is invalid
      * @throws RuntimeException if an unexpected error occurs during the creation process
      */
     @Override
-    public CourseBundle createCourseBundle(final CourseBundlePostDTO courseBundlePostDTO) {
+    public CourseBundle createCourseBundle(final CourseBundleInDTO courseBundleInDTO) {
         try {
             log.info("Starting process to create a new course-bundle mapping");
 
             // Check if the resource already exists
-            if (courseBundleRepository.existsByBundleIdAndCourseId(courseBundlePostDTO.getBundleId(),
-                    courseBundlePostDTO.getCourseId())) {
+            if (courseBundleRepository.existsByBundleIdAndCourseId(courseBundleInDTO.getBundleId(),
+                    courseBundleInDTO.getCourseId())) {
                 log.error("Course-bundle mapping already exists for Bundle ID: {} and Course ID: {}",
-                        courseBundlePostDTO.getBundleId(), courseBundlePostDTO.getCourseId());
+                        courseBundleInDTO.getBundleId(), courseBundleInDTO.getCourseId());
                 throw new ResourceAlreadyExistsException(COURSE_BUNDLE_ALREADY_EXISTS);
             }
 
             // Validate Bundle ID
-            if (!bundleRepository.existsById(courseBundlePostDTO.getBundleId())) {
-                log.error("Invalid Bundle ID: {}", courseBundlePostDTO.getBundleId());
-                throw new ResourceNotValidException(INVALID_BUNDLE_ID + courseBundlePostDTO.getBundleId());
+            if (!bundleRepository.existsById(courseBundleInDTO.getBundleId())) {
+                log.error("Invalid Bundle ID: {}", courseBundleInDTO.getBundleId());
+                throw new ResourceNotValidException(INVALID_BUNDLE_ID + courseBundleInDTO.getBundleId());
             }
 
             // Validate Course ID
-            if (!courseRepository.existsById(courseBundlePostDTO.getCourseId())) {
-                log.error("Invalid Course ID: {}", courseBundlePostDTO.getCourseId());
-                throw new ResourceNotValidException(INVALID_COURSE_ID + courseBundlePostDTO.getCourseId());
+            if (!courseRepository.existsById(courseBundleInDTO.getCourseId())) {
+                log.error("Invalid Course ID: {}", courseBundleInDTO.getCourseId());
+                throw new ResourceNotValidException(INVALID_COURSE_ID + courseBundleInDTO.getCourseId());
             }
 
             // Convert DTO to Entity
-            CourseBundle courseBundle = convertDTOToEntityPost(courseBundlePostDTO);
+            CourseBundle courseBundle = convertDTOToEntityPost(courseBundleInDTO);
             courseBundle.setCreatedAt(LocalDateTime.now());
             courseBundle.setUpdatedAt(LocalDateTime.now());
             // Save entity to the database

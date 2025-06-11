@@ -1,6 +1,6 @@
 package com.example.course_service_lms.converters;
 
-import com.example.course_service_lms.dto.UserProgressDTO;
+import com.example.course_service_lms.outDTO.UserProgressOutDTO;
 import com.example.course_service_lms.entity.UserProgress;
 import org.springframework.stereotype.Component;
 
@@ -9,8 +9,8 @@ import java.time.LocalDateTime;
 @Component
 public class UserProgressConverter {
 
-    public UserProgressDTO toDTO(UserProgress entity) {
-        return UserProgressDTO.builder()
+    public UserProgressOutDTO toDTO(UserProgress entity) {
+        return UserProgressOutDTO.builder()
                 .userId(entity.getUserId())
                 .contentId(entity.getContentId())
                 .courseId(entity.getCourseId()) // Course ID retained
@@ -21,7 +21,7 @@ public class UserProgressConverter {
                 .build();
     }
 
-    public UserProgress toEntity(UserProgressDTO dto) {
+    public UserProgress toEntity(UserProgressOutDTO dto) {
         return UserProgress.builder()
                 .userId(dto.getUserId())
                 .contentId(dto.getContentId())

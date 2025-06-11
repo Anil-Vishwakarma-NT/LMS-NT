@@ -1,7 +1,7 @@
 package com.example.course_service_lms.controller;
 
-import com.example.course_service_lms.dto.CourseContentDTO;
-import com.example.course_service_lms.dto.UpdateCourseContentDTO;
+import com.example.course_service_lms.inDTO.CourseContentInDTO;
+import com.example.course_service_lms.inDTO.UpdateCourseContentInDTO;
 import com.example.course_service_lms.entity.CourseContent;
 import com.example.course_service_lms.service.CourseContentService;
 import jakarta.validation.Valid;
@@ -40,13 +40,13 @@ public class CourseContentController {
     /**
      * Creates a new CourseContent for a given course.
      *
-     * @param courseContentDTO DTO containing course content details.
+     * @param courseContentInDTO DTO containing course content details.
      * @return ResponseEntity containing the created CourseContent entity.
      */
     @PostMapping
-    public ResponseEntity<CourseContent> createCourseContent(@Valid @RequestBody final CourseContentDTO courseContentDTO) {
-        log.info("Received request to create course content: {}", courseContentDTO.getTitle());
-        CourseContent courseContent = courseContentService.createCourseContent(courseContentDTO);
+    public ResponseEntity<CourseContent> createCourseContent(@Valid @RequestBody final CourseContentInDTO courseContentInDTO) {
+        log.info("Received request to create course content: {}", courseContentInDTO.getTitle());
+        CourseContent courseContent = courseContentService.createCourseContent(courseContentInDTO);
         log.info("Course content created with ID: {}", courseContent.getCourseContentId());
         return ResponseEntity.ok(courseContent);
     }
@@ -114,14 +114,14 @@ public class CourseContentController {
      * Updates a course content entry.
      *
      * @param id ID of the course content to update.
-     * @param updateCourseContentDTO DTO containing updated course content information.
+     * @param updateCourseContentInDTO DTO containing updated course content information.
      * @return ResponseEntity containing a confirmation message.
      */
     @PutMapping("{id}")
     public ResponseEntity<String> updateCourseContent(@PathVariable final Long id,
-                                                      @Valid @RequestBody final UpdateCourseContentDTO updateCourseContentDTO) {
+                                                      @Valid @RequestBody final UpdateCourseContentInDTO updateCourseContentInDTO) {
         log.info("Received request to update course content with ID: {}", id);
-        String message = courseContentService.updateCourseContent(id, updateCourseContentDTO);
+        String message = courseContentService.updateCourseContent(id, updateCourseContentInDTO);
         log.info("Update response: {}", message);
         return ResponseEntity.ok(message);
     }
