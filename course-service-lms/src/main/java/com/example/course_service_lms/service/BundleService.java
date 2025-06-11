@@ -46,7 +46,7 @@ public interface BundleService {
      * @param updateBundleDTO the updated bundle data
      * @return success message
      */
-    String updateBundle(Long bundleId, UpdateBundleDTO updateBundleDTO);
+    BundleOutDTO updateBundle(Long bundleId, UpdateBundleDTO updateBundleDTO);
 
     /**
      * Deletes the bundle with the given ID.

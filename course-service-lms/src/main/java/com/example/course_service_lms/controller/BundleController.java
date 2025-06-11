@@ -77,11 +77,11 @@ public class BundleController {
      * @return ResponseEntity containing StandardResponseOutDTO with update confirmation.
      */
     @PutMapping("/{id}")
-    public ResponseEntity<StandardResponseOutDTO<String>> updateBundle(@PathVariable final Long id,
-                                                                       @Valid @RequestBody final UpdateBundleDTO updateBundleDTO) {
+    public ResponseEntity<StandardResponseOutDTO<BundleOutDTO>> updateBundle(@PathVariable final Long id,
+                                                                             @Valid @RequestBody final UpdateBundleDTO updateBundleDTO) {
         log.info("Received request to update bundle with ID: {}", id);
-        String response = bundleService.updateBundle(id, updateBundleDTO);
-        return ResponseEntity.ok(StandardResponseOutDTO.success(response, "Bundle updated successfully"));
+        BundleOutDTO bundleOutDTO = bundleService.updateBundle(id, updateBundleDTO);
+        return ResponseEntity.ok(StandardResponseOutDTO.success(bundleOutDTO, "Bundle updated successfully"));
     }
 
     /**
