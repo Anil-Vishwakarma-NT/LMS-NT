@@ -37,7 +37,7 @@ public class UserCourseEnrollmentServiceImpl implements UserCourseEnrollmentServ
     @Override
     public List<UserCourseEnrollmentOutDTO> getUserEnrollmentsByCourse() {
         try {
-            List<CourseInfoOutDTO> courseInfoOutDTOLists = courseMicroserviceClient.getCourseInfo().getBody();
+            List<CourseInfoOutDTO> courseInfoOutDTOLists = courseMicroserviceClient.getCourseInfo().getBody().getData();
             if (courseInfoOutDTOLists == null || courseInfoOutDTOLists.isEmpty()) {
                 throw new ResourceNotFoundException("Course not found");
             }

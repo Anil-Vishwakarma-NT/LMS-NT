@@ -16,6 +16,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 @Service
 public class UserBundleEnrollmentServiceImpl implements UserBundleEnrollmentService {
@@ -32,7 +33,7 @@ public class UserBundleEnrollmentServiceImpl implements UserBundleEnrollmentServ
     @Override
     public List<UserBundleEnrollmentOutDTO> getUserEnrollmentsByBundle() {
         try {
-            List<BundleInfoOutDTO> bundleInfoOutDTOS = courseMicroserviceClient.getBundleInfo().getBody();
+            List<BundleInfoOutDTO> bundleInfoOutDTOS = Objects.requireNonNull(courseMicroserviceClient.getBundleInfo().getBody()).getData();
             if(bundleInfoOutDTOS == null || bundleInfoOutDTOS.isEmpty()) {
                 throw new ResourceNotFoundException("No course added to the bundle");
             }
