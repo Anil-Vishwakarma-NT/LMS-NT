@@ -51,13 +51,13 @@ public class EnrollmentController {
      * @return ResponseEntity with enrollment confirmation message
      */
     @PostMapping("/enroll")
-    public ResponseEntity<StandardResponseOutDTO<String>> enroll(
+    public ResponseEntity<StandardResponseOutDTO<EnrollmentOutDTO>> enroll(
             @Valid @RequestBody EnrollmentInDTO enrollmentInDTO) {
 
         log.info("Received enrollment request for user ID: {}", enrollmentInDTO.getUserId());
 
-        String response = enrollmentService.enrollUser(enrollmentInDTO);
-        StandardResponseOutDTO<String> standardResponse = StandardResponseOutDTO
+        EnrollmentOutDTO response = enrollmentService.enrollUser(enrollmentInDTO);
+        StandardResponseOutDTO<EnrollmentOutDTO> standardResponse = StandardResponseOutDTO
                 .success(response, "User enrolled successfully");
 
         log.info("User enrollment completed successfully");

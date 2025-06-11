@@ -47,7 +47,7 @@ public class EnrollmentServiceImpl implements EnrollmentService {
 
     @Transactional
     @Override
-    public String enrollUser(EnrollmentInDTO enrollmentInDTO) {
+    public EnrollmentOutDTO enrollUser(EnrollmentInDTO enrollmentInDTO) {
         validateEnrollmentRequest(enrollmentInDTO);
 
         User manager = getManagerById(enrollmentInDTO.getAssignedBy());
@@ -79,16 +79,16 @@ public class EnrollmentServiceImpl implements EnrollmentService {
                 .orElseThrow(() -> new ResourceNotFoundException("Manager not found with ID: " + managerId));
     }
 
-    private String processUserEnrollment(EnrollmentInDTO enrollmentInDTO, LocalDateTime now, User manager) {
+    private EnrollmentOutDTO processUserEnrollment(EnrollmentInDTO enrollmentInDTO, LocalDateTime now, User manager) {
         User user = validateUserManagerRelationship(enrollmentInDTO.getUserId(), manager.getUserId());
 
         if (enrollmentInDTO.getCourseId() != null) {
             enrollUserInCourse(enrollmentInDTO, now);
+            return buildEnrollmentOutDTO(enrollmentInDTO, user, manager, null);
         } else {
             enrollUserInBundle(enrollmentInDTO, now);
+            return buildEnrollmentOutDTO(enrollmentInDTO, user, manager, null);
         }
-
-        return "User enrollment completed successfully";
     }
 
     private User validateUserManagerRelationship(Long userId, Long managerId) {
@@ -148,7 +148,7 @@ public class EnrollmentServiceImpl implements EnrollmentService {
         CompletableFuture.allOf(futures.toArray(new CompletableFuture[0])).join();
     }
 
-    private String processGroupEnrollment(EnrollmentInDTO enrollmentInDTO, LocalDateTime now, User manager) {
+    private EnrollmentOutDTO processGroupEnrollment(EnrollmentInDTO enrollmentInDTO, LocalDateTime now, User manager) {
         Group group = getGroupById(enrollmentInDTO.getGroupId());
         List<UserGroup> userGroups = getUserGroupsWithValidation(group.getGroupId(), manager.getUserId());
 
@@ -158,7 +158,52 @@ public class EnrollmentServiceImpl implements EnrollmentService {
             enrollGroupInBundle(enrollmentInDTO, userGroups, now);
         }
 
-        return "Group enrollment completed successfully";
+        return buildEnrollmentOutDTO(enrollmentInDTO, null, manager, group);
+    }
+
+    private EnrollmentOutDTO buildEnrollmentOutDTO(EnrollmentInDTO enrollmentInDTO, User user, User manager, Group group) {
+        EnrollmentOutDTO enrollmentOutDTO = new EnrollmentOutDTO();
+
+        // Set basic information
+        enrollmentOutDTO.setUserId(enrollmentInDTO.getUserId());
+        enrollmentOutDTO.setCourseId(enrollmentInDTO.getCourseId());
+        enrollmentOutDTO.setBundleId(enrollmentInDTO.getBundleId());
+        enrollmentOutDTO.setGroupId(enrollmentInDTO.getGroupId());
+        enrollmentOutDTO.setAssignedById(manager.getUserId());
+        enrollmentOutDTO.setAssignedByName(manager.getFirstName() + " " + manager.getLastName());
+
+        // Set user information if it's a user enrollment
+        if (user != null) {
+            enrollmentOutDTO.setLearnerName(user.getFirstName() + " " + user.getLastName());
+        }
+
+        // Set group information if it's a group enrollment
+        if (group != null) {
+            enrollmentOutDTO.setGroupName(group.getGroupName());
+        }
+
+        // Set course/bundle names
+        try {
+            if (enrollmentInDTO.getCourseId() != null) {
+                String courseName = courseMicroserviceClient.getCourseNameById(enrollmentInDTO.getCourseId()).getBody();
+                enrollmentOutDTO.setCourseName(courseName);
+            }
+            if (enrollmentInDTO.getBundleId() != null) {
+                String bundleName = courseMicroserviceClient.getBundleNameById(enrollmentInDTO.getBundleId()).getBody();
+                enrollmentOutDTO.setBundleName(bundleName);
+            }
+        } catch (Exception e) {
+            log.warn("Failed to fetch course/bundle name", e);
+            // Set default values or leave as null
+            if (enrollmentInDTO.getCourseId() != null) {
+                enrollmentOutDTO.setCourseName("Course ID: " + enrollmentInDTO.getCourseId());
+            }
+            if (enrollmentInDTO.getBundleId() != null) {
+                enrollmentOutDTO.setBundleName("Bundle ID: " + enrollmentInDTO.getBundleId());
+            }
+        }
+
+        return enrollmentOutDTO;
     }
 
     private Group getGroupById(Long groupId) {
