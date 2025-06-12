@@ -16,6 +16,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
+import java.sql.SQLOutput;
 import java.util.List;
 
 /**
@@ -142,16 +143,16 @@ public final class AdminController {
         return new ResponseEntity<>(standardResponseOutDTO,HttpStatus.OK);
     }
 
-//    @PutMapping("/update-user/{userId}")
-////    @PreAuthorize("hasAuthority('admin')")
-////    public ResponseEntity<MessageOutDto> updateUser(@PathVariable final long userId , @RequestBody final UserInDTO registerDto){
-////
-////        log.info("Received request to update user details");
-////        return new ResponseEntity<>(
-////                adminService.updateUserDetails(registerDto,userId),
-////                HttpStatus.OK
-////        );
-////    }
+    @PatchMapping("/update-user/{userId}")
+    @PreAuthorize("hasAuthority('admin')")
+    public ResponseEntity<MessageOutDto> updateUser(@PathVariable final long userId , @RequestBody final UserInDTO userInDTO){
+
+        log.info("Received request to update user details");
+        return new ResponseEntity<>(
+                adminService.updateUserDetails(userInDTO,userId),
+                HttpStatus.OK
+        );
+    }
 
 
 

@@ -1,9 +1,11 @@
 package com.nt.LMS.service.serviceImpl;
 
 import com.nt.LMS.converter.UserDTOConverter;
+import com.nt.LMS.dto.inDTO.UserInDTO;
 import com.nt.LMS.dto.outDTO.MessageOutDto;
 import com.nt.LMS.dto.outDTO.StandardResponseOutDTO;
 import com.nt.LMS.dto.outDTO.UserOutDTO;
+import com.nt.LMS.dto.*;
 import com.nt.LMS.exception.InvalidRequestException;
 import com.nt.LMS.exception.ResourceNotFoundException;
 import com.nt.LMS.constants.UserConstants;
@@ -19,10 +21,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Date;
-import java.util.List;
+import java.util.*;
 
 import static com.nt.LMS.constants.UserConstants.INVALID_REQUEST;
 import static com.nt.LMS.constants.UserConstants.USER_UPDATED_SUCCESSFULLY;
@@ -167,7 +166,6 @@ public final class AdminServiceImpl implements AdminService {
         log.info("Fetching all users");
         try {
             List<User> employees = userRepository.findAll();
-//            System.out.println(employees);
             if (employees.isEmpty()) {
                 log.warn("No employees found");
                 return StandardResponseOutDTO.success(Collections.emptyList(),"No user found");
@@ -334,7 +332,7 @@ public final class AdminServiceImpl implements AdminService {
     }
 
 
-    public MessageOutDto updateUserDetails(RegisterDto registerDto , long userId ){
+    public MessageOutDto updateUserDetails(UserInDTO registerDto , long userId ){
         log.info("updating user information");
         try {
             if (userId != UserConstants.getAdminId()) {
@@ -351,9 +349,12 @@ public final class AdminServiceImpl implements AdminService {
                     user.setUserName(registerDto.getUserName());
                 if (!registerDto.getEmail().isEmpty())
                     user.setEmail(registerDto.getEmail());
-                if (registerDto.getRoleId() != null)
-                    user.setRoleId(registerDto.getRoleId());
 
+
+                if (registerDto.getRole() != null) {
+                    Optional<Role> role = roleRepository.findByName(registerDto.getRole());
+                    user.setRoleId(role.get().getRoleId());
+                }
                 userRepository.save(user);
 
                 return new MessageOutDto(USER_UPDATED_SUCCESSFULLY);
