@@ -139,7 +139,7 @@ public final class AdminController {
         return new ResponseEntity<>(standardResponseOutDTO,HttpStatus.OK);
     }
 
-    @PutMapping("/update-user/{userId}")
+    @PatchMapping("/update-user/{userId}")
     @PreAuthorize("hasAuthority('admin')")
     public ResponseEntity<MessageOutDto> updateUser(@PathVariable final long userId , @RequestBody final UserInDTO registerDto){
 
