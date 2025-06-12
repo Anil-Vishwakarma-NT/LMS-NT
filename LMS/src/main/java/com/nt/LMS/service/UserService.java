@@ -1,6 +1,7 @@
 package com.nt.LMS.service;
 
 import com.nt.LMS.dto.UsersDetailsViewDTO;
+import com.nt.LMS.entities.User;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
@@ -16,4 +17,7 @@ public interface UserService extends UserDetailsService {
     List<UsersDetailsViewDTO> getRecentUserDetails();
 
     public Map<String , Long> userStatistics(long userId);
-}
+
+    public User getAuthenticatedUser();
+
+    }

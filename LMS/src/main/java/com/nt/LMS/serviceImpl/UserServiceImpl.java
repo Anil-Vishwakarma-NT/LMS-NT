@@ -1,11 +1,13 @@
 package com.nt.LMS.serviceImpl;
 
+import com.nt.LMS.config.JwtUtil;
 import com.nt.LMS.constants.UserConstants;
 import com.nt.LMS.dto.UsersDetailsViewDTO;
 import com.nt.LMS.entities.Enrollment;
 import com.nt.LMS.entities.Role;
 import com.nt.LMS.entities.User;
 import com.nt.LMS.exception.ResourceNotFoundException;
+import com.nt.LMS.exception.UnauthorizedAccessException;
 import com.nt.LMS.repository.EnrollmentRepository;
 import com.nt.LMS.repository.RoleRepository;
 import com.nt.LMS.repository.UserGroupRepository;
@@ -23,6 +25,8 @@ import com.nt.LMS.entities.UserGroup;
 import java.sql.Timestamp;
 import java.util.*;
 import java.util.stream.Collectors;
+
+import static com.nt.LMS.constants.UserConstants.USER_NOT_FOUND;
 
 /**
  * Implementation of the UserService interface that handles user-related operations.
@@ -126,6 +130,18 @@ public final class UserServiceImpl implements UserService {  // Made the class f
        return stats;
     }
 
+    @Override
+    public User getAuthenticatedUser() {
+        String email = JwtUtil.getEmailFromToken();
+
+        if (email == null) {
+            log.warn("Unable to extract email from security context");
+            throw new UnauthorizedAccessException(USER_NOT_FOUND);
+        }
+
+        return userRepository.findByEmailIgnoreCase(email)
+                .orElseThrow(() -> new ResourceNotFoundException(USER_NOT_FOUND));
+    }
 
 }
 

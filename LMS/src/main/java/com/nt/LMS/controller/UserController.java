@@ -1,11 +1,13 @@
 package com.nt.LMS.controller;
 
 
+import com.nt.LMS.config.JwtUtil;
 import com.nt.LMS.dto.*;
 import com.nt.LMS.service.UserService;
 import com.nt.LMS.serviceImpl.GroupServiceImpl;
 import com.nt.LMS.serviceImpl.UserServiceImpl;
 import com.nt.LMS.serviceImpl.AdminServiceImpl;
+import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 import lombok.extern.slf4j.Slf4j;
 import com.nt.LMS.entities.User;
@@ -26,9 +28,18 @@ public class UserController {
     @Autowired
     private UserRepository userRepository;
 
+    @Autowired
+    private JwtUtil jwtUtil;
+
+    @Autowired
+    private UserService userService;
+
+
     @GetMapping("/getUserId")
-    public ResponseEntity<UserOutDTO> getUserIdByEmail(@RequestParam String email) {
-        Optional<User> user = userRepository.findByEmailIgnoreCase(email);
+    public ResponseEntity<UserOutDTO> getUserIdByEmail() {
+        User authenticatedUser = userService.getAuthenticatedUser();
+
+        Optional<User> user = userRepository.findByEmailIgnoreCase(authenticatedUser.getEmail());
 
         if (user.isPresent()) {
             UserOutDTO userOutDTO = new UserOutDTO();
