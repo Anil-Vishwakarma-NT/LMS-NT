@@ -167,6 +167,7 @@ public final class AdminServiceImpl implements AdminService {
         log.info("Fetching all users");
         try {
             List<User> employees = userRepository.findAll();
+//            System.out.println(employees);
             if (employees.isEmpty()) {
                 log.warn("No employees found");
                 return StandardResponseOutDTO.success(Collections.emptyList(),"No user found");
