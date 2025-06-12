@@ -157,18 +157,19 @@ public final class AdminController {
 
     @PreAuthorize("permitAll()")
     @GetMapping("/count")
-    public ResponseEntity<MessageOutDto> getTotalUserCount() {
+    public ResponseEntity<StandardResponseOutDTO<Long>> getTotalUserCount() {
         log.info("Fetching total user count");
         long count = userService.countActiveUsers();
         log.info("Total user count retrieved: {}", count);
-        MessageOutDto message =new MessageOutDto();
-        message.setMessage(""+count);
-        return ResponseEntity.ok(message);
+        StandardResponseOutDTO<Long> standardResponseOutDTO = StandardResponseOutDTO.success(count, "Fetched User Count");
+        return ResponseEntity.ok(standardResponseOutDTO);
     }
 
     @GetMapping("/users/recent")
-    public ResponseEntity<List<UsersDetailsViewDTO>> getRecentUsers() {
-        return ResponseEntity.ok(userService.getRecentUserDetails());
+    public ResponseEntity<StandardResponseOutDTO<List<UsersDetailsViewDTO>>> getRecentUsers() {
+        List<UsersDetailsViewDTO> usersDetailsViewDTOS = userService.getRecentUserDetails();
+        StandardResponseOutDTO<List<UsersDetailsViewDTO>> standardResponseOutDTO = StandardResponseOutDTO.success(usersDetailsViewDTOS, "Fetched Recent Users");
+        return ResponseEntity.ok(standardResponseOutDTO);
     }
 
 }
