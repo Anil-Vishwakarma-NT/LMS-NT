@@ -1,9 +1,9 @@
 package com.nt.LMS.service;
 
 import com.nt.LMS.dto.LoginDto;
-import com.nt.LMS.dto.MessageOutDto;
-import com.nt.LMS.dto.StandardResponseOutDTO;
 import com.nt.LMS.dto.TokenResponseDto;
+import com.nt.LMS.dto.outDTO.MessageOutDto;
+import com.nt.LMS.dto.outDTO.StandardResponseOutDTO;
 
 /**
  * Service interface for authentication operations like login,

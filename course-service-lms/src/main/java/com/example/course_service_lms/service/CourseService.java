@@ -1,9 +1,10 @@
 package com.example.course_service_lms.service;
 
-import com.example.course_service_lms.dto.CourseDTO;
-import com.example.course_service_lms.dto.CourseSummaryDTO;
-import com.example.course_service_lms.dto.CourseInfoDTO;
-import com.example.course_service_lms.dto.UpdateCourseDTO;
+import com.example.course_service_lms.dto.inDTO.CourseInDTO;
+import com.example.course_service_lms.dto.outDTO.CourseOutDTO;
+import com.example.course_service_lms.dto.outDTO.CourseSummaryOutDTO;
+import com.example.course_service_lms.dto.outDTO.CourseInfoOutDTO;
+import com.example.course_service_lms.dto.inDTO.UpdateCourseInDTO;
 import com.example.course_service_lms.entity.Course;
 
 import java.util.List;
@@ -21,17 +22,17 @@ public interface CourseService {
     /**
      * Creates a new course using the provided DTO.
      *
-     * @param courseDTO the DTO containing course details
+     * @param courseInDTO the DTO containing course details
      * @return the created {@link Course} entity
      */
-    Course createCourse(CourseDTO courseDTO);
+    CourseOutDTO createCourse(CourseInDTO courseInDTO);
 
     /**
      * Retrieves all available courses.
      *
      * @return a list of all {@link Course} entities
      */
-    List<Course> getAllCourses();
+    List<CourseOutDTO> getAllCourses();
 
     /**
      * Retrieves a course by its ID.
@@ -39,7 +40,7 @@ public interface CourseService {
      * @param courseId the ID of the course to retrieve
      * @return an {@link Optional} containing the course if found, or empty if not
      */
-    Optional<Course> getCourseById(Long courseId);
+    Optional<CourseOutDTO> getCourseById(Long courseId);
 
     String getCourseNameById(Long courseId);
 
@@ -55,10 +56,10 @@ public interface CourseService {
      * Updates an existing course using the given DTO and ID.
      *
      * @param courseId the ID of the course to update
-     * @param updateCourseDTO the DTO containing updated course data
+     * @param updateCourseInDTO the DTO containing updated course data
      * @return a message indicating the result of the update
      */
-    String updateCourse(Long courseId, UpdateCourseDTO updateCourseDTO);
+    CourseOutDTO updateCourse(Long courseId, UpdateCourseInDTO updateCourseInDTO);
 
     /**
      * Checks whether a course exists by its ID.
@@ -68,6 +69,6 @@ public interface CourseService {
      */
     boolean courseExistsById(Long courseId);
     long countCourses();
-    List<CourseSummaryDTO> getRecentCourseSummaries();
-    List<CourseInfoDTO> getCoursesInfo();
+    List<CourseSummaryOutDTO> getRecentCourseSummaries();
+    List<CourseInfoOutDTO> getCoursesInfo();
 }

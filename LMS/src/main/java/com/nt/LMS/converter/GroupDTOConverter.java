@@ -1,6 +1,6 @@
 package com.nt.LMS.converter;
 
-import com.nt.LMS.dto.GroupOutDTO;
+import com.nt.LMS.dto.outDTO.GroupOutDTO;
 import com.nt.LMS.entities.Group;
 import org.springframework.stereotype.Component;
 
