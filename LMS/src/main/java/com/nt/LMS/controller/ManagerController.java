@@ -1,7 +1,7 @@
 package com.nt.LMS.controller;
 
-import com.nt.LMS.dto.StandardResponseOutDTO;
-import com.nt.LMS.dto.UserOutDTO;
+import com.nt.LMS.dto.outDTO.StandardResponseOutDTO;
+import com.nt.LMS.dto.outDTO.UserOutDTO;
 import com.nt.LMS.service.serviceImpl.GroupServiceImpl;
 import com.nt.LMS.service.serviceImpl.ManagerServiceImpl;
 import lombok.extern.slf4j.Slf4j;

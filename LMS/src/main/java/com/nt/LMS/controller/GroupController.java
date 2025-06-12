@@ -1,5 +1,7 @@
 package com.nt.LMS.controller;
 
+import com.nt.LMS.dto.inDTO.GroupInDTO;
+import com.nt.LMS.dto.outDTO.*;
 import com.nt.LMS.repository.UserRepository;
 import com.nt.LMS.service.serviceImpl.GroupServiceImpl;
 import jakarta.validation.Valid;
@@ -156,8 +158,8 @@ public final class GroupController {
     }
 
     @GetMapping("/recent")
-    public ResponseEntity<StandardResponseOutDTO<List<GroupSummaryDTO>>> getRecentGroups() {
-        StandardResponseOutDTO<List<GroupSummaryDTO>> response = groupService.getRecentGroupSummaries();
+    public ResponseEntity<StandardResponseOutDTO<List<GroupSummaryOutDTO>>> getRecentGroups() {
+        StandardResponseOutDTO<List<GroupSummaryOutDTO>> response = groupService.getRecentGroupSummaries();
         return new ResponseEntity<>(response,HttpStatus.OK);
     }
 }

@@ -1,6 +1,6 @@
 package com.nt.LMS.service;
 
-import com.nt.LMS.dto.*;
+import com.nt.LMS.dto.outDTO.*;
 
 import java.util.List;
 
@@ -74,5 +74,5 @@ public interface GroupService {
      *
      * @return a list containing summaries of the most recently created groups with member counts
      */
-    StandardResponseOutDTO<List<GroupSummaryDTO>> getRecentGroupSummaries();
+    StandardResponseOutDTO<List<GroupSummaryOutDTO>> getRecentGroupSummaries();
 }

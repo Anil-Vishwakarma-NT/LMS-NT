@@ -1,12 +1,12 @@
 package com.nt.LMS.service.serviceImpl;
 
 import com.nt.LMS.converter.UserDTOConverter;
-import com.nt.LMS.dto.StandardResponseOutDTO;
-import com.nt.LMS.dto.UserOutDTO;
+import com.nt.LMS.dto.outDTO.MessageOutDto;
+import com.nt.LMS.dto.outDTO.StandardResponseOutDTO;
+import com.nt.LMS.dto.outDTO.UserOutDTO;
 import com.nt.LMS.exception.InvalidRequestException;
 import com.nt.LMS.exception.ResourceNotFoundException;
 import com.nt.LMS.constants.UserConstants;
-import com.nt.LMS.dto.MessageOutDto;
 import com.nt.LMS.dto.RegisterDto;
 import com.nt.LMS.entities.Role;
 import com.nt.LMS.entities.User;
