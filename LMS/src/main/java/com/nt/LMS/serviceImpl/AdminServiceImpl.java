@@ -116,7 +116,7 @@ public final class AdminServiceImpl implements AdminService {
             Role role = roleRepository.findById(user.getRoleId())
                     .orElseThrow(() -> {
                         log.error("Role with ID {} not found for user ID {}", user.getRoleId(), id);
-                        return new IllegalStateException(UserConstants.INVALID_USER_ROLE);
+                        return new ResourceNotFoundException(UserConstants.INVALID_USER_ROLE);
                     });
 
             String roleName = role.getName();
@@ -142,7 +142,7 @@ public final class AdminServiceImpl implements AdminService {
             }
         else {
             log.error("Invalid role for user with ID {}: {}", id, roleName);
-            throw new IllegalStateException(UserConstants.INVALID_USER_ROLE);
+            throw new InvalidRequestException(UserConstants.INVALID_USER_ROLE);
         }}
         else{
             throw new InvalidRequestException(INVALID_REQUEST);
@@ -161,7 +161,6 @@ public final class AdminServiceImpl implements AdminService {
         log.info("Fetching all users");
         try {
             List<User> employees = userRepository.findAll();
-//            System.out.println(employees);
             if (employees.isEmpty()) {
                 log.warn("No employees found");
                 return StandardResponseOutDTO.success(Collections.emptyList(),"No user found");
