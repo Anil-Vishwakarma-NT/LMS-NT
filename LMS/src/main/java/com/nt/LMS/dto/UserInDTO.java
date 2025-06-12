@@ -23,6 +23,12 @@ public class UserInDTO {
     )
     private long userId;
 
+    private String email;
+    private String firstName;
+    private String lastName;
+    private String userName;
+
+
     /**
      * The role of the user.
      * Must contain only alphabets.
