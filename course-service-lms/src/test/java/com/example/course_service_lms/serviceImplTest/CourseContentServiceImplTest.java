@@ -1,13 +1,12 @@
 package com.example.course_service_lms.serviceImplTest;
 
-import com.example.course_service_lms.converters.CourseContentConverters;
-import com.example.course_service_lms.dto.CourseContentDTO;
+import com.example.course_service_lms.dto.inDTO.CourseContentInDTO;
 import com.example.course_service_lms.entity.CourseContent;
 import com.example.course_service_lms.exception.ResourceAlreadyExistsException;
 import com.example.course_service_lms.exception.ResourceNotFoundException;
 import com.example.course_service_lms.repository.CourseContentRepository;
 import com.example.course_service_lms.repository.CourseRepository;
-import com.example.course_service_lms.serviceImpl.CourseContentImpl;
+import com.example.course_service_lms.service.serviceImpl.CourseContentImpl;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -33,12 +32,12 @@ class CourseContentImplTest {
     @InjectMocks
     private CourseContentImpl courseContentService;
 
-    private CourseContentDTO validDTO;
+    private CourseContentInDTO validDTO;
     private CourseContent courseContent;
 
     @BeforeEach
     void setUp() {
-        validDTO = new CourseContentDTO();
+        validDTO = new CourseContentInDTO();
         validDTO.setCourseId(1L);
         validDTO.setTitle("Java Basics");
         validDTO.setDescription("Introduction to Java");

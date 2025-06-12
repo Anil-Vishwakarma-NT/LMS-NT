@@ -1,7 +1,7 @@
 package com.example.course_service_lms.converterTest;
 
 import com.example.course_service_lms.converters.CourseContentConverters;
-import com.example.course_service_lms.dto.CourseContentDTO;
+import com.example.course_service_lms.dto.inDTO.CourseContentInDTO;
 import com.example.course_service_lms.entity.CourseContent;
 import org.junit.jupiter.api.Test;
 
@@ -12,7 +12,7 @@ class CourseContentConvertersTest {
     @Test
     void testCourseContentDtoToCourseContent() {
         // Given
-        CourseContentDTO dto = new CourseContentDTO();
+        CourseContentInDTO dto = new CourseContentInDTO();
         dto.setCourseId(1L);
         dto.setTitle("Java Basics");
         dto.setDescription("Introduction to Java Programming");
@@ -34,7 +34,7 @@ class CourseContentConvertersTest {
     @Test
     void testEmptyCourseContentDto() {
         // Given
-        CourseContentDTO dto = new CourseContentDTO();
+        CourseContentInDTO dto = new CourseContentInDTO();
 
         // When
         CourseContent courseContent = CourseContentConverters.courseContentDtoToCourseContent(dto);
@@ -51,7 +51,7 @@ class CourseContentConvertersTest {
     @Test
     void testNullCourseContentDto() {
         // Given
-        CourseContentDTO dto = null;
+        CourseContentInDTO dto = null;
 
         // When / Then
         assertThrows(NullPointerException.class, () -> CourseContentConverters.courseContentDtoToCourseContent(dto));

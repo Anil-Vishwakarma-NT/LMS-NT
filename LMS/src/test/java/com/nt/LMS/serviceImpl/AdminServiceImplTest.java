@@ -13,6 +13,7 @@ import com.nt.LMS.exception.ResourceConflictException;
 import com.nt.LMS.exception.ResourceNotFoundException;
 import com.nt.LMS.repository.RoleRepository;
 import com.nt.LMS.repository.UserRepository;
+import com.nt.LMS.service.serviceImpl.AdminServiceImpl;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.*;

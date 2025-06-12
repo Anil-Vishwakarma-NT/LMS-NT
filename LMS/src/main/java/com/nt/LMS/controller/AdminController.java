@@ -1,9 +1,13 @@
 package com.nt.LMS.controller;
 
 import com.nt.LMS.dto.*;
-import com.nt.LMS.serviceImpl.GroupServiceImpl;
-import com.nt.LMS.serviceImpl.UserServiceImpl;
-import com.nt.LMS.serviceImpl.AdminServiceImpl;
+import com.nt.LMS.dto.inDTO.UserInDTO;
+import com.nt.LMS.dto.outDTO.MessageOutDto;
+import com.nt.LMS.dto.outDTO.StandardResponseOutDTO;
+import com.nt.LMS.dto.outDTO.UserOutDTO;
+import com.nt.LMS.service.serviceImpl.GroupServiceImpl;
+import com.nt.LMS.service.serviceImpl.UserServiceImpl;
+import com.nt.LMS.service.serviceImpl.AdminServiceImpl;
 import jakarta.validation.Valid;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -141,11 +145,11 @@ public final class AdminController {
 
     @PatchMapping("/update-user/{userId}")
     @PreAuthorize("hasAuthority('admin')")
-    public ResponseEntity<MessageOutDto> updateUser(@PathVariable final long userId , @RequestBody final UserInDTO registerDto){
+    public ResponseEntity<MessageOutDto> updateUser(@PathVariable final long userId , @RequestBody final UserInDTO userInDTO){
 
         log.info("Received request to update user details");
         return new ResponseEntity<>(
-                adminService.updateUserDetails(registerDto,userId),
+                adminService.updateUserDetails(userInDTO,userId),
                 HttpStatus.OK
         );
     }
@@ -154,18 +158,19 @@ public final class AdminController {
 
     @PreAuthorize("permitAll()")
     @GetMapping("/count")
-    public ResponseEntity<MessageOutDto> getTotalUserCount() {
+    public ResponseEntity<StandardResponseOutDTO<Long>> getTotalUserCount() {
         log.info("Fetching total user count");
         long count = userService.countActiveUsers();
         log.info("Total user count retrieved: {}", count);
-        MessageOutDto message =new MessageOutDto();
-        message.setMessage(""+count);
-        return ResponseEntity.ok(message);
+        StandardResponseOutDTO<Long> standardResponseOutDTO = StandardResponseOutDTO.success(count, "Fetched User Count");
+        return ResponseEntity.ok(standardResponseOutDTO);
     }
 
     @GetMapping("/users/recent")
-    public ResponseEntity<List<UsersDetailsViewDTO>> getRecentUsers() {
-        return ResponseEntity.ok(userService.getRecentUserDetails());
+    public ResponseEntity<StandardResponseOutDTO<List<UsersDetailsViewDTO>>> getRecentUsers() {
+        List<UsersDetailsViewDTO> usersDetailsViewDTOS = userService.getRecentUserDetails();
+        StandardResponseOutDTO<List<UsersDetailsViewDTO>> standardResponseOutDTO = StandardResponseOutDTO.success(usersDetailsViewDTOS, "Fetched Recent Users");
+        return ResponseEntity.ok(standardResponseOutDTO);
     }
 
 }

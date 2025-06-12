@@ -1,7 +1,7 @@
 package com.example.course_service_lms.controllerTest;
 
 import com.example.course_service_lms.controller.CourseContentController;
-import com.example.course_service_lms.dto.CourseContentDTO;
+import com.example.course_service_lms.dto.inDTO.CourseContentInDTO;
 import com.example.course_service_lms.entity.CourseContent;
 import com.example.course_service_lms.service.CourseContentService;
 import org.junit.jupiter.api.Test;
@@ -31,7 +31,7 @@ class CourseContentControllerTest {
     @Test
     void testCreateCourseContent() {
         // Given
-        CourseContentDTO dto = new CourseContentDTO();
+        CourseContentInDTO dto = new CourseContentInDTO();
         dto.setCourseId(1L);
         dto.setTitle("Java Basics");
         dto.setDescription("Introduction to Java Programming");
@@ -135,7 +135,7 @@ class CourseContentControllerTest {
     @Test
     void testUpdateCourseContent() {
         // Given
-        CourseContentDTO dto = new CourseContentDTO();
+        CourseContentInDTO dto = new CourseContentInDTO();
         dto.setCourseId(1L);
         dto.setTitle("Updated Title");
         dto.setDescription("Updated Description");

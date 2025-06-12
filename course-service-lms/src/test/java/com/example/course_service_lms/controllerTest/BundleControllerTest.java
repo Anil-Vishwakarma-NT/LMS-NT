@@ -1,7 +1,7 @@
 package com.example.course_service_lms.controllerTest;
 
 import com.example.course_service_lms.controller.BundleController;
-import com.example.course_service_lms.dto.BundleDTO;
+import com.example.course_service_lms.dto.inDTO.BundleInDTO;
 import com.example.course_service_lms.entity.Bundle;
 import com.example.course_service_lms.service.BundleService;
 import org.junit.jupiter.api.BeforeEach;
@@ -33,14 +33,14 @@ public class BundleControllerTest {
 
     @Test
     public void testCreateBundle() {
-        BundleDTO bundleDTO = new BundleDTO("Test Bundle");
+        BundleInDTO bundleInDTO = new BundleInDTO("Test Bundle");
         Bundle bundle = new Bundle();
         bundle.setBundleId(1L);
         bundle.setBundleName("Test Bundle");
 
-        when(bundleService.createBundle(bundleDTO)).thenReturn(bundle);
+        when(bundleService.createBundle(bundleInDTO)).thenReturn(bundle);
 
-        ResponseEntity<Bundle> response = bundleController.createBundle(bundleDTO);
+        ResponseEntity<Bundle> response = bundleController.createBundle(bundleInDTO);
 
         assertEquals(200, response.getStatusCodeValue());
         assertEquals(bundle, response.getBody());
@@ -77,12 +77,12 @@ public class BundleControllerTest {
     @Test
     public void testUpdateBundle() {
         Long bundleId = 1L;
-        BundleDTO inputDTO = new BundleDTO("Updated Bundle");
-        BundleDTO returnedDTO = new BundleDTO("Updated Bundle");
+        BundleInDTO inputDTO = new BundleInDTO("Updated Bundle");
+        BundleInDTO returnedDTO = new BundleInDTO("Updated Bundle");
 
         when(bundleService.updateBundle(bundleId, inputDTO)).thenReturn(returnedDTO);
 
-        ResponseEntity<BundleDTO> response = bundleController.updateBundle(bundleId, inputDTO);
+        ResponseEntity<BundleInDTO> response = bundleController.updateBundle(bundleId, inputDTO);
 
         assertEquals(200, response.getStatusCodeValue());
         assertEquals("Updated Bundle", response.getBody().getBundleName());

@@ -5,6 +5,7 @@ import com.nt.LMS.entities.Role;
 import com.nt.LMS.entities.User;
 import com.nt.LMS.repository.RoleRepository;
 import com.nt.LMS.repository.UserRepository;
+import com.nt.LMS.service.serviceImpl.UserServiceImpl;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;

@@ -1,6 +1,6 @@
 package com.example.course_service_lms.dtoTest;
 
-import com.example.course_service_lms.dto.CourseBundlePostDTO;
+import com.example.course_service_lms.dto.inDTO.CourseBundleInDTO;
 import org.junit.jupiter.api.Test;
 import jakarta.validation.Validation;
 import jakarta.validation.Validator;
@@ -11,7 +11,7 @@ import java.util.Set;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-class CourseBundlePostDTOTest {
+class CourseBundleInDTOTest {
 
     private final ValidatorFactory factory = Validation.buildDefaultValidatorFactory();
     private final Validator validator = factory.getValidator();
@@ -19,10 +19,10 @@ class CourseBundlePostDTOTest {
     @Test
     void testValidDTO() {
         // Given
-        CourseBundlePostDTO postDTO = new CourseBundlePostDTO(1L, 101L, 201L);
+        CourseBundleInDTO postDTO = new CourseBundleInDTO(1L, 101L, 201L);
 
         // When
-        Set<ConstraintViolation<CourseBundlePostDTO>> violations = validator.validate(postDTO);
+        Set<ConstraintViolation<CourseBundleInDTO>> violations = validator.validate(postDTO);
 
         // Then
         assertTrue(violations.isEmpty(), "Valid DTO should not trigger any constraint violations");
@@ -31,10 +31,10 @@ class CourseBundlePostDTOTest {
     @Test
     void testInvalidBundleId() {
         // Given
-        CourseBundlePostDTO postDTO = new CourseBundlePostDTO(1L, -101L, 201L);
+        CourseBundleInDTO postDTO = new CourseBundleInDTO(1L, -101L, 201L);
 
         // When
-        Set<ConstraintViolation<CourseBundlePostDTO>> violations = validator.validate(postDTO);
+        Set<ConstraintViolation<CourseBundleInDTO>> violations = validator.validate(postDTO);
 
         // Then
         assertFalse(violations.isEmpty(), "Negative BundleId should trigger a violation");
@@ -43,10 +43,10 @@ class CourseBundlePostDTOTest {
     @Test
     void testInvalidCourseId() {
         // Given
-        CourseBundlePostDTO postDTO = new CourseBundlePostDTO(1L, 101L, -201L);
+        CourseBundleInDTO postDTO = new CourseBundleInDTO(1L, 101L, -201L);
 
         // When
-        Set<ConstraintViolation<CourseBundlePostDTO>> violations = validator.validate(postDTO);
+        Set<ConstraintViolation<CourseBundleInDTO>> violations = validator.validate(postDTO);
 
         // Then
         assertFalse(violations.isEmpty(), "Negative CourseId should trigger a violation");
@@ -55,9 +55,9 @@ class CourseBundlePostDTOTest {
     @Test
     void testEqualsAndHashCode() {
         // Given
-        CourseBundlePostDTO dto1 = new CourseBundlePostDTO(1L, 101L, 201L);
-        CourseBundlePostDTO dto2 = new CourseBundlePostDTO(1L, 101L, 201L);
-        CourseBundlePostDTO dto3 = new CourseBundlePostDTO(2L, 102L, 202L);
+        CourseBundleInDTO dto1 = new CourseBundleInDTO(1L, 101L, 201L);
+        CourseBundleInDTO dto2 = new CourseBundleInDTO(1L, 101L, 201L);
+        CourseBundleInDTO dto3 = new CourseBundleInDTO(2L, 102L, 202L);
 
         // Then
         assertEquals(dto1, dto2, "DTO objects with the same attributes should be equal");
@@ -69,7 +69,7 @@ class CourseBundlePostDTOTest {
     @Test
     void testNoArgsConstructor() {
         // Given
-        CourseBundlePostDTO postDTO = new CourseBundlePostDTO();
+        CourseBundleInDTO postDTO = new CourseBundleInDTO();
 
         // Then
         assertNotNull(postDTO, "No-args constructor should create a non-null object");
