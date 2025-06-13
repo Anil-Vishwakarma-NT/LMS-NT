@@ -1,6 +1,7 @@
 package com.nt.LMS.service.serviceImpl;
 
 import com.nt.LMS.config.JwtUtil;
+import com.nt.LMS.config.RsaDecryptUtil;
 import com.nt.LMS.constants.UserConstants;
 import com.nt.LMS.dto.LoginDto;
 import com.nt.LMS.dto.TokenResponseDto;
@@ -17,6 +18,7 @@ import com.nt.LMS.service.AuthService;
 import jakarta.transaction.Transactional;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -49,6 +51,9 @@ public class AuthServiceImpl implements AuthService {
     @Autowired
     private JwtUtil jwtUtil;
 
+
+    @Autowired
+    RsaDecryptUtil rsaDecryptUtil;
     /**
      * Loads user details for authentication.
      */
@@ -85,7 +90,9 @@ public class AuthServiceImpl implements AuthService {
             throw new InvalidRequestException(UserConstants.EMAIL_NOT_NULL_MESSAGE);
         }
         try {
-            String decodedPass = new String (Base64.getDecoder().decode(loginDto.getPassword()));
+//            String decodedPass = new String (Base64.getDecoder().decode(loginDto.getPassword()));
+
+            String decodedPass = rsaDecryptUtil.decrypt(loginDto.getPassword());
             authenticationManager.authenticate(
                     new UsernamePasswordAuthenticationToken(
                             loginDto.getEmail(),
