@@ -1,0 +1,68 @@
+2025-06-13 14:11:13 INFO  o.h.validator.internal.util.Version - HV000001: Hibernate Validator 8.0.2.Final
+2025-06-13 14:11:13 INFO  com.nt.LMS.LmsApplication - Starting LmsApplication using Java 17.0.12 with PID 16276 (C:\Users\DELL\Downloads\securityEx\LMS-NT\LMS\build\classes\java\main started by DELL in C:\Users\DELL\Downloads\securityEx\LMS-NT\LMS)
+2025-06-13 14:11:13 INFO  com.nt.LMS.LmsApplication - No active profile set, falling back to 1 default profile: "default"
+2025-06-13 14:11:15 INFO  o.s.d.r.c.RepositoryConfigurationDelegate - Bootstrapping Spring Data JPA repositories in DEFAULT mode.
+2025-06-13 14:11:15 INFO  o.s.d.r.c.RepositoryConfigurationDelegate - Finished Spring Data repository scanning in 132 ms. Found 11 JPA repository interfaces.
+2025-06-13 14:11:15 INFO  o.s.cloud.context.scope.GenericScope - BeanFactory id=dc96a742-fdd6-3504-a3b6-f1101938df4f
+2025-06-13 14:11:16 INFO  o.s.b.w.e.tomcat.TomcatWebServer - Tomcat initialized with port 8081 (http)
+2025-06-13 14:11:16 INFO  o.a.coyote.http11.Http11NioProtocol - Initializing ProtocolHandler ["http-nio-8081"]
+2025-06-13 14:11:16 INFO  o.a.catalina.core.StandardService - Starting service [Tomcat]
+2025-06-13 14:11:16 INFO  o.a.catalina.core.StandardEngine - Starting Servlet engine: [Apache Tomcat/10.1.39]
+2025-06-13 14:11:16 INFO  o.a.c.c.C.[Tomcat].[localhost].[/] - Initializing Spring embedded WebApplicationContext
+2025-06-13 14:11:16 INFO  o.s.b.w.s.c.ServletWebServerApplicationContext - Root WebApplicationContext: initialization completed in 2644 ms
+2025-06-13 14:11:16 INFO  o.h.jpa.internal.util.LogHelper - HHH000204: Processing PersistenceUnitInfo [name: default]
+2025-06-13 14:11:16 INFO  org.hibernate.Version - HHH000412: Hibernate ORM core version 6.6.11.Final
+2025-06-13 14:11:16 INFO  o.h.c.i.RegionFactoryInitiator - HHH000026: Second-level cache disabled
+2025-06-13 14:11:17 INFO  o.s.o.j.p.SpringPersistenceUnitInfo - No LoadTimeWeaver setup: ignoring JPA class transformer
+2025-06-13 14:11:17 INFO  com.zaxxer.hikari.HikariDataSource - HikariPool-1 - Starting...
+2025-06-13 14:11:17 INFO  com.zaxxer.hikari.pool.HikariPool - HikariPool-1 - Added connection org.postgresql.jdbc.PgConnection@23c05889
+2025-06-13 14:11:17 INFO  com.zaxxer.hikari.HikariDataSource - HikariPool-1 - Start completed.
+2025-06-13 14:11:17 WARN  org.hibernate.orm.deprecation - HHH90000025: PostgreSQLDialect does not need to be specified explicitly using 'hibernate.dialect' (remove the property setting and it will be selected by default)
+2025-06-13 14:11:17 INFO  o.hibernate.orm.connections.pooling - HHH10001005: Database info:
+	Database JDBC URL [Connecting through datasource 'HikariDataSource (HikariPool-1)']
+	Database driver: undefined/unknown
+	Database version: 15.7
+	Autocommit mode: undefined/unknown
+	Isolation level: undefined/unknown
+	Minimum pool size: undefined/unknown
+	Maximum pool size: undefined/unknown
+2025-06-13 14:11:19 INFO  o.h.e.t.j.p.i.JtaPlatformInitiator - HHH000489: No JTA platform available (set 'hibernate.transaction.jta.platform' to enable JTA platform integration)
+2025-06-13 14:11:19 INFO  o.s.o.j.LocalContainerEntityManagerFactoryBean - Initialized JPA EntityManagerFactory for persistence unit 'default'
+2025-06-13 14:11:19 INFO  o.s.d.j.r.query.QueryEnhancerFactory - Hibernate is in classpath; If applicable, HQL parser will be used.
+2025-06-13 14:11:20 WARN  o.s.b.a.o.j.JpaBaseConfiguration$JpaWebConfiguration - spring.jpa.open-in-view is enabled by default. Therefore, database queries may be performed during view rendering. Explicitly configure spring.jpa.open-in-view to disable this warning
+2025-06-13 14:11:20 INFO  o.s.s.c.a.a.c.InitializeAuthenticationProviderBeanManagerConfigurer$InitializeAuthenticationProviderManagerConfigurer - Global AuthenticationManager configured with AuthenticationProvider bean with name authenticationProvider
+2025-06-13 14:11:20 WARN  o.s.s.c.a.a.c.InitializeUserDetailsBeanManagerConfigurer$InitializeUserDetailsManagerConfigurer - Global AuthenticationManager configured with an AuthenticationProvider bean. UserDetailsService beans will not be used by Spring Security for automatically configuring username/password login. Consider removing the AuthenticationProvider bean. Alternatively, consider using the UserDetailsService in a manually instantiated DaoAuthenticationProvider. If the current configuration is intentional, to turn off this warning, increase the logging level of 'org.springframework.security.config.annotation.authentication.configuration.InitializeUserDetailsBeanManagerConfigurer' to ERROR
+2025-06-13 14:11:20 DEBUG o.s.w.s.m.m.a.RequestMappingHandlerMapping - 36 mappings in 'requestMappingHandlerMapping'
+2025-06-13 14:11:20 DEBUG o.s.w.s.h.SimpleUrlHandlerMapping - Patterns [/webjars/**, /**] in 'resourceHandlerMapping'
+2025-06-13 14:11:21 DEBUG o.s.w.s.m.m.a.RequestMappingHandlerAdapter - ControllerAdvice beans: 0 @ModelAttribute, 0 @InitBinder, 1 RequestBodyAdvice, 1 ResponseBodyAdvice
+2025-06-13 14:11:21 DEBUG o.s.w.s.m.m.a.ExceptionHandlerExceptionResolver - ControllerAdvice beans: 1 @ExceptionHandler, 1 ResponseBodyAdvice
+2025-06-13 14:11:21 INFO  o.a.coyote.http11.Http11NioProtocol - Starting ProtocolHandler ["http-nio-8081"]
+2025-06-13 14:11:21 INFO  o.s.b.w.e.tomcat.TomcatWebServer - Tomcat started on port 8081 (http) with context path '/'
+2025-06-13 14:11:21 INFO  com.nt.LMS.LmsApplication - Started LmsApplication in 8.776 seconds (process running for 9.664)
+2025-06-13 14:12:00 INFO  o.a.c.c.C.[Tomcat].[localhost].[/] - Initializing Spring DispatcherServlet 'dispatcherServlet'
+2025-06-13 14:12:00 INFO  o.s.web.servlet.DispatcherServlet - Initializing Servlet 'dispatcherServlet'
+2025-06-13 14:12:00 DEBUG o.s.web.servlet.DispatcherServlet - Detected StandardServletMultipartResolver
+2025-06-13 14:12:00 DEBUG o.s.web.servlet.DispatcherServlet - Detected AcceptHeaderLocaleResolver
+2025-06-13 14:12:00 DEBUG o.s.web.servlet.DispatcherServlet - Detected FixedThemeResolver
+2025-06-13 14:12:00 DEBUG o.s.web.servlet.DispatcherServlet - Detected org.springframework.web.servlet.view.DefaultRequestToViewNameTranslator@6cca70e3
+2025-06-13 14:12:00 DEBUG o.s.web.servlet.DispatcherServlet - Detected org.springframework.web.servlet.support.SessionFlashMapManager@6dc98c02
+2025-06-13 14:12:00 DEBUG o.s.web.servlet.DispatcherServlet - enableLoggingRequestDetails='false': request parameters and headers will be masked to prevent unsafe logging of potentially sensitive data
+2025-06-13 14:12:00 INFO  o.s.web.servlet.DispatcherServlet - Completed initialization in 1 ms
+2025-06-13 14:12:00 DEBUG o.s.web.servlet.DispatcherServlet - GET "/admin/active-employees", parameters={}
+2025-06-13 14:12:00 DEBUG o.s.w.s.m.m.a.RequestMappingHandlerMapping - Mapped to com.nt.LMS.controller.AdminController#getAllEmployees()
+2025-06-13 14:12:00 INFO  c.nt.LMS.controller.AdminController - Fetching all employees
+2025-06-13 14:12:00 INFO  c.n.L.s.serviceImpl.AdminServiceImpl - Fetching all users
+2025-06-13 14:12:00 INFO  c.n.L.s.serviceImpl.AdminServiceImpl - Successfully fetched 3 users
+2025-06-13 14:12:00 INFO  c.nt.LMS.controller.AdminController - Fetched 3 employees
+2025-06-13 14:12:00 DEBUG o.s.w.s.m.m.a.HttpEntityMethodProcessor - Using 'application/json', given [application/json, text/plain, */*] and supported [application/json, application/*+json]
+2025-06-13 14:12:00 DEBUG o.s.w.s.m.m.a.HttpEntityMethodProcessor - Writing [StandardResponseOutDTO{status='SUCCESS', message='User fetched Successfully', data=[UserOutDTO(userI (truncated)...]
+2025-06-13 14:12:00 DEBUG o.s.web.servlet.DispatcherServlet - Completed 200 OK
+2025-06-13 14:12:00 DEBUG o.s.web.servlet.DispatcherServlet - GET "/admin/inactive-employees", parameters={}
+2025-06-13 14:12:00 DEBUG o.s.w.s.m.m.a.RequestMappingHandlerMapping - Mapped to com.nt.LMS.controller.AdminController#getAllInactiveEmployees()
+2025-06-13 14:12:00 INFO  c.nt.LMS.controller.AdminController - Fetching all inactive employees
+2025-06-13 14:12:00 INFO  c.n.L.s.serviceImpl.AdminServiceImpl - Fetching all  inactive users
+2025-06-13 14:12:00 INFO  c.n.L.s.serviceImpl.AdminServiceImpl - Successfully fetched 5 inactive users
+2025-06-13 14:12:00 INFO  c.nt.LMS.controller.AdminController - Fetched 5 inactive employees
+2025-06-13 14:12:00 DEBUG o.s.w.s.m.m.a.HttpEntityMethodProcessor - Using 'application/json', given [application/json, text/plain, */*] and supported [application/json, application/*+json]
+2025-06-13 14:12:00 DEBUG o.s.w.s.m.m.a.HttpEntityMethodProcessor - Writing [StandardResponseOutDTO{status='SUCCESS', message='User fetched Successfully', data=[UserOutDTO(userI (truncated)...]
+2025-06-13 14:12:00 DEBUG o.s.web.servlet.DispatcherServlet - Completed 200 OK
