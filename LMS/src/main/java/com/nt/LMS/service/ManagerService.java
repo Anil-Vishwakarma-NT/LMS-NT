@@ -1,7 +1,7 @@
 package com.nt.LMS.service;
 
-import com.nt.LMS.dto.StandardResponseOutDTO;
-import com.nt.LMS.dto.UserOutDTO;
+import com.nt.LMS.dto.outDTO.StandardResponseOutDTO;
+import com.nt.LMS.dto.outDTO.UserOutDTO;
 
 import java.util.List;
 

@@ -1,12 +1,11 @@
 package com.nt.LMS.service;
 
-import com.nt.LMS.dto.UserCourseEnrollmentOutDTO;
-import com.nt.LMS.dto.UserEnrollDetails;
-import com.nt.LMS.entities.UserCourseEnrollment;
+import com.nt.LMS.dto.outDTO.UserCourseEnrollmentOutDTO;
+import com.nt.LMS.dto.outDTO.UserEnrollDetailsOutDTO;
 
 import java.util.List;
 
 public interface UserCourseEnrollmentService {
     List<UserCourseEnrollmentOutDTO> getUserEnrollmentsByCourse();
-    List<UserEnrollDetails> getUserEnrolledCourses(Long userId);
+    List<UserEnrollDetailsOutDTO> getUserEnrolledCourses(Long userId);
 }

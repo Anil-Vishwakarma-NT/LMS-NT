@@ -1,8 +1,6 @@
 package com.example.course_service_lms.entityTest;
 
 import com.example.course_service_lms.entity.Course;
-import com.example.course_service_lms.entity.CourseBundle;
-import com.example.course_service_lms.entity.CourseLevel;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.*;

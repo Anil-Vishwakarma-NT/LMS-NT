@@ -1,16 +1,14 @@
 package com.nt.LMS.controller;
 
-import com.nt.LMS.dto.UserOutDTO;
-import com.nt.LMS.serviceImpl.AdminServiceImpl;
-import com.nt.LMS.serviceImpl.GroupServiceImpl;
-import com.nt.LMS.serviceImpl.ManagerServiceImpl;
+import com.nt.LMS.dto.outDTO.UserOutDTO;
+import com.nt.LMS.service.serviceImpl.AdminServiceImpl;
+import com.nt.LMS.service.serviceImpl.GroupServiceImpl;
+import com.nt.LMS.service.serviceImpl.ManagerServiceImpl;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.*;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
-import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.context.annotation.Import;
-import org.springframework.http.MediaType;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.core.context.SecurityContextHolder;

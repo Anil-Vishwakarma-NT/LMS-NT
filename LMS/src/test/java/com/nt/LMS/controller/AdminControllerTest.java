@@ -1,9 +1,9 @@
 package com.nt.LMS.controller;
 
 import com.nt.LMS.dto.*;
-import com.nt.LMS.serviceImpl.AdminServiceImpl;
-import com.nt.LMS.serviceImpl.GroupServiceImpl;
-import com.nt.LMS.serviceImpl.UserServiceImpl;
+import com.nt.LMS.service.serviceImpl.AdminServiceImpl;
+import com.nt.LMS.service.serviceImpl.GroupServiceImpl;
+import com.nt.LMS.service.serviceImpl.UserServiceImpl;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;

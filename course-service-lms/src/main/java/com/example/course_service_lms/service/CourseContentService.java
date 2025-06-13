@@ -1,67 +1,62 @@
 package com.example.course_service_lms.service;
 
-
-import com.example.course_service_lms.dto.CourseContentDTO;
-import com.example.course_service_lms.dto.UpdateCourseContentDTO;
-import com.example.course_service_lms.entity.CourseContent;
+import com.example.course_service_lms.dto.inDTO.CourseContentInDTO;
+import com.example.course_service_lms.dto.inDTO.UpdateCourseContentInDTO;
+import com.example.course_service_lms.dto.outDTO.CourseContentOutDTO;
 
 import java.util.List;
-import java.util.Optional;
 
 /**
- * Service interface for managing course content.
- * <p>
- * Provides methods for creating, retrieving, updating, and deleting
- * course content associated with a course.
- * </p>
+ * Service interface for managing course content operations.
+ * Defines the contract for course content CRUD operations.
  */
 public interface CourseContentService {
 
     /**
-     * Creates new course content.
+     * Creates a new course content.
      *
-     * @param courseContentDTO the data transfer object containing content details
-     * @return the created {@link CourseContent} entity
+     * @param courseContentInDTO the course content data transfer object
+     * @return the created course content as DTO
      */
-    CourseContent createCourseContent(CourseContentDTO courseContentDTO);
+    CourseContentOutDTO createCourseContent(CourseContentInDTO courseContentInDTO);
 
     /**
-     * Retrieves all course content records.
+     * Retrieves all course contents.
      *
-     * @return a list of all {@link CourseContent} entities
+     * @return list of all course contents as DTOs
      */
-    List<CourseContent> getAllCourseContents();
+    List<CourseContentOutDTO> getAllCourseContents();
 
     /**
-     * Retrieves a specific course content record by its ID.
+     * Retrieves a course content by its ID.
      *
-     * @param courseContentId the ID of the course content to retrieve
-     * @return an {@link Optional} containing the found {@link CourseContent} or empty if not found
+     * @param courseContentId the course content ID
+     * @return the course content DTO
      */
-    Optional<CourseContent> getCourseContentById(Long courseContentId);
+    CourseContentOutDTO getCourseContentById(Long courseContentId);
 
     /**
-     * Deletes a course content record by its ID.
+     * Deletes a course content.
      *
-     * @param courseContentId the ID of the course content to delete
-     * @return a success message indicating the outcome
+     * @param courseContentId the course content ID to delete
+     * @return success message
      */
     String deleteCourseContent(Long courseContentId);
 
     /**
-     * Updates course content for a given course ID.
+     * Updates an existing course content.
      *
-     * @param courseId the ID of the course whose content is to be updated
-     * @param updateCourseContentDTO the updated content data
-     * @return a success message indicating the outcome
+     * @param courseContentId the course content ID to update
+     * @param updateCourseContentInDTO the updated course content data
+     * @return the updated course content as DTO
      */
-    String updateCourseContent(Long courseId, UpdateCourseContentDTO updateCourseContentDTO);
+    CourseContentOutDTO updateCourseContent(Long courseContentId, UpdateCourseContentInDTO updateCourseContentInDTO);
 
     /**
-     * Retrieves all course content items associated with a specific course.
+     * Retrieves all course contents for a specific course.
      *
-     * @param courseId the ID of the course
-     * @return a list of {@link CourseContent} records associated with the course
+     * @param courseId the course ID
+     * @return list of course contents for the specified course as DTOs
      */
-    List<CourseContent> getAllCourseContentByCourseId(Long courseId);
+    List<CourseContentOutDTO> getAllCourseContentByCourseId(Long courseId);
 }

@@ -2,9 +2,10 @@ package com.nt.LMS.feignClient;
 
 
 import com.nt.LMS.config.FeignClientConfig;
-import com.nt.LMS.dto.BundleInfoDTO;
-import com.nt.LMS.dto.CourseBundleDTO;
-import com.nt.LMS.dto.CourseInfoDTO;
+import com.nt.LMS.dto.outDTO.BundleInfoOutDTO;
+import com.nt.LMS.dto.outDTO.CourseBundleOutDTO;
+import com.nt.LMS.dto.outDTO.CourseInfoOutDTO;
+import com.nt.LMS.dto.outDTO.StandardResponseOutDTO;
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -23,7 +24,7 @@ public interface CourseMicroserviceClient {
     boolean bundleExistsById(@PathVariable("id") Long bundleId);
 
     @GetMapping("/bundles/course-bundles/bundle/{id}")
-    ResponseEntity<List<CourseBundleDTO>> getAllCoursesByBundleId(@PathVariable("id") Long bundleId);
+    ResponseEntity<StandardResponseOutDTO<List<CourseBundleOutDTO>>> getAllCoursesByBundleId(@PathVariable("id") Long bundleId);
 
     @GetMapping("/course/{id}/name")
     public ResponseEntity<String> getCourseNameById(@PathVariable("id") Long id);
@@ -32,10 +33,10 @@ public interface CourseMicroserviceClient {
     public ResponseEntity<String> getBundleNameById(@PathVariable("id") Long id);
 
     @GetMapping("/course/info")
-    public ResponseEntity<List<CourseInfoDTO>> getCourseInfo();
+    public ResponseEntity<StandardResponseOutDTO<List<CourseInfoOutDTO>>> getCourseInfo();
 
     @GetMapping("/bundles/course-bundles/info")
-    public  ResponseEntity<List<BundleInfoDTO>> getBundleInfo();
+    public  ResponseEntity<StandardResponseOutDTO<List<BundleInfoOutDTO>>> getBundleInfo();
 
     @GetMapping("/user-progress")
     public ResponseEntity<Double> getCourseProgress(@RequestParam int userId, @RequestParam int courseId);

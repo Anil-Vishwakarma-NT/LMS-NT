@@ -1,9 +1,9 @@
 package com.nt.LMS.controller;
 
-import com.nt.LMS.dto.*;
+import com.nt.LMS.dto.inDTO.GroupInDTO;
+import com.nt.LMS.dto.outDTO.*;
 import com.nt.LMS.repository.UserRepository;
-import com.nt.LMS.service.GroupService;
-import com.nt.LMS.serviceImpl.GroupServiceImpl;
+import com.nt.LMS.service.serviceImpl.GroupServiceImpl;
 import jakarta.validation.Valid;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -21,8 +21,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
-
-import static org.springframework.http.HttpStatus.CREATED;
 
 /**
  * Controller for handling group-related operations.
@@ -160,8 +158,8 @@ public final class GroupController {
     }
 
     @GetMapping("/recent")
-    public ResponseEntity<StandardResponseOutDTO<List<GroupSummaryDTO>>> getRecentGroups() {
-        StandardResponseOutDTO<List<GroupSummaryDTO>> response = groupService.getRecentGroupSummaries();
+    public ResponseEntity<StandardResponseOutDTO<List<GroupSummaryOutDTO>>> getRecentGroups() {
+        StandardResponseOutDTO<List<GroupSummaryOutDTO>> response = groupService.getRecentGroupSummaries();
         return new ResponseEntity<>(response,HttpStatus.OK);
     }
 }

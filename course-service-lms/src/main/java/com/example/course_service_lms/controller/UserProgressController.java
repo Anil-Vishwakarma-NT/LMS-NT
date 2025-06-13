@@ -1,6 +1,6 @@
 package com.example.course_service_lms.controller;
 
-import com.example.course_service_lms.dto.UserProgressDTO;
+import com.example.course_service_lms.dto.outDTO.UserProgressOutDTO;
 import com.example.course_service_lms.service.UserProgressService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
@@ -16,7 +16,7 @@ public class UserProgressController {
 
     // Endpoint to update user progress when interacting with content
     @PostMapping("/update")
-    public void updateProgress(@RequestBody UserProgressDTO progressDTO) {
+    public void updateProgress(@RequestBody UserProgressOutDTO progressDTO) {
         userProgressService.updateProgress(progressDTO);
     }
 

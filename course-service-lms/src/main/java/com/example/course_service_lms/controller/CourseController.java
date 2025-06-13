@@ -1,11 +1,11 @@
 package com.example.course_service_lms.controller;
 
-import com.example.course_service_lms.dto.CourseDTO;
-import com.example.course_service_lms.dto.CourseSummaryDTO;
-import com.example.course_service_lms.dto.CourseInfoDTO;
-import com.example.course_service_lms.dto.MessageOutDTO;
-import com.example.course_service_lms.dto.UpdateCourseDTO;
-import com.example.course_service_lms.entity.Course;
+import com.example.course_service_lms.dto.inDTO.CourseInDTO;
+import com.example.course_service_lms.dto.outDTO.CourseOutDTO;
+import com.example.course_service_lms.dto.outDTO.CourseSummaryOutDTO;
+import com.example.course_service_lms.dto.outDTO.CourseInfoOutDTO;
+import com.example.course_service_lms.dto.inDTO.UpdateCourseInDTO;
+import com.example.course_service_lms.dto.outDTO.StandardResponseOutDTO;
 import com.example.course_service_lms.service.CourseService;
 import jakarta.validation.Valid;
 import lombok.extern.slf4j.Slf4j;
@@ -36,14 +36,15 @@ public class CourseController {
     /**
      * Creates a new course.
      *
-     * @param courseDTO DTO containing course details to be created.
+     * @param courseInDTO DTO containing course details to be created.
      * @return ResponseEntity containing the created Course entity.
      */
     @PostMapping
-    public ResponseEntity<Course> createCourse(@Valid @RequestBody final CourseDTO courseDTO) {
-        log.info("Received request to create course: {}", courseDTO.getTitle());
-        Course createdCourse = courseService.createCourse(courseDTO);
-        return ResponseEntity.ok(createdCourse);
+    public ResponseEntity<StandardResponseOutDTO<CourseOutDTO>> createCourse(@Valid @RequestBody final CourseInDTO courseInDTO) {
+        log.info("Received request to create course: {}", courseInDTO.getTitle());
+        CourseOutDTO createdCourse = courseService.createCourse(courseInDTO);
+        StandardResponseOutDTO<CourseOutDTO> standardResponseOutDTO = StandardResponseOutDTO.success(createdCourse, "Course Created Successfully");
+        return ResponseEntity.ok(standardResponseOutDTO);
     }
 
     /**
@@ -52,10 +53,11 @@ public class CourseController {
      * @return ResponseEntity containing a list of all Course entities.
      */
     @GetMapping
-    public ResponseEntity<List<Course>> getAllCourses() {
+    public ResponseEntity<StandardResponseOutDTO<List<CourseOutDTO>>> getAllCourses() {
         log.info("Received request to get all courses.");
-        List<Course> courses = courseService.getAllCourses();
-        return ResponseEntity.ok(courses);
+        List<CourseOutDTO> courses = courseService.getAllCourses();
+        StandardResponseOutDTO<List<CourseOutDTO>> standardResponseOutDTO = StandardResponseOutDTO.success(courses, "Fetched Courses Successfully");
+        return ResponseEntity.ok(standardResponseOutDTO);
     }
 
     /**
@@ -65,10 +67,11 @@ public class CourseController {
      * @return ResponseEntity containing the Course wrapped in Optional.
      */
     @GetMapping("/{id}")
-    public ResponseEntity<Optional<Course>> getCourseById(@PathVariable final Long id) {
+    public ResponseEntity<StandardResponseOutDTO<Optional<CourseOutDTO>>> getCourseById(@PathVariable final Long id) {
         log.info("Received request to get course by ID: {}", id);
-        Optional<Course> course = courseService.getCourseById(id);
-        return ResponseEntity.ok(course);
+        Optional<CourseOutDTO> course = courseService.getCourseById(id);
+        StandardResponseOutDTO<Optional<CourseOutDTO>> standardResponseOutDTO = StandardResponseOutDTO.success(course,"Fetched Course Details");
+        return ResponseEntity.ok(standardResponseOutDTO);
     }
 
     /**
@@ -78,24 +81,26 @@ public class CourseController {
      * @return ResponseEntity containing a confirmation message.
      */
     @DeleteMapping("/{id}")
-    public ResponseEntity<String> deleteCourse(@PathVariable final Long id) {
+    public ResponseEntity<StandardResponseOutDTO<Void>> deleteCourse(@PathVariable final Long id) {
         log.info("Received request to delete course with ID: {}", id);
         String response = courseService.deleteCourse(id);
-        return ResponseEntity.ok(response);
+        StandardResponseOutDTO<Void> standardResponseOutDTO = StandardResponseOutDTO.success(null, response);
+        return ResponseEntity.ok(standardResponseOutDTO);
     }
 
     /**
      * Updates an existing course by its ID.
      *
      * @param id              ID of the course to update.
-     * @param updateCourseDTO DTO containing updated course information.
+     * @param updateCourseInDTO DTO containing updated course information.
      * @return ResponseEntity containing a confirmation message.
      */
     @PutMapping("/{id}")
-    public ResponseEntity<String> updateCourse(@PathVariable final Long id, @Valid @RequestBody final UpdateCourseDTO updateCourseDTO) {
+    public ResponseEntity<StandardResponseOutDTO<CourseOutDTO>> updateCourse(@PathVariable final Long id, @Valid @RequestBody final UpdateCourseInDTO updateCourseInDTO) {
         log.info("Received request to update course with ID: {}", id);
-        String response = courseService.updateCourse(id, updateCourseDTO);
-        return ResponseEntity.ok(response);
+        CourseOutDTO courseOutDTO = courseService.updateCourse(id, updateCourseInDTO);
+        StandardResponseOutDTO<CourseOutDTO> standardResponseOutDTO = StandardResponseOutDTO.success(courseOutDTO, "Course Updated Successfully");
+        return ResponseEntity.ok(standardResponseOutDTO);
     }
 
     /**
@@ -113,17 +118,19 @@ public class CourseController {
     }
 
     @GetMapping("/count")
-    public ResponseEntity<MessageOutDTO> getCourseCount() {
+    public ResponseEntity<StandardResponseOutDTO<Long>> getCourseCount() {
         log.info("Received request to get total course count.");
         long count = courseService.countCourses();
+        StandardResponseOutDTO<Long> standardResponseOutDTO = StandardResponseOutDTO.success(count, "Fetched Course Count");
         log.info("Total course count retrieved: {}", count);
-        return ResponseEntity.ok(new MessageOutDTO("" + count));
+        return ResponseEntity.ok(standardResponseOutDTO);
     }
 
     @GetMapping("/recent")
-    public ResponseEntity<List<CourseSummaryDTO>> getRecentCourses() {
-        List<CourseSummaryDTO> recentCourses = courseService.getRecentCourseSummaries();
-        return ResponseEntity.ok(recentCourses);
+    public ResponseEntity<StandardResponseOutDTO<List<CourseSummaryOutDTO>>> getRecentCourses() {
+        List<CourseSummaryOutDTO> recentCourses = courseService.getRecentCourseSummaries();
+        StandardResponseOutDTO<List<CourseSummaryOutDTO>> standardResponseOutDTO = StandardResponseOutDTO.success(recentCourses, "Fetched Recent Courses");
+        return ResponseEntity.ok(standardResponseOutDTO);
     }
 
     @GetMapping("/{id}/name")
@@ -135,8 +142,9 @@ public class CourseController {
     }
 
     @GetMapping("/info")
-    public ResponseEntity<List<CourseInfoDTO>> getCoursesInfo() {
-        List<CourseInfoDTO> courseDTOS = courseService.getCoursesInfo();
-        return ResponseEntity.ok(courseDTOS);
+    public ResponseEntity<StandardResponseOutDTO<List<CourseInfoOutDTO>>> getCoursesInfo() {
+        List<CourseInfoOutDTO> courseDTOS = courseService.getCoursesInfo();
+        StandardResponseOutDTO<List<CourseInfoOutDTO>> standardResponseOutDTO = StandardResponseOutDTO.success(courseDTOS, "Fetched Course Information");
+        return ResponseEntity.ok(standardResponseOutDTO);
     }
 }

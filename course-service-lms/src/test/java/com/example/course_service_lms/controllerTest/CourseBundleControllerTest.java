@@ -1,8 +1,8 @@
 package com.example.course_service_lms.controllerTest;
 
 import com.example.course_service_lms.controller.CourseBundleController;
-import com.example.course_service_lms.dto.CourseBundleDTO;
-import com.example.course_service_lms.dto.CourseBundlePostDTO;
+import com.example.course_service_lms.dto.outDTO.CourseBundleOutDTO;
+import com.example.course_service_lms.dto.inDTO.CourseBundleInDTO;
 import com.example.course_service_lms.service.CourseBundleService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -37,8 +37,8 @@ class CourseBundleControllerTest {
     @Test
     void testCreateCourseBundle() throws Exception {
         // Mock service response
-        CourseBundlePostDTO mockCourseBundlePostDTO = new CourseBundlePostDTO(1L, 101L, 201L);
-        when(courseBundleService.createCourseBundle(any(CourseBundlePostDTO.class))).thenReturn(mockCourseBundlePostDTO);
+        CourseBundleInDTO mockCourseBundleInDTO = new CourseBundleInDTO(1L, 101L, 201L);
+        when(courseBundleService.createCourseBundle(any(CourseBundleInDTO.class))).thenReturn(mockCourseBundleInDTO);
 
         // Perform POST request
         mockMvc.perform(post("/api/bundles/course_bundles")
@@ -51,9 +51,9 @@ class CourseBundleControllerTest {
     @Test
     void testGetAllCourseBundles() throws Exception {
         // Mock service response
-        List<CourseBundleDTO> mockCourseBundles = List.of(
-                new CourseBundleDTO(1L, 101L, "MockBundle1", 201L, "MockCourse1"),
-                new CourseBundleDTO(2L, 102L, "MockBundle2", 202L, "MockCourse2")
+        List<CourseBundleOutDTO> mockCourseBundles = List.of(
+                new CourseBundleOutDTO(1L, 101L, "MockBundle1", 201L, "MockCourse1"),
+                new CourseBundleOutDTO(2L, 102L, "MockBundle2", 202L, "MockCourse2")
         );
         when(courseBundleService.getAllCourseBundles()).thenReturn(mockCourseBundles);
 
@@ -68,8 +68,8 @@ class CourseBundleControllerTest {
     @Test
     void testGetCourseBundleById() throws Exception {
         // Mock service response
-        CourseBundleDTO mockCourseBundleDTO = new CourseBundleDTO(1L, 101L, "MockBundle", 201L, "MockCourse");
-        when(courseBundleService.getCourseBundleById(1L)).thenReturn(mockCourseBundleDTO);
+        CourseBundleOutDTO mockCourseBundleOutDTO = new CourseBundleOutDTO(1L, 101L, "MockBundle", 201L, "MockCourse");
+        when(courseBundleService.getCourseBundleById(1L)).thenReturn(mockCourseBundleOutDTO);
 
         // Perform GET request
         mockMvc.perform(get("/api/bundles/course_bundles/1"))
@@ -93,8 +93,8 @@ class CourseBundleControllerTest {
     @Test
     void testUpdateCourseBundle() throws Exception {
         // Mock service response
-        CourseBundlePostDTO mockUpdatedCourseBundlePostDTO = new CourseBundlePostDTO(1L, 102L,  202L);
-        when(courseBundleService.updateCourseBundle(eq(1L), any(CourseBundlePostDTO.class))).thenReturn(mockUpdatedCourseBundlePostDTO);
+        CourseBundleInDTO mockUpdatedCourseBundleInDTO = new CourseBundleInDTO(1L, 102L,  202L);
+        when(courseBundleService.updateCourseBundle(eq(1L), any(CourseBundleInDTO.class))).thenReturn(mockUpdatedCourseBundleInDTO);
 
         // Perform PUT request
         mockMvc.perform(put("/api/bundles/course_bundles/1")

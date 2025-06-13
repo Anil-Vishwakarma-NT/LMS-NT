@@ -1,5 +1,6 @@
 package com.nt.LMS.dto;
 
+import com.nt.LMS.dto.outDTO.GroupOutDTO;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 

@@ -1,15 +1,14 @@
 package com.nt.LMS.controller;
 
 import com.nt.LMS.dto.LoginDto;
-import com.nt.LMS.dto.MessageOutDto;
-import com.nt.LMS.dto.StandardResponseOutDTO;
 import com.nt.LMS.dto.TokenResponseDto;
+import com.nt.LMS.dto.outDTO.MessageOutDto;
+import com.nt.LMS.dto.outDTO.StandardResponseOutDTO;
 import com.nt.LMS.service.AuthService;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;

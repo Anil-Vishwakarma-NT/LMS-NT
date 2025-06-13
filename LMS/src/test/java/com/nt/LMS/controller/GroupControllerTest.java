@@ -1,13 +1,15 @@
 package com.nt.LMS.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.nt.LMS.dto.*;
-import com.nt.LMS.serviceImpl.GroupServiceImpl;
+import com.nt.LMS.dto.inDTO.GroupInDTO;
+import com.nt.LMS.dto.outDTO.GroupOutDTO;
+import com.nt.LMS.dto.outDTO.MessageOutDto;
+import com.nt.LMS.dto.outDTO.UserOutDTO;
+import com.nt.LMS.service.serviceImpl.GroupServiceImpl;
 import com.nt.LMS.repository.UserRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.*;
-import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.http.MediaType;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContext;

@@ -1,6 +1,7 @@
 package com.nt.LMS.controller;
 
-import com.nt.LMS.dto.UserCourseEnrollmentOutDTO;
+import com.nt.LMS.dto.outDTO.StandardResponseOutDTO;
+import com.nt.LMS.dto.outDTO.UserCourseEnrollmentOutDTO;
 import com.nt.LMS.service.UserCourseEnrollmentService;
 import com.nt.LMS.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -27,16 +28,18 @@ public class UserCourseEnrollmentController {
 
 
     @GetMapping
-    public ResponseEntity<List<UserCourseEnrollmentOutDTO>> getUsersEnrolledFilterByCourse() {
+    public ResponseEntity<StandardResponseOutDTO<List<UserCourseEnrollmentOutDTO>>> getUsersEnrolledFilterByCourse() {
         List<UserCourseEnrollmentOutDTO> userCourseEnrollmentOutDTOS = userCourseEnrollmentService.getUserEnrollmentsByCourse();
-        return ResponseEntity.ok(userCourseEnrollmentOutDTOS);
+        StandardResponseOutDTO<List<UserCourseEnrollmentOutDTO>> standardResponseOutDTO = StandardResponseOutDTO.success(userCourseEnrollmentOutDTOS, "Fetched Users Enrolled");
+        return ResponseEntity.ok(standardResponseOutDTO);
     }
 
     @GetMapping("/{userId}/statistics")
-    public ResponseEntity<Map<String,Long>> getUserEnrollments(@PathVariable Long userId){
+    public ResponseEntity<StandardResponseOutDTO<Map<String,Long>>> getUserEnrollments(@PathVariable Long userId){
         System.out.println(userId + "USERID *****");
         Map<String , Long> stats = userService.userStatistics(userId);
-        return new ResponseEntity<>(stats , HttpStatus.OK);
+        StandardResponseOutDTO<Map<String,Long>> standardResponseOutDTO = StandardResponseOutDTO.success(stats, "Fetched Users Enrolled");
+        return ResponseEntity.ok(standardResponseOutDTO);
     }
 
 

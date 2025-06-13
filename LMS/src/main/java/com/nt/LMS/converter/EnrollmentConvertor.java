@@ -1,8 +1,11 @@
 package com.nt.LMS.converter;
 
-import com.nt.LMS.dto.*;
 import com.nt.LMS.entities.*;
 import com.nt.LMS.feignClient.CourseMicroserviceClient;
+import com.nt.LMS.dto.inDTO.EnrollmentInDTO;
+import com.nt.LMS.dto.outDTO.EnrolledBundlesOutDTO;
+import com.nt.LMS.dto.outDTO.EnrolledCoursesOutDTO;
+import com.nt.LMS.dto.outDTO.UserEnrollmentsOutDTO;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
@@ -21,27 +24,27 @@ public class EnrollmentConvertor {
     /**
      * Converts EnrollmentDTO and timestamp to UserCourseEnrollment entity
      */
-    public UserCourseEnrollment toUserCourseEnrollment(EnrollmentDTO enrollmentDTO, LocalDateTime assignedAt) {
+    public UserCourseEnrollment toUserCourseEnrollment(EnrollmentInDTO enrollmentInDTO, LocalDateTime assignedAt) {
         UserCourseEnrollment enrollment = new UserCourseEnrollment();
-        enrollment.setUserId(enrollmentDTO.getUserId());
-        enrollment.setCourseId(enrollmentDTO.getCourseId());
-        enrollment.setAssignedBy(enrollmentDTO.getAssignedBy());
+        enrollment.setUserId(enrollmentInDTO.getUserId());
+        enrollment.setCourseId(enrollmentInDTO.getCourseId());
+        enrollment.setAssignedBy(enrollmentInDTO.getAssignedBy());
         enrollment.setStatus("ENROLLED");
         enrollment.setAssignedAt(assignedAt);
-        enrollment.setDeadline(enrollmentDTO.getDeadline());
+        enrollment.setDeadline(enrollmentInDTO.getDeadline());
         return enrollment;
     }
 
     /**
      * Converts EnrollmentDTO and timestamp to UserBundleEnrollment entity
      */
-    public UserBundleEnrollment toUserBundleEnrollment(EnrollmentDTO enrollmentDTO, LocalDateTime assignedAt) {
+    public UserBundleEnrollment toUserBundleEnrollment(EnrollmentInDTO enrollmentInDTO, LocalDateTime assignedAt) {
         UserBundleEnrollment enrollment = new UserBundleEnrollment();
-        enrollment.setUserId(enrollmentDTO.getUserId());
-        enrollment.setBundleId(enrollmentDTO.getBundleId());
-        enrollment.setDeadline(enrollmentDTO.getDeadline());
+        enrollment.setUserId(enrollmentInDTO.getUserId());
+        enrollment.setBundleId(enrollmentInDTO.getBundleId());
+        enrollment.setDeadline(enrollmentInDTO.getDeadline());
         enrollment.setStatus("ENROLLED");
-        enrollment.setAssignedBy(enrollmentDTO.getAssignedBy());
+        enrollment.setAssignedBy(enrollmentInDTO.getAssignedBy());
         enrollment.setAssignedAt(assignedAt);
         return enrollment;
     }
@@ -49,13 +52,13 @@ public class EnrollmentConvertor {
     /**
      * Converts EnrollmentDTO and timestamp to GroupCourseEnrollment entity
      */
-    public GroupCourseEnrollment toGroupCourseEnrollment(EnrollmentDTO enrollmentDTO, LocalDateTime assignedAt) {
+    public GroupCourseEnrollment toGroupCourseEnrollment(EnrollmentInDTO enrollmentInDTO, LocalDateTime assignedAt) {
         GroupCourseEnrollment enrollment = new GroupCourseEnrollment();
-        enrollment.setGroupId(enrollmentDTO.getGroupId());
-        enrollment.setCourseId(enrollmentDTO.getCourseId());
-        enrollment.setDeadline(enrollmentDTO.getDeadline());
+        enrollment.setGroupId(enrollmentInDTO.getGroupId());
+        enrollment.setCourseId(enrollmentInDTO.getCourseId());
+        enrollment.setDeadline(enrollmentInDTO.getDeadline());
         enrollment.setStatus("ENROLLED");
-        enrollment.setAssignedBy(enrollmentDTO.getAssignedBy());
+        enrollment.setAssignedBy(enrollmentInDTO.getAssignedBy());
         enrollment.setAssignedAt(assignedAt);
         return enrollment;
     }
@@ -63,12 +66,12 @@ public class EnrollmentConvertor {
     /**
      * Converts EnrollmentDTO and timestamp to GroupBundleEnrollment entity
      */
-    public GroupBundleEnrollment toGroupBundleEnrollment(EnrollmentDTO enrollmentDTO, LocalDateTime assignedAt) {
+    public GroupBundleEnrollment toGroupBundleEnrollment(EnrollmentInDTO enrollmentInDTO, LocalDateTime assignedAt) {
         GroupBundleEnrollment enrollment = new GroupBundleEnrollment();
-        enrollment.setGroupId(enrollmentDTO.getGroupId());
-        enrollment.setBundleId(enrollmentDTO.getBundleId());
-        enrollment.setDeadline(enrollmentDTO.getDeadline());
-        enrollment.setAssignedBy(enrollmentDTO.getAssignedBy());
+        enrollment.setGroupId(enrollmentInDTO.getGroupId());
+        enrollment.setBundleId(enrollmentInDTO.getBundleId());
+        enrollment.setDeadline(enrollmentInDTO.getDeadline());
+        enrollment.setAssignedBy(enrollmentInDTO.getAssignedBy());
         enrollment.setAssignedAt(assignedAt);
         enrollment.setStatus("ENROLLED");
         return enrollment;
@@ -108,10 +111,10 @@ public class EnrollmentConvertor {
     /**
      * Converts UserCourseEnrollment to EnrolledCoursesDTO with course name and progress
      */
-    public EnrolledCoursesDTO toEnrolledCoursesDTO(UserCourseEnrollment enrollment,
-                                                   String courseName,
-                                                   Float progress) {
-        EnrolledCoursesDTO dto = new EnrolledCoursesDTO();
+    public EnrolledCoursesOutDTO toEnrolledCoursesDTO(UserCourseEnrollment enrollment,
+                                                      String courseName,
+                                                      Float progress) {
+        EnrolledCoursesOutDTO dto = new EnrolledCoursesOutDTO();
         dto.setCourseId(enrollment.getCourseId());
         dto.setCourseName(courseName);
         dto.setEnrollmentDate(enrollment.getAssignedAt());
@@ -123,8 +126,8 @@ public class EnrollmentConvertor {
     /**
      * Converts UserBundleEnrollment to EnrolledBundlesDTO
      */
-    public EnrolledBundlesDTO toEnrolledBundlesDTO(UserBundleEnrollment enrollment, String bundleName) {
-        EnrolledBundlesDTO dto = new EnrolledBundlesDTO();
+    public EnrolledBundlesOutDTO toEnrolledBundlesDTO(UserBundleEnrollment enrollment, String bundleName) {
+        EnrolledBundlesOutDTO dto = new EnrolledBundlesOutDTO();
         dto.setBundleName(bundleName);
         dto.setBundleId(enrollment.getBundleId());
         dto.setEnrollmentDate(enrollment.getAssignedAt());
@@ -136,13 +139,13 @@ public class EnrollmentConvertor {
     /**
      * Converts User and enrollment data to UserEnrollmentsDTO
      */
-    public UserEnrollmentsDTO toUserEnrollmentsDTO(User user,
-                                                   List<EnrolledCoursesDTO> enrolledCourses,
-                                                   List<EnrolledBundlesDTO> enrolledBundles,
-                                                   long courseEnrollments,
-                                                   long bundleEnrollments,
-                                                   int upcomingDeadlines) {
-        UserEnrollmentsDTO dto = new UserEnrollmentsDTO();
+    public UserEnrollmentsOutDTO toUserEnrollmentsDTO(User user,
+                                                      List<EnrolledCoursesOutDTO> enrolledCourses,
+                                                      List<EnrolledBundlesOutDTO> enrolledBundles,
+                                                      long courseEnrollments,
+                                                      long bundleEnrollments,
+                                                      int upcomingDeadlines) {
+        UserEnrollmentsOutDTO dto = new UserEnrollmentsOutDTO();
         dto.setUserId(user.getUserId());
         dto.setUserName(user.getFirstName() + " " + user.getLastName());
         dto.setStatus(true);
@@ -159,10 +162,10 @@ public class EnrollmentConvertor {
      * Batch converts UserCourseEnrollments to EnrolledCoursesDTOs
      * More efficient for bulk operations
      */
-    public List<EnrolledCoursesDTO> toEnrolledCoursesDTOList(List<UserCourseEnrollment> enrollments,
-                                                             Map<Long, String> courseNames,
-                                                             Map<Long, Float> progressMap) {
-        List<EnrolledCoursesDTO> dtoList = new ArrayList<>();
+    public List<EnrolledCoursesOutDTO> toEnrolledCoursesDTOList(List<UserCourseEnrollment> enrollments,
+                                                                Map<Long, String> courseNames,
+                                                                Map<Long, Float> progressMap) {
+        List<EnrolledCoursesOutDTO> dtoList = new ArrayList<>();
         for (UserCourseEnrollment enrollment : enrollments) {
             String courseName = courseNames.getOrDefault(enrollment.getCourseId(), "Unknown Course");
             Float progress = progressMap.getOrDefault(enrollment.getCourseId(), 0F);
@@ -174,9 +177,9 @@ public class EnrollmentConvertor {
     /**
      * Batch converts UserBundleEnrollments to EnrolledBundlesDTOs
      */
-    public List<EnrolledBundlesDTO> toEnrolledBundlesDTOList(List<UserBundleEnrollment> enrollments,
-                                                             Map<Long, String> bundleNames) {
-        List<EnrolledBundlesDTO> dtoList = new ArrayList<>();
+    public List<EnrolledBundlesOutDTO> toEnrolledBundlesDTOList(List<UserBundleEnrollment> enrollments,
+                                                                Map<Long, String> bundleNames) {
+        List<EnrolledBundlesOutDTO> dtoList = new ArrayList<>();
         for (UserBundleEnrollment enrollment : enrollments) {
             String bundleName = bundleNames.getOrDefault(enrollment.getBundleId(), "Unknown Bundle");
             dtoList.add(toEnrolledBundlesDTO(enrollment, bundleName));

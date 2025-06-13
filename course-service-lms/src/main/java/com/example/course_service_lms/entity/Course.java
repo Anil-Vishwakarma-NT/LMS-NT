@@ -57,9 +57,8 @@ public class Course {
     /**
      * Level of the course (e.g., BEGINNER, INTERMEDIATE, ADVANCED).
      */
-    @Enumerated(EnumType.STRING)
     @Column(name = "level")
-    private CourseLevel level;
+    private String level;
 
     @Column(name = "is_active")
     private boolean isActive;
@@ -77,10 +76,9 @@ public class Course {
      * @param ownerId      the owner/instructor ID
      * @param title        the course title
      * @param description  the course description
-     * @param image        the image path or URL
      * @param level        the course difficulty level
      */
-    public Course(long courseId, long ownerId, String title, String description, String image, CourseLevel level, boolean isActive, LocalDateTime createdAt, LocalDateTime updatedAt) {
+    public Course(long courseId, long ownerId, String title, String description, String level, boolean isActive, LocalDateTime createdAt, LocalDateTime updatedAt) {
         this.courseId = courseId;
         this.ownerId = ownerId;
         this.title = title;
@@ -102,7 +100,7 @@ public class Course {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         Course course = (Course) o;
-        return courseId == course.courseId && ownerId == course.ownerId && isActive == course.isActive && Objects.equals(title, course.title) && Objects.equals(description, course.description) && level == course.level && Objects.equals(createdAt, course.createdAt) && Objects.equals(updatedAt, course.updatedAt);
+        return courseId == course.courseId && ownerId == course.ownerId && isActive == course.isActive && Objects.equals(title, course.title) && Objects.equals(description, course.description) && Objects.equals(level, course.level) && Objects.equals(createdAt, course.createdAt) && Objects.equals(updatedAt, course.updatedAt);
     }
 
     @Override
