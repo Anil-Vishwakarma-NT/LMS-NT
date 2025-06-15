@@ -15,7 +15,5 @@ public class EnrollmentInDTO {
     private Long bundleId;
     private Long assignedBy;
 
-    private LocalDateTime assignedAt = LocalDateTime.now();
-
     private LocalDateTime deadline;
 }

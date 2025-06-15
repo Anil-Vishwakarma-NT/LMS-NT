@@ -124,6 +124,21 @@ public class CourseServiceImpl implements CourseService {
     }
 
     @Override
+    public List<Long> findExistingIds(List<Long> courseIds) {
+        try{
+            List<Long> existingCourseIds = courseRepository.findExistingIds(courseIds);
+            if (existingCourseIds.isEmpty()) {
+               throw new ResourceNotFoundException("No Course IDs found");
+            }
+            return existingCourseIds;
+        } catch (ResourceNotFoundException e) {
+            throw e;
+        } catch (Exception e) {
+            throw new RuntimeException("SERVER ERROR");
+        }
+    }
+
+    @Override
     public CourseOutDTO updateCourse(final Long courseId, final UpdateCourseInDTO updateCourseInDTO) {
         log.info("Updating course with ID: {}", courseId);
 

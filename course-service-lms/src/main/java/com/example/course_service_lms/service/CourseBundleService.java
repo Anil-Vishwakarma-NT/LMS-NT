@@ -6,6 +6,7 @@ import com.example.course_service_lms.dto.inDTO.UpdateCourseBundleInDTO;
 import com.example.course_service_lms.dto.outDTO.BundleInfoOutDTO;
 import com.example.course_service_lms.dto.outDTO.BundleSummaryOutDTO;
 import com.example.course_service_lms.dto.outDTO.CourseBundleOutDTO;
+import org.springframework.data.repository.query.Param;
 
 import java.util.List;
 
@@ -67,4 +68,6 @@ public interface CourseBundleService {
 
     List<BundleInfoOutDTO> getBundlesInfo();
     List<BundleSummaryOutDTO> getRecentBundleSummaries();
+
+    List<Long> findCourseIdsByBundleId(Long bundleId);
 }

@@ -8,9 +8,7 @@ import com.nt.LMS.dto.outDTO.CourseInfoOutDTO;
 import com.nt.LMS.dto.outDTO.StandardResponseOutDTO;
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
@@ -40,4 +38,13 @@ public interface CourseMicroserviceClient {
 
     @GetMapping("/user-progress")
     public ResponseEntity<Double> getCourseProgress(@RequestParam int userId, @RequestParam int courseId);
+
+    @PostMapping("/course/existing-ids")
+    public ResponseEntity<List<Long>> getExistingCourseIds(@RequestBody List<Long> courseIds);
+
+    @PostMapping("/bundles/existing-ids")
+    public ResponseEntity<List<Long>> getExistingBundleIds(@RequestBody List<Long> bundleIds);
+
+    @GetMapping("/bundles/course-bundles/bundle-id/{id}/course-ids")
+    public ResponseEntity<List<Long>> findCourseIdsByBundleId(@PathVariable("id") Long bundleId);
 }

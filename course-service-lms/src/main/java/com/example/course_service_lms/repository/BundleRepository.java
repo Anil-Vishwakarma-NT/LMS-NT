@@ -2,6 +2,8 @@ package com.example.course_service_lms.repository;
 
 import com.example.course_service_lms.entity.Bundle;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
@@ -40,4 +42,9 @@ public interface BundleRepository extends JpaRepository<Bundle, Long> {
      * @return a list of the 5 most recently created bundles
      */
     List<Bundle> findTop5ByOrderByCreatedAtDesc();
+
+    @Query("SELECT b.bundleId FROM Bundle b WHERE b.bundleId IN :bundleIds")
+    List<Long> findExistingIds(@Param("bundleIds") List<Long> bundleIds);
+
+
 }

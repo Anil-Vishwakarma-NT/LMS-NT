@@ -71,4 +71,5 @@ public interface CourseService {
     long countCourses();
     List<CourseSummaryOutDTO> getRecentCourseSummaries();
     List<CourseInfoOutDTO> getCoursesInfo();
+    List<Long> findExistingIds(List<Long> courseIds);
 }

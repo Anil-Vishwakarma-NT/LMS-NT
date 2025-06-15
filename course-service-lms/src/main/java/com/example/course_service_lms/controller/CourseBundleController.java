@@ -124,4 +124,9 @@ public class CourseBundleController {
         List<BundleSummaryOutDTO> bundleSummaries = courseBundleService.getRecentBundleSummaries();
         return ResponseEntity.ok(StandardResponseOutDTO.success(bundleSummaries, "Recent bundles retrieved successfully."));
     }
+
+    @GetMapping("/bundle-id/{id}/course-ids")
+    public ResponseEntity<List<Long>> findCourseIdsByBundleId(@PathVariable("id") Long bundleId) {
+        return ResponseEntity.ok(courseBundleService.findCourseIdsByBundleId(bundleId));
+    }
 }
