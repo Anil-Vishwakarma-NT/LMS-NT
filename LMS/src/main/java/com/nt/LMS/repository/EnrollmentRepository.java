@@ -14,20 +14,6 @@ import java.util.Optional;
 @Repository
 public interface EnrollmentRepository extends JpaRepository<Enrollment, Long> {
 
-    @Query("SELECT e FROM Enrollment e WHERE e.userId = :userId AND e.courseId = :courseId AND e.isActive = true AND e.status NOT IN ('COMPLETED', 'EXPIRED', 'UNENROLLED')")
-    Optional<Enrollment> findActiveEnrollmentByUserAndCourse(@Param("userId") Long userId, @Param("courseId") Long courseId);
-
-    @Query("SELECT e FROM Enrollment e WHERE e.userId = :userId AND e.bundleId = :bundleId AND e.isActive = true AND e.status NOT IN ('COMPLETED', 'EXPIRED', 'UNENROLLED')")
-    Optional<Enrollment> findActiveEnrollmentByUserAndBundle(@Param("userId") Long userId, @Param("bundleId") Long bundleId);
-
-    @Query("SELECT e FROM Enrollment e WHERE e.groupId = :groupId AND e.courseId = :courseId AND e.isActive = true AND e.status NOT IN ('COMPLETED', 'EXPIRED', 'UNENROLLED')")
-    Optional<Enrollment> findActiveEnrollmentByGroupAndCourse(@Param("groupId") Long groupId, @Param("courseId") Long courseId);
-
-    @Query("SELECT e FROM Enrollment e WHERE e.groupId = :groupId AND e.bundleId = :bundleId AND e.isActive = true AND e.status NOT IN ('COMPLETED', 'EXPIRED', 'UNENROLLED')")
-    Optional<Enrollment> findActiveEnrollmentByGroupAndBundle(@Param("groupId") Long groupId, @Param("bundleId") Long bundleId);
-
-// Add these methods to your EnrollmentRepository interface
-
     // Count total active enrollments
     Long countByIsActiveTrue();
 
