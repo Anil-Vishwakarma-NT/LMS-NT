@@ -103,4 +103,22 @@ public interface EnrollmentRepository extends JpaRepository<Enrollment, Long> {
 
     List<Enrollment> findActiveEnrollmentsByUserIdAndParentEnrollmentId(Long userId, Long parentEnrollmentId);
 
+    /**
+     * Find all active individual course enrollments (not from bundles)
+     * @return List of individual course enrollments
+     */
+    @Query("SELECT e FROM Enrollment e WHERE e.isActive = true " +
+            "AND e.courseId IS NOT NULL " +
+            "AND e.bundleId IS NULL " +
+            "AND e.enrollmentSource = 'INDIVIDUAL' " +
+            "ORDER BY e.courseId, e.assignedAt")
+    List<Enrollment> findAllActiveIndividualCourseEnrollments();
+
+    @Query("SELECT e FROM Enrollment e WHERE e.isActive = true " +
+            "AND e.bundleId IS NOT NULL " +
+            "AND e.courseId IS NULL " +
+            "AND e.enrollmentSource = 'INDIVIDUAL' " +
+            "ORDER BY e.bundleId, e.assignedAt")
+    List<Enrollment> findAllActiveIndividualBundleEnrollments();
+
 }

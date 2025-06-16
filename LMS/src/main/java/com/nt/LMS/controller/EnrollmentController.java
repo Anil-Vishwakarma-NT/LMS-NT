@@ -1,9 +1,7 @@
 package com.nt.LMS.controller;
 
 import com.nt.LMS.dto.inDTO.EnrollmentRequestInDTO;
-import com.nt.LMS.dto.outDTO.EnrollmentDashBoardStatsOutDTO;
-import com.nt.LMS.dto.outDTO.StandardResponseOutDTO;
-import com.nt.LMS.dto.outDTO.UserEnrollmentsOutDTO;
+import com.nt.LMS.dto.outDTO.*;
 import com.nt.LMS.entities.Enrollment;
 import com.nt.LMS.service.EnrollmentService;
 import jakarta.validation.Valid;
@@ -49,9 +47,23 @@ public class EnrollmentController {
     }
 
     @GetMapping("/user-enrollments")
-    public ResponseEntity<StandardResponseOutDTO<List<UserEnrollmentsOutDTO>>> getUserEnrollmentsByUserId() {
+    public ResponseEntity<StandardResponseOutDTO<List<UserEnrollmentsOutDTO>>> getUserEnrollments() {
         List<UserEnrollmentsOutDTO> userEnrollmentsOutDTOs = enrollmentService.getAllUsersEnrollments();
         StandardResponseOutDTO<List<UserEnrollmentsOutDTO>> standardResponseOutDTO = StandardResponseOutDTO.success(userEnrollmentsOutDTOs, "User Enrollment Fetched");
+        return ResponseEntity.ok(standardResponseOutDTO);
+    }
+
+    @GetMapping("/user-course-enrollments")
+    public ResponseEntity<StandardResponseOutDTO<List<UserCourseEnrollmentOutDTO>>> getUserCourseEnrollments() {
+        List<UserCourseEnrollmentOutDTO> userCourseEnrollmentOutDTOS = enrollmentService.getIndividualCourseEnrollments();
+        StandardResponseOutDTO<List<UserCourseEnrollmentOutDTO>> standardResponseOutDTO = StandardResponseOutDTO.success(userCourseEnrollmentOutDTOS, "Fetched Course Enrollments for User");
+        return ResponseEntity.ok(standardResponseOutDTO);
+    }
+
+    @GetMapping("/user-bundle-enrollments")
+    public ResponseEntity<StandardResponseOutDTO<List<UserBundleEnrollmentOutDTO>>> getUserBundleEnrollments() {
+        List<UserBundleEnrollmentOutDTO> userBundleEnrollmentOutDTOS = enrollmentService.getIndividualBundleEnrollments();
+        StandardResponseOutDTO<List<UserBundleEnrollmentOutDTO>> standardResponseOutDTO = StandardResponseOutDTO.success(userBundleEnrollmentOutDTOS, "Fetched Bundle Enrollments for User");
         return ResponseEntity.ok(standardResponseOutDTO);
     }
 }

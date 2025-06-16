@@ -49,10 +49,10 @@ public class UserCourseEnrollmentServiceImpl implements UserCourseEnrollmentServ
                         .filter(User::isActive)
                         .orElseThrow(() -> new ResourceNotFoundException("Active owner not found"));
 
-                List<UserCourseEnrollment> indivisualEnrollments = userCourseEnrollmentRepository
+                List<UserCourseEnrollment> individualEnrollments = userCourseEnrollmentRepository
                         .findByCourseId(courseInfo.getCourseId());
 
-                long activeEnrollmentCount = indivisualEnrollments.stream()
+                long activeEnrollmentCount = individualEnrollments.stream()
                         .filter(enrollment -> !List.of("EXPIRED", "UNENROLLED", "COMPLETED").contains(enrollment.getStatus()))
                         .map(enrollment -> userRepository.findById(enrollment.getUserId()))
                         .filter(Optional::isPresent)

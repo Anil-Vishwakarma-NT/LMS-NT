@@ -2,6 +2,8 @@ package com.nt.LMS.service;
 
 import com.nt.LMS.dto.inDTO.EnrollmentRequestInDTO;
 import com.nt.LMS.dto.outDTO.EnrollmentDashBoardStatsOutDTO;
+import com.nt.LMS.dto.outDTO.UserBundleEnrollmentOutDTO;
+import com.nt.LMS.dto.outDTO.UserCourseEnrollmentOutDTO;
 import com.nt.LMS.dto.outDTO.UserEnrollmentsOutDTO;
 import com.nt.LMS.entities.Enrollment;
 
@@ -32,7 +34,12 @@ public interface EnrollmentService {
     EnrollmentDashBoardStatsOutDTO getEnrollmentStats();
     UserEnrollmentsOutDTO getUserEnrollmentsByUserID(Long userId);
     List<UserEnrollmentsOutDTO> getAllUsersEnrollments();
-
+    /**
+     * Get individual course enrollments details grouped by course
+     * @return List of UserCourseEnrollmentOutDTO containing course details and enrolled users
+     */
+    List<UserCourseEnrollmentOutDTO> getIndividualCourseEnrollments();
+    List<UserBundleEnrollmentOutDTO> getIndividualBundleEnrollments();
 
 //
 //    long countEnrollments();
