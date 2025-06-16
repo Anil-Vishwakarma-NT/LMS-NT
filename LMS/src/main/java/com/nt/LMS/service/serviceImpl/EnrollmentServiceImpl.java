@@ -1,7 +1,7 @@
 package com.nt.LMS.service.serviceImpl;
 
 import com.nt.LMS.dto.inDTO.EnrollmentRequestInDTO;
-import com.nt.LMS.dto.outDTO.EnrollmentStatsDTO;
+import com.nt.LMS.dto.outDTO.*;
 import com.nt.LMS.entities.*;
 import com.nt.LMS.exception.ResourceAlreadyExistsException;
 import com.nt.LMS.exception.ResourceNotFoundException;
@@ -14,8 +14,10 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.time.LocalDateTime;
 import java.util.*;
+import java.util.stream.Collectors;
 //
 //@Service
 //@Transactional
@@ -510,46 +512,6 @@ public class EnrollmentServiceImpl implements EnrollmentService {
         }
     }
 
-    @Override
-    public EnrollmentStatsDTO getEnrollmentStatistics() {
-        try {
-            // Get basic counts
-            Long totalEnrollments = enrollmentRepository.countTotalActiveEnrollments();
-            Long totalUsersEnrolled = enrollmentRepository.countDistinctUsersEnrolled();
-            Long totalGroupsEnrolled = enrollmentRepository.countDistinctGroupsEnrolled();
-            Long totalBundlesEnrolled = enrollmentRepository.countDistinctBundlesEnrolled();
-
-            // Get top enrolled course
-            List<Object[]> topCourseResults = enrollmentRepository.findTopEnrolledCourses();
-            EnrollmentStatsDTO.CourseEnrollmentStatsDTO topEnrolledCourse = null;
-
-            if (!topCourseResults.isEmpty()) {
-                Object[] topCourse = topCourseResults.get(0);
-                Long courseId = (Long) topCourse[0];
-                Long enrollmentCount = (Long) topCourse[1];
-                topEnrolledCourse = new EnrollmentStatsDTO.CourseEnrollmentStatsDTO(courseId, enrollmentCount);
-            }
-
-            // Get average progress percentage
-            BigDecimal averageProgress = enrollmentRepository.findAverageProgressPercentage();
-            if (averageProgress == null) {
-                averageProgress = BigDecimal.ZERO;
-            }
-
-            return new EnrollmentStatsDTO(
-                    totalEnrollments,
-                    totalUsersEnrolled,
-                    totalGroupsEnrolled,
-                    topEnrolledCourse,
-                    totalBundlesEnrolled,
-                    averageProgress
-            );
-
-        } catch (Exception e) {
-            throw new ResourceNotValidException("Failed to retrieve enrollment statistics: " + e.getMessage());
-        }
-    }
-
     private void validateEnrollmentRequest(EnrollmentRequestInDTO requestDTO) {
         if (!requestDTO.isValid()) {
             throw new ResourceNotValidException("Invalid enrollment request. Must provide either users or groups (not both) and either courses or bundles (not both).");
@@ -696,105 +658,61 @@ public class EnrollmentServiceImpl implements EnrollmentService {
     }
 
     private Enrollment handleUserCourseEnrollment(Long userId, Long courseId, EnrollmentRequestInDTO requestDTO) {
-        // Check for existing enrollment
+        // Check for existing enrollment with the same source (INDIVIDUAL)
         Optional<Enrollment> existingEnrollment = enrollmentRepository
-                .findActiveEnrollmentByUserAndCourse(userId, courseId);
+                .findActiveEnrollmentByUserCourseAndSource(userId, courseId, ENROLLMENT_SOURCE_INDIVIDUAL);
 
         if (existingEnrollment.isPresent()) {
-            if (!requestDTO.isForceEnrollment()) {
-                throw new ResourceAlreadyExistsException(
-                        "User " + userId + " is already enrolled in course " + courseId);
-            } else {
-                // Force enrollment: deactivate existing and create new
-                Enrollment existing = existingEnrollment.get();
-                existing.setActive(false);
-                existing.setUpdatedAt(LocalDateTime.now());
-                enrollmentRepository.save(existing);
-
-                // Create new enrollment
-                return createEnrollment(userId, null, courseId, null,
-                        ENROLLMENT_SOURCE_INDIVIDUAL, null, requestDTO);
-            }
+            throw new ResourceAlreadyExistsException(
+                    "User " + userId + " is already individually enrolled in course " + courseId);
         }
 
+        // Always create new enrollment regardless of other enrollment sources
         return createEnrollment(userId, null, courseId, null,
                 ENROLLMENT_SOURCE_INDIVIDUAL, null, requestDTO);
     }
 
     private Enrollment handleUserBundleEnrollment(Long userId, Long bundleId, EnrollmentRequestInDTO requestDTO) {
-        // Check for existing bundle enrollment
+        // Check for existing bundle enrollment with the same source (INDIVIDUAL)
         Optional<Enrollment> existingEnrollment = enrollmentRepository
-                .findActiveEnrollmentByUserAndBundle(userId, bundleId);
+                .findActiveEnrollmentByUserBundleAndSource(userId, bundleId, ENROLLMENT_SOURCE_INDIVIDUAL);
 
         if (existingEnrollment.isPresent()) {
-            if (!requestDTO.isForceEnrollment()) {
-                throw new ResourceAlreadyExistsException(
-                        "User " + userId + " is already enrolled in bundle " + bundleId);
-            } else {
-                // Force enrollment: deactivate existing and create new
-                Enrollment existing = existingEnrollment.get();
-                existing.setActive(false);
-                existing.setUpdatedAt(LocalDateTime.now());
-                enrollmentRepository.save(existing);
-
-                // Create new enrollment
-                return createEnrollment(userId, null, null, bundleId,
-                        ENROLLMENT_SOURCE_INDIVIDUAL, null, requestDTO);
-            }
+            throw new ResourceAlreadyExistsException(
+                    "User " + userId + " is already individually enrolled in bundle " + bundleId);
         }
 
+        // Always create new enrollment regardless of other enrollment sources
         return createEnrollment(userId, null, null, bundleId,
                 ENROLLMENT_SOURCE_INDIVIDUAL, null, requestDTO);
     }
 
     private Enrollment handleGroupCourseEnrollment(Long groupId, Long courseId, EnrollmentRequestInDTO requestDTO) {
-        // Check for existing group enrollment
+        // Check for existing group enrollment with the same source (GROUP)
         Optional<Enrollment> existingEnrollment = enrollmentRepository
-                .findActiveEnrollmentByGroupAndCourse(groupId, courseId);
+                .findActiveEnrollmentByGroupCourseAndSource(groupId, courseId, ENROLLMENT_SOURCE_GROUP);
 
         if (existingEnrollment.isPresent()) {
-            if (!requestDTO.isForceEnrollment()) {
-                throw new ResourceAlreadyExistsException(
-                        "Group " + groupId + " is already enrolled in course " + courseId);
-            } else {
-                // Force enrollment: deactivate existing and create new
-                Enrollment existing = existingEnrollment.get();
-                existing.setActive(false);
-                existing.setUpdatedAt(LocalDateTime.now());
-                enrollmentRepository.save(existing);
-
-                // Create new enrollment
-                return createEnrollment(null, groupId, courseId, null,
-                        ENROLLMENT_SOURCE_GROUP, null, requestDTO);
-            }
+            throw new ResourceAlreadyExistsException(
+                    "Group " + groupId + " is already enrolled in course " + courseId);
         }
 
+        // Always create new enrollment
         return createEnrollment(null, groupId, courseId, null,
                 ENROLLMENT_SOURCE_GROUP, null, requestDTO);
     }
 
     private Enrollment handleGroupBundleEnrollment(Long groupId, Long bundleId, EnrollmentRequestInDTO requestDTO) {
-        // Check for existing group bundle enrollment
+        // Check for existing group bundle enrollment with the same source (GROUP)
         Optional<Enrollment> existingEnrollment = enrollmentRepository
-                .findActiveEnrollmentByGroupAndBundle(groupId, bundleId);
+                .findActiveEnrollmentByGroupBundleAndSource(groupId, bundleId, ENROLLMENT_SOURCE_GROUP);
 
         if (existingEnrollment.isPresent()) {
-            if (!requestDTO.isForceEnrollment()) {
-                throw new ResourceAlreadyExistsException(
-                        "Group " + groupId + " is already enrolled in bundle " + bundleId);
-            } else {
-                // Force enrollment: deactivate existing and create new
-                Enrollment existing = existingEnrollment.get();
-                existing.setActive(false);
-                existing.setUpdatedAt(LocalDateTime.now());
-                enrollmentRepository.save(existing);
-
-                // Create new enrollment
-                return createEnrollment(null, groupId, null, bundleId,
-                        ENROLLMENT_SOURCE_GROUP, null, requestDTO);
-            }
+            throw new ResourceAlreadyExistsException(
+                    "Group " + groupId + " is already enrolled in bundle " + bundleId);
         }
 
+        // Always create new enrollment
         return createEnrollment(null, groupId, null, bundleId,
                 ENROLLMENT_SOURCE_GROUP, null, requestDTO);
     }
@@ -805,19 +723,18 @@ public class EnrollmentServiceImpl implements EnrollmentService {
         List<Long> courseIds = courseMicroserviceClient.findCourseIdsByBundleId(bundleId).getBody();
 
         for (Long courseId : courseIds) {
-            // ALWAYS create new course enrollment from bundle expansion
-            // If there's an existing enrollment, deactivate it first
-            Optional<Enrollment> existingCourseEnrollment = enrollmentRepository
-                    .findActiveEnrollmentByUserAndCourse(userId, courseId);
+            // Check if there's already a BUNDLE_EXPANSION enrollment for this user and course from this specific bundle
+            Optional<Enrollment> existingBundleExpansion = enrollmentRepository
+                    .findActiveEnrollmentByUserCourseSourceAndParent(userId, courseId,
+                            ENROLLMENT_SOURCE_BUNDLE_EXPANSION, bundleEnrollment.getEnrollmentId());
 
-            if (existingCourseEnrollment.isPresent()) {
-                Enrollment existing = existingCourseEnrollment.get();
-                existing.setActive(false);
-                existing.setUpdatedAt(LocalDateTime.now());
-                enrollmentRepository.save(existing);
+            if (existingBundleExpansion.isPresent()) {
+                // This bundle expansion already exists, skip
+                continue;
             }
 
-            // Create new course enrollment from bundle expansion
+            // Always create new course enrollment from bundle expansion
+            // This allows multiple enrollments with different sources for the same user-course combination
             Enrollment courseEnrollment = createEnrollment(
                     userId, null, courseId, null,
                     ENROLLMENT_SOURCE_BUNDLE_EXPANSION, bundleEnrollment.getEnrollmentId(),
@@ -835,19 +752,18 @@ public class EnrollmentServiceImpl implements EnrollmentService {
         List<Long> memberIds = userGroupRepository.findUserIdsByGroupId(groupId);
 
         for (Long memberId : memberIds) {
-            // ALWAYS create new enrollment for group member
-            // If there's an existing enrollment, deactivate it first
-            Optional<Enrollment> existingEnrollment = enrollmentRepository
-                    .findActiveEnrollmentByUserAndCourse(memberId, courseId);
+            // Check if there's already a GROUP enrollment for this member and course from this specific group
+            Optional<Enrollment> existingGroupEnrollment = enrollmentRepository
+                    .findActiveEnrollmentByUserCourseSourceAndParent(memberId, courseId,
+                            ENROLLMENT_SOURCE_GROUP, groupEnrollment.getEnrollmentId());
 
-            if (existingEnrollment.isPresent()) {
-                Enrollment existing = existingEnrollment.get();
-                existing.setActive(false);
-                existing.setUpdatedAt(LocalDateTime.now());
-                enrollmentRepository.save(existing);
+            if (existingGroupEnrollment.isPresent()) {
+                // This group enrollment already exists for this member, skip
+                continue;
             }
 
-            // Create new enrollment for group member
+            // Always create new enrollment for group member
+            // This allows multiple enrollments with different sources for the same user-course combination
             Enrollment memberEnrollment = createEnrollment(
                     memberId, null, courseId, null,
                     ENROLLMENT_SOURCE_GROUP, groupEnrollment.getEnrollmentId(),
@@ -880,28 +796,336 @@ public class EnrollmentServiceImpl implements EnrollmentService {
         return enrollmentRepository.save(enrollment);
     }
 
-    private void updateEnrollmentDetails(Enrollment enrollment, EnrollmentRequestInDTO requestDTO) {
-        enrollment.setAssignedBy(requestDTO.getAssignedBy());
-        enrollment.setAssignedAt(LocalDateTime.now());
-        enrollment.setDeadline(requestDTO.getDeadline());
-        enrollment.setStatus(requestDTO.getStatus());
-        enrollment.setUpdatedAt(LocalDateTime.now());
+
+    @Override
+    public EnrollmentDashBoardStatsOutDTO getEnrollmentStats() {
+        EnrollmentDashBoardStatsOutDTO stats = new EnrollmentDashBoardStatsOutDTO();
+
+        // Total active enrollments
+        stats.setTotalEnrollments(enrollmentRepository.countByIsActiveTrue());
+
+        // Individual users enrolled (distinct users with active enrollments)
+        stats.setIndividualUsersEnrolled(enrollmentRepository.countDistinctUsersByIsActiveTrue());
+
+        // Groups enrolled (distinct groups with active enrollments)
+        stats.setGroupsEnrolled(enrollmentRepository.countDistinctGroupsByIsActiveTrue());
+
+        // Bundles enrolled (distinct bundles with active enrollments)
+        stats.setBundlesEnrolled(enrollmentRepository.countDistinctBundlesByIsActiveTrue());
+
+        // Top enrolled course (course with most active enrollments)
+        Long topCourseId = enrollmentRepository.findTopEnrolledCourse();
+        if (topCourseId != null) {
+            // Get course name from microservice
+            String courseName = courseMicroserviceClient.getCourseNameById(topCourseId).getBody();
+            stats.setTopEnrolledCourse(courseName != null ? courseName : "Course ID: " + topCourseId);
+        } else {
+            stats.setTopEnrolledCourse("No courses enrolled");
+        }
+
+        // Average progress percentage across all active enrollments
+        BigDecimal avgProgress = enrollmentRepository.findAverageProgressPercentage();
+        stats.setAverageProgressPercentage(avgProgress != null ? avgProgress.longValue() : 0L);
+
+        // Count of enrollments with deadlines due (deadline before current time)
+        stats.setDueDeadlines(enrollmentRepository.countEnrollmentsWithDueDeadlines(LocalDateTime.now()));
+
+        return stats;
     }
 
-    private boolean shouldUpdateExistingEnrollment(String existingSource, String newSource) {
-        // Priority order: INDIVIDUAL (1) > GROUP (2) > BUNDLE_EXPANSION (3)
-        int existingPriority = getSourcePriority(existingSource);
-        int newPriority = getSourcePriority(newSource);
+    @Override
+    public UserEnrollmentsOutDTO getUserEnrollmentsByUserID(Long userId) {
+        // Validate user exists
+        Optional<User> userOptional = userRepository.findById(userId);
+        if (userOptional.isEmpty()) {
+            throw new ResourceNotFoundException("User not found with ID: " + userId);
+        }
 
-        return newPriority < existingPriority;
+        User user = userOptional.get();
+        UserEnrollmentsOutDTO userEnrollmentsDTO = new UserEnrollmentsOutDTO();
+
+        // Set basic user information
+        userEnrollmentsDTO.setUserId(userId);
+        userEnrollmentsDTO.setUserName(user.getFirstName() + " " + user.getLastName());
+        userEnrollmentsDTO.setStatus(user.isActive());
+
+        // Get all active enrollments for the user
+        List<Enrollment> userEnrollments = enrollmentRepository.findActiveEnrollmentsByUserId(userId);
+
+        // Separate individual course enrollments (not from bundles)
+        List<Enrollment> individualCourseEnrollments = userEnrollments.stream()
+                .filter(enrollment -> enrollment.getCourseId() != null &&
+                        enrollment.getBundleId() == null &&
+                        ENROLLMENT_SOURCE_INDIVIDUAL.equals(enrollment.getEnrollmentSource()))
+                .collect(Collectors.toList());
+
+        // Get bundle enrollments (actual bundle enrollments, not expanded courses)
+        List<Enrollment> bundleEnrollments = userEnrollments.stream()
+                .filter(enrollment -> enrollment.getBundleId() != null &&
+                        enrollment.getCourseId() == null)
+                .collect(Collectors.toList());
+
+        // Set enrollment counts
+        userEnrollmentsDTO.setCourseEnrollments((long) individualCourseEnrollments.size());
+        userEnrollmentsDTO.setBundleEnrollments((long) bundleEnrollments.size());
+
+        // Calculate total unique courses (individual + from bundles)
+        Set<Long> uniqueCourseIds = new HashSet<>();
+
+        // Add individual courses
+        individualCourseEnrollments.forEach(enrollment -> uniqueCourseIds.add(enrollment.getCourseId()));
+
+        // Add courses from bundles
+        for (Enrollment bundleEnrollment : bundleEnrollments) {
+            List<Long> bundleCourseIds = courseMicroserviceClient
+                    .findCourseIdsByBundleId(bundleEnrollment.getBundleId()).getBody();
+            if (bundleCourseIds != null) {
+                uniqueCourseIds.addAll(bundleCourseIds);
+            }
+        }
+        userEnrollmentsDTO.setTotalCourses((long) uniqueCourseIds.size());
+
+        // Calculate average completion percentage across all enrollments
+        List<BigDecimal> progressValues = userEnrollments.stream()
+                .map(Enrollment::getProgressPercentage)
+                .filter(Objects::nonNull)
+                .collect(Collectors.toList());
+
+        if (!progressValues.isEmpty()) {
+            BigDecimal averageProgress = progressValues.stream()
+                    .reduce(BigDecimal.ZERO, BigDecimal::add)
+                    .divide(BigDecimal.valueOf(progressValues.size()), 2, RoundingMode.HALF_UP);
+            userEnrollmentsDTO.setAverageCompletion(averageProgress.floatValue());
+        } else {
+            userEnrollmentsDTO.setAverageCompletion(0.0f);
+        }
+
+        // Count upcoming deadlines (deadlines in the future)
+        LocalDateTime now = LocalDateTime.now();
+        int upcomingDeadlines = (int) userEnrollments.stream()
+                .filter(enrollment -> enrollment.getDeadline() != null && enrollment.getDeadline().isAfter(now))
+                .count();
+        userEnrollmentsDTO.setUpcomingDeadlines(upcomingDeadlines);
+
+        // Build individual enrolled courses list
+        List<EnrolledCoursesOutDTO> enrolledCoursesList = buildIndividualEnrolledCoursesList(individualCourseEnrollments);
+        userEnrollmentsDTO.setEnrolledCoursesList(enrolledCoursesList);
+
+        // Build enrolled bundles list with their courses
+        List<EnrolledBundlesOutDTO> enrolledBundlesList = buildEnrolledBundlesListWithCourses(bundleEnrollments, userId);
+        userEnrollmentsDTO.setEnrolledBundlesList(enrolledBundlesList);
+
+        return userEnrollmentsDTO;
     }
 
-    private int getSourcePriority(String source) {
-        return switch (source) {
-            case ENROLLMENT_SOURCE_INDIVIDUAL -> 1;
-            case ENROLLMENT_SOURCE_GROUP -> 2;
-            case ENROLLMENT_SOURCE_BUNDLE_EXPANSION -> 3;
-            default -> 4;
-        };
+    @Override
+    public List<UserEnrollmentsOutDTO> getAllUsersEnrollments() {
+        // Get all users who have active enrollments
+        List<Long> userIdsWithEnrollments = enrollmentRepository.findDistinctUserIdsWithActiveEnrollments();
+
+        List<UserEnrollmentsOutDTO> allUserEnrollments = new ArrayList<>();
+
+        for (Long userId : userIdsWithEnrollments) {
+            try {
+                UserEnrollmentsOutDTO userEnrollmentDTO = buildUserEnrollmentDTO(userId);
+                allUserEnrollments.add(userEnrollmentDTO);
+            } catch (Exception e) {
+                // Log the error but continue processing other users
+                System.err.println("Error processing enrollments for user " + userId + ": " + e.getMessage());
+            }
+        }
+
+        return allUserEnrollments;
     }
+
+    private UserEnrollmentsOutDTO buildUserEnrollmentDTO(Long userId) {
+        // Get user information
+        Optional<User> userOptional = userRepository.findById(userId);
+        if (userOptional.isEmpty()) {
+            throw new ResourceNotFoundException("User not found with ID: " + userId);
+        }
+
+        User user = userOptional.get();
+        UserEnrollmentsOutDTO userEnrollmentsDTO = new UserEnrollmentsOutDTO();
+
+        // Set basic user information
+        userEnrollmentsDTO.setUserId(userId);
+        userEnrollmentsDTO.setUserName(user.getFirstName() + " " + user.getLastName());
+        userEnrollmentsDTO.setStatus(user.isActive());
+
+        // Get all active enrollments for the user
+        List<Enrollment> userEnrollments = enrollmentRepository.findActiveEnrollmentsByUserId(userId);
+
+        // Separate individual course enrollments (not from bundles)
+        List<Enrollment> individualCourseEnrollments = userEnrollments.stream()
+                .filter(enrollment -> enrollment.getCourseId() != null &&
+                        enrollment.getBundleId() == null &&
+                        ENROLLMENT_SOURCE_INDIVIDUAL.equals(enrollment.getEnrollmentSource()))
+                .collect(Collectors.toList());
+
+        // Get bundle enrollments (actual bundle enrollments, not expanded courses)
+        List<Enrollment> bundleEnrollments = userEnrollments.stream()
+                .filter(enrollment -> enrollment.getBundleId() != null &&
+                        enrollment.getCourseId() == null)
+                .collect(Collectors.toList());
+
+        // Set enrollment counts
+        userEnrollmentsDTO.setCourseEnrollments((long) individualCourseEnrollments.size());
+        userEnrollmentsDTO.setBundleEnrollments((long) bundleEnrollments.size());
+
+        // Calculate total unique courses (individual + from bundles)
+        Set<Long> uniqueCourseIds = new HashSet<>();
+
+        // Add individual courses
+        individualCourseEnrollments.forEach(enrollment -> uniqueCourseIds.add(enrollment.getCourseId()));
+
+        // Add courses from bundles
+        for (Enrollment bundleEnrollment : bundleEnrollments) {
+            try {
+                List<Long> bundleCourseIds = courseMicroserviceClient
+                        .findCourseIdsByBundleId(bundleEnrollment.getBundleId()).getBody();
+                if (bundleCourseIds != null) {
+                    uniqueCourseIds.addAll(bundleCourseIds);
+                }
+            } catch (Exception e) {
+                System.err.println("Error fetching courses for bundle " + bundleEnrollment.getBundleId() + ": " + e.getMessage());
+            }
+        }
+        userEnrollmentsDTO.setTotalCourses((long) uniqueCourseIds.size());
+
+        // Calculate average completion percentage across all enrollments
+        List<BigDecimal> progressValues = userEnrollments.stream()
+                .map(Enrollment::getProgressPercentage)
+                .filter(Objects::nonNull)
+                .collect(Collectors.toList());
+
+        if (!progressValues.isEmpty()) {
+            BigDecimal averageProgress = progressValues.stream()
+                    .reduce(BigDecimal.ZERO, BigDecimal::add)
+                    .divide(BigDecimal.valueOf(progressValues.size()), 2, RoundingMode.HALF_UP);
+            userEnrollmentsDTO.setAverageCompletion(averageProgress.floatValue());
+        } else {
+            userEnrollmentsDTO.setAverageCompletion(0.0f);
+        }
+
+        // Count upcoming deadlines (deadlines in the future)
+        LocalDateTime now = LocalDateTime.now();
+        int upcomingDeadlines = (int) userEnrollments.stream()
+                .filter(enrollment -> enrollment.getDeadline() != null && enrollment.getDeadline().isAfter(now))
+                .count();
+        userEnrollmentsDTO.setUpcomingDeadlines(upcomingDeadlines);
+
+        // Build individual enrolled courses list
+        List<EnrolledCoursesOutDTO> enrolledCoursesList = buildIndividualEnrolledCoursesList(individualCourseEnrollments);
+        userEnrollmentsDTO.setEnrolledCoursesList(enrolledCoursesList);
+
+        // Build enrolled bundles list with their courses
+        List<EnrolledBundlesOutDTO> enrolledBundlesList = buildEnrolledBundlesListWithCourses(bundleEnrollments, userId);
+        userEnrollmentsDTO.setEnrolledBundlesList(enrolledBundlesList);
+
+        return userEnrollmentsDTO;
+    }
+
+    private List<EnrolledCoursesOutDTO> buildIndividualEnrolledCoursesList(List<Enrollment> individualCourseEnrollments) {
+        List<EnrolledCoursesOutDTO> enrolledCoursesList = new ArrayList<>();
+
+        for (Enrollment enrollment : individualCourseEnrollments) {
+            EnrolledCoursesOutDTO courseDTO = new EnrolledCoursesOutDTO();
+            courseDTO.setCourseId(enrollment.getCourseId());
+
+            try {
+                // Get course name from microservice
+                String courseName = courseMicroserviceClient.getCourseNameById(enrollment.getCourseId()).getBody();
+                courseDTO.setCourseName(courseName != null ? courseName : "Course ID: " + enrollment.getCourseId());
+            } catch (Exception e) {
+                courseDTO.setCourseName("Course ID: " + enrollment.getCourseId());
+                System.err.println("Error fetching course name for course " + enrollment.getCourseId() + ": " + e.getMessage());
+            }
+
+            courseDTO.setProgress(enrollment.getProgressPercentage() != null ?
+                    enrollment.getProgressPercentage().floatValue() : 0.0f);
+            courseDTO.setEnrollmentDate(enrollment.getAssignedAt());
+            courseDTO.setDeadline(enrollment.getDeadline());
+
+            enrolledCoursesList.add(courseDTO);
+        }
+
+        return enrolledCoursesList;
+    }
+
+    private List<EnrolledBundlesOutDTO> buildEnrolledBundlesListWithCourses(List<Enrollment> bundleEnrollments, Long userId) {
+        List<EnrolledBundlesOutDTO> enrolledBundlesList = new ArrayList<>();
+        Map<Long, List<Enrollment>> bundleEnrollmentMap = bundleEnrollments.stream()
+                .collect(Collectors.groupingBy(Enrollment::getBundleId));
+
+        for (Map.Entry<Long, List<Enrollment>> entry : bundleEnrollmentMap.entrySet()) {
+            Long bundleId = entry.getKey();
+            List<Enrollment> enrollmentsForBundle = entry.getValue();
+
+            // Use the first enrollment for basic info (they should have same bundle info)
+            Enrollment primaryEnrollment = enrollmentsForBundle.get(0);
+
+            EnrolledBundlesOutDTO bundleDTO = new EnrolledBundlesOutDTO();
+            bundleDTO.setBundleId(bundleId);
+
+            try {
+                // Get bundle name from microservice
+                String bundleName = courseMicroserviceClient.getBundleNameById(bundleId).getBody();
+                bundleDTO.setBundleName(bundleName != null ? bundleName : "Bundle ID: " + bundleId);
+            } catch (Exception e) {
+                bundleDTO.setBundleName("Bundle ID: " + bundleId);
+                System.err.println("Error fetching bundle name for bundle " + bundleId + ": " + e.getMessage());
+            }
+
+            // Get all course enrollments from this bundle for this user
+            List<Enrollment> bundleCourseEnrollments = enrollmentRepository
+                    .findActiveEnrollmentsByUserIdAndParentEnrollmentId(userId, primaryEnrollment.getEnrollmentId());
+
+            // Calculate bundle progress based on course enrollments from this bundle
+            List<BigDecimal> bundleProgressValues = bundleCourseEnrollments.stream()
+                    .map(Enrollment::getProgressPercentage)
+                    .filter(Objects::nonNull)
+                    .collect(Collectors.toList());
+
+            if (!bundleProgressValues.isEmpty()) {
+                BigDecimal bundleProgress = bundleProgressValues.stream()
+                        .reduce(BigDecimal.ZERO, BigDecimal::add)
+                        .divide(BigDecimal.valueOf(bundleProgressValues.size()), 2, RoundingMode.HALF_UP);
+                bundleDTO.setProgress(bundleProgress.floatValue());
+            } else {
+                bundleDTO.setProgress(0.0f);
+            }
+
+            bundleDTO.setEnrollmentDate(primaryEnrollment.getAssignedAt());
+            bundleDTO.setDeadline(primaryEnrollment.getDeadline());
+
+            // Build courses list for this bundle
+            List<EnrolledCoursesOutDTO> bundleCoursesList = new ArrayList<>();
+            for (Enrollment courseEnrollment : bundleCourseEnrollments) {
+                EnrolledCoursesOutDTO courseDTO = new EnrolledCoursesOutDTO();
+                courseDTO.setCourseId(courseEnrollment.getCourseId());
+
+                try {
+                    String courseName = courseMicroserviceClient.getCourseNameById(courseEnrollment.getCourseId()).getBody();
+                    courseDTO.setCourseName(courseName != null ? courseName : "Course ID: " + courseEnrollment.getCourseId());
+                } catch (Exception e) {
+                    courseDTO.setCourseName("Course ID: " + courseEnrollment.getCourseId());
+                    System.err.println("Error fetching course name for course " + courseEnrollment.getCourseId() + ": " + e.getMessage());
+                }
+
+                courseDTO.setProgress(courseEnrollment.getProgressPercentage() != null ?
+                        courseEnrollment.getProgressPercentage().floatValue() : 0.0f);
+                courseDTO.setEnrollmentDate(courseEnrollment.getAssignedAt());
+                courseDTO.setDeadline(courseEnrollment.getDeadline());
+
+                bundleCoursesList.add(courseDTO);
+            }
+
+            bundleDTO.setEnrolledCoursesList(bundleCoursesList);
+            enrolledBundlesList.add(bundleDTO);
+        }
+
+        return enrolledBundlesList;
+    }
+
 }

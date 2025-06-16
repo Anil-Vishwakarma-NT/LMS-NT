@@ -1,7 +1,8 @@
 package com.nt.LMS.service;
 
 import com.nt.LMS.dto.inDTO.EnrollmentRequestInDTO;
-import com.nt.LMS.dto.outDTO.EnrollmentStatsDTO;
+import com.nt.LMS.dto.outDTO.EnrollmentDashBoardStatsOutDTO;
+import com.nt.LMS.dto.outDTO.UserEnrollmentsOutDTO;
 import com.nt.LMS.entities.Enrollment;
 
 import java.util.List;
@@ -28,7 +29,10 @@ public interface EnrollmentService {
      * @throws com.nt.LMS.exception.ResourceNotValidException if request is invalid or enrollment fails
      */
     List<Enrollment> enroll(EnrollmentRequestInDTO requestDTO);
-    EnrollmentStatsDTO getEnrollmentStatistics();
+    EnrollmentDashBoardStatsOutDTO getEnrollmentStats();
+    UserEnrollmentsOutDTO getUserEnrollmentsByUserID(Long userId);
+    List<UserEnrollmentsOutDTO> getAllUsersEnrollments();
+
 
 //
 //    long countEnrollments();

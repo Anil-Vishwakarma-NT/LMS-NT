@@ -1,8 +1,9 @@
 package com.nt.LMS.controller;
 
 import com.nt.LMS.dto.inDTO.EnrollmentRequestInDTO;
-import com.nt.LMS.dto.outDTO.EnrollmentStatsDTO;
+import com.nt.LMS.dto.outDTO.EnrollmentDashBoardStatsOutDTO;
 import com.nt.LMS.dto.outDTO.StandardResponseOutDTO;
+import com.nt.LMS.dto.outDTO.UserEnrollmentsOutDTO;
 import com.nt.LMS.entities.Enrollment;
 import com.nt.LMS.service.EnrollmentService;
 import jakarta.validation.Valid;
@@ -34,9 +35,23 @@ public class EnrollmentController {
     }
 
     @GetMapping("/statistics")
-    public ResponseEntity<StandardResponseOutDTO<EnrollmentStatsDTO>> getEnrollmentStatistics() {
-            EnrollmentStatsDTO stats = enrollmentService.getEnrollmentStatistics();
-            StandardResponseOutDTO<EnrollmentStatsDTO> standardResponseOutDTO = StandardResponseOutDTO.success(stats, "Fetched Enrollment Statistics");
+    public ResponseEntity<StandardResponseOutDTO<EnrollmentDashBoardStatsOutDTO>> getEnrollmentStatistics() {
+            EnrollmentDashBoardStatsOutDTO stats = enrollmentService.getEnrollmentStats();
+            StandardResponseOutDTO<EnrollmentDashBoardStatsOutDTO> standardResponseOutDTO = StandardResponseOutDTO.success(stats, "Fetched Enrollment Statistics");
             return ResponseEntity.ok(standardResponseOutDTO);
+    }
+
+    @GetMapping("/user-enrollments/{id}")
+    public ResponseEntity<StandardResponseOutDTO<UserEnrollmentsOutDTO>> getUserEnrollmentsByUserId(@PathVariable("id") Long userId) {
+        UserEnrollmentsOutDTO userEnrollmentsOutDTO = enrollmentService.getUserEnrollmentsByUserID(userId);
+        StandardResponseOutDTO<UserEnrollmentsOutDTO> standardResponseOutDTO = StandardResponseOutDTO.success(userEnrollmentsOutDTO, "User Enrollment Fetched");
+        return ResponseEntity.ok(standardResponseOutDTO);
+    }
+
+    @GetMapping("/user-enrollments")
+    public ResponseEntity<StandardResponseOutDTO<List<UserEnrollmentsOutDTO>>> getUserEnrollmentsByUserId() {
+        List<UserEnrollmentsOutDTO> userEnrollmentsOutDTOs = enrollmentService.getAllUsersEnrollments();
+        StandardResponseOutDTO<List<UserEnrollmentsOutDTO>> standardResponseOutDTO = StandardResponseOutDTO.success(userEnrollmentsOutDTOs, "User Enrollment Fetched");
+        return ResponseEntity.ok(standardResponseOutDTO);
     }
 }

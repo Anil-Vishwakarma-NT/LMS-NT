@@ -5,10 +5,10 @@ import lombok.Data;
 @Data
 public class EnrollmentDashBoardStatsOutDTO {
     private Long totalEnrollments;
-    private Long usersEnrolled;
+    private Long individualUsersEnrolled;
     private Long groupsEnrolled;
-    private Long completionRate;
+    private Long bundlesEnrolled;
     private String topEnrolledCourse;
-    private Long upcomingDeadlines;
-    private Long courseCompletions;
+    private Long averageProgressPercentage;
+    private Long dueDeadlines;
 }
