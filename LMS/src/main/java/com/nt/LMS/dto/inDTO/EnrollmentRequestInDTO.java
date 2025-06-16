@@ -2,11 +2,11 @@ package com.nt.LMS.dto.inDTO;
 
 
 import jakarta.validation.constraints.NotNull;
-import jakarta.validation.constraints.NotEmpty;
+
 import java.time.LocalDateTime;
 import java.util.List;
 
-public class EnrollmentRequestDTO {
+public class EnrollmentRequestInDTO {
 
     @NotNull(message = "Assigned by user ID is required")
     private Long assignedBy;
@@ -28,7 +28,7 @@ public class EnrollmentRequestDTO {
     // Optional: Skip creating individual enrollments for group enrollments
     private boolean groupEnrollmentOnly = false;
 
-    public EnrollmentRequestDTO() {}
+    public EnrollmentRequestInDTO() {}
 
     // Getters and Setters
     public Long getAssignedBy() {

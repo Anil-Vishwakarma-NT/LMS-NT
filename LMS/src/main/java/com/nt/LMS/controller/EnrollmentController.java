@@ -1,17 +1,13 @@
 package com.nt.LMS.controller;
 
-import com.nt.LMS.dto.inDTO.EnrollmentInDTO;
-import com.nt.LMS.dto.inDTO.EnrollmentRequestDTO;
-import com.nt.LMS.dto.outDTO.*;
+import com.nt.LMS.dto.inDTO.EnrollmentRequestInDTO;
+import com.nt.LMS.dto.outDTO.EnrollmentStatsDTO;
+import com.nt.LMS.dto.outDTO.StandardResponseOutDTO;
 import com.nt.LMS.entities.Enrollment;
 import com.nt.LMS.service.EnrollmentService;
-import com.nt.LMS.service.EnrollmentsService;
-import com.nt.LMS.service.UserBundleEnrollmentService;
-import com.nt.LMS.service.UserCourseEnrollmentService;
 import jakarta.validation.Valid;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -31,7 +27,16 @@ public class EnrollmentController {
     EnrollmentService enrollmentService;
 
     @PostMapping("/enroll")
-    public ResponseEntity<List<Enrollment>> enroll(@Valid @RequestBody EnrollmentRequestDTO enrollmentRequestDTO) {
-        return ResponseEntity.ok(enrollmentService.enroll(enrollmentRequestDTO));
+    public ResponseEntity<StandardResponseOutDTO<List<Enrollment>>> enroll(@Valid @RequestBody EnrollmentRequestInDTO enrollmentRequestInDTO) {
+        List<Enrollment> enrollments =  enrollmentService.enroll(enrollmentRequestInDTO);
+        StandardResponseOutDTO<List<Enrollment>> standardResponseOutDTO = StandardResponseOutDTO.success(enrollments, "Enrollment Successful");
+        return ResponseEntity.ok(standardResponseOutDTO);
+    }
+
+    @GetMapping("/statistics")
+    public ResponseEntity<StandardResponseOutDTO<EnrollmentStatsDTO>> getEnrollmentStatistics() {
+            EnrollmentStatsDTO stats = enrollmentService.getEnrollmentStatistics();
+            StandardResponseOutDTO<EnrollmentStatsDTO> standardResponseOutDTO = StandardResponseOutDTO.success(stats, "Fetched Enrollment Statistics");
+            return ResponseEntity.ok(standardResponseOutDTO);
     }
 }

@@ -1,6 +1,7 @@
 package com.nt.LMS.service.serviceImpl;
 
-import com.nt.LMS.dto.inDTO.EnrollmentRequestDTO;
+import com.nt.LMS.dto.inDTO.EnrollmentRequestInDTO;
+import com.nt.LMS.dto.outDTO.EnrollmentStatsDTO;
 import com.nt.LMS.entities.*;
 import com.nt.LMS.exception.ResourceAlreadyExistsException;
 import com.nt.LMS.exception.ResourceNotFoundException;
@@ -40,7 +41,7 @@ public class EnrollmentServiceImpl implements EnrollmentService {
     private static final String ENROLLMENT_SOURCE_BUNDLE_EXPANSION = "BUNDLE_EXPANSION";
 
     @Override
-    public List<Enrollment> enroll(EnrollmentRequestDTO requestDTO) {
+    public List<Enrollment> enroll(EnrollmentRequestInDTO requestDTO) {
         // Validate request
         validateEnrollmentRequest(requestDTO);
 
@@ -72,7 +73,47 @@ public class EnrollmentServiceImpl implements EnrollmentService {
         }
     }
 
-    private void validateEnrollmentRequest(EnrollmentRequestDTO requestDTO) {
+    @Override
+    public EnrollmentStatsDTO getEnrollmentStatistics() {
+        try {
+            // Get basic counts
+            Long totalEnrollments = enrollmentRepository.countTotalActiveEnrollments();
+            Long totalUsersEnrolled = enrollmentRepository.countDistinctUsersEnrolled();
+            Long totalGroupsEnrolled = enrollmentRepository.countDistinctGroupsEnrolled();
+            Long totalBundlesEnrolled = enrollmentRepository.countDistinctBundlesEnrolled();
+
+            // Get top enrolled course
+            List<Object[]> topCourseResults = enrollmentRepository.findTopEnrolledCourses();
+            EnrollmentStatsDTO.CourseEnrollmentStatsDTO topEnrolledCourse = null;
+
+            if (!topCourseResults.isEmpty()) {
+                Object[] topCourse = topCourseResults.get(0);
+                Long courseId = (Long) topCourse[0];
+                Long enrollmentCount = (Long) topCourse[1];
+                topEnrolledCourse = new EnrollmentStatsDTO.CourseEnrollmentStatsDTO(courseId, enrollmentCount);
+            }
+
+            // Get average progress percentage
+            BigDecimal averageProgress = enrollmentRepository.findAverageProgressPercentage();
+            if (averageProgress == null) {
+                averageProgress = BigDecimal.ZERO;
+            }
+
+            return new EnrollmentStatsDTO(
+                    totalEnrollments,
+                    totalUsersEnrolled,
+                    totalGroupsEnrolled,
+                    topEnrolledCourse,
+                    totalBundlesEnrolled,
+                    averageProgress
+            );
+
+        } catch (Exception e) {
+            throw new ResourceNotValidException("Failed to retrieve enrollment statistics: " + e.getMessage());
+        }
+    }
+
+    private void validateEnrollmentRequest(EnrollmentRequestInDTO requestDTO) {
         if (!requestDTO.isValid()) {
             throw new ResourceNotValidException("Invalid enrollment request. Must provide either users or groups (not both) and either courses or bundles (not both).");
         }
@@ -123,7 +164,7 @@ public class EnrollmentServiceImpl implements EnrollmentService {
         }
     }
 
-    private List<Enrollment> enrollUsersToCourses(EnrollmentRequestDTO requestDTO) {
+    private List<Enrollment> enrollUsersToCourses(EnrollmentRequestInDTO requestDTO) {
         List<Enrollment> enrollments = new ArrayList<>();
 
         for (Long userId : requestDTO.getUserIds()) {
@@ -138,7 +179,7 @@ public class EnrollmentServiceImpl implements EnrollmentService {
         return enrollments;
     }
 
-    private List<Enrollment> enrollUsersToBundles(EnrollmentRequestDTO requestDTO) {
+    private List<Enrollment> enrollUsersToBundles(EnrollmentRequestInDTO requestDTO) {
         List<Enrollment> enrollments = new ArrayList<>();
 
         for (Long userId : requestDTO.getUserIds()) {
@@ -159,7 +200,7 @@ public class EnrollmentServiceImpl implements EnrollmentService {
         return enrollments;
     }
 
-    private List<Enrollment> enrollGroupsToCourses(EnrollmentRequestDTO requestDTO) {
+    private List<Enrollment> enrollGroupsToCourses(EnrollmentRequestInDTO requestDTO) {
         List<Enrollment> enrollments = new ArrayList<>();
 
         for (Long groupId : requestDTO.getGroupIds()) {
@@ -182,7 +223,7 @@ public class EnrollmentServiceImpl implements EnrollmentService {
         return enrollments;
     }
 
-    private List<Enrollment> enrollGroupsToBundles(EnrollmentRequestDTO requestDTO) {
+    private List<Enrollment> enrollGroupsToBundles(EnrollmentRequestInDTO requestDTO) {
         List<Enrollment> enrollments = new ArrayList<>();
 
         for (Long groupId : requestDTO.getGroupIds()) {
@@ -217,7 +258,7 @@ public class EnrollmentServiceImpl implements EnrollmentService {
         return enrollments;
     }
 
-    private Enrollment handleUserCourseEnrollment(Long userId, Long courseId, EnrollmentRequestDTO requestDTO) {
+    private Enrollment handleUserCourseEnrollment(Long userId, Long courseId, EnrollmentRequestInDTO requestDTO) {
         // Check for existing enrollment
         Optional<Enrollment> existingEnrollment = enrollmentRepository
                 .findActiveEnrollmentByUserAndCourse(userId, courseId);
@@ -238,7 +279,7 @@ public class EnrollmentServiceImpl implements EnrollmentService {
                 ENROLLMENT_SOURCE_INDIVIDUAL, null, requestDTO);
     }
 
-    private Enrollment handleUserBundleEnrollment(Long userId, Long bundleId, EnrollmentRequestDTO requestDTO) {
+    private Enrollment handleUserBundleEnrollment(Long userId, Long bundleId, EnrollmentRequestInDTO requestDTO) {
         // Check for existing bundle enrollment
         Optional<Enrollment> existingEnrollment = enrollmentRepository
                 .findActiveEnrollmentByUserAndBundle(userId, bundleId);
@@ -258,7 +299,7 @@ public class EnrollmentServiceImpl implements EnrollmentService {
                 ENROLLMENT_SOURCE_INDIVIDUAL, null, requestDTO);
     }
 
-    private Enrollment handleGroupCourseEnrollment(Long groupId, Long courseId, EnrollmentRequestDTO requestDTO) {
+    private Enrollment handleGroupCourseEnrollment(Long groupId, Long courseId, EnrollmentRequestInDTO requestDTO) {
         // Check for existing group enrollment
         Optional<Enrollment> existingEnrollment = enrollmentRepository
                 .findActiveEnrollmentByGroupAndCourse(groupId, courseId);
@@ -278,7 +319,7 @@ public class EnrollmentServiceImpl implements EnrollmentService {
                 ENROLLMENT_SOURCE_GROUP, null, requestDTO);
     }
 
-    private Enrollment handleGroupBundleEnrollment(Long groupId, Long bundleId, EnrollmentRequestDTO requestDTO) {
+    private Enrollment handleGroupBundleEnrollment(Long groupId, Long bundleId, EnrollmentRequestInDTO requestDTO) {
         // Check for existing group bundle enrollment
         Optional<Enrollment> existingEnrollment = enrollmentRepository
                 .findActiveEnrollmentByGroupAndBundle(groupId, bundleId);
@@ -299,7 +340,7 @@ public class EnrollmentServiceImpl implements EnrollmentService {
     }
 
     private List<Enrollment> expandBundleToIndividualCourses(Enrollment bundleEnrollment, Long userId,
-                                                             Long bundleId, EnrollmentRequestDTO requestDTO) {
+                                                             Long bundleId, EnrollmentRequestInDTO requestDTO) {
         List<Enrollment> courseEnrollments = new ArrayList<>();
         List<Long> courseIds = courseMicroserviceClient.findCourseIdsByBundleId(bundleId).getBody();
 
@@ -333,7 +374,7 @@ public class EnrollmentServiceImpl implements EnrollmentService {
 
     private List<Enrollment> createIndividualEnrollmentsForGroupMembers(Enrollment groupEnrollment,
                                                                         Long groupId, Long courseId,
-                                                                        EnrollmentRequestDTO requestDTO) {
+                                                                        EnrollmentRequestInDTO requestDTO) {
         List<Enrollment> memberEnrollments = new ArrayList<>();
         List<Long> memberIds = userGroupRepository.findUserIdsByGroupId(groupId);
 
@@ -366,7 +407,7 @@ public class EnrollmentServiceImpl implements EnrollmentService {
 
     private Enrollment createEnrollment(Long userId, Long groupId, Long courseId, Long bundleId,
                                         String enrollmentSource, Long parentEnrollmentId,
-                                        EnrollmentRequestDTO requestDTO) {
+                                        EnrollmentRequestInDTO requestDTO) {
         Enrollment enrollment = new Enrollment();
         enrollment.setUserId(userId);
         enrollment.setGroupId(groupId);
@@ -386,7 +427,7 @@ public class EnrollmentServiceImpl implements EnrollmentService {
         return enrollmentRepository.save(enrollment);
     }
 
-    private void updateEnrollmentDetails(Enrollment enrollment, EnrollmentRequestDTO requestDTO) {
+    private void updateEnrollmentDetails(Enrollment enrollment, EnrollmentRequestInDTO requestDTO) {
         enrollment.setAssignedBy(requestDTO.getAssignedBy());
         enrollment.setAssignedAt(LocalDateTime.now());
         enrollment.setDeadline(requestDTO.getDeadline());
