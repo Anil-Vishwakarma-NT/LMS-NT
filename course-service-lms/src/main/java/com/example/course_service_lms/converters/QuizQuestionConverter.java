@@ -1,6 +1,6 @@
 package com.example.course_service_lms.converters;
 
-import com.example.course_service_lms.dto.inDTO.QuizQuestionCreateInDTO;
+import com.example.course_service_lms.dto.inDTO.QuizQuestionInDTO;
 import com.example.course_service_lms.dto.inDTO.QuizQuestionUpdateInDTO;
 import com.example.course_service_lms.dto.outDTO.QuizQuestionOutDTO;
 import com.example.course_service_lms.entity.QuizQuestion;
@@ -25,7 +25,7 @@ public class QuizQuestionConverter {
      * @param questionCreateInDTO The input DTO containing question creation data.
      * @return A new QuizQuestion entity with data from the DTO.
      */
-    public QuizQuestion convertCreateInDTOToEntity(final QuizQuestionCreateInDTO questionCreateInDTO) {
+    public QuizQuestion convertCreateInDTOToEntity(final QuizQuestionInDTO questionCreateInDTO) {
         if (questionCreateInDTO == null) {
             return null;
         }

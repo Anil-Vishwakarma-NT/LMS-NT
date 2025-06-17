@@ -5,56 +5,65 @@ import java.math.BigDecimal;
 import java.time.LocalDateTime;
 
 /**
- * Data Transfer Object for quiz question output.
- *
- * <p>This DTO is used to return question information to the client.
- * It contains all the question details that should be exposed to the frontend.
+ * Data Transfer Object for outgoing quiz question data.
+ * Used for returning quiz question information to clients.
  */
 @Data
 public class QuizQuestionOutDTO {
 
-    /**
-     * The unique identifier of the question.
-     */
     private Integer questionId;
-
-    /**
-     * The ID of the quiz to which this question belongs.
-     */
     private Integer quizId;
-
-    /**
-     * The text content of the question.
-     */
     private String questionText;
-
-    /**
-     * The type of question (e.g., "SINGLE-MULTIPLE_CHOICE", "MULTI-SELECT", "TEXT").
-     */
     private String questionType;
-
-    /**
-     * The point value for this question.
-     */
+    private String options; // JSON string for question options
+    private String correctAnswer; // JSON string for correct answer(s) - may be hidden based on context
     private BigDecimal points;
-
-    /**
-     * Explanation or feedback for the question.
-     */
     private String explanation;
-
-    /**
-     * Flag indicating whether this question is required to be answered.
-     */
     private Boolean required;
-
-    /**
-     * Position/order of the question within the quiz.
-     */
     private Integer position;
+    private LocalDateTime createdAt;
+    private LocalDateTime updatedAt;
+
+    // Constructor for all fields
+    public QuizQuestionOutDTO(Integer questionId, Integer quizId, String questionText,
+                              String questionType, String options, String correctAnswer,
+                              BigDecimal points, String explanation, Boolean required,
+                              Integer position, LocalDateTime createdAt, LocalDateTime updatedAt) {
+        this.questionId = questionId;
+        this.quizId = quizId;
+        this.questionText = questionText;
+        this.questionType = questionType;
+        this.options = options;
+        this.correctAnswer = correctAnswer;
+        this.points = points;
+        this.explanation = explanation;
+        this.required = required;
+        this.position = position;
+        this.createdAt = createdAt;
+        this.updatedAt = updatedAt;
+    }
+
+    // Default constructor
+    public QuizQuestionOutDTO() {}
 
     /**
-     * Timestamp when the question was created.
+     * Creates a QuizQuestionOutDTO without correct answer information.
+     * Useful for student-facing responses where answers should be hidden.
      */
-    private LocalDateTime createdAt;
+    public static QuizQuestionOutDTO withoutCorrectAnswer(QuizQuestionOutDTO original) {
+        QuizQuestionOutDTO dto = new QuizQuestionOutDTO();
+        dto.questionId = original.questionId;
+        dto.quizId = original.quizId;
+        dto.questionText = original.questionText;
+        dto.questionType = original.questionType;
+        dto.options = original.options;
+        dto.correctAnswer = null; // Hide correct answer
+        dto.points = original.points;
+        dto.explanation = null; // Hide explanation
+        dto.required = original.required;
+        dto.position = original.position;
+        dto.createdAt = original.createdAt;
+        dto.updatedAt = original.updatedAt;
+        return dto;
+    }
 }

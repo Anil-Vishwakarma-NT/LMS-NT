@@ -1,6 +1,6 @@
 package com.example.course_service_lms.controller;
 
-import com.example.course_service_lms.dto.inDTO.QuizQuestionCreateInDTO;
+import com.example.course_service_lms.dto.inDTO.QuizQuestionInDTO;
 import com.example.course_service_lms.dto.inDTO.QuizQuestionUpdateInDTO;
 import com.example.course_service_lms.dto.outDTO.QuizQuestionOutDTO;
 import com.example.course_service_lms.dto.outDTO.StandardResponseOutDTO;
@@ -36,7 +36,7 @@ public class QuizQuestionController {
      */
     @PostMapping
     public ResponseEntity<StandardResponseOutDTO<QuizQuestionOutDTO>> createQuestion(
-            @Valid @RequestBody final QuizQuestionCreateInDTO questionCreateInDTO) {
+            @Valid @RequestBody final QuizQuestionInDTO questionCreateInDTO) {
         log.info("Received request to create question for quiz ID: {}", questionCreateInDTO.getQuizId());
 
         QuizQuestionOutDTO createdQuestion = quizQuestionService.createQuestion(questionCreateInDTO);
@@ -57,7 +57,7 @@ public class QuizQuestionController {
             @PathVariable final Integer quizId) {
         log.info("Received request to get all questions for quiz ID: {}", quizId);
 
-        List<QuizQuestionOutDTO> questions = quizQuestionService.getAllQuestionsByQuizId(quizId);
+        List<QuizQuestionOutDTO> questions = quizQuestionService.getQuestionsByQuizId(quizId);
 
         log.info("Retrieved {} questions for quiz ID: {}", questions.size(), quizId);
         return ResponseEntity.ok(StandardResponseOutDTO.success(questions,
@@ -91,7 +91,7 @@ public class QuizQuestionController {
     @PutMapping("/{questionId}")
     public ResponseEntity<StandardResponseOutDTO<QuizQuestionOutDTO>> updateQuestion(
             @PathVariable final Integer questionId,
-            @Valid @RequestBody final QuizQuestionUpdateInDTO questionUpdateInDTO) {
+            @Valid @RequestBody final QuizQuestionInDTO questionUpdateInDTO) {
         log.info("Received request to update question with ID: {}", questionId);
 
         QuizQuestionOutDTO updatedQuestion = quizQuestionService.updateQuestion(questionId, questionUpdateInDTO);

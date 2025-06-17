@@ -1,171 +1,224 @@
 package com.example.course_service_lms.service.serviceImpl;
 
 import com.example.course_service_lms.converters.QuizQuestionConverter;
-import com.example.course_service_lms.dto.inDTO.QuizQuestionCreateInDTO;
+import com.example.course_service_lms.dto.inDTO.QuizQuestionInDTO;
 import com.example.course_service_lms.dto.inDTO.QuizQuestionUpdateInDTO;
 import com.example.course_service_lms.dto.outDTO.QuizQuestionOutDTO;
 import com.example.course_service_lms.entity.QuizQuestion;
 import com.example.course_service_lms.exception.ResourceAlreadyExistsException;
 import com.example.course_service_lms.exception.ResourceNotFoundException;
+import com.example.course_service_lms.exception.ResourceNotValidException;
 import com.example.course_service_lms.repository.QuizQuestionRepository;
+import com.example.course_service_lms.repository.QuizRepository;
 import com.example.course_service_lms.service.QuizQuestionService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Optional;
+import java.util.stream.Collectors;
+
 import static com.example.course_service_lms.constants.QuizQuestionConstants.*;
 
 /**
- * Implementation of the QuizQuestionService interface.
- *
- * <p>This service handles all business logic related to quiz question operations
- * including creation, retrieval, updating, and deletion.</p>
+ * Implementation of QuizQuestionService for managing quiz questions.
  */
 @Service
 @RequiredArgsConstructor
 @Slf4j
+@Transactional
 public class QuizQuestionServiceImpl implements QuizQuestionService {
 
     private final QuizQuestionRepository quizQuestionRepository;
-    private final QuizQuestionConverter quizQuestionConverter;
-
+    private final QuizRepository quizRepository;
 
     @Override
-    public QuizQuestionOutDTO createQuestion(final QuizQuestionCreateInDTO questionCreateInDTO) {
-        try {
-            log.info("Attempting to create a new question for quiz ID: {}", questionCreateInDTO.getQuizId());
+    public QuizQuestionOutDTO createQuestion(QuizQuestionInDTO questionInDTO) {
+        log.info("Creating new question for quiz ID: {}", questionInDTO.getQuizId());
 
-            // Check if question with same position already exists in the quiz
-            if (quizQuestionRepository.existsByQuizIdAndPosition(
-                    questionCreateInDTO.getQuizId(),
-                    questionCreateInDTO.getPosition())) {
-                log.error("Question with position '{}' already exists in quiz '{}'",
-                        questionCreateInDTO.getPosition(), questionCreateInDTO.getQuizId());
-                throw new ResourceAlreadyExistsException(
-                        String.format(POSITION_EXISTS, questionCreateInDTO.getPosition(), questionCreateInDTO.getQuizId()));
-            }
+        // Validate quiz exists
+        validateQuizExists(questionInDTO.getQuizId());
 
-            // Convert DTO to Entity using converter
-            QuizQuestion question = quizQuestionConverter.convertCreateInDTOToEntity(questionCreateInDTO);
+        // Validate question position is not already taken
+        validateQuestionPosition(questionInDTO.getQuizId(), questionInDTO.getPosition(), null);
 
-            // Save question entity
-            QuizQuestion savedQuestion = quizQuestionRepository.save(question);
-            log.info("Question created successfully with ID: {} for quiz ID: {}",
-                    savedQuestion.getQuestionId(), savedQuestion.getQuizId());
+        // Validate question data
+        validateQuestionData(questionInDTO);
 
-            // Convert entity to output DTO
-            return quizQuestionConverter.convertEntityToOutDTO(savedQuestion);
-        } catch (ResourceAlreadyExistsException e) {
-            throw e;
-        } catch (Exception e) {
-            log.error("Error creating question for quiz ID {}: {}", questionCreateInDTO.getQuizId(), e.getMessage(), e);
-            throw new RuntimeException(GENERAL_ERROR, e);
-        }
+        // Convert DTO to entity
+        QuizQuestion question = convertToEntity(questionInDTO);
+        question.setCreatedAt(LocalDateTime.now());
+        question.setUpdatedAt(LocalDateTime.now());
+
+        // Save question
+        QuizQuestion savedQuestion = quizQuestionRepository.save(question);
+        log.info("Successfully created question with ID: {}", savedQuestion.getQuestionId());
+
+        return convertToOutDTO(savedQuestion);
     }
 
     @Override
-    public List<QuizQuestionOutDTO> getAllQuestionsByQuizId(final Integer quizId) {
-        try {
-            log.info("Retrieving all questions for quiz ID: {}", quizId);
+    @Transactional(readOnly = true)
+    public List<QuizQuestionOutDTO> getAllQuestions() {
+        log.info("Retrieving all questions");
 
-            List<QuizQuestion> questions = quizQuestionRepository.findByQuizIdOrderByPosition(quizId);
-
-            if (questions.isEmpty()) {
-                log.info("No questions found for quiz ID: {}", quizId);
-            } else {
-                log.info("Found {} questions for quiz ID: {}", questions.size(), quizId);
-            }
-
-            return quizQuestionConverter.convertEntityListToOutDTOList(questions);
-        } catch (Exception e) {
-            log.error("Error retrieving questions for quiz ID {}: {}", quizId, e.getMessage(), e);
-            throw new RuntimeException(GENERAL_ERROR, e);
-        }
+        List<QuizQuestion> questions = quizQuestionRepository.findAll();
+        return questions.stream()
+                .map(this::convertToOutDTO)
+                .collect(Collectors.toList());
     }
 
     @Override
-    public QuizQuestionOutDTO getQuestionById(final Integer questionId) {
-        try {
-            log.info("Retrieving question with ID: {}", questionId);
+    @Transactional(readOnly = true)
+    public List<QuizQuestionOutDTO> getQuestionsByQuizId(Integer quizId) {
+        log.info("Retrieving questions for quiz ID: {}", quizId);
 
-            QuizQuestion question = quizQuestionRepository.findById(questionId)
-                    .orElseThrow(() -> {
-                        log.error("Question not found with ID: {}", questionId);
-                        return new ResourceNotFoundException(String.format(QUESTION_NOT_FOUND, questionId));
-                    });
+        // Validate quiz exists
+        validateQuizExists(quizId);
 
-            log.info("Question retrieved successfully with ID: {}", questionId);
-            return quizQuestionConverter.convertEntityToOutDTO(question);
-        } catch (ResourceNotFoundException e) {
-            throw e;
-        } catch (Exception e) {
-            log.error("Error retrieving question with ID {}: {}", questionId, e.getMessage(), e);
-            throw new RuntimeException(GENERAL_ERROR, e);
-        }
+        List<QuizQuestion> questions = quizQuestionRepository.findByQuizIdOrderByPosition(quizId);
+        return questions.stream()
+                .map(this::convertToOutDTO)
+                .collect(Collectors.toList());
     }
 
     @Override
-    public QuizQuestionOutDTO updateQuestion(final Integer questionId, final QuizQuestionUpdateInDTO questionUpdateInDTO) {
-        try {
-            log.info("Attempting to update question with ID: {}", questionId);
+    @Transactional(readOnly = true)
+    public QuizQuestionOutDTO getQuestionById(Integer questionId) {
+        log.info("Retrieving question with ID: {}", questionId);
 
-            // Find existing question
-            QuizQuestion existingQuestion = quizQuestionRepository.findById(questionId)
-                    .orElseThrow(() -> {
-                        log.error("Question not found with ID: {}", questionId);
-                        return new ResourceNotFoundException(String.format(QUESTION_NOT_FOUND, questionId));
-                    });
-
-            // Check if position is being changed and if new position already exists
-            if (!existingQuestion.getPosition().equals(questionUpdateInDTO.getPosition())) {
-                if (quizQuestionRepository.existsByQuizIdAndPositionAndQuestionIdNot(
-                        existingQuestion.getQuizId(),
-                        questionUpdateInDTO.getPosition(),
-                        questionId)) {
-                    log.error("Question with position '{}' already exists in quiz '{}'",
-                            questionUpdateInDTO.getPosition(), existingQuestion.getQuizId());
-                    throw new ResourceAlreadyExistsException(
-                            String.format(POSITION_EXISTS, questionUpdateInDTO.getPosition(), existingQuestion.getQuizId()));
-                }
-            }
-
-            // Update entity using converter
-            QuizQuestion updatedQuestion = quizQuestionConverter.updateEntityFromUpdateInDTO(existingQuestion, questionUpdateInDTO);
-
-            // Save updated entity
-            QuizQuestion savedQuestion = quizQuestionRepository.save(updatedQuestion);
-            log.info("Question updated successfully with ID: {}", savedQuestion.getQuestionId());
-
-            // Convert entity to output DTO
-            return quizQuestionConverter.convertEntityToOutDTO(savedQuestion);
-        } catch (ResourceNotFoundException | ResourceAlreadyExistsException e) {
-            throw e;
-        } catch (Exception e) {
-            log.error("Error updating question with ID {}: {}", questionId, e.getMessage(), e);
-            throw new RuntimeException(GENERAL_ERROR, e);
-        }
+        QuizQuestion question = findQuestionById(questionId);
+        return convertToOutDTO(question);
     }
 
     @Override
-    public void deleteQuestion(final Integer questionId) {
-        try {
-            log.info("Attempting to delete question with ID: {}", questionId);
+    public QuizQuestionOutDTO updateQuestion(Integer questionId, QuizQuestionInDTO questionInDTO) {
+        log.info("Updating question with ID: {}", questionId);
 
-            // Check if question exists
-            if (!quizQuestionRepository.existsById(questionId)) {
-                log.error("Question not found with ID: {}", questionId);
-                throw new ResourceNotFoundException(String.format(QUESTION_NOT_FOUND, questionId));
-            }
+        // Find existing question
+        QuizQuestion existingQuestion = findQuestionById(questionId);
 
-            // Delete the question
-            quizQuestionRepository.deleteById(questionId);
-            log.info("Question deleted successfully with ID: {}", questionId);
-        } catch (ResourceNotFoundException e) {
-            throw e;
-        } catch (Exception e) {
-            log.error("Error deleting question with ID {}: {}", questionId, e.getMessage(), e);
-            throw new RuntimeException(GENERAL_ERROR, e);
+        // Validate quiz exists (in case quiz ID is being changed)
+        validateQuizExists(questionInDTO.getQuizId());
+
+        // Validate question position (exclude current question from position check)
+        validateQuestionPosition(questionInDTO.getQuizId(), questionInDTO.getPosition(), questionId);
+
+        // Validate question data
+        validateQuestionData(questionInDTO);
+
+        // Update entity fields
+        updateQuestionFromDTO(existingQuestion, questionInDTO);
+        existingQuestion.setUpdatedAt(LocalDateTime.now());
+
+        // Save updated question
+        QuizQuestion updatedQuestion = quizQuestionRepository.save(existingQuestion);
+        log.info("Successfully updated question with ID: {}", updatedQuestion.getQuestionId());
+
+        return convertToOutDTO(updatedQuestion);
+    }
+
+    @Override
+    public void deleteQuestion(Integer questionId) {
+        log.info("Deleting question with ID: {}", questionId);
+
+        // Verify question exists
+        QuizQuestion question = findQuestionById(questionId);
+
+        // Delete the question
+        quizQuestionRepository.delete(question);
+        log.info("Successfully deleted question with ID: {}", questionId);
+    }
+
+    // Private helper methods
+
+    private void validateQuizExists(Integer quizId) {
+        if (!quizRepository.existsById(quizId)) {
+            throw new ResourceNotFoundException("Quiz not found with ID: " + quizId);
         }
+    }
+
+    private void validateQuestionPosition(Integer quizId, Integer position, Integer excludeQuestionId) {
+        Optional<QuizQuestion> existingQuestion = quizQuestionRepository.findByQuizIdAndPosition(quizId, position);
+
+        if (existingQuestion.isPresent() &&
+                (excludeQuestionId == null || !existingQuestion.get().getQuestionId().equals(excludeQuestionId))) {
+            throw new ResourceAlreadyExistsException(
+                    "Question already exists at position " + position + " for quiz ID: " + quizId);
+        }
+    }
+
+    private void validateQuestionData(QuizQuestionInDTO questionInDTO) {
+        // Validate question type specific requirements
+        String questionType = questionInDTO.getQuestionType();
+
+        if ("MULTIPLE_CHOICE".equals(questionType) &&
+                (questionInDTO.getOptions() == null || questionInDTO.getOptions().trim().isEmpty())) {
+            throw new ResourceNotValidException("Options are required for multiple choice questions");
+        }
+
+        if ("TRUE_FALSE".equals(questionType)) {
+            String correctAnswer = questionInDTO.getCorrectAnswer();
+            if (correctAnswer == null ||
+                    (!correctAnswer.equalsIgnoreCase("true") && !correctAnswer.equalsIgnoreCase("false"))) {
+                throw new ResourceNotValidException("Correct answer for true/false questions must be 'true' or 'false'");
+            }
+        }
+
+        // Validate points are reasonable
+        if (questionInDTO.getPoints().compareTo(new java.math.BigDecimal("0")) < 0) {
+            throw new ResourceNotValidException("Points cannot be negative");
+        }
+    }
+
+    private QuizQuestion findQuestionById(Integer questionId) {
+        return quizQuestionRepository.findById(questionId)
+                .orElseThrow(() -> new ResourceNotFoundException("Question not found with ID: " + questionId));
+    }
+
+    private QuizQuestion convertToEntity(QuizQuestionInDTO dto) {
+        QuizQuestion question = new QuizQuestion();
+        question.setQuizId(dto.getQuizId());
+        question.setQuestionText(dto.getQuestionText());
+        question.setQuestionType(dto.getQuestionType());
+        question.setOptions(dto.getOptions());
+        question.setCorrectAnswer(dto.getCorrectAnswer());
+        question.setPoints(dto.getPoints());
+        question.setExplanation(dto.getExplanation());
+        question.setRequired(dto.getRequired());
+        question.setPosition(dto.getPosition());
+        return question;
+    }
+
+    private void updateQuestionFromDTO(QuizQuestion question, QuizQuestionInDTO dto) {
+        question.setQuizId(dto.getQuizId());
+        question.setQuestionText(dto.getQuestionText());
+        question.setQuestionType(dto.getQuestionType());
+        question.setOptions(dto.getOptions());
+        question.setCorrectAnswer(dto.getCorrectAnswer());
+        question.setPoints(dto.getPoints());
+        question.setExplanation(dto.getExplanation());
+        question.setRequired(dto.getRequired());
+        question.setPosition(dto.getPosition());
+    }
+
+    private QuizQuestionOutDTO convertToOutDTO(QuizQuestion question) {
+        return new QuizQuestionOutDTO(
+                question.getQuestionId(),
+                question.getQuizId(),
+                question.getQuestionText(),
+                question.getQuestionType(),
+                question.getOptions(),
+                question.getCorrectAnswer(),
+                question.getPoints(),
+                question.getExplanation(),
+                question.getRequired(),
+                question.getPosition(),
+                question.getCreatedAt(),
+                question.getUpdatedAt()
+        );
     }
 }
