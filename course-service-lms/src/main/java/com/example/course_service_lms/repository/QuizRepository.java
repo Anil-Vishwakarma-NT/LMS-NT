@@ -39,7 +39,7 @@ public interface QuizRepository extends JpaRepository<Quiz, Integer> {
      * @param parentId The parent ID
      * @return List of quizzes for the given parent
      */
-    List<Quiz> findByParentTypeAndParentIdAndIsActiveTrue(String parentType, Integer parentId);
+    List<Quiz> findByParentTypeAndParentIdAndIsActiveTrue(String parentType, Long parentId);
 
     /**
      * Check if a quiz with the same title exists for the same parent.
@@ -49,7 +49,7 @@ public interface QuizRepository extends JpaRepository<Quiz, Integer> {
      * @param parentId The parent ID
      * @return true if quiz with same title exists for the parent
      */
-    boolean existsByTitleAndParentTypeAndParentId(String title, String parentType, Integer parentId);
+    boolean existsByTitleAndParentTypeAndParentId(String title, String parentType, Long parentId);
 
     /**
      * Find all quizzes for a specific course (parent_type = 'course').

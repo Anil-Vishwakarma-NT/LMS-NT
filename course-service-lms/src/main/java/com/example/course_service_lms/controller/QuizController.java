@@ -79,7 +79,7 @@ public class QuizController {
      * @return ResponseEntity containing StandardResponseOutDTO with a list of QuizOutDTO for the course.
      */
     @GetMapping("/course/{courseId}")
-    public ResponseEntity<StandardResponseOutDTO<List<QuizOutDTO>>> getQuizzesByCourse(@PathVariable final Integer courseId) {
+    public ResponseEntity<StandardResponseOutDTO<List<QuizOutDTO>>> getQuizzesByCourse(@PathVariable final Long courseId) {
         log.info("Received request to fetch quizzes for course ID: {}", courseId);
         List<QuizOutDTO> quizzes = quizService.getQuizzesByCourse(courseId);
         log.info("Retrieved {} quizzes for course ID: {}", quizzes.size(), courseId);
@@ -93,7 +93,7 @@ public class QuizController {
      * @return ResponseEntity containing StandardResponseOutDTO with a list of QuizOutDTO for the course content.
      */
     @GetMapping("/course-content/{courseContentId}")
-    public ResponseEntity<StandardResponseOutDTO<List<QuizOutDTO>>> getQuizzesByCourseContent(@PathVariable final Integer courseContentId) {
+    public ResponseEntity<StandardResponseOutDTO<List<QuizOutDTO>>> getQuizzesByCourseContent(@PathVariable final Long courseContentId) {
         log.info("Received request to fetch quizzes for course content ID: {}", courseContentId);
         List<QuizOutDTO> quizzes = quizService.getQuizzesByCourseContent(courseContentId);
         log.info("Retrieved {} quizzes for course content ID: {}", quizzes.size(), courseContentId);

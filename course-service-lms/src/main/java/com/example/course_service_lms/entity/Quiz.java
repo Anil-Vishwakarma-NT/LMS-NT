@@ -38,7 +38,7 @@ public class Quiz {
      * Identifier for the parent entity this quiz belongs to.
      */
     @Column(name = "parent_id", nullable = false)
-    private Integer parentId;
+    private Long parentId;
 
     /**
      * Title of the quiz.
@@ -131,7 +131,7 @@ public class Quiz {
      * @param createdAt          when it was created
      * @param updatedAt          when it was last updated
      */
-    public Quiz(Integer quizId, String parentType, Integer parentId, String title, String description,
+    public Quiz(Integer quizId, String parentType, Long parentId, String title, String description,
                 Integer timeLimit, Integer attemptsAllowed, BigDecimal passingScore, Boolean randomizeQuestions,
                 Boolean showResults, Boolean isActive, Integer createdBy, LocalDateTime createdAt, LocalDateTime updatedAt) {
         this.quizId = quizId;

@@ -7,6 +7,8 @@ import com.example.course_service_lms.dto.outDTO.QuizOutDTO;
 import com.example.course_service_lms.entity.Quiz;
 import com.example.course_service_lms.exception.ResourceAlreadyExistsException;
 import com.example.course_service_lms.exception.ResourceNotFoundException;
+import com.example.course_service_lms.repository.CourseContentRepository;
+import com.example.course_service_lms.repository.CourseRepository;
 import com.example.course_service_lms.repository.QuizRepository;
 import com.example.course_service_lms.service.QuizService;
 import lombok.extern.slf4j.Slf4j;
@@ -42,6 +44,12 @@ public class QuizServiceImpl implements QuizService {
     @Autowired
     private QuizConverter quizConverter;
 
+    @Autowired
+    private CourseRepository courseRepository;
+
+    @Autowired
+    private CourseContentRepository courseContentRepository;
+
     /**
      * Creates a new quiz based on the provided DTO.
      * <p>
@@ -57,6 +65,22 @@ public class QuizServiceImpl implements QuizService {
     public QuizOutDTO createQuiz(final QuizCreateInDTO quizCreateInDTO) {
         try {
             log.info("Attempting to create a new quiz: {}", quizCreateInDTO.getTitle());
+            String parentType = quizCreateInDTO.getParentType();
+            Long parentId = quizCreateInDTO.getParentId();
+
+            switch (parentType) {
+                case "course":
+                    if (!courseRepository.existsById(parentId)) {
+                        throw new ResourceNotFoundException("Course Not Found");
+                    }
+                    break;
+
+                case "course-content":
+                    if (!courseContentRepository.existsById(parentId)) {
+                        throw new ResourceNotFoundException("Course Content Not Found");
+                    }
+                    break;
+            }
 
             // Check for duplicate quiz title within the same parent
             if (quizRepository.existsByTitleAndParentTypeAndParentId(
@@ -76,7 +100,7 @@ public class QuizServiceImpl implements QuizService {
 
             // Convert entity to output DTO
             return quizConverter.toOutDTO(savedQuiz);
-        } catch (ResourceAlreadyExistsException e) {
+        } catch (ResourceNotFoundException | ResourceAlreadyExistsException e) {
             throw e;
         } catch (Exception e) {
             log.error("Error creating quiz: {}", e.getMessage(), e);
@@ -153,7 +177,7 @@ public class QuizServiceImpl implements QuizService {
      * @return a list of {@link QuizOutDTO} for the course
      */
     @Override
-    public List<QuizOutDTO> getQuizzesByCourse(final Integer courseId) {
+    public List<QuizOutDTO> getQuizzesByCourse(final Long courseId) {
         try {
             log.info("Fetching quizzes for course ID: {}", courseId);
 
@@ -184,7 +208,7 @@ public class QuizServiceImpl implements QuizService {
      * @return a list of {@link QuizOutDTO} for the course content
      */
     @Override
-    public List<QuizOutDTO> getQuizzesByCourseContent(final Integer courseContentId) {
+    public List<QuizOutDTO> getQuizzesByCourseContent(final Long courseContentId) {
         try {
             log.info("Fetching quizzes for course content ID: {}", courseContentId);
 

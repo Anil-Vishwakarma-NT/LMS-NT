@@ -17,7 +17,7 @@ public class QuizCreateInDTO {
 
     @NotNull(message = "Parent ID is required")
     @Positive(message = "Parent ID must be positive")
-    private Integer parentId;
+    private Long parentId;
 
     @NotBlank(message = "Title is required")
     @Size(max = 255, message = "Title must not exceed 255 characters")

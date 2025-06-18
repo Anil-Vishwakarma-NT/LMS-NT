@@ -26,9 +26,9 @@ public class EnrollmentController {
     EnrollmentService enrollmentService;
 
     @PostMapping("/enroll")
-    public ResponseEntity<StandardResponseOutDTO<List<Enrollment>>> enroll(@Valid @RequestBody EnrollmentRequestInDTO enrollmentRequestInDTO) {
-        List<Enrollment> enrollments =  enrollmentService.enroll(enrollmentRequestInDTO);
-        StandardResponseOutDTO<List<Enrollment>> standardResponseOutDTO = StandardResponseOutDTO.success(enrollments, "Enrollment Successful");
+    public ResponseEntity<StandardResponseOutDTO<List<EnrollmentOutDTO>>> enroll(@Valid @RequestBody EnrollmentRequestInDTO enrollmentRequestInDTO) {
+        List<EnrollmentOutDTO> enrollments =  enrollmentService.enroll(enrollmentRequestInDTO);
+        StandardResponseOutDTO<List<EnrollmentOutDTO>> standardResponseOutDTO = StandardResponseOutDTO.success(enrollments, "Enrollment Successful");
         return ResponseEntity.ok(standardResponseOutDTO);
     }
 

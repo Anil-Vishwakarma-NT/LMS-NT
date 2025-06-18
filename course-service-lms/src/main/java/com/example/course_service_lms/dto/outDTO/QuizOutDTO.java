@@ -11,7 +11,7 @@ import java.time.LocalDateTime;
 public class QuizOutDTO {
     private Integer quizId;
     private String parentType;
-    private Integer parentId;
+    private Long parentId;
     private String title;
     private String description;
     private Integer timeLimit;

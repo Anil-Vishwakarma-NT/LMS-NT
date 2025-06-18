@@ -45,7 +45,7 @@ public interface QuizService {
      * @param courseId the ID of the course
      * @return a list of {@link QuizOutDTO} for the course
      */
-    List<QuizOutDTO> getQuizzesByCourse(Integer courseId);
+    List<QuizOutDTO> getQuizzesByCourse(Long courseId);
 
     /**
      * Retrieves all quizzes for a specific course content.
@@ -53,7 +53,7 @@ public interface QuizService {
      * @param courseContentId the ID of the course content
      * @return a list of {@link QuizOutDTO} for the course content
      */
-    List<QuizOutDTO> getQuizzesByCourseContent(Integer courseContentId);
+    List<QuizOutDTO> getQuizzesByCourseContent(Long courseContentId);
 
     /**
      * Updates the details of an existing quiz.

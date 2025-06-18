@@ -44,7 +44,7 @@ public class EnrollmentServiceImpl implements EnrollmentService {
     private static final String ENROLLMENT_SOURCE_BUNDLE_EXPANSION = "BUNDLE_EXPANSION";
 
     @Override
-    public List<Enrollment> enroll(EnrollmentRequestInDTO requestDTO) {
+    public List<EnrollmentOutDTO> enroll(EnrollmentRequestInDTO requestDTO) {
         // Validate request
         validateEnrollmentRequest(requestDTO);
 
@@ -69,11 +69,37 @@ public class EnrollmentServiceImpl implements EnrollmentService {
                 }
             }
 
-            return createdEnrollments;
+            return createdEnrollments.stream()
+                    .map(this::convertToEnrollmentOutDTO)
+                    .collect(Collectors.toList());
 
         } catch (Exception e) {
             throw new ResourceNotValidException("Enrollment failed: " + e.getMessage());
         }
+    }
+
+    private EnrollmentOutDTO convertToEnrollmentOutDTO(Enrollment enrollment) {
+        EnrollmentOutDTO dto = new EnrollmentOutDTO();
+
+        dto.setEnrollmentId(enrollment.getEnrollmentId());
+        dto.setUserId(enrollment.getUserId());
+        dto.setGroupId(enrollment.getGroupId());
+        dto.setCourseId(enrollment.getCourseId());
+        dto.setBundleId(enrollment.getBundleId());
+        dto.setAssignedBy(enrollment.getAssignedBy());
+        dto.setAssignedAt(enrollment.getAssignedAt());
+        dto.setDeadline(enrollment.getDeadline());
+        dto.setStatus(enrollment.getStatus());
+        dto.setEnrollmentSource(enrollment.getEnrollmentSource());
+        dto.setParentEnrollmentId(enrollment.getParentEnrollmentId());
+        dto.setStartedAt(enrollment.getStartedAt());
+        dto.setCompletedAt(enrollment.getCompletedAt());
+        dto.setProgressPercentage(enrollment.getProgressPercentage());
+        dto.setCreatedAt(enrollment.getCreatedAt());
+        dto.setUpdatedAt(enrollment.getUpdatedAt());
+        dto.setIsActive(enrollment.getIsActive());
+
+        return dto;
     }
 
     private void validateEnrollmentRequest(EnrollmentRequestInDTO requestDTO) {
