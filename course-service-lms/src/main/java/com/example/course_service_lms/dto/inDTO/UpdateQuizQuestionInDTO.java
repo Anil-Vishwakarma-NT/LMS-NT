@@ -2,19 +2,11 @@ package com.example.course_service_lms.dto.inDTO;
 
 import jakarta.validation.constraints.*;
 import lombok.Data;
+
 import java.math.BigDecimal;
 
-/**
- * Data Transfer Object for incoming quiz question data.
- * Used for creating and updating quiz questions.
- */
 @Data
-public class QuizQuestionInDTO {
-
-    @NotNull(message = "Quiz ID is required")
-    @Positive(message = "Quiz ID must be positive")
-    private Long quizId;
-
+public class UpdateQuizQuestionInDTO {
     @NotBlank(message = "Question text is required")
     @Size(max = 5000, message = "Question text cannot exceed 5000 characters")
     private String questionText;

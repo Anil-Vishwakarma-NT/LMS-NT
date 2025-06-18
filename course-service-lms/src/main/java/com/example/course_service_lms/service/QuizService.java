@@ -37,7 +37,7 @@ public interface QuizService {
      * @return the {@link QuizOutDTO} if found
      * @throws com.example.course_service_lms.exception.ResourceNotFoundException if quiz not found
      */
-    QuizOutDTO getQuizById(Integer id);
+    QuizOutDTO getQuizById(Long id);
 
     /**
      * Retrieves all quizzes for a specific course.
@@ -62,12 +62,12 @@ public interface QuizService {
      * @param quizUpdateInDTO the updated quiz data
      * @return the updated {@link QuizOutDTO}
      */
-    QuizOutDTO updateQuiz(Integer quizId, QuizUpdateInDTO quizUpdateInDTO);
+    QuizOutDTO updateQuiz(Long quizId, QuizUpdateInDTO quizUpdateInDTO);
 
     /**
      * Soft deletes the quiz with the given ID by setting isActive to false.
      *
      * @param id the ID of the quiz to delete
      */
-    void deleteQuiz(Integer id);
+    void deleteQuiz(Long id);
 }

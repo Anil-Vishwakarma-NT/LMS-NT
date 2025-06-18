@@ -25,7 +25,7 @@ public class Quiz {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "quiz_id")
-    private Integer quizId;
+    private Long quizId;
 
     /**
      * Type of the parent entity (e.g., "course", "bundle").
@@ -131,7 +131,7 @@ public class Quiz {
      * @param createdAt          when it was created
      * @param updatedAt          when it was last updated
      */
-    public Quiz(Integer quizId, String parentType, Long parentId, String title, String description,
+    public Quiz(Long quizId, String parentType, Long parentId, String title, String description,
                 Integer timeLimit, Integer attemptsAllowed, BigDecimal passingScore, Boolean randomizeQuestions,
                 Boolean showResults, Boolean isActive, Integer createdBy, LocalDateTime createdAt, LocalDateTime updatedAt) {
         this.quizId = quizId;

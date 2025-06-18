@@ -16,14 +16,14 @@ import java.util.Optional;
  * for managing quiz questions in the database.</p>
  */
 @Repository
-public interface QuizQuestionRepository extends JpaRepository<QuizQuestion, Integer> {
+public interface QuizQuestionRepository extends JpaRepository<QuizQuestion, Long> {
     /**
      * Find all questions for a specific quiz, ordered by position.
      *
      * @param quizId the quiz ID
      * @return list of questions ordered by position
      */
-    List<QuizQuestion> findByQuizIdOrderByPosition(Integer quizId);
+    List<QuizQuestion> findByQuizIdOrderByPosition(Long quizId);
 
     /**
      * Find a question by quiz ID and position.
@@ -32,7 +32,7 @@ public interface QuizQuestionRepository extends JpaRepository<QuizQuestion, Inte
      * @param position the question position
      * @return optional question
      */
-    Optional<QuizQuestion> findByQuizIdAndPosition(Integer quizId, Integer position);
+    Optional<QuizQuestion> findByQuizIdAndPosition(Long quizId, Integer position);
 
     /**
      * Count questions for a specific quiz.
@@ -40,14 +40,14 @@ public interface QuizQuestionRepository extends JpaRepository<QuizQuestion, Inte
      * @param quizId the quiz ID
      * @return number of questions in the quiz
      */
-    long countByQuizId(Integer quizId);
+    long countByQuizId(Long quizId);
 
     /**
      * Delete all questions for a specific quiz.
      *
      * @param quizId the quiz ID
      */
-    void deleteByQuizId(Integer quizId);
+    void deleteByQuizId(Long quizId);
 
     /**
      * Find questions by quiz ID and question type.
@@ -56,7 +56,7 @@ public interface QuizQuestionRepository extends JpaRepository<QuizQuestion, Inte
      * @param questionType the question type
      * @return list of questions matching the criteria
      */
-    List<QuizQuestion> findByQuizIdAndQuestionType(Integer quizId, String questionType);
+    List<QuizQuestion> findByQuizIdAndQuestionType(Long quizId, String questionType);
 
     /**
      * Check if a question exists at a specific position in a quiz.
@@ -65,7 +65,7 @@ public interface QuizQuestionRepository extends JpaRepository<QuizQuestion, Inte
      * @param position the position to check
      * @return true if a question exists at that position
      */
-    boolean existsByQuizIdAndPosition(Integer quizId, Integer position);
+    boolean existsByQuizIdAndPosition(Long quizId, Integer position);
 
     /**
      * Get the maximum position for questions in a quiz.
@@ -74,6 +74,6 @@ public interface QuizQuestionRepository extends JpaRepository<QuizQuestion, Inte
      * @return the maximum position, or null if no questions exist
      */
     @Query("SELECT MAX(q.position) FROM QuizQuestion q WHERE q.quizId = :quizId")
-    Integer findMaxPositionByQuizId(@Param("quizId") Integer quizId);
+    Integer findMaxPositionByQuizId(@Param("quizId") Long quizId);
 }
 

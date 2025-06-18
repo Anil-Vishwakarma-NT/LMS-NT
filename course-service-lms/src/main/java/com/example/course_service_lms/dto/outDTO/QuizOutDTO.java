@@ -9,7 +9,7 @@ import java.time.LocalDateTime;
  */
 @Data
 public class QuizOutDTO {
-    private Integer quizId;
+    private Long quizId;
     private String parentType;
     private Long parentId;
     private String title;

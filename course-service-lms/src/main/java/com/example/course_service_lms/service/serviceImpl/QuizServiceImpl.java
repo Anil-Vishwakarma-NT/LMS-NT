@@ -148,7 +148,7 @@ public class QuizServiceImpl implements QuizService {
      * @throws ResourceNotFoundException if quiz not found
      */
     @Override
-    public QuizOutDTO getQuizById(final Integer quizId) {
+    public QuizOutDTO getQuizById(final Long quizId) {
         try {
             log.info("Fetching quiz with ID: {}", quizId);
 
@@ -246,7 +246,7 @@ public class QuizServiceImpl implements QuizService {
      * @throws RuntimeException               if there is a general error during the update
      */
     @Override
-    public QuizOutDTO updateQuiz(final Integer quizId, final QuizUpdateInDTO quizUpdateInDTO) {
+    public QuizOutDTO updateQuiz(final Long quizId, final QuizUpdateInDTO quizUpdateInDTO) {
         try {
             log.info("Attempting to update quiz with ID: {}", quizId);
 
@@ -293,7 +293,7 @@ public class QuizServiceImpl implements QuizService {
      * @throws RuntimeException          if there is a general error during the deletion
      */
     @Override
-    public void deleteQuiz(final Integer id) {
+    public void deleteQuiz(final Long id) {
         try {
             log.info("Attempting to soft delete quiz with ID: {}", id);
 

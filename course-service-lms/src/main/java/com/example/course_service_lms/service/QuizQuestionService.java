@@ -2,6 +2,7 @@ package com.example.course_service_lms.service;
 
 import com.example.course_service_lms.dto.inDTO.QuizQuestionInDTO;
 import com.example.course_service_lms.dto.inDTO.QuizQuestionUpdateInDTO;
+import com.example.course_service_lms.dto.inDTO.UpdateQuizQuestionInDTO;
 import com.example.course_service_lms.dto.outDTO.QuizQuestionOutDTO;
 
 import java.util.List;
@@ -32,7 +33,7 @@ public interface QuizQuestionService {
      * @param quizId the quiz ID
      * @return list of questions for the quiz
      */
-    List<QuizQuestionOutDTO> getQuestionsByQuizId(Integer quizId);
+    List<QuizQuestionOutDTO> getQuestionsByQuizId(Long quizId);
 
     /**
      * Retrieves a specific question by ID.
@@ -40,21 +41,21 @@ public interface QuizQuestionService {
      * @param questionId the question ID
      * @return the question details
      */
-    QuizQuestionOutDTO getQuestionById(Integer questionId);
+    QuizQuestionOutDTO getQuestionById(Long questionId);
 
     /**
      * Updates an existing quiz question.
      *
      * @param questionId the question ID to update
-     * @param questionInDTO the updated question data
+     * @param updateQuizQuestionInDTO the updated question data
      * @return the updated question as QuizQuestionOutDTO
      */
-    QuizQuestionOutDTO updateQuestion(Integer questionId, QuizQuestionInDTO questionInDTO);
+    QuizQuestionOutDTO updateQuestion(Long questionId, UpdateQuizQuestionInDTO updateQuizQuestionInDTO);
 
     /**
      * Deletes a quiz question.
      *
      * @param questionId the question ID to delete
      */
-    void deleteQuestion(Integer questionId);
+    void deleteQuestion(Long questionId);
 }

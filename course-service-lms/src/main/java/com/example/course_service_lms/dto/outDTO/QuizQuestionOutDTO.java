@@ -11,8 +11,8 @@ import java.time.LocalDateTime;
 @Data
 public class QuizQuestionOutDTO {
 
-    private Integer questionId;
-    private Integer quizId;
+    private Long questionId;
+    private Long quizId;
     private String questionText;
     private String questionType;
     private String options; // JSON string for question options
@@ -25,7 +25,7 @@ public class QuizQuestionOutDTO {
     private LocalDateTime updatedAt;
 
     // Constructor for all fields
-    public QuizQuestionOutDTO(Integer questionId, Integer quizId, String questionText,
+    public QuizQuestionOutDTO(Long questionId, Long quizId, String questionText,
                               String questionType, String options, String correctAnswer,
                               BigDecimal points, String explanation, Boolean required,
                               Integer position, LocalDateTime createdAt, LocalDateTime updatedAt) {

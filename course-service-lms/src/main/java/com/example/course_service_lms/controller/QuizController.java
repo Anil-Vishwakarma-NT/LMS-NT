@@ -65,7 +65,7 @@ public class QuizController {
      * @return ResponseEntity containing StandardResponseOutDTO with the QuizOutDTO if found.
      */
     @GetMapping("/{id}")
-    public ResponseEntity<StandardResponseOutDTO<QuizOutDTO>> getQuizById(@PathVariable final Integer id) {
+    public ResponseEntity<StandardResponseOutDTO<QuizOutDTO>> getQuizById(@PathVariable final Long id) {
         log.info("Received request to fetch quiz with ID: {}", id);
         QuizOutDTO quiz = quizService.getQuizById(id);
         log.info("Quiz retrieved successfully with ID: {}", id);
@@ -108,7 +108,7 @@ public class QuizController {
      * @return ResponseEntity containing StandardResponseOutDTO with updated QuizOutDTO.
      */
     @PutMapping("/{id}")
-    public ResponseEntity<StandardResponseOutDTO<QuizOutDTO>> updateQuiz(@PathVariable final Integer id,
+    public ResponseEntity<StandardResponseOutDTO<QuizOutDTO>> updateQuiz(@PathVariable final Long id,
                                                                          @Valid @RequestBody final QuizUpdateInDTO quizUpdateInDTO) {
         log.info("Received request to update quiz with ID: {}", id);
         QuizOutDTO updatedQuiz = quizService.updateQuiz(id, quizUpdateInDTO);
@@ -123,7 +123,7 @@ public class QuizController {
      * @return ResponseEntity containing StandardResponseOutDTO with success message.
      */
     @DeleteMapping("/{id}")
-    public ResponseEntity<StandardResponseOutDTO<String>> deleteQuiz(@PathVariable final Integer id) {
+    public ResponseEntity<StandardResponseOutDTO<String>> deleteQuiz(@PathVariable final Long id) {
         log.info("Received request to delete quiz with ID: {}", id);
         quizService.deleteQuiz(id);
         log.info("Quiz soft deleted successfully with ID: {}", id);

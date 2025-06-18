@@ -3,6 +3,7 @@ package com.example.course_service_lms.service.serviceImpl;
 import com.example.course_service_lms.converters.QuizQuestionConverter;
 import com.example.course_service_lms.dto.inDTO.QuizQuestionInDTO;
 import com.example.course_service_lms.dto.inDTO.QuizQuestionUpdateInDTO;
+import com.example.course_service_lms.dto.inDTO.UpdateQuizQuestionInDTO;
 import com.example.course_service_lms.dto.outDTO.QuizQuestionOutDTO;
 import com.example.course_service_lms.entity.QuizQuestion;
 import com.example.course_service_lms.exception.ResourceAlreadyExistsException;
@@ -11,6 +12,7 @@ import com.example.course_service_lms.exception.ResourceNotValidException;
 import com.example.course_service_lms.repository.QuizQuestionRepository;
 import com.example.course_service_lms.repository.QuizRepository;
 import com.example.course_service_lms.service.QuizQuestionService;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -34,6 +36,7 @@ public class QuizQuestionServiceImpl implements QuizQuestionService {
 
     private final QuizQuestionRepository quizQuestionRepository;
     private final QuizRepository quizRepository;
+    ObjectMapper objectMapper = new ObjectMapper();
 
     @Override
     public QuizQuestionOutDTO createQuestion(QuizQuestionInDTO questionInDTO) {
@@ -73,21 +76,28 @@ public class QuizQuestionServiceImpl implements QuizQuestionService {
 
     @Override
     @Transactional(readOnly = true)
-    public List<QuizQuestionOutDTO> getQuestionsByQuizId(Integer quizId) {
-        log.info("Retrieving questions for quiz ID: {}", quizId);
+    public List<QuizQuestionOutDTO> getQuestionsByQuizId(Long quizId) {
+        try {
+            log.info("Retrieving questions for quiz ID: {}", quizId);
 
-        // Validate quiz exists
-        validateQuizExists(quizId);
+            // Validate quiz exists
+            validateQuizExists(quizId);
 
-        List<QuizQuestion> questions = quizQuestionRepository.findByQuizIdOrderByPosition(quizId);
-        return questions.stream()
-                .map(this::convertToOutDTO)
-                .collect(Collectors.toList());
+            List<QuizQuestion> questions = quizQuestionRepository.findByQuizIdOrderByPosition(quizId);
+            if(questions.isEmpty()) {
+                throw new ResourceNotFoundException("No Questions Found");
+            }
+            return questions.stream()
+                    .map(this::convertToOutDTO)
+                    .collect(Collectors.toList());
+        } catch (ResourceNotFoundException e) {
+            throw e;
+        }
     }
 
     @Override
     @Transactional(readOnly = true)
-    public QuizQuestionOutDTO getQuestionById(Integer questionId) {
+    public QuizQuestionOutDTO getQuestionById(Long questionId) {
         log.info("Retrieving question with ID: {}", questionId);
 
         QuizQuestion question = findQuestionById(questionId);
@@ -95,23 +105,23 @@ public class QuizQuestionServiceImpl implements QuizQuestionService {
     }
 
     @Override
-    public QuizQuestionOutDTO updateQuestion(Integer questionId, QuizQuestionInDTO questionInDTO) {
+    public QuizQuestionOutDTO updateQuestion(Long questionId, UpdateQuizQuestionInDTO questionInDTO) {
         log.info("Updating question with ID: {}", questionId);
 
         // Find existing question
         QuizQuestion existingQuestion = findQuestionById(questionId);
 
-        // Validate quiz exists (in case quiz ID is being changed)
-        validateQuizExists(questionInDTO.getQuizId());
+        // Use the existing question's quiz ID for validations
+        Long quizId = existingQuestion.getQuizId();
 
         // Validate question position (exclude current question from position check)
-        validateQuestionPosition(questionInDTO.getQuizId(), questionInDTO.getPosition(), questionId);
+        validateQuestionPosition(quizId, questionInDTO.getPosition(), questionId);
 
         // Validate question data
-        validateQuestionData(questionInDTO);
+        validateUpdateQuestionData(questionInDTO);
 
-        // Update entity fields
-        updateQuestionFromDTO(existingQuestion, questionInDTO);
+        // Update entity fields (preserving the existing quizId)
+        updateQuestionFromUpdateDTO(existingQuestion, questionInDTO);
         existingQuestion.setUpdatedAt(LocalDateTime.now());
 
         // Save updated question
@@ -122,7 +132,7 @@ public class QuizQuestionServiceImpl implements QuizQuestionService {
     }
 
     @Override
-    public void deleteQuestion(Integer questionId) {
+    public void deleteQuestion(Long questionId) {
         log.info("Deleting question with ID: {}", questionId);
 
         // Verify question exists
@@ -135,13 +145,13 @@ public class QuizQuestionServiceImpl implements QuizQuestionService {
 
     // Private helper methods
 
-    private void validateQuizExists(Integer quizId) {
+    private void validateQuizExists(Long quizId) {
         if (!quizRepository.existsById(quizId)) {
             throw new ResourceNotFoundException("Quiz not found with ID: " + quizId);
         }
     }
 
-    private void validateQuestionPosition(Integer quizId, Integer position, Integer excludeQuestionId) {
+    private void validateQuestionPosition(Long quizId, Integer position, Long excludeQuestionId) {
         Optional<QuizQuestion> existingQuestion = quizQuestionRepository.findByQuizIdAndPosition(quizId, position);
 
         if (existingQuestion.isPresent() &&
@@ -174,7 +184,23 @@ public class QuizQuestionServiceImpl implements QuizQuestionService {
         }
     }
 
-    private QuizQuestion findQuestionById(Integer questionId) {
+    private void validateUpdateQuestionData(UpdateQuizQuestionInDTO questionInDTO) {
+        // Validate question type specific requirements
+        String questionType = questionInDTO.getQuestionType();
+
+        if ("MCQ_SINGLE".equals(questionType) || "MCQ_MULTIPLE".equals(questionType)) {
+            if (questionInDTO.getOptions() == null || questionInDTO.getOptions().trim().isEmpty()) {
+                throw new ResourceNotValidException("Options are required for multiple choice questions");
+            }
+        }
+
+        // Validate points are reasonable (already validated by @DecimalMin annotation, but adding for completeness)
+        if (questionInDTO.getPoints().compareTo(new java.math.BigDecimal("0")) < 0) {
+            throw new ResourceNotValidException("Points cannot be negative");
+        }
+    }
+
+    private QuizQuestion findQuestionById(Long questionId) {
         return quizQuestionRepository.findById(questionId)
                 .orElseThrow(() -> new ResourceNotFoundException("Question not found with ID: " + questionId));
     }
@@ -195,6 +221,19 @@ public class QuizQuestionServiceImpl implements QuizQuestionService {
 
     private void updateQuestionFromDTO(QuizQuestion question, QuizQuestionInDTO dto) {
         question.setQuizId(dto.getQuizId());
+        question.setQuestionText(dto.getQuestionText());
+        question.setQuestionType(dto.getQuestionType());
+        question.setOptions(dto.getOptions());
+        question.setCorrectAnswer(dto.getCorrectAnswer());
+        question.setPoints(dto.getPoints());
+        question.setExplanation(dto.getExplanation());
+        question.setRequired(dto.getRequired());
+        question.setPosition(dto.getPosition());
+    }
+
+    private void updateQuestionFromUpdateDTO(QuizQuestion question, UpdateQuizQuestionInDTO dto) {
+        // Note: quizId is not updated since UpdateQuizQuestionInDTO doesn't contain it
+        // The existing question's quizId is preserved
         question.setQuestionText(dto.getQuestionText());
         question.setQuestionType(dto.getQuestionType());
         question.setOptions(dto.getOptions());

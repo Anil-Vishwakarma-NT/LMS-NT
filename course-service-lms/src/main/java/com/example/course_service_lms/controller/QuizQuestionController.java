@@ -2,6 +2,7 @@ package com.example.course_service_lms.controller;
 
 import com.example.course_service_lms.dto.inDTO.QuizQuestionInDTO;
 import com.example.course_service_lms.dto.inDTO.QuizQuestionUpdateInDTO;
+import com.example.course_service_lms.dto.inDTO.UpdateQuizQuestionInDTO;
 import com.example.course_service_lms.dto.outDTO.QuizQuestionOutDTO;
 import com.example.course_service_lms.dto.outDTO.StandardResponseOutDTO;
 import com.example.course_service_lms.service.QuizQuestionService;
@@ -21,7 +22,7 @@ import java.util.List;
  * and deleting quiz questions.</p>
  */
 @RestController
-@RequestMapping("/api/v1/quiz-questions")
+@RequestMapping("/api/quiz-questions")
 @RequiredArgsConstructor
 @Slf4j
 public class QuizQuestionController {
@@ -54,7 +55,7 @@ public class QuizQuestionController {
      */
     @GetMapping("/quiz/{quizId}")
     public ResponseEntity<StandardResponseOutDTO<List<QuizQuestionOutDTO>>> getAllQuestionsByQuizId(
-            @PathVariable final Integer quizId) {
+            @PathVariable final Long quizId) {
         log.info("Received request to get all questions for quiz ID: {}", quizId);
 
         List<QuizQuestionOutDTO> questions = quizQuestionService.getQuestionsByQuizId(quizId);
@@ -72,7 +73,7 @@ public class QuizQuestionController {
      */
     @GetMapping("/{questionId}")
     public ResponseEntity<StandardResponseOutDTO<QuizQuestionOutDTO>> getQuestionById(
-            @PathVariable final Integer questionId) {
+            @PathVariable final Long questionId) {
         log.info("Received request to get question with ID: {}", questionId);
 
         QuizQuestionOutDTO question = quizQuestionService.getQuestionById(questionId);
@@ -90,8 +91,8 @@ public class QuizQuestionController {
      */
     @PutMapping("/{questionId}")
     public ResponseEntity<StandardResponseOutDTO<QuizQuestionOutDTO>> updateQuestion(
-            @PathVariable final Integer questionId,
-            @Valid @RequestBody final QuizQuestionInDTO questionUpdateInDTO) {
+            @PathVariable final Long questionId,
+            @Valid @RequestBody final UpdateQuizQuestionInDTO questionUpdateInDTO) {
         log.info("Received request to update question with ID: {}", questionId);
 
         QuizQuestionOutDTO updatedQuestion = quizQuestionService.updateQuestion(questionId, questionUpdateInDTO);
@@ -108,7 +109,7 @@ public class QuizQuestionController {
      */
     @DeleteMapping("/{questionId}")
     public ResponseEntity<StandardResponseOutDTO<Void>> deleteQuestion(
-            @PathVariable final Integer questionId) {
+            @PathVariable final Long questionId) {
         log.info("Received request to delete question with ID: {}", questionId);
 
         quizQuestionService.deleteQuestion(questionId);

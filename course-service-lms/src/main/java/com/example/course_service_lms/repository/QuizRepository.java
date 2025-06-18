@@ -16,7 +16,7 @@ import java.util.Optional;
  * for managing quizzes in the database.</p>
  */
 @Repository
-public interface QuizRepository extends JpaRepository<Quiz, Integer> {
+public interface QuizRepository extends JpaRepository<Quiz, Long> {
     /**
      * Find all active quizzes.
      *
@@ -30,7 +30,7 @@ public interface QuizRepository extends JpaRepository<Quiz, Integer> {
      * @param quizId The quiz ID
      * @return Optional Quiz if found and active
      */
-    Optional<Quiz> findByQuizIdAndIsActiveTrue(Integer quizId);
+    Optional<Quiz> findByQuizIdAndIsActiveTrue(Long quizId);
 
     /**
      * Find all quizzes by parent type and parent ID (for active quizzes).

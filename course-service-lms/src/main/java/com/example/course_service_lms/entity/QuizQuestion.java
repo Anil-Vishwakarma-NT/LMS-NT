@@ -2,6 +2,9 @@ package com.example.course_service_lms.entity;
 
 import jakarta.persistence.*;
 import lombok.Data;
+import org.hibernate.annotations.JdbcTypeCode;
+import org.hibernate.type.SqlTypes;
+
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.Objects;
@@ -17,10 +20,10 @@ public class QuizQuestion {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "question_id")
-    private Integer questionId;
+    private Long questionId;
 
     @Column(name = "quiz_id", nullable = false)
-    private Integer quizId;
+    private Long quizId;
 
     @Column(name = "question_text", nullable = false, columnDefinition = "TEXT")
     private String questionText;
@@ -28,11 +31,11 @@ public class QuizQuestion {
     @Column(name = "question_type", nullable = false, length = 20)
     private String questionType;
 
-    @Lob
+    @JdbcTypeCode(SqlTypes.JSON)
     @Column(name = "options", columnDefinition = "JSONB")
     private String options;
 
-    @Lob
+    @JdbcTypeCode(SqlTypes.JSON)
     @Column(name = "correct_answer", nullable = false, columnDefinition = "JSONB")
     private String correctAnswer;
 
@@ -56,7 +59,7 @@ public class QuizQuestion {
 
     public QuizQuestion() {}
 
-    public QuizQuestion(Integer questionId, Integer quizId, String questionText, String questionType,
+    public QuizQuestion(Long questionId, Long quizId, String questionText, String questionType,
                         String options, String correctAnswer, BigDecimal points, String explanation,
                         Boolean required, Integer position, LocalDateTime createdAt, LocalDateTime updatedAt) {
         this.questionId = questionId;
