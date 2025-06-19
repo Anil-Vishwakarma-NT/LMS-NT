@@ -58,6 +58,7 @@ public class QuizQuestionServiceImpl implements QuizQuestionService {
 
         // Convert DTO to entity
         QuizQuestion question = QuizQuestionConverter.convertToEntity(questionInDTO);
+        question.setPosition(nextPosition);
         question.setCreatedAt(LocalDateTime.now());
         question.setUpdatedAt(LocalDateTime.now());
 
@@ -184,15 +185,6 @@ public class QuizQuestionServiceImpl implements QuizQuestionService {
         }
     }
 
-    private void validateQuestionPosition(Long quizId, Integer position, Long excludeQuestionId) {
-        Optional<QuizQuestion> existingQuestion = quizQuestionRepository.findByQuizIdAndPosition(quizId, position);
-
-        if (existingQuestion.isPresent() &&
-                (excludeQuestionId == null || !existingQuestion.get().getQuestionId().equals(excludeQuestionId))) {
-            throw new ResourceAlreadyExistsException(
-                    "Question already exists at position " + position + " for quiz ID: " + quizId);
-        }
-    }
 
     private void validatePositionRange(Long quizId, Integer newPosition, Long excludeQuestionId) {
         // Get total count of questions for this quiz (excluding the current question being updated)
