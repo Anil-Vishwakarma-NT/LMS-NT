@@ -66,4 +66,11 @@ public class EnrollmentController {
         StandardResponseOutDTO<List<UserBundleEnrollmentOutDTO>> standardResponseOutDTO = StandardResponseOutDTO.success(userBundleEnrollmentOutDTOS, "Fetched Bundle Enrollments for User");
         return ResponseEntity.ok(standardResponseOutDTO);
     }
+
+    @GetMapping("/user/{userId}/enrolled-courses")
+    public ResponseEntity<StandardResponseOutDTO<List<EnrolledCoursesOutDTO>>> getEnrolledCourses(@PathVariable Long userId) {
+        List<EnrolledCoursesOutDTO> courses = enrollmentService.getUserEnrollmentsByUserID(userId).getEnrolledCoursesList();
+        return ResponseEntity.ok(StandardResponseOutDTO.success(courses, "Fetched enrolled courses"));
+    }
+
 }
