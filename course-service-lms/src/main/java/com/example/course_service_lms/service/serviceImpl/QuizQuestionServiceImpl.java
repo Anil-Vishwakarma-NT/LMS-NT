@@ -107,27 +107,33 @@ public class QuizQuestionServiceImpl implements QuizQuestionService {
 
     @Override
     public QuizQuestionOutDTO updateQuestion(Long questionId, UpdateQuizQuestionInDTO questionInDTO) {
-        log.info("Updating question with ID: {}", questionId);
+        log.info("Updating question with ID: {} to position: {}", questionId, questionInDTO.getPosition());
 
         // Find existing question
         QuizQuestion existingQuestion = findQuestionById(questionId);
-
-        // Use the existing question's quiz ID for validations
         Long quizId = existingQuestion.getQuizId();
-
-        // Validate question position (exclude current question from position check)
-        validateQuestionPosition(quizId, questionInDTO.getPosition(), questionId);
+        Integer oldPosition = existingQuestion.getPosition();
+        Integer newPosition = questionInDTO.getPosition();
 
         // Validate question data
         validateUpdateQuestionData(questionInDTO);
 
-        // Update entity fields (preserving the existing quizId)
+        // Validate new position is valid (not beyond the max position + 1)
+        validatePositionRange(quizId, newPosition, questionId);
+
+        // Handle position reordering if position has changed
+        if (!oldPosition.equals(newPosition)) {
+            log.info("Position change detected: {} -> {}. Reordering questions...", oldPosition, newPosition);
+            reorderQuestionsForUpdate(quizId, questionId, oldPosition, newPosition);
+        }
+
+        // Update entity fields
         updateQuestionFromUpdateDTO(existingQuestion, questionInDTO);
         existingQuestion.setUpdatedAt(LocalDateTime.now());
 
         // Save updated question
         QuizQuestion updatedQuestion = quizQuestionRepository.save(existingQuestion);
-        log.info("Successfully updated question with ID: {}", updatedQuestion.getQuestionId());
+        log.info("Successfully updated question with ID: {} to position: {}", updatedQuestion.getQuestionId(), newPosition);
 
         return convertToOutDTO(updatedQuestion);
     }
@@ -138,10 +144,16 @@ public class QuizQuestionServiceImpl implements QuizQuestionService {
 
         // Verify question exists
         QuizQuestion question = findQuestionById(questionId);
+        Long quizId = question.getQuizId();
+        Integer deletedPosition = question.getPosition();
 
         // Delete the question
         quizQuestionRepository.delete(question);
-        log.info("Successfully deleted question with ID: {}", questionId);
+
+        // Reorder remaining questions to fill the gap
+        reorderQuestionsAfterDelete(quizId, deletedPosition);
+
+        log.info("Successfully deleted question with ID: {} and reordered remaining questions", questionId);
     }
 
     // Private helper methods
@@ -159,6 +171,69 @@ public class QuizQuestionServiceImpl implements QuizQuestionService {
                 (excludeQuestionId == null || !existingQuestion.get().getQuestionId().equals(excludeQuestionId))) {
             throw new ResourceAlreadyExistsException(
                     "Question already exists at position " + position + " for quiz ID: " + quizId);
+        }
+    }
+
+    private void validatePositionRange(Long quizId, Integer newPosition, Long excludeQuestionId) {
+        // Get total count of questions for this quiz (excluding the current question being updated)
+        List<QuizQuestion> allQuestions = quizQuestionRepository.findByQuizIdOrderByPosition(quizId);
+        long totalQuestions = allQuestions.stream()
+                .filter(q -> !q.getQuestionId().equals(excludeQuestionId))
+                .count();
+
+        if (newPosition < 1 || newPosition > totalQuestions + 1) {
+            throw new ResourceNotValidException(
+                    String.format("Position must be between 1 and %d for quiz ID: %d", totalQuestions + 1, quizId));
+        }
+    }
+
+    private void reorderQuestionsForUpdate(Long quizId, Long questionId, Integer oldPosition, Integer newPosition) {
+        List<QuizQuestion> questions = quizQuestionRepository.findByQuizIdOrderByPosition(quizId);
+
+        // Filter out the question being updated
+        List<QuizQuestion> otherQuestions = questions.stream()
+                .filter(q -> !q.getQuestionId().equals(questionId))
+                .collect(Collectors.toList());
+
+        if (newPosition < oldPosition) {
+            // Moving up: shift questions down from newPosition to oldPosition-1
+            log.info("Moving question up from position {} to {}. Shifting questions down.", oldPosition, newPosition);
+
+            for (QuizQuestion question : otherQuestions) {
+                if (question.getPosition() >= newPosition && question.getPosition() < oldPosition) {
+                    question.setPosition(question.getPosition() + 1);
+                    question.setUpdatedAt(LocalDateTime.now());
+                    quizQuestionRepository.save(question);
+                    log.debug("Shifted question ID {} from position {} to {}",question.getQuestionId(), question.getPosition() - 1, question.getPosition());
+                }
+            }
+        } else {
+            // Moving down: shift questions up from oldPosition+1 to newPosition
+            log.info("Moving question down from position {} to {}. Shifting questions up.", oldPosition, newPosition);
+
+            for (QuizQuestion question : otherQuestions) {
+                if (question.getPosition() > oldPosition && question.getPosition() <= newPosition) {
+                    question.setPosition(question.getPosition() - 1);
+                    question.setUpdatedAt(LocalDateTime.now());
+                    quizQuestionRepository.save(question);
+                    log.debug("Shifted question ID {} from position {} to {}",question.getQuestionId(), question.getPosition() + 1, question.getPosition());
+                }
+            }
+        }
+    }
+
+    private void reorderQuestionsAfterDelete(Long quizId, Integer deletedPosition) {
+        List<QuizQuestion> questions = quizQuestionRepository.findByQuizIdOrderByPosition(quizId);
+
+        // Shift all questions with position > deletedPosition up by 1
+        for (QuizQuestion question : questions) {
+            if (question.getPosition() > deletedPosition) {
+                question.setPosition(question.getPosition() - 1);
+                question.setUpdatedAt(LocalDateTime.now());
+                quizQuestionRepository.save(question);
+                log.debug("Shifted question ID {} from position {} to {} after deletion",
+                        question.getQuestionId(), question.getPosition() + 1, question.getPosition());
+            }
         }
     }
 
