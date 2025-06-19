@@ -43,7 +43,5 @@ public class QuizQuestionInDTO {
     @NotNull(message = "Required field must be specified")
     private Boolean required = true;
 
-    @NotNull(message = "Position is required")
-    @Positive(message = "Position must be positive")
-    private Integer position;
+
 }

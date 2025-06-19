@@ -47,7 +47,11 @@ public class QuizQuestionServiceImpl implements QuizQuestionService {
         validateQuizExists(questionInDTO.getQuizId());
 
         // Validate question position is not already taken
-        validateQuestionPosition(questionInDTO.getQuizId(), questionInDTO.getPosition(), null);
+        //validateQuestionPosition(questionInDTO.getQuizId(), questionInDTO.getPosition(), null);
+
+        // Auto-assign the next available position
+        Integer nextPosition = getNextAvailablePosition(questionInDTO.getQuizId());
+        log.info("Auto-assigning position {} to new question for quiz ID: {}", nextPosition, questionInDTO.getQuizId());
 
         // Validate question data
         validateQuestionData(questionInDTO);
@@ -157,6 +161,22 @@ public class QuizQuestionServiceImpl implements QuizQuestionService {
     }
 
     // Private helper methods
+
+    private Integer getNextAvailablePosition(Long quizId) {
+        List<QuizQuestion> existingQuestions = quizQuestionRepository.findByQuizIdOrderByPosition(quizId);
+
+        if (existingQuestions.isEmpty()) {
+            return 1; // First question
+        }
+
+        // Return the next position after the last question
+        Integer maxPosition = existingQuestions.stream()
+                .mapToInt(QuizQuestion::getPosition)
+                .max()
+                .orElse(0);
+
+        return maxPosition + 1;
+    }
 
     private void validateQuizExists(Long quizId) {
         if (!quizRepository.existsById(quizId)) {

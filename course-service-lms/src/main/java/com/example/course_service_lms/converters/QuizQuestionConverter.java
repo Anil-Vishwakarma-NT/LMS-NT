@@ -54,7 +54,7 @@ public class QuizQuestionConverter {
         question.setPoints(dto.getPoints());
         question.setExplanation(dto.getExplanation());
         question.setRequired(dto.getRequired());
-        question.setPosition(dto.getPosition());
+        //question.setPosition(dto.getPosition());
         return question;
     }
 
