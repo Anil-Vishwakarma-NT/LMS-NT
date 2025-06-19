@@ -24,6 +24,7 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 
 import static com.example.course_service_lms.constants.QuizQuestionConstants.*;
+import static com.example.course_service_lms.converters.QuizQuestionConverter.convertToOutDTO;
 
 /**
  * Implementation of QuizQuestionService for managing quiz questions.
@@ -52,7 +53,7 @@ public class QuizQuestionServiceImpl implements QuizQuestionService {
         validateQuestionData(questionInDTO);
 
         // Convert DTO to entity
-        QuizQuestion question = convertToEntity(questionInDTO);
+        QuizQuestion question = QuizQuestionConverter.convertToEntity(questionInDTO);
         question.setCreatedAt(LocalDateTime.now());
         question.setUpdatedAt(LocalDateTime.now());
 
@@ -70,7 +71,7 @@ public class QuizQuestionServiceImpl implements QuizQuestionService {
 
         List<QuizQuestion> questions = quizQuestionRepository.findAll();
         return questions.stream()
-                .map(this::convertToOutDTO)
+                .map(QuizQuestionConverter::convertToOutDTO)
                 .collect(Collectors.toList());
     }
 
@@ -88,7 +89,7 @@ public class QuizQuestionServiceImpl implements QuizQuestionService {
                 throw new ResourceNotFoundException("No Questions Found");
             }
             return questions.stream()
-                    .map(this::convertToOutDTO)
+                    .map(QuizQuestionConverter::convertToOutDTO)
                     .collect(Collectors.toList());
         } catch (ResourceNotFoundException e) {
             throw e;
@@ -205,32 +206,6 @@ public class QuizQuestionServiceImpl implements QuizQuestionService {
                 .orElseThrow(() -> new ResourceNotFoundException("Question not found with ID: " + questionId));
     }
 
-    private QuizQuestion convertToEntity(QuizQuestionInDTO dto) {
-        QuizQuestion question = new QuizQuestion();
-        question.setQuizId(dto.getQuizId());
-        question.setQuestionText(dto.getQuestionText());
-        question.setQuestionType(dto.getQuestionType());
-        question.setOptions(dto.getOptions());
-        question.setCorrectAnswer(dto.getCorrectAnswer());
-        question.setPoints(dto.getPoints());
-        question.setExplanation(dto.getExplanation());
-        question.setRequired(dto.getRequired());
-        question.setPosition(dto.getPosition());
-        return question;
-    }
-
-    private void updateQuestionFromDTO(QuizQuestion question, QuizQuestionInDTO dto) {
-        question.setQuizId(dto.getQuizId());
-        question.setQuestionText(dto.getQuestionText());
-        question.setQuestionType(dto.getQuestionType());
-        question.setOptions(dto.getOptions());
-        question.setCorrectAnswer(dto.getCorrectAnswer());
-        question.setPoints(dto.getPoints());
-        question.setExplanation(dto.getExplanation());
-        question.setRequired(dto.getRequired());
-        question.setPosition(dto.getPosition());
-    }
-
     private void updateQuestionFromUpdateDTO(QuizQuestion question, UpdateQuizQuestionInDTO dto) {
         // Note: quizId is not updated since UpdateQuizQuestionInDTO doesn't contain it
         // The existing question's quizId is preserved
@@ -242,22 +217,5 @@ public class QuizQuestionServiceImpl implements QuizQuestionService {
         question.setExplanation(dto.getExplanation());
         question.setRequired(dto.getRequired());
         question.setPosition(dto.getPosition());
-    }
-
-    private QuizQuestionOutDTO convertToOutDTO(QuizQuestion question) {
-        return new QuizQuestionOutDTO(
-                question.getQuestionId(),
-                question.getQuizId(),
-                question.getQuestionText(),
-                question.getQuestionType(),
-                question.getOptions(),
-                question.getCorrectAnswer(),
-                question.getPoints(),
-                question.getExplanation(),
-                question.getRequired(),
-                question.getPosition(),
-                question.getCreatedAt(),
-                question.getUpdatedAt()
-        );
     }
 }

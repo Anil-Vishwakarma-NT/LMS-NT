@@ -25,14 +25,6 @@ public interface QuizRepository extends JpaRepository<Quiz, Long> {
     List<Quiz> findByIsActiveTrue();
 
     /**
-     * Find active quiz by ID.
-     *
-     * @param quizId The quiz ID
-     * @return Optional Quiz if found and active
-     */
-    Optional<Quiz> findByQuizIdAndIsActiveTrue(Long quizId);
-
-    /**
      * Find all quizzes by parent type and parent ID (for active quizzes).
      *
      * @param parentType The parent type (course, bundle, course-content)
@@ -50,23 +42,5 @@ public interface QuizRepository extends JpaRepository<Quiz, Long> {
      * @return true if quiz with same title exists for the parent
      */
     boolean existsByTitleAndParentTypeAndParentId(String title, String parentType, Long parentId);
-
-    /**
-     * Find all quizzes for a specific course (parent_type = 'course').
-     *
-     * @param courseId The course ID
-     * @return List of quizzes for the course
-     */
-    @Query("SELECT q FROM Quiz q WHERE q.parentType = 'course' AND q.parentId = :courseId AND q.isActive = true")
-    List<Quiz> findByCourseId(@Param("courseId") Integer courseId);
-
-    /**
-     * Find all quizzes for a specific course content (parent_type = 'course-content').
-     *
-     * @param courseContentId The course content ID
-     * @return List of quizzes for the course content
-     */
-    @Query("SELECT q FROM Quiz q WHERE q.parentType = 'course-content' AND q.parentId = :courseContentId AND q.isActive = true")
-    List<Quiz> findByCourseContentId(@Param("courseContentId") Integer courseContentId);
 }
 

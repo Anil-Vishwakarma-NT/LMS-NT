@@ -2,6 +2,7 @@ package com.example.course_service_lms.converters;
 
 import com.example.course_service_lms.dto.inDTO.QuizQuestionInDTO;
 import com.example.course_service_lms.dto.inDTO.QuizQuestionUpdateInDTO;
+import com.example.course_service_lms.dto.inDTO.UpdateQuizQuestionInDTO;
 import com.example.course_service_lms.dto.outDTO.QuizQuestionOutDTO;
 import com.example.course_service_lms.entity.QuizQuestion;
 import org.springframework.stereotype.Component;
@@ -18,53 +19,6 @@ import java.util.stream.Collectors;
  */
 @Component
 public class QuizQuestionConverter {
-
-    /**
-     * Converts a QuestionCreateInDTO to a QuizQuestion entity for creation.
-     *
-     * @param questionCreateInDTO The input DTO containing question creation data.
-     * @return A new QuizQuestion entity with data from the DTO.
-     */
-    public QuizQuestion convertCreateInDTOToEntity(final QuizQuestionInDTO questionCreateInDTO) {
-        if (questionCreateInDTO == null) {
-            return null;
-        }
-
-        QuizQuestion question = new QuizQuestion();
-        question.setQuizId(questionCreateInDTO.getQuizId());
-        question.setQuestionText(questionCreateInDTO.getQuestionText());
-        question.setQuestionType(questionCreateInDTO.getQuestionType());
-        question.setPoints(questionCreateInDTO.getPoints());
-        question.setExplanation(questionCreateInDTO.getExplanation());
-        question.setRequired(questionCreateInDTO.getRequired());
-        question.setPosition(questionCreateInDTO.getPosition());
-        question.setCreatedAt(LocalDateTime.now());
-
-        return question;
-    }
-
-    /**
-     * Updates an existing QuizQuestion entity with data from QuestionUpdateInDTO.
-     *
-     * @param existingQuestion The existing QuizQuestion entity to update.
-     * @param questionUpdateInDTO The input DTO containing updated question data.
-     * @return The updated QuizQuestion entity.
-     */
-    public QuizQuestion updateEntityFromUpdateInDTO(final QuizQuestion existingQuestion, final QuizQuestionUpdateInDTO questionUpdateInDTO) {
-        if (existingQuestion == null || questionUpdateInDTO == null) {
-            return existingQuestion;
-        }
-
-        existingQuestion.setQuestionText(questionUpdateInDTO.getQuestionText());
-        existingQuestion.setQuestionType(questionUpdateInDTO.getQuestionType());
-        existingQuestion.setPoints(questionUpdateInDTO.getPoints());
-        existingQuestion.setExplanation(questionUpdateInDTO.getExplanation());
-        existingQuestion.setRequired(questionUpdateInDTO.getRequired());
-        existingQuestion.setPosition(questionUpdateInDTO.getPosition());
-
-        return existingQuestion;
-    }
-
     /**
      * Converts a QuizQuestion entity to a QuestionOutDTO.
      *
@@ -90,19 +44,36 @@ public class QuizQuestionConverter {
         return questionOutDTO;
     }
 
-    /**
-     * Converts a list of QuizQuestion entities to a list of QuestionOutDTOs.
-     *
-     * @param questions The list of QuizQuestion entities to convert.
-     * @return A list of QuestionOutDTOs.
-     */
-    public List<QuizQuestionOutDTO> convertEntityListToOutDTOList(final List<QuizQuestion> questions) {
-        if (questions == null) {
-            return null;
-        }
+    public static QuizQuestion convertToEntity(QuizQuestionInDTO dto) {
+        QuizQuestion question = new QuizQuestion();
+        question.setQuizId(dto.getQuizId());
+        question.setQuestionText(dto.getQuestionText());
+        question.setQuestionType(dto.getQuestionType());
+        question.setOptions(dto.getOptions());
+        question.setCorrectAnswer(dto.getCorrectAnswer());
+        question.setPoints(dto.getPoints());
+        question.setExplanation(dto.getExplanation());
+        question.setRequired(dto.getRequired());
+        question.setPosition(dto.getPosition());
+        return question;
+    }
 
-        return questions.stream()
-                .map(this::convertEntityToOutDTO)
-                .collect(Collectors.toList());
+
+
+    public static QuizQuestionOutDTO convertToOutDTO(QuizQuestion question) {
+        return new QuizQuestionOutDTO(
+                question.getQuestionId(),
+                question.getQuizId(),
+                question.getQuestionText(),
+                question.getQuestionType(),
+                question.getOptions(),
+                question.getCorrectAnswer(),
+                question.getPoints(),
+                question.getExplanation(),
+                question.getRequired(),
+                question.getPosition(),
+                question.getCreatedAt(),
+                question.getUpdatedAt()
+        );
     }
 }

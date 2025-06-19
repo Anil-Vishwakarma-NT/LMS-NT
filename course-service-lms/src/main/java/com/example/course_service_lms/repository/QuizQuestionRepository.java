@@ -33,47 +33,5 @@ public interface QuizQuestionRepository extends JpaRepository<QuizQuestion, Long
      * @return optional question
      */
     Optional<QuizQuestion> findByQuizIdAndPosition(Long quizId, Integer position);
-
-    /**
-     * Count questions for a specific quiz.
-     *
-     * @param quizId the quiz ID
-     * @return number of questions in the quiz
-     */
-    long countByQuizId(Long quizId);
-
-    /**
-     * Delete all questions for a specific quiz.
-     *
-     * @param quizId the quiz ID
-     */
-    void deleteByQuizId(Long quizId);
-
-    /**
-     * Find questions by quiz ID and question type.
-     *
-     * @param quizId the quiz ID
-     * @param questionType the question type
-     * @return list of questions matching the criteria
-     */
-    List<QuizQuestion> findByQuizIdAndQuestionType(Long quizId, String questionType);
-
-    /**
-     * Check if a question exists at a specific position in a quiz.
-     *
-     * @param quizId the quiz ID
-     * @param position the position to check
-     * @return true if a question exists at that position
-     */
-    boolean existsByQuizIdAndPosition(Long quizId, Integer position);
-
-    /**
-     * Get the maximum position for questions in a quiz.
-     *
-     * @param quizId the quiz ID
-     * @return the maximum position, or null if no questions exist
-     */
-    @Query("SELECT MAX(q.position) FROM QuizQuestion q WHERE q.quizId = :quizId")
-    Integer findMaxPositionByQuizId(@Param("quizId") Long quizId);
 }
 
