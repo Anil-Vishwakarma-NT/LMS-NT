@@ -6,6 +6,8 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.util.List;
+
 /**
  * DTO used to accept input for group operations.
  */
@@ -28,13 +30,15 @@ public class GroupInDTO {
      * ID of the group.
      * Must be a positive number.
      */
-    @Min(value = 1, message = "Group ID must be a positive number.")
+//    @Min(value = 1, message = "Group ID must be a positive number.")
     private long groupId;
 
     /**
      * ID of the user.
      * Must be a positive number.
      */
-    @Min(value = 1, message = "User ID must be a positive number.")
     private long userId;
+
+
+    private List<Long> employees;
 }

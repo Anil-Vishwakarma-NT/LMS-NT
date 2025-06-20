@@ -12,13 +12,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.web.bind.annotation.DeleteMapping;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
@@ -49,7 +43,7 @@ public final class GroupController {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         String username = authentication.getName();
         log.info("Attempting to create a group with name: {}", groupInDTO.getGroupName());
-        StandardResponseOutDTO<MessageOutDto> response = groupService.createGroup(groupInDTO.getGroupName(), username);
+        StandardResponseOutDTO<MessageOutDto> response = groupService.createGroup(groupInDTO.getGroupName(), username ,groupInDTO.getEmployees());
         return new ResponseEntity<>(response, HttpStatus.CREATED);
     }
 
@@ -59,12 +53,26 @@ public final class GroupController {
      * @param groupId group ID.
      * @return success message.
      */
-    @DeleteMapping("/{groupId}")
+    @DeleteMapping("/remove/{groupId}")
     public ResponseEntity<StandardResponseOutDTO<MessageOutDto>> deleteGroup(@PathVariable final long groupId) {
         log.info("Attempting to delete group with ID: {}", groupId);
         StandardResponseOutDTO<MessageOutDto> response = groupService.deleteGroup(groupId);
         return new ResponseEntity<>(response, HttpStatus.OK);
     }
+    /**
+     * Updates a group.
+     *
+     * @param groupInDTO DTO containing user and group IDs.
+     * @return success message.
+     */
+    @PutMapping("/update-group")
+    public ResponseEntity<StandardResponseOutDTO<MessageOutDto>> updateGroup(@RequestBody final GroupInDTO groupInDTO){
+        log.info("Updating Group details");
+        StandardResponseOutDTO<MessageOutDto> response = groupService.updateGroup(groupInDTO.getGroupId(),groupInDTO.getGroupName());
+        return new ResponseEntity<>(response , HttpStatus.OK);
+    }
+
+
 
     /**
      * Adds a user to a group.
@@ -139,14 +147,14 @@ public final class GroupController {
      *
      * @return list of all groups.
      */
-    @PreAuthorize("hasAuthority('admin')")
-    @GetMapping("/all-groups")
-    public ResponseEntity<StandardResponseOutDTO<List<GroupOutDTO>>> getAllGroups() {
-        log.info("Fetching all groups (Admin access required)");
-        StandardResponseOutDTO<List<GroupOutDTO>> response = groupService.getAllGroups();
-        log.info("Fetched {} groups", response.getData().size());
-        return new ResponseEntity<>(response,HttpStatus.OK);
-    }
+//    @PreAuthorize("hasAuthority('admin')")
+//    @GetMapping("/all-groups")
+//    public ResponseEntity<StandardResponseOutDTO<List<GroupOutDTO>>> getAllGroups() {
+//        log.info("Fetching all groups (Admin access required)");
+//        StandardResponseOutDTO<List<GroupOutDTO>> response = groupService.getAllGroups();
+//        log.info("Fetched {} groups", response.getData().size());
+//        return new ResponseEntity<>(response,HttpStatus.OK);
+//    }
     @GetMapping("/count")
     public ResponseEntity<MessageOutDto> getGroupCount() {
         log.info("Received request to get total Group count.");

@@ -16,7 +16,7 @@ public interface GroupService {
      * @param username The username of the creator.
      * @return A MessageOutDto indicating the result of the operation.
      */
-    StandardResponseOutDTO<MessageOutDto> createGroup(String groupName, String username);
+    StandardResponseOutDTO<MessageOutDto> createGroup(String groupName, String username ,List<Long> employeeId);
 
     /**
      * Deletes a group.
@@ -34,6 +34,8 @@ public interface GroupService {
      * @return A MessageOutDto indicating the result of the operation.
      */
     StandardResponseOutDTO<MessageOutDto> addUserToGroup(long userId, long groupId);
+
+    StandardResponseOutDTO<MessageOutDto> updateGroup (long groupId , String groupName);
 
     /**
      * Removes a user from a group.

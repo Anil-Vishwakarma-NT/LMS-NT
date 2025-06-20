@@ -13,6 +13,7 @@ import com.nt.LMS.repository.GroupRepository;
 import com.nt.LMS.repository.UserGroupRepository;
 import com.nt.LMS.repository.UserRepository;
 import com.nt.LMS.service.GroupService;
+import jakarta.transaction.Transactional;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -20,6 +21,7 @@ import org.springframework.stereotype.Service;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 import static com.nt.LMS.constants.GroupConstants.GROUP_CREATED;
@@ -79,16 +81,22 @@ public class GroupServiceImpl implements GroupService {
      * @return a success message
      */
     @Override
-    public StandardResponseOutDTO<MessageOutDto> createGroup(final String groupName, final String username) {
+    public StandardResponseOutDTO<MessageOutDto> createGroup(final String groupName, final String username , final List<Long> employeeId) {
         try {
             log.info("Attempting to create a group with name: {} by user: {}", groupName, username);
             User user = userRepository.findByEmailIgnoreCase(username)
                     .orElseThrow(() -> new UnauthorizedAccessException(USER_NOT_FOUND));
 
             Group group = new Group(groupName, user.getUserId());
-            groupRepository.save(group);
+            group = groupRepository.save(group);
             log.info("Group '{}' created successfully by '{}'", groupName, username);
-
+   if(!employeeId.isEmpty()){
+       Group finalGroup = group;
+       employeeId.forEach(employee -> {
+           UserGroup usr = new UserGroup(employee,finalGroup.getGroupId());
+           userGroupRepository.save(usr);
+       });
+   }
             MessageOutDto messageOutDto = new MessageOutDto(GROUP_CREATED);
             return StandardResponseOutDTO.success(messageOutDto,null);
         } catch (Exception e) {
@@ -104,6 +112,7 @@ public class GroupServiceImpl implements GroupService {
      * @return a success message
      */
     @Override
+    @Transactional
     public StandardResponseOutDTO<MessageOutDto> deleteGroup(final long groupId) {
         try {
             log.info("Attempting to delete group with ID: {}", groupId);
@@ -156,6 +165,28 @@ public class GroupServiceImpl implements GroupService {
             log.error("Error adding user ID: {} to group ID: {}", userId, groupId, e);
             throw new RuntimeException(GROUP_FAILURE, e);
         }
+    }
+
+    @Override
+    public StandardResponseOutDTO<MessageOutDto> updateGroup(long groupId, String groupName) {
+         try{
+             Optional<Group> group = groupRepository.findById(groupId);
+             if(group.isPresent()){
+                 group.get().setGroupName(groupName);
+                 groupRepository.save(group.get());
+             }
+             else {
+                throw new ResourceNotFoundException("Group Not found");
+             }
+             MessageOutDto messageOutDto =  new MessageOutDto("Group updated");
+             return StandardResponseOutDTO.success(messageOutDto,null);
+         }
+         catch (Exception e){
+             log.error("Error in updating group");
+             throw new RuntimeException("Group not updated",e);
+         }
+
+
     }
 
     /**
@@ -230,23 +261,23 @@ public class GroupServiceImpl implements GroupService {
                     .orElseThrow(() -> new ResourceNotFoundException(USER_NOT_FOUND));
 
             List<GroupOutDTO> groupOutList = new ArrayList<>();
-            List<Group> userGroups = groupRepository.findByCreatorId(user.getUserId());
-
-            for (Group group : userGroups) {
-                GroupOutDTO gout = groupDTOConverter.groupToOutDto(group,
-                        user.getFirstName() + " " + user.getLastName());
-                groupOutList.add(gout);
-            }
-
-            if (user.getUserId() != UserConstants.getAdminId()) {
-                List<Group> adminGroups = groupRepository.findByCreatorId(UserConstants.getAdminId());
+            if (user.getUserId() == UserConstants.getAdminId()) {
+                List<Group> adminGroups = groupRepository.findAll();
                 for (Group group : adminGroups) {
                     GroupOutDTO gout = groupDTOConverter.groupToOutDto(group,
                             user.getFirstName() + " " + user.getLastName());
                     groupOutList.add(gout);
                 }
             }
+            else {
+                List<Group> userGroups = groupRepository.findByCreatorId(user.getUserId());
 
+                for (Group group : userGroups) {
+                    GroupOutDTO gout = groupDTOConverter.groupToOutDto(group,
+                            user.getFirstName() + " " + user.getLastName());
+                    groupOutList.add(gout);
+                }
+            }
             return StandardResponseOutDTO.success(groupOutList,"Group fetched Successfully");
         } catch (Exception e) {
             log.error("Error fetching groups for user with email: {}", email, e);
