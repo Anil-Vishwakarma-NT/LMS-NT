@@ -1,10 +1,7 @@
 package com.nt.LMS.service;
 
 import com.nt.LMS.dto.inDTO.EnrollmentRequestInDTO;
-import com.nt.LMS.dto.outDTO.EnrollmentDashBoardStatsOutDTO;
-import com.nt.LMS.dto.outDTO.UserBundleEnrollmentOutDTO;
-import com.nt.LMS.dto.outDTO.UserCourseEnrollmentOutDTO;
-import com.nt.LMS.dto.outDTO.UserEnrollmentsOutDTO;
+import com.nt.LMS.dto.outDTO.*;
 import com.nt.LMS.entities.Enrollment;
 
 import java.util.List;
@@ -41,6 +38,7 @@ public interface EnrollmentService {
     List<UserCourseEnrollmentOutDTO> getIndividualCourseEnrollments();
     List<UserBundleEnrollmentOutDTO> getIndividualBundleEnrollments();
 
+    List<UserCourseEnrollDetails> getUserEnrolledCourses(Long userId);
 //
 //    long countEnrollments();
 //

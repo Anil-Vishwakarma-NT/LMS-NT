@@ -4,6 +4,7 @@ import com.nt.LMS.dto.inDTO.EnrollmentRequestInDTO;
 import com.nt.LMS.dto.outDTO.*;
 import com.nt.LMS.entities.Enrollment;
 import com.nt.LMS.service.EnrollmentService;
+import com.nt.LMS.service.serviceImpl.EnrollmentServiceImpl;
 import jakarta.validation.Valid;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -67,10 +68,10 @@ public class EnrollmentController {
         return ResponseEntity.ok(standardResponseOutDTO);
     }
 
-    @GetMapping("/user/{userId}/enrolled-courses")
-    public ResponseEntity<StandardResponseOutDTO<List<EnrolledCoursesOutDTO>>> getEnrolledCourses(@PathVariable Long userId) {
-        List<EnrolledCoursesOutDTO> courses = enrollmentService.getUserEnrollmentsByUserID(userId).getEnrolledCoursesList();
-        return ResponseEntity.ok(StandardResponseOutDTO.success(courses, "Fetched enrolled courses"));
+    @GetMapping("/userCourses/{userId}")
+    public ResponseEntity<StandardResponseOutDTO<List<UserCourseEnrollDetails>>> getEnrolledCoursesByUserId(@PathVariable Long userId) {
+        List<UserCourseEnrollDetails> enrolledCourses = enrollmentService.getUserEnrolledCourses(userId);
+        return ResponseEntity.ok(StandardResponseOutDTO.success(enrolledCourses, "Fetched enrolled courses successfully"));
     }
 
 }
