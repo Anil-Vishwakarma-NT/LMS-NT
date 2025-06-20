@@ -3,6 +3,7 @@ package com.example.course_service_lms.service;
 import com.example.course_service_lms.dto.inDTO.BundleInDTO;
 import com.example.course_service_lms.dto.outDTO.BundleOutDTO;
 import com.example.course_service_lms.dto.inDTO.UpdateBundleInDTO;
+import org.springframework.data.repository.query.Param;
 
 import java.util.List;
 
@@ -77,4 +78,6 @@ public interface BundleService {
      * @return the bundle name
      */
     String getBundleNameById(Long bundleId);
+
+    List<Long> findExistingIds(List<Long> bundleIds);
 }

@@ -36,4 +36,7 @@ public interface UserGroupRepository extends JpaRepository<UserGroup, Long> {
 
     @Query(value = "SELECT COUNT(*) FROM user_group e WHERE e.user_id = :userId", nativeQuery = true)
     long  getAllUserGroups(@Param("userId") long userId);
+
+    @Query("SELECT ug.userId FROM UserGroup ug WHERE ug.groupId = :groupId")
+    List<Long> findUserIdsByGroupId(@Param("groupId") Long groupId);
 }

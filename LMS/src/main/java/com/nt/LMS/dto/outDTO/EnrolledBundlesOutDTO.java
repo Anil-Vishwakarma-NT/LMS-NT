@@ -3,6 +3,7 @@ package com.nt.LMS.dto.outDTO;
 import lombok.Data;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 @Data
 public class EnrolledBundlesOutDTO {
@@ -11,4 +12,5 @@ public class EnrolledBundlesOutDTO {
     private Float progress;
     private LocalDateTime enrollmentDate;
     private LocalDateTime deadline;
+    private List<EnrolledCoursesOutDTO> enrolledCoursesList;
 }

@@ -279,4 +279,19 @@ public class BundleServiceImpl implements BundleService {
             throw new RuntimeException("Something went wrong while fetching bundle name", e);
         }
     }
+
+    @Override
+    public List<Long> findExistingIds(List<Long> bundleIds) {
+        try{
+            List<Long> existingCourseIds = bundleRepository.findExistingIds(bundleIds);
+            if (existingCourseIds.isEmpty()) {
+                throw new ResourceNotFoundException("No Bundle IDs found");
+            }
+            return existingCourseIds;
+        } catch (ResourceNotFoundException e) {
+            throw e;
+        } catch (Exception e) {
+            throw new RuntimeException("SERVER ERROR");
+        }
+    }
 }

@@ -2,6 +2,8 @@ package com.nt.LMS.repository;
 
 import com.nt.LMS.entities.Group;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
@@ -36,5 +38,8 @@ public interface GroupRepository extends JpaRepository<Group, Long> {
      * @return a list of the 5 most recently created groups
      */
     List<Group> findTop5ByOrderByGroupIdDesc();
+
+    @Query("SELECT g.groupId FROM Group g WHERE g.groupId IN :groupIds")
+    List<Long> findExistingIds(@Param("groupIds") List<Long> groupIds);
 
 }

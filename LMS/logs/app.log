@@ -103624,3 +103624,849 @@ io.jsonwebtoken.ExpiredJwtException: JWT expired at 2025-06-20T02:11:22Z. Curren
 	at org.apache.tomcat.util.threads.ThreadPoolExecutor$Worker.run(ThreadPoolExecutor.java:659)
 	at org.apache.tomcat.util.threads.TaskThread$WrappingRunnable.run(TaskThread.java:63)
 	at java.base/java.lang.Thread.run(Thread.java:842)
+2025-06-20 10:43:49 INFO  o.h.validator.internal.util.Version - HV000001: Hibernate Validator 8.0.2.Final
+2025-06-20 10:43:49 INFO  com.nt.LMS.LmsApplication - Starting LmsApplication using Java 17.0.12 with PID 33188 (C:\Users\DELL\Downloads\securityEx\LMS-NT\LMS\build\classes\java\main started by DELL in C:\Users\DELL\Downloads\securityEx\LMS-NT\LMS)
+2025-06-20 10:43:49 INFO  com.nt.LMS.LmsApplication - No active profile set, falling back to 1 default profile: "default"
+2025-06-20 10:43:51 INFO  o.s.d.r.c.RepositoryConfigurationDelegate - Bootstrapping Spring Data JPA repositories in DEFAULT mode.
+2025-06-20 10:43:51 INFO  o.s.d.r.c.RepositoryConfigurationDelegate - Finished Spring Data repository scanning in 342 ms. Found 11 JPA repository interfaces.
+2025-06-20 10:43:52 INFO  o.s.cloud.context.scope.GenericScope - BeanFactory id=dc96a742-fdd6-3504-a3b6-f1101938df4f
+2025-06-20 10:43:53 INFO  o.s.b.w.e.tomcat.TomcatWebServer - Tomcat initialized with port 8081 (http)
+2025-06-20 10:43:53 INFO  o.a.coyote.http11.Http11NioProtocol - Initializing ProtocolHandler ["http-nio-8081"]
+2025-06-20 10:43:53 INFO  o.a.catalina.core.StandardService - Starting service [Tomcat]
+2025-06-20 10:43:53 INFO  o.a.catalina.core.StandardEngine - Starting Servlet engine: [Apache Tomcat/10.1.39]
+2025-06-20 10:43:53 INFO  o.a.c.c.C.[Tomcat].[localhost].[/] - Initializing Spring embedded WebApplicationContext
+2025-06-20 10:43:53 INFO  o.s.b.w.s.c.ServletWebServerApplicationContext - Root WebApplicationContext: initialization completed in 4668 ms
+2025-06-20 10:43:54 INFO  o.h.jpa.internal.util.LogHelper - HHH000204: Processing PersistenceUnitInfo [name: default]
+2025-06-20 10:43:54 INFO  org.hibernate.Version - HHH000412: Hibernate ORM core version 6.6.11.Final
+2025-06-20 10:43:54 INFO  o.h.c.i.RegionFactoryInitiator - HHH000026: Second-level cache disabled
+2025-06-20 10:43:55 INFO  o.s.o.j.p.SpringPersistenceUnitInfo - No LoadTimeWeaver setup: ignoring JPA class transformer
+2025-06-20 10:43:55 INFO  com.zaxxer.hikari.HikariDataSource - HikariPool-1 - Starting...
+2025-06-20 10:43:55 INFO  com.zaxxer.hikari.pool.HikariPool - HikariPool-1 - Added connection org.postgresql.jdbc.PgConnection@5cf2f5d6
+2025-06-20 10:43:55 INFO  com.zaxxer.hikari.HikariDataSource - HikariPool-1 - Start completed.
+2025-06-20 10:43:55 WARN  org.hibernate.orm.deprecation - HHH90000025: PostgreSQLDialect does not need to be specified explicitly using 'hibernate.dialect' (remove the property setting and it will be selected by default)
+2025-06-20 10:43:55 INFO  o.hibernate.orm.connections.pooling - HHH10001005: Database info:
+	Database JDBC URL [Connecting through datasource 'HikariDataSource (HikariPool-1)']
+	Database driver: undefined/unknown
+	Database version: 15.7
+	Autocommit mode: undefined/unknown
+	Isolation level: undefined/unknown
+	Minimum pool size: undefined/unknown
+	Maximum pool size: undefined/unknown
+2025-06-20 10:43:57 INFO  o.h.e.t.j.p.i.JtaPlatformInitiator - HHH000489: No JTA platform available (set 'hibernate.transaction.jta.platform' to enable JTA platform integration)
+2025-06-20 10:43:57 INFO  o.s.o.j.LocalContainerEntityManagerFactoryBean - Initialized JPA EntityManagerFactory for persistence unit 'default'
+2025-06-20 10:43:58 INFO  o.s.d.j.r.query.QueryEnhancerFactory - Hibernate is in classpath; If applicable, HQL parser will be used.
+2025-06-20 10:43:59 WARN  o.s.b.a.o.j.JpaBaseConfiguration$JpaWebConfiguration - spring.jpa.open-in-view is enabled by default. Therefore, database queries may be performed during view rendering. Explicitly configure spring.jpa.open-in-view to disable this warning
+2025-06-20 10:43:59 INFO  o.s.s.c.a.a.c.InitializeAuthenticationProviderBeanManagerConfigurer$InitializeAuthenticationProviderManagerConfigurer - Global AuthenticationManager configured with AuthenticationProvider bean with name authenticationProvider
+2025-06-20 10:43:59 WARN  o.s.s.c.a.a.c.InitializeUserDetailsBeanManagerConfigurer$InitializeUserDetailsManagerConfigurer - Global AuthenticationManager configured with an AuthenticationProvider bean. UserDetailsService beans will not be used by Spring Security for automatically configuring username/password login. Consider removing the AuthenticationProvider bean. Alternatively, consider using the UserDetailsService in a manually instantiated DaoAuthenticationProvider. If the current configuration is intentional, to turn off this warning, increase the logging level of 'org.springframework.security.config.annotation.authentication.configuration.InitializeUserDetailsBeanManagerConfigurer' to ERROR
+2025-06-20 10:43:59 DEBUG o.s.w.s.m.m.a.RequestMappingHandlerMapping - 36 mappings in 'requestMappingHandlerMapping'
+2025-06-20 10:44:00 DEBUG o.s.w.s.h.SimpleUrlHandlerMapping - Patterns [/webjars/**, /**] in 'resourceHandlerMapping'
+2025-06-20 10:44:00 DEBUG o.s.w.s.m.m.a.RequestMappingHandlerAdapter - ControllerAdvice beans: 0 @ModelAttribute, 0 @InitBinder, 1 RequestBodyAdvice, 1 ResponseBodyAdvice
+2025-06-20 10:44:00 DEBUG o.s.w.s.m.m.a.ExceptionHandlerExceptionResolver - ControllerAdvice beans: 1 @ExceptionHandler, 1 ResponseBodyAdvice
+2025-06-20 10:44:00 INFO  o.a.coyote.http11.Http11NioProtocol - Starting ProtocolHandler ["http-nio-8081"]
+2025-06-20 10:44:00 INFO  o.s.b.w.e.tomcat.TomcatWebServer - Tomcat started on port 8081 (http) with context path '/'
+2025-06-20 10:44:01 INFO  com.nt.LMS.LmsApplication - Started LmsApplication in 13.73 seconds (process running for 15.811)
+2025-06-20 10:45:08 INFO  o.a.c.c.C.[Tomcat].[localhost].[/] - Initializing Spring DispatcherServlet 'dispatcherServlet'
+2025-06-20 10:45:08 INFO  o.s.web.servlet.DispatcherServlet - Initializing Servlet 'dispatcherServlet'
+2025-06-20 10:45:08 DEBUG o.s.web.servlet.DispatcherServlet - Detected StandardServletMultipartResolver
+2025-06-20 10:45:08 DEBUG o.s.web.servlet.DispatcherServlet - Detected AcceptHeaderLocaleResolver
+2025-06-20 10:45:08 DEBUG o.s.web.servlet.DispatcherServlet - Detected FixedThemeResolver
+2025-06-20 10:45:08 DEBUG o.s.web.servlet.DispatcherServlet - Detected org.springframework.web.servlet.view.DefaultRequestToViewNameTranslator@51a8aed8
+2025-06-20 10:45:08 DEBUG o.s.web.servlet.DispatcherServlet - Detected org.springframework.web.servlet.support.SessionFlashMapManager@4c140b12
+2025-06-20 10:45:08 DEBUG o.s.web.servlet.DispatcherServlet - enableLoggingRequestDetails='false': request parameters and headers will be masked to prevent unsafe logging of potentially sensitive data
+2025-06-20 10:45:08 INFO  o.s.web.servlet.DispatcherServlet - Completed initialization in 1 ms
+2025-06-20 10:45:08 ERROR o.a.c.c.C.[.[.[.[dispatcherServlet] - Servlet.service() for servlet [dispatcherServlet] in context with path [] threw exception
+io.jsonwebtoken.ExpiredJwtException: JWT expired at 2025-06-20T02:11:22Z. Current time: 2025-06-20T05:15:08Z, a difference of 10726289 milliseconds.  Allowed clock skew: 300000 milliseconds.
+	at io.jsonwebtoken.impl.DefaultJwtParser.parse(DefaultJwtParser.java:427)
+	at io.jsonwebtoken.impl.DefaultJwtParser.parse(DefaultJwtParser.java:529)
+	at io.jsonwebtoken.impl.DefaultJwtParser.parseClaimsJws(DefaultJwtParser.java:589)
+	at io.jsonwebtoken.impl.ImmutableJwtParser.parseClaimsJws(ImmutableJwtParser.java:173)
+	at com.nt.LMS.config.JwtUtil.extractAllClaims(JwtUtil.java:91)
+	at com.nt.LMS.config.JwtUtil.extractClaim(JwtUtil.java:74)
+	at com.nt.LMS.config.JwtUtil.extractUsername(JwtUtil.java:62)
+	at com.nt.LMS.config.JwtFilter.doFilterInternal(JwtFilter.java:63)
+	at org.springframework.web.filter.OncePerRequestFilter.doFilter(OncePerRequestFilter.java:116)
+	at org.springframework.security.web.FilterChainProxy$VirtualFilterChain.doFilter(FilterChainProxy.java:374)
+	at org.springframework.security.web.authentication.logout.LogoutFilter.doFilter(LogoutFilter.java:107)
+	at org.springframework.security.web.authentication.logout.LogoutFilter.doFilter(LogoutFilter.java:93)
+	at org.springframework.security.web.FilterChainProxy$VirtualFilterChain.doFilter(FilterChainProxy.java:374)
+	at org.springframework.web.filter.CorsFilter.doFilterInternal(CorsFilter.java:91)
+	at org.springframework.web.filter.OncePerRequestFilter.doFilter(OncePerRequestFilter.java:116)
+	at org.springframework.security.web.FilterChainProxy$VirtualFilterChain.doFilter(FilterChainProxy.java:374)
+	at org.springframework.security.web.header.HeaderWriterFilter.doHeadersAfter(HeaderWriterFilter.java:90)
+	at org.springframework.security.web.header.HeaderWriterFilter.doFilterInternal(HeaderWriterFilter.java:75)
+	at org.springframework.web.filter.OncePerRequestFilter.doFilter(OncePerRequestFilter.java:116)
+	at org.springframework.security.web.FilterChainProxy$VirtualFilterChain.doFilter(FilterChainProxy.java:374)
+	at org.springframework.security.web.context.SecurityContextHolderFilter.doFilter(SecurityContextHolderFilter.java:82)
+	at org.springframework.security.web.context.SecurityContextHolderFilter.doFilter(SecurityContextHolderFilter.java:69)
+	at org.springframework.security.web.FilterChainProxy$VirtualFilterChain.doFilter(FilterChainProxy.java:374)
+	at org.springframework.security.web.context.request.async.WebAsyncManagerIntegrationFilter.doFilterInternal(WebAsyncManagerIntegrationFilter.java:62)
+	at org.springframework.web.filter.OncePerRequestFilter.doFilter(OncePerRequestFilter.java:116)
+	at org.springframework.security.web.FilterChainProxy$VirtualFilterChain.doFilter(FilterChainProxy.java:374)
+	at org.springframework.security.web.session.DisableEncodeUrlFilter.doFilterInternal(DisableEncodeUrlFilter.java:42)
+	at org.springframework.web.filter.OncePerRequestFilter.doFilter(OncePerRequestFilter.java:116)
+	at org.springframework.security.web.FilterChainProxy$VirtualFilterChain.doFilter(FilterChainProxy.java:374)
+	at org.springframework.security.web.FilterChainProxy.doFilterInternal(FilterChainProxy.java:233)
+	at org.springframework.security.web.FilterChainProxy.doFilter(FilterChainProxy.java:191)
+	at org.springframework.web.filter.CompositeFilter$VirtualFilterChain.doFilter(CompositeFilter.java:113)
+	at org.springframework.web.servlet.handler.HandlerMappingIntrospector.lambda$createCacheFilter$3(HandlerMappingIntrospector.java:243)
+	at org.springframework.web.filter.CompositeFilter$VirtualFilterChain.doFilter(CompositeFilter.java:113)
+	at org.springframework.web.filter.CompositeFilter.doFilter(CompositeFilter.java:74)
+	at org.springframework.security.config.annotation.web.configuration.WebMvcSecurityConfiguration$CompositeFilterChainProxy.doFilter(WebMvcSecurityConfiguration.java:238)
+	at org.springframework.web.filter.DelegatingFilterProxy.invokeDelegate(DelegatingFilterProxy.java:362)
+	at org.springframework.web.filter.DelegatingFilterProxy.doFilter(DelegatingFilterProxy.java:278)
+	at org.apache.catalina.core.ApplicationFilterChain.internalDoFilter(ApplicationFilterChain.java:164)
+	at org.apache.catalina.core.ApplicationFilterChain.doFilter(ApplicationFilterChain.java:140)
+	at org.springframework.web.filter.RequestContextFilter.doFilterInternal(RequestContextFilter.java:100)
+	at org.springframework.web.filter.OncePerRequestFilter.doFilter(OncePerRequestFilter.java:116)
+	at org.apache.catalina.core.ApplicationFilterChain.internalDoFilter(ApplicationFilterChain.java:164)
+	at org.apache.catalina.core.ApplicationFilterChain.doFilter(ApplicationFilterChain.java:140)
+	at org.springframework.web.filter.FormContentFilter.doFilterInternal(FormContentFilter.java:93)
+	at org.springframework.web.filter.OncePerRequestFilter.doFilter(OncePerRequestFilter.java:116)
+	at org.apache.catalina.core.ApplicationFilterChain.internalDoFilter(ApplicationFilterChain.java:164)
+	at org.apache.catalina.core.ApplicationFilterChain.doFilter(ApplicationFilterChain.java:140)
+	at org.springframework.web.filter.CharacterEncodingFilter.doFilterInternal(CharacterEncodingFilter.java:201)
+	at org.springframework.web.filter.OncePerRequestFilter.doFilter(OncePerRequestFilter.java:116)
+	at org.apache.catalina.core.ApplicationFilterChain.internalDoFilter(ApplicationFilterChain.java:164)
+	at org.apache.catalina.core.ApplicationFilterChain.doFilter(ApplicationFilterChain.java:140)
+	at org.apache.catalina.core.StandardWrapperValve.invoke(StandardWrapperValve.java:167)
+	at org.apache.catalina.core.StandardContextValve.invoke(StandardContextValve.java:90)
+	at org.apache.catalina.authenticator.AuthenticatorBase.invoke(AuthenticatorBase.java:483)
+	at org.apache.catalina.core.StandardHostValve.invoke(StandardHostValve.java:115)
+	at org.apache.catalina.valves.ErrorReportValve.invoke(ErrorReportValve.java:93)
+	at org.apache.catalina.core.StandardEngineValve.invoke(StandardEngineValve.java:74)
+	at org.apache.catalina.connector.CoyoteAdapter.service(CoyoteAdapter.java:344)
+	at org.apache.coyote.http11.Http11Processor.service(Http11Processor.java:397)
+	at org.apache.coyote.AbstractProcessorLight.process(AbstractProcessorLight.java:63)
+	at org.apache.coyote.AbstractProtocol$ConnectionHandler.process(AbstractProtocol.java:905)
+	at org.apache.tomcat.util.net.NioEndpoint$SocketProcessor.doRun(NioEndpoint.java:1743)
+	at org.apache.tomcat.util.net.SocketProcessorBase.run(SocketProcessorBase.java:52)
+	at org.apache.tomcat.util.threads.ThreadPoolExecutor.runWorker(ThreadPoolExecutor.java:1190)
+	at org.apache.tomcat.util.threads.ThreadPoolExecutor$Worker.run(ThreadPoolExecutor.java:659)
+	at org.apache.tomcat.util.threads.TaskThread$WrappingRunnable.run(TaskThread.java:63)
+	at java.base/java.lang.Thread.run(Thread.java:842)
+2025-06-20 10:45:08 ERROR o.a.c.c.C.[.[.[.[dispatcherServlet] - Servlet.service() for servlet [dispatcherServlet] in context with path [] threw exception
+io.jsonwebtoken.ExpiredJwtException: JWT expired at 2025-06-20T02:11:22Z. Current time: 2025-06-20T05:15:08Z, a difference of 10726289 milliseconds.  Allowed clock skew: 300000 milliseconds.
+	at io.jsonwebtoken.impl.DefaultJwtParser.parse(DefaultJwtParser.java:427)
+	at io.jsonwebtoken.impl.DefaultJwtParser.parse(DefaultJwtParser.java:529)
+	at io.jsonwebtoken.impl.DefaultJwtParser.parseClaimsJws(DefaultJwtParser.java:589)
+	at io.jsonwebtoken.impl.ImmutableJwtParser.parseClaimsJws(ImmutableJwtParser.java:173)
+	at com.nt.LMS.config.JwtUtil.extractAllClaims(JwtUtil.java:91)
+	at com.nt.LMS.config.JwtUtil.extractClaim(JwtUtil.java:74)
+	at com.nt.LMS.config.JwtUtil.extractUsername(JwtUtil.java:62)
+	at com.nt.LMS.config.JwtFilter.doFilterInternal(JwtFilter.java:63)
+	at org.springframework.web.filter.OncePerRequestFilter.doFilter(OncePerRequestFilter.java:116)
+	at org.springframework.security.web.FilterChainProxy$VirtualFilterChain.doFilter(FilterChainProxy.java:374)
+	at org.springframework.security.web.authentication.logout.LogoutFilter.doFilter(LogoutFilter.java:107)
+	at org.springframework.security.web.authentication.logout.LogoutFilter.doFilter(LogoutFilter.java:93)
+	at org.springframework.security.web.FilterChainProxy$VirtualFilterChain.doFilter(FilterChainProxy.java:374)
+	at org.springframework.web.filter.CorsFilter.doFilterInternal(CorsFilter.java:91)
+	at org.springframework.web.filter.OncePerRequestFilter.doFilter(OncePerRequestFilter.java:116)
+	at org.springframework.security.web.FilterChainProxy$VirtualFilterChain.doFilter(FilterChainProxy.java:374)
+	at org.springframework.security.web.header.HeaderWriterFilter.doHeadersAfter(HeaderWriterFilter.java:90)
+	at org.springframework.security.web.header.HeaderWriterFilter.doFilterInternal(HeaderWriterFilter.java:75)
+	at org.springframework.web.filter.OncePerRequestFilter.doFilter(OncePerRequestFilter.java:116)
+	at org.springframework.security.web.FilterChainProxy$VirtualFilterChain.doFilter(FilterChainProxy.java:374)
+	at org.springframework.security.web.context.SecurityContextHolderFilter.doFilter(SecurityContextHolderFilter.java:82)
+	at org.springframework.security.web.context.SecurityContextHolderFilter.doFilter(SecurityContextHolderFilter.java:69)
+	at org.springframework.security.web.FilterChainProxy$VirtualFilterChain.doFilter(FilterChainProxy.java:374)
+	at org.springframework.security.web.context.request.async.WebAsyncManagerIntegrationFilter.doFilterInternal(WebAsyncManagerIntegrationFilter.java:62)
+	at org.springframework.web.filter.OncePerRequestFilter.doFilter(OncePerRequestFilter.java:116)
+	at org.springframework.security.web.FilterChainProxy$VirtualFilterChain.doFilter(FilterChainProxy.java:374)
+	at org.springframework.security.web.session.DisableEncodeUrlFilter.doFilterInternal(DisableEncodeUrlFilter.java:42)
+	at org.springframework.web.filter.OncePerRequestFilter.doFilter(OncePerRequestFilter.java:116)
+	at org.springframework.security.web.FilterChainProxy$VirtualFilterChain.doFilter(FilterChainProxy.java:374)
+	at org.springframework.security.web.FilterChainProxy.doFilterInternal(FilterChainProxy.java:233)
+	at org.springframework.security.web.FilterChainProxy.doFilter(FilterChainProxy.java:191)
+	at org.springframework.web.filter.CompositeFilter$VirtualFilterChain.doFilter(CompositeFilter.java:113)
+	at org.springframework.web.servlet.handler.HandlerMappingIntrospector.lambda$createCacheFilter$3(HandlerMappingIntrospector.java:243)
+	at org.springframework.web.filter.CompositeFilter$VirtualFilterChain.doFilter(CompositeFilter.java:113)
+	at org.springframework.web.filter.CompositeFilter.doFilter(CompositeFilter.java:74)
+	at org.springframework.security.config.annotation.web.configuration.WebMvcSecurityConfiguration$CompositeFilterChainProxy.doFilter(WebMvcSecurityConfiguration.java:238)
+	at org.springframework.web.filter.DelegatingFilterProxy.invokeDelegate(DelegatingFilterProxy.java:362)
+	at org.springframework.web.filter.DelegatingFilterProxy.doFilter(DelegatingFilterProxy.java:278)
+	at org.apache.catalina.core.ApplicationFilterChain.internalDoFilter(ApplicationFilterChain.java:164)
+	at org.apache.catalina.core.ApplicationFilterChain.doFilter(ApplicationFilterChain.java:140)
+	at org.springframework.web.filter.RequestContextFilter.doFilterInternal(RequestContextFilter.java:100)
+	at org.springframework.web.filter.OncePerRequestFilter.doFilter(OncePerRequestFilter.java:116)
+	at org.apache.catalina.core.ApplicationFilterChain.internalDoFilter(ApplicationFilterChain.java:164)
+	at org.apache.catalina.core.ApplicationFilterChain.doFilter(ApplicationFilterChain.java:140)
+	at org.springframework.web.filter.FormContentFilter.doFilterInternal(FormContentFilter.java:93)
+	at org.springframework.web.filter.OncePerRequestFilter.doFilter(OncePerRequestFilter.java:116)
+	at org.apache.catalina.core.ApplicationFilterChain.internalDoFilter(ApplicationFilterChain.java:164)
+	at org.apache.catalina.core.ApplicationFilterChain.doFilter(ApplicationFilterChain.java:140)
+	at org.springframework.web.filter.CharacterEncodingFilter.doFilterInternal(CharacterEncodingFilter.java:201)
+	at org.springframework.web.filter.OncePerRequestFilter.doFilter(OncePerRequestFilter.java:116)
+	at org.apache.catalina.core.ApplicationFilterChain.internalDoFilter(ApplicationFilterChain.java:164)
+	at org.apache.catalina.core.ApplicationFilterChain.doFilter(ApplicationFilterChain.java:140)
+	at org.apache.catalina.core.StandardWrapperValve.invoke(StandardWrapperValve.java:167)
+	at org.apache.catalina.core.StandardContextValve.invoke(StandardContextValve.java:90)
+	at org.apache.catalina.authenticator.AuthenticatorBase.invoke(AuthenticatorBase.java:483)
+	at org.apache.catalina.core.StandardHostValve.invoke(StandardHostValve.java:115)
+	at org.apache.catalina.valves.ErrorReportValve.invoke(ErrorReportValve.java:93)
+	at org.apache.catalina.core.StandardEngineValve.invoke(StandardEngineValve.java:74)
+	at org.apache.catalina.connector.CoyoteAdapter.service(CoyoteAdapter.java:344)
+	at org.apache.coyote.http11.Http11Processor.service(Http11Processor.java:397)
+	at org.apache.coyote.AbstractProcessorLight.process(AbstractProcessorLight.java:63)
+	at org.apache.coyote.AbstractProtocol$ConnectionHandler.process(AbstractProtocol.java:905)
+	at org.apache.tomcat.util.net.NioEndpoint$SocketProcessor.doRun(NioEndpoint.java:1743)
+	at org.apache.tomcat.util.net.SocketProcessorBase.run(SocketProcessorBase.java:52)
+	at org.apache.tomcat.util.threads.ThreadPoolExecutor.runWorker(ThreadPoolExecutor.java:1190)
+	at org.apache.tomcat.util.threads.ThreadPoolExecutor$Worker.run(ThreadPoolExecutor.java:659)
+	at org.apache.tomcat.util.threads.TaskThread$WrappingRunnable.run(TaskThread.java:63)
+	at java.base/java.lang.Thread.run(Thread.java:842)
+2025-06-20 10:45:31 DEBUG o.s.web.servlet.DispatcherServlet - POST "/api/auth/login", parameters={}
+2025-06-20 10:45:31 DEBUG o.s.w.s.m.m.a.RequestMappingHandlerMapping - Mapped to com.nt.LMS.controller.AuthController#login(LoginDto)
+2025-06-20 10:45:31 DEBUG o.s.w.s.m.m.a.RequestResponseBodyMethodProcessor - Read "application/json;charset=UTF-8" to [LoginDto(email=sakshi@nucleusteq.com, password=SYkD5ejN9mnyN8NR1heXhwb8p8BQ6ZTNHDKgmQwLrwIiI2WchHMY9 (truncated)...]
+2025-06-20 10:45:31 INFO  c.n.L.s.serviceImpl.AuthServiceImpl - Attempting login for email: sakshi@nucleusteq.com
+2025-06-20 10:45:32 INFO  c.n.L.s.serviceImpl.AuthServiceImpl - Refresh token stored for user: sakshi@nucleusteq.com
+2025-06-20 10:45:32 DEBUG o.s.w.s.m.m.a.HttpEntityMethodProcessor - Using 'application/json', given [application/json, text/plain, */*] and supported [application/json, application/*+json]
+2025-06-20 10:45:32 DEBUG o.s.w.s.m.m.a.HttpEntityMethodProcessor - Writing [StandardResponseOutDTO{status='SUCCESS', message='User Logged in successfully', data=TokenResponseDt (truncated)...]
+2025-06-20 10:45:32 DEBUG o.s.web.servlet.DispatcherServlet - Completed 200 OK
+2025-06-20 10:45:32 DEBUG o.s.web.servlet.DispatcherServlet - GET "/api/users/getUserId?email=sakshi@nucleusteq.com", parameters={masked}
+2025-06-20 10:45:32 DEBUG o.s.w.s.m.m.a.RequestMappingHandlerMapping - Mapped to com.nt.LMS.controller.UserController#getUserIdByEmail(String)
+2025-06-20 10:45:32 DEBUG o.s.w.s.m.m.a.HttpEntityMethodProcessor - Using 'application/json', given [*/*] and supported [application/json, application/*+json]
+2025-06-20 10:45:32 DEBUG o.s.w.s.m.m.a.HttpEntityMethodProcessor - Writing [UserOutDTO(userId=1, username=null, firstName=sakshi, lastName=purankar, email=null, manager=null, r (truncated)...]
+2025-06-20 10:45:32 DEBUG o.s.web.servlet.DispatcherServlet - Completed 200 OK
+2025-06-20 10:45:32 DEBUG o.s.web.servlet.DispatcherServlet - GET "/admin/count", parameters={}
+2025-06-20 10:45:32 DEBUG o.s.w.s.m.m.a.RequestMappingHandlerMapping - Mapped to com.nt.LMS.controller.AdminController#getTotalUserCount()
+2025-06-20 10:45:32 INFO  c.nt.LMS.controller.AdminController - Fetching total user count
+2025-06-20 10:45:32 DEBUG o.s.web.servlet.DispatcherServlet - GET "/api/enrollment/stats", parameters={}
+2025-06-20 10:45:32 DEBUG o.s.w.s.m.m.a.RequestMappingHandlerMapping - Mapped to com.nt.LMS.controller.EnrollmentController#getEnrollmentStats()
+2025-06-20 10:45:32 DEBUG o.s.web.servlet.DispatcherServlet - GET "/group/count", parameters={}
+2025-06-20 10:45:32 DEBUG o.s.w.s.m.m.a.RequestMappingHandlerMapping - Mapped to com.nt.LMS.controller.GroupController#getGroupCount()
+2025-06-20 10:45:32 INFO  c.n.L.c.EnrollmentController - Fetching enrollment statistics for dashboard
+2025-06-20 10:45:32 INFO  c.nt.LMS.controller.GroupController - Received request to get total Group count.
+2025-06-20 10:45:32 DEBUG o.s.web.servlet.DispatcherServlet - GET "/admin/users/recent", parameters={}
+2025-06-20 10:45:32 DEBUG o.s.w.s.m.m.a.RequestMappingHandlerMapping - Mapped to com.nt.LMS.controller.AdminController#getRecentUsers()
+2025-06-20 10:45:32 INFO  c.nt.LMS.controller.AdminController - Total user count retrieved: 4
+2025-06-20 10:45:32 DEBUG o.s.w.s.m.m.a.HttpEntityMethodProcessor - Using 'application/json', given [application/json, text/plain, */*] and supported [application/json, application/*+json]
+2025-06-20 10:45:32 DEBUG o.s.w.s.m.m.a.HttpEntityMethodProcessor - Writing [StandardResponseOutDTO{status='SUCCESS', message='Fetched User Count', data=4}]
+2025-06-20 10:45:32 DEBUG o.s.web.servlet.DispatcherServlet - Completed 200 OK
+2025-06-20 10:45:32 DEBUG o.s.w.s.m.m.a.HttpEntityMethodProcessor - Using 'application/json', given [application/json, text/plain, */*] and supported [application/json, application/*+json]
+2025-06-20 10:45:32 DEBUG o.s.w.s.m.m.a.HttpEntityMethodProcessor - Writing [StandardResponseOutDTO{status='SUCCESS', message='Fetched Recent Users', data=[UsersDetailsViewDTO(f (truncated)...]
+2025-06-20 10:45:32 DEBUG o.s.web.servlet.DispatcherServlet - Completed 200 OK
+2025-06-20 10:45:33 DEBUG o.s.w.c.HttpMessageConverterExtractor - Reading to [java.lang.String] as "text/plain;charset=UTF-8"
+2025-06-20 10:45:33 INFO  c.n.L.c.EnrollmentController - Enrollment statistics retrieved successfully
+2025-06-20 10:45:33 DEBUG o.s.w.s.m.m.a.HttpEntityMethodProcessor - Using 'application/json', given [application/json, text/plain, */*] and supported [application/json, application/*+json]
+2025-06-20 10:45:33 DEBUG o.s.w.s.m.m.a.HttpEntityMethodProcessor - Writing [StandardResponseOutDTO{status='SUCCESS', message='Enrollment statistics retrieved successfully', dat (truncated)...]
+2025-06-20 10:45:33 DEBUG o.s.web.servlet.DispatcherServlet - Completed 200 OK
+2025-06-20 10:45:33 INFO  c.nt.LMS.controller.GroupController - Total Group count retrieved: 1
+2025-06-20 10:45:33 DEBUG o.s.w.s.m.m.a.HttpEntityMethodProcessor - Using 'application/json', given [application/json, text/plain, */*] and supported [application/json, application/*+json]
+2025-06-20 10:45:33 DEBUG o.s.w.s.m.m.a.HttpEntityMethodProcessor - Writing [MessageOutDto(message=1)]
+2025-06-20 10:45:33 DEBUG o.s.web.servlet.DispatcherServlet - Completed 200 OK
+2025-06-20 10:46:29 DEBUG o.s.web.servlet.DispatcherServlet - GET "/group/groups", parameters={}
+2025-06-20 10:46:29 DEBUG o.s.web.servlet.DispatcherServlet - GET "/admin/active-employees", parameters={}
+2025-06-20 10:46:29 DEBUG o.s.w.s.m.m.a.RequestMappingHandlerMapping - Mapped to com.nt.LMS.controller.AdminController#getAllEmployees()
+2025-06-20 10:46:29 DEBUG o.s.w.s.m.m.a.RequestMappingHandlerMapping - Mapped to com.nt.LMS.controller.GroupController#getGroups()
+2025-06-20 10:46:29 INFO  c.nt.LMS.controller.AdminController - Fetching all employees
+2025-06-20 10:46:29 INFO  c.nt.LMS.controller.GroupController - Fetching groups for user: sakshi@nucleusteq.com
+2025-06-20 10:46:29 INFO  c.n.L.s.serviceImpl.AdminServiceImpl - Fetching all users
+2025-06-20 10:46:29 INFO  c.nt.LMS.controller.GroupController - Found 1 groups for user: sakshi@nucleusteq.com
+2025-06-20 10:46:29 DEBUG o.s.w.s.m.m.a.HttpEntityMethodProcessor - Using 'application/json', given [application/json, text/plain, */*] and supported [application/json, application/*+json]
+2025-06-20 10:46:29 DEBUG o.s.w.s.m.m.a.HttpEntityMethodProcessor - Writing [StandardResponseOutDTO{status='SUCCESS', message='Group fetched Successfully', data=[GroupOutDTO(gro (truncated)...]
+2025-06-20 10:46:29 DEBUG o.s.web.servlet.DispatcherServlet - Completed 200 OK
+2025-06-20 10:46:29 INFO  c.n.L.s.serviceImpl.AdminServiceImpl - Successfully fetched 4 users
+2025-06-20 10:46:29 INFO  c.nt.LMS.controller.AdminController - Fetched 4 employees
+2025-06-20 10:46:29 DEBUG o.s.w.s.m.m.a.HttpEntityMethodProcessor - Using 'application/json', given [application/json, text/plain, */*] and supported [application/json, application/*+json]
+2025-06-20 10:46:29 DEBUG o.s.w.s.m.m.a.HttpEntityMethodProcessor - Writing [StandardResponseOutDTO{status='SUCCESS', message='User fetched Successfully', data=[UserOutDTO(userI (truncated)...]
+2025-06-20 10:46:29 DEBUG o.s.web.servlet.DispatcherServlet - Completed 200 OK
+2025-06-20 10:46:37 DEBUG o.s.web.servlet.DispatcherServlet - GET "/group/group-emps/1", parameters={}
+2025-06-20 10:46:37 DEBUG o.s.w.s.m.m.a.RequestMappingHandlerMapping - Mapped to com.nt.LMS.controller.GroupController#getUsersInGroup(long)
+2025-06-20 10:46:37 INFO  c.nt.LMS.controller.GroupController - Fetching users in group with ID: 1
+2025-06-20 10:46:37 INFO  c.nt.LMS.controller.GroupController - Users found in group with ID: 1: 1
+2025-06-20 10:46:37 DEBUG o.s.w.s.m.m.a.HttpEntityMethodProcessor - Using 'application/json', given [application/json, text/plain, */*] and supported [application/json, application/*+json]
+2025-06-20 10:46:37 DEBUG o.s.w.s.m.m.a.HttpEntityMethodProcessor - Writing [StandardResponseOutDTO{status='SUCCESS', message='Group Employee fetched successfully', data=[UserOu (truncated)...]
+2025-06-20 10:46:37 DEBUG o.s.web.servlet.DispatcherServlet - Completed 200 OK
+2025-06-20 10:47:37 DEBUG o.s.web.servlet.DispatcherServlet - GET "/api/users/enrollments/3/statistics", parameters={}
+2025-06-20 10:47:37 DEBUG o.s.w.s.m.m.a.RequestMappingHandlerMapping - Mapped to com.nt.LMS.controller.UserCourseEnrollmentController#getUserEnrollments(Long)
+2025-06-20 10:47:37 DEBUG o.s.web.servlet.DispatcherServlet - GET "/api/issuances/user/history/", parameters={}
+2025-06-20 10:47:37 DEBUG o.s.w.s.h.SimpleUrlHandlerMapping - Mapped to ResourceHttpRequestHandler [classpath [META-INF/resources/], classpath [resources/], classpath [static/], classpath [public/], ServletContext [/]]
+2025-06-20 10:47:37 DEBUG o.s.w.s.r.ResourceHttpRequestHandler - Resource not found
+2025-06-20 10:47:37 DEBUG o.s.w.s.m.m.a.HttpEntityMethodProcessor - Using 'application/json', given [application/json, text/plain, */*] and supported [application/json, application/*+json]
+2025-06-20 10:47:37 DEBUG o.s.w.s.m.s.DefaultHandlerExceptionResolver - Resolved [org.springframework.web.servlet.resource.NoResourceFoundException: No static resource api/issuances/user/history.]
+2025-06-20 10:47:37 DEBUG o.s.w.s.m.m.a.HttpEntityMethodProcessor - Writing [StandardResponseOutDTO{status='SUCCESS', message='Fetched Users Enrolled', data={groups=1, enrollmen (truncated)...]
+2025-06-20 10:47:37 DEBUG o.s.web.servlet.DispatcherServlet - Completed 404 NOT_FOUND
+2025-06-20 10:47:37 DEBUG o.s.web.servlet.DispatcherServlet - Completed 200 OK
+2025-06-20 10:47:37 DEBUG o.s.web.servlet.DispatcherServlet - GET "/api/enrollment/user/3/enrolled-courses", parameters={}
+2025-06-20 10:47:37 DEBUG o.s.w.s.m.m.a.RequestMappingHandlerMapping - Mapped to com.nt.LMS.controller.EnrollmentController#getUserEnrolledCourses(Long)
+2025-06-20 10:47:37 INFO  c.n.L.c.EnrollmentController - Fetching enrolled courses for user ID: 3
+2025-06-20 10:47:37 INFO  c.n.L.c.EnrollmentController - Retrieved 1 enrolled courses for user ID: 3
+2025-06-20 10:47:37 DEBUG o.s.w.s.m.m.a.HttpEntityMethodProcessor - Using 'application/json', given [application/json, text/plain, */*] and supported [application/json, application/*+json]
+2025-06-20 10:47:37 DEBUG o.s.w.s.m.m.a.HttpEntityMethodProcessor - Writing [StandardResponseOutDTO{status='SUCCESS', message='User enrolled courses retrieved successfully', dat (truncated)...]
+2025-06-20 10:47:37 DEBUG o.s.web.servlet.DispatcherServlet - Completed 200 OK
+2025-06-20 10:47:42 DEBUG o.s.web.servlet.DispatcherServlet - GET "/group/group-emps/1", parameters={}
+2025-06-20 10:47:42 DEBUG o.s.w.s.m.m.a.RequestMappingHandlerMapping - Mapped to com.nt.LMS.controller.GroupController#getUsersInGroup(long)
+2025-06-20 10:47:42 INFO  c.nt.LMS.controller.GroupController - Fetching users in group with ID: 1
+2025-06-20 10:47:42 INFO  c.nt.LMS.controller.GroupController - Users found in group with ID: 1: 1
+2025-06-20 10:47:42 DEBUG o.s.w.s.m.m.a.HttpEntityMethodProcessor - Using 'application/json', given [application/json, text/plain, */*] and supported [application/json, application/*+json]
+2025-06-20 10:47:42 DEBUG o.s.w.s.m.m.a.HttpEntityMethodProcessor - Writing [StandardResponseOutDTO{status='SUCCESS', message='Group Employee fetched successfully', data=[UserOu (truncated)...]
+2025-06-20 10:47:42 DEBUG o.s.web.servlet.DispatcherServlet - Completed 200 OK
+2025-06-20 10:47:47 DEBUG o.s.web.servlet.DispatcherServlet - GET "/api/users/enrollments/3/statistics", parameters={}
+2025-06-20 10:47:47 DEBUG o.s.web.servlet.DispatcherServlet - GET "/api/issuances/user/history/", parameters={}
+2025-06-20 10:47:47 DEBUG o.s.w.s.m.m.a.RequestMappingHandlerMapping - Mapped to com.nt.LMS.controller.UserCourseEnrollmentController#getUserEnrollments(Long)
+2025-06-20 10:47:47 DEBUG o.s.w.s.h.SimpleUrlHandlerMapping - Mapped to ResourceHttpRequestHandler [classpath [META-INF/resources/], classpath [resources/], classpath [static/], classpath [public/], ServletContext [/]]
+2025-06-20 10:47:47 DEBUG o.s.w.s.r.ResourceHttpRequestHandler - Resource not found
+2025-06-20 10:47:47 DEBUG o.s.w.s.m.m.a.HttpEntityMethodProcessor - Using 'application/json', given [application/json, text/plain, */*] and supported [application/json, application/*+json]
+2025-06-20 10:47:47 DEBUG o.s.w.s.m.m.a.HttpEntityMethodProcessor - Writing [StandardResponseOutDTO{status='SUCCESS', message='Fetched Users Enrolled', data={groups=1, enrollmen (truncated)...]
+2025-06-20 10:47:47 DEBUG o.s.w.s.m.s.DefaultHandlerExceptionResolver - Resolved [org.springframework.web.servlet.resource.NoResourceFoundException: No static resource api/issuances/user/history.]
+2025-06-20 10:47:47 DEBUG o.s.web.servlet.DispatcherServlet - Completed 404 NOT_FOUND
+2025-06-20 10:47:47 DEBUG o.s.web.servlet.DispatcherServlet - Completed 200 OK
+2025-06-20 10:47:47 DEBUG o.s.web.servlet.DispatcherServlet - GET "/api/enrollment/user/3/enrolled-courses", parameters={}
+2025-06-20 10:47:47 DEBUG o.s.w.s.m.m.a.RequestMappingHandlerMapping - Mapped to com.nt.LMS.controller.EnrollmentController#getUserEnrolledCourses(Long)
+2025-06-20 10:47:47 INFO  c.n.L.c.EnrollmentController - Fetching enrolled courses for user ID: 3
+2025-06-20 10:47:47 INFO  c.n.L.c.EnrollmentController - Retrieved 1 enrolled courses for user ID: 3
+2025-06-20 10:47:47 DEBUG o.s.w.s.m.m.a.HttpEntityMethodProcessor - Using 'application/json', given [application/json, text/plain, */*] and supported [application/json, application/*+json]
+2025-06-20 10:47:47 DEBUG o.s.w.s.m.m.a.HttpEntityMethodProcessor - Writing [StandardResponseOutDTO{status='SUCCESS', message='User enrolled courses retrieved successfully', dat (truncated)...]
+2025-06-20 10:47:47 DEBUG o.s.web.servlet.DispatcherServlet - Completed 200 OK
+2025-06-20 10:50:10 DEBUG o.s.web.servlet.DispatcherServlet - GET "/group/groups", parameters={}
+2025-06-20 10:50:10 DEBUG o.s.web.servlet.DispatcherServlet - GET "/admin/active-employees", parameters={}
+2025-06-20 10:50:10 DEBUG o.s.w.s.m.m.a.RequestMappingHandlerMapping - Mapped to com.nt.LMS.controller.GroupController#getGroups()
+2025-06-20 10:50:10 DEBUG o.s.w.s.m.m.a.RequestMappingHandlerMapping - Mapped to com.nt.LMS.controller.AdminController#getAllEmployees()
+2025-06-20 10:50:10 INFO  c.nt.LMS.controller.AdminController - Fetching all employees
+2025-06-20 10:50:10 INFO  c.nt.LMS.controller.GroupController - Fetching groups for user: sakshi@nucleusteq.com
+2025-06-20 10:50:10 INFO  c.n.L.s.serviceImpl.AdminServiceImpl - Fetching all users
+2025-06-20 10:50:10 INFO  c.nt.LMS.controller.GroupController - Found 1 groups for user: sakshi@nucleusteq.com
+2025-06-20 10:50:10 DEBUG o.s.w.s.m.m.a.HttpEntityMethodProcessor - Using 'application/json', given [application/json, text/plain, */*] and supported [application/json, application/*+json]
+2025-06-20 10:50:10 DEBUG o.s.w.s.m.m.a.HttpEntityMethodProcessor - Writing [StandardResponseOutDTO{status='SUCCESS', message='Group fetched Successfully', data=[GroupOutDTO(gro (truncated)...]
+2025-06-20 10:50:10 DEBUG o.s.web.servlet.DispatcherServlet - Completed 200 OK
+2025-06-20 10:50:10 INFO  c.n.L.s.serviceImpl.AdminServiceImpl - Successfully fetched 4 users
+2025-06-20 10:50:10 INFO  c.nt.LMS.controller.AdminController - Fetched 4 employees
+2025-06-20 10:50:10 DEBUG o.s.w.s.m.m.a.HttpEntityMethodProcessor - Using 'application/json', given [application/json, text/plain, */*] and supported [application/json, application/*+json]
+2025-06-20 10:50:10 DEBUG o.s.w.s.m.m.a.HttpEntityMethodProcessor - Writing [StandardResponseOutDTO{status='SUCCESS', message='User fetched Successfully', data=[UserOutDTO(userI (truncated)...]
+2025-06-20 10:50:10 DEBUG o.s.web.servlet.DispatcherServlet - Completed 200 OK
+2025-06-20 10:51:03 DEBUG o.s.web.servlet.DispatcherServlet - GET "/group/group-emps/1", parameters={}
+2025-06-20 10:51:03 DEBUG o.s.w.s.m.m.a.RequestMappingHandlerMapping - Mapped to com.nt.LMS.controller.GroupController#getUsersInGroup(long)
+2025-06-20 10:51:03 INFO  c.nt.LMS.controller.GroupController - Fetching users in group with ID: 1
+2025-06-20 10:51:03 INFO  c.nt.LMS.controller.GroupController - Users found in group with ID: 1: 1
+2025-06-20 10:51:03 DEBUG o.s.w.s.m.m.a.HttpEntityMethodProcessor - Using 'application/json', given [application/json, text/plain, */*] and supported [application/json, application/*+json]
+2025-06-20 10:51:03 DEBUG o.s.w.s.m.m.a.HttpEntityMethodProcessor - Writing [StandardResponseOutDTO{status='SUCCESS', message='Group Employee fetched successfully', data=[UserOu (truncated)...]
+2025-06-20 10:51:03 DEBUG o.s.web.servlet.DispatcherServlet - Completed 200 OK
+2025-06-20 10:51:31 DEBUG o.s.web.servlet.DispatcherServlet - GET "/group/group-emps/1", parameters={}
+2025-06-20 10:51:31 DEBUG o.s.w.s.m.m.a.RequestMappingHandlerMapping - Mapped to com.nt.LMS.controller.GroupController#getUsersInGroup(long)
+2025-06-20 10:51:31 INFO  c.nt.LMS.controller.GroupController - Fetching users in group with ID: 1
+2025-06-20 10:51:31 INFO  c.nt.LMS.controller.GroupController - Users found in group with ID: 1: 1
+2025-06-20 10:51:31 DEBUG o.s.w.s.m.m.a.HttpEntityMethodProcessor - Using 'application/json', given [application/json, text/plain, */*] and supported [application/json, application/*+json]
+2025-06-20 10:51:31 DEBUG o.s.w.s.m.m.a.HttpEntityMethodProcessor - Writing [StandardResponseOutDTO{status='SUCCESS', message='Group Employee fetched successfully', data=[UserOu (truncated)...]
+2025-06-20 10:51:31 DEBUG o.s.web.servlet.DispatcherServlet - Completed 200 OK
+2025-06-20 10:51:40 DEBUG o.s.web.servlet.DispatcherServlet - GET "/group/group-emps/1", parameters={}
+2025-06-20 10:51:40 DEBUG o.s.w.s.m.m.a.RequestMappingHandlerMapping - Mapped to com.nt.LMS.controller.GroupController#getUsersInGroup(long)
+2025-06-20 10:51:40 INFO  c.nt.LMS.controller.GroupController - Fetching users in group with ID: 1
+2025-06-20 10:51:40 INFO  c.nt.LMS.controller.GroupController - Users found in group with ID: 1: 1
+2025-06-20 10:51:40 DEBUG o.s.w.s.m.m.a.HttpEntityMethodProcessor - Using 'application/json', given [application/json, text/plain, */*] and supported [application/json, application/*+json]
+2025-06-20 10:51:40 DEBUG o.s.w.s.m.m.a.HttpEntityMethodProcessor - Writing [StandardResponseOutDTO{status='SUCCESS', message='Group Employee fetched successfully', data=[UserOu (truncated)...]
+2025-06-20 10:51:40 DEBUG o.s.web.servlet.DispatcherServlet - Completed 200 OK
+2025-06-20 10:51:43 DEBUG o.s.web.servlet.DispatcherServlet - GET "/group/group-emps/1", parameters={}
+2025-06-20 10:51:43 DEBUG o.s.w.s.m.m.a.RequestMappingHandlerMapping - Mapped to com.nt.LMS.controller.GroupController#getUsersInGroup(long)
+2025-06-20 10:51:43 INFO  c.nt.LMS.controller.GroupController - Fetching users in group with ID: 1
+2025-06-20 10:51:43 INFO  c.nt.LMS.controller.GroupController - Users found in group with ID: 1: 1
+2025-06-20 10:51:43 DEBUG o.s.w.s.m.m.a.HttpEntityMethodProcessor - Using 'application/json', given [application/json, text/plain, */*] and supported [application/json, application/*+json]
+2025-06-20 10:51:43 DEBUG o.s.w.s.m.m.a.HttpEntityMethodProcessor - Writing [StandardResponseOutDTO{status='SUCCESS', message='Group Employee fetched successfully', data=[UserOu (truncated)...]
+2025-06-20 10:51:43 DEBUG o.s.web.servlet.DispatcherServlet - Completed 200 OK
+2025-06-20 10:53:07 DEBUG o.s.web.servlet.DispatcherServlet - GET "/group/group-emps/1", parameters={}
+2025-06-20 10:53:07 DEBUG o.s.w.s.m.m.a.RequestMappingHandlerMapping - Mapped to com.nt.LMS.controller.GroupController#getUsersInGroup(long)
+2025-06-20 10:53:07 INFO  c.nt.LMS.controller.GroupController - Fetching users in group with ID: 1
+2025-06-20 10:53:07 INFO  c.nt.LMS.controller.GroupController - Users found in group with ID: 1: 1
+2025-06-20 10:53:07 DEBUG o.s.w.s.m.m.a.HttpEntityMethodProcessor - Using 'application/json', given [application/json, text/plain, */*] and supported [application/json, application/*+json]
+2025-06-20 10:53:07 DEBUG o.s.w.s.m.m.a.HttpEntityMethodProcessor - Writing [StandardResponseOutDTO{status='SUCCESS', message='Group Employee fetched successfully', data=[UserOu (truncated)...]
+2025-06-20 10:53:07 DEBUG o.s.web.servlet.DispatcherServlet - Completed 200 OK
+2025-06-20 10:53:13 DEBUG o.s.web.servlet.DispatcherServlet - GET "/group/group-emps/1", parameters={}
+2025-06-20 10:53:13 DEBUG o.s.w.s.m.m.a.RequestMappingHandlerMapping - Mapped to com.nt.LMS.controller.GroupController#getUsersInGroup(long)
+2025-06-20 10:53:13 INFO  c.nt.LMS.controller.GroupController - Fetching users in group with ID: 1
+2025-06-20 10:53:13 INFO  c.nt.LMS.controller.GroupController - Users found in group with ID: 1: 1
+2025-06-20 10:53:13 DEBUG o.s.w.s.m.m.a.HttpEntityMethodProcessor - Using 'application/json', given [application/json, text/plain, */*] and supported [application/json, application/*+json]
+2025-06-20 10:53:13 DEBUG o.s.w.s.m.m.a.HttpEntityMethodProcessor - Writing [StandardResponseOutDTO{status='SUCCESS', message='Group Employee fetched successfully', data=[UserOu (truncated)...]
+2025-06-20 10:53:13 DEBUG o.s.web.servlet.DispatcherServlet - Completed 200 OK
+2025-06-20 10:53:59 DEBUG o.s.web.servlet.DispatcherServlet - GET "/group/group-emps/1", parameters={}
+2025-06-20 10:53:59 DEBUG o.s.w.s.m.m.a.RequestMappingHandlerMapping - Mapped to com.nt.LMS.controller.GroupController#getUsersInGroup(long)
+2025-06-20 10:53:59 INFO  c.nt.LMS.controller.GroupController - Fetching users in group with ID: 1
+2025-06-20 10:53:59 INFO  c.nt.LMS.controller.GroupController - Users found in group with ID: 1: 1
+2025-06-20 10:53:59 DEBUG o.s.w.s.m.m.a.HttpEntityMethodProcessor - Using 'application/json', given [application/json, text/plain, */*] and supported [application/json, application/*+json]
+2025-06-20 10:53:59 DEBUG o.s.w.s.m.m.a.HttpEntityMethodProcessor - Writing [StandardResponseOutDTO{status='SUCCESS', message='Group Employee fetched successfully', data=[UserOu (truncated)...]
+2025-06-20 10:53:59 DEBUG o.s.web.servlet.DispatcherServlet - Completed 200 OK
+2025-06-20 10:54:41 DEBUG o.s.web.servlet.DispatcherServlet - GET "/group/group-emps/1", parameters={}
+2025-06-20 10:54:41 DEBUG o.s.w.s.m.m.a.RequestMappingHandlerMapping - Mapped to com.nt.LMS.controller.GroupController#getUsersInGroup(long)
+2025-06-20 10:54:41 INFO  c.nt.LMS.controller.GroupController - Fetching users in group with ID: 1
+2025-06-20 10:54:41 INFO  c.nt.LMS.controller.GroupController - Users found in group with ID: 1: 1
+2025-06-20 10:54:41 DEBUG o.s.w.s.m.m.a.HttpEntityMethodProcessor - Using 'application/json', given [application/json, text/plain, */*] and supported [application/json, application/*+json]
+2025-06-20 10:54:41 DEBUG o.s.w.s.m.m.a.HttpEntityMethodProcessor - Writing [StandardResponseOutDTO{status='SUCCESS', message='Group Employee fetched successfully', data=[UserOu (truncated)...]
+2025-06-20 10:54:41 DEBUG o.s.web.servlet.DispatcherServlet - Completed 200 OK
+2025-06-20 10:55:18 DEBUG o.s.web.servlet.DispatcherServlet - GET "/group/groups", parameters={}
+2025-06-20 10:55:18 DEBUG o.s.w.s.m.m.a.RequestMappingHandlerMapping - Mapped to com.nt.LMS.controller.GroupController#getGroups()
+2025-06-20 10:55:18 INFO  c.nt.LMS.controller.GroupController - Fetching groups for user: sakshi@nucleusteq.com
+2025-06-20 10:55:18 DEBUG o.s.web.servlet.DispatcherServlet - GET "/admin/active-employees", parameters={}
+2025-06-20 10:55:18 DEBUG o.s.w.s.m.m.a.RequestMappingHandlerMapping - Mapped to com.nt.LMS.controller.AdminController#getAllEmployees()
+2025-06-20 10:55:18 INFO  c.nt.LMS.controller.AdminController - Fetching all employees
+2025-06-20 10:55:18 INFO  c.n.L.s.serviceImpl.AdminServiceImpl - Fetching all users
+2025-06-20 10:55:18 INFO  c.nt.LMS.controller.GroupController - Found 1 groups for user: sakshi@nucleusteq.com
+2025-06-20 10:55:18 DEBUG o.s.w.s.m.m.a.HttpEntityMethodProcessor - Using 'application/json', given [application/json, text/plain, */*] and supported [application/json, application/*+json]
+2025-06-20 10:55:18 DEBUG o.s.w.s.m.m.a.HttpEntityMethodProcessor - Writing [StandardResponseOutDTO{status='SUCCESS', message='Group fetched Successfully', data=[GroupOutDTO(gro (truncated)...]
+2025-06-20 10:55:18 DEBUG o.s.web.servlet.DispatcherServlet - Completed 200 OK
+2025-06-20 10:55:18 INFO  c.n.L.s.serviceImpl.AdminServiceImpl - Successfully fetched 4 users
+2025-06-20 10:55:18 INFO  c.nt.LMS.controller.AdminController - Fetched 4 employees
+2025-06-20 10:55:18 DEBUG o.s.w.s.m.m.a.HttpEntityMethodProcessor - Using 'application/json', given [application/json, text/plain, */*] and supported [application/json, application/*+json]
+2025-06-20 10:55:18 DEBUG o.s.w.s.m.m.a.HttpEntityMethodProcessor - Writing [StandardResponseOutDTO{status='SUCCESS', message='User fetched Successfully', data=[UserOutDTO(userI (truncated)...]
+2025-06-20 10:55:18 DEBUG o.s.web.servlet.DispatcherServlet - Completed 200 OK
+2025-06-20 10:55:20 DEBUG o.s.web.servlet.DispatcherServlet - GET "/group/group-emps/1", parameters={}
+2025-06-20 10:55:20 DEBUG o.s.w.s.m.m.a.RequestMappingHandlerMapping - Mapped to com.nt.LMS.controller.GroupController#getUsersInGroup(long)
+2025-06-20 10:55:20 INFO  c.nt.LMS.controller.GroupController - Fetching users in group with ID: 1
+2025-06-20 10:55:20 INFO  c.nt.LMS.controller.GroupController - Users found in group with ID: 1: 1
+2025-06-20 10:55:20 DEBUG o.s.w.s.m.m.a.HttpEntityMethodProcessor - Using 'application/json', given [application/json, text/plain, */*] and supported [application/json, application/*+json]
+2025-06-20 10:55:20 DEBUG o.s.w.s.m.m.a.HttpEntityMethodProcessor - Writing [StandardResponseOutDTO{status='SUCCESS', message='Group Employee fetched successfully', data=[UserOu (truncated)...]
+2025-06-20 10:55:20 DEBUG o.s.web.servlet.DispatcherServlet - Completed 200 OK
+2025-06-20 10:55:32 DEBUG o.s.web.servlet.DispatcherServlet - GET "/group/group-emps/1", parameters={}
+2025-06-20 10:55:32 DEBUG o.s.w.s.m.m.a.RequestMappingHandlerMapping - Mapped to com.nt.LMS.controller.GroupController#getUsersInGroup(long)
+2025-06-20 10:55:32 INFO  c.nt.LMS.controller.GroupController - Fetching users in group with ID: 1
+2025-06-20 10:55:32 INFO  c.nt.LMS.controller.GroupController - Users found in group with ID: 1: 1
+2025-06-20 10:55:32 DEBUG o.s.w.s.m.m.a.HttpEntityMethodProcessor - Using 'application/json', given [application/json, text/plain, */*] and supported [application/json, application/*+json]
+2025-06-20 10:55:32 DEBUG o.s.w.s.m.m.a.HttpEntityMethodProcessor - Writing [StandardResponseOutDTO{status='SUCCESS', message='Group Employee fetched successfully', data=[UserOu (truncated)...]
+2025-06-20 10:55:32 DEBUG o.s.web.servlet.DispatcherServlet - Completed 200 OK
+2025-06-20 11:24:57 WARN  com.zaxxer.hikari.pool.HikariPool - HikariPool-1 - Thread starvation or clock leap detected (housekeeper delta=19m31s357ms486µs200ns).
+2025-06-20 12:31:08 WARN  com.zaxxer.hikari.pool.HikariPool - HikariPool-1 - Thread starvation or clock leap detected (housekeeper delta=2m9s646ms770µs).
+2025-06-20 12:36:54 WARN  com.zaxxer.hikari.pool.HikariPool - HikariPool-1 - Thread starvation or clock leap detected (housekeeper delta=1m45s516ms858µs300ns).
+2025-06-20 12:44:23 DEBUG o.s.web.servlet.DispatcherServlet - GET "/group/group-emps/1", parameters={}
+2025-06-20 12:44:23 DEBUG o.s.w.s.m.m.a.RequestMappingHandlerMapping - Mapped to com.nt.LMS.controller.GroupController#getUsersInGroup(long)
+2025-06-20 12:44:24 INFO  c.nt.LMS.controller.GroupController - Fetching users in group with ID: 1
+2025-06-20 12:44:24 INFO  c.nt.LMS.controller.GroupController - Users found in group with ID: 1: 1
+2025-06-20 12:44:24 DEBUG o.s.w.s.m.m.a.HttpEntityMethodProcessor - Using 'application/json', given [application/json, text/plain, */*] and supported [application/json, application/*+json]
+2025-06-20 12:44:24 DEBUG o.s.w.s.m.m.a.HttpEntityMethodProcessor - Writing [StandardResponseOutDTO{status='SUCCESS', message='Group Employee fetched successfully', data=[UserOu (truncated)...]
+2025-06-20 12:44:24 DEBUG o.s.web.servlet.DispatcherServlet - Completed 200 OK
+2025-06-20 12:44:32 DEBUG o.s.web.servlet.DispatcherServlet - GET "/group/group-emps/1", parameters={}
+2025-06-20 12:44:32 DEBUG o.s.w.s.m.m.a.RequestMappingHandlerMapping - Mapped to com.nt.LMS.controller.GroupController#getUsersInGroup(long)
+2025-06-20 12:44:32 INFO  c.nt.LMS.controller.GroupController - Fetching users in group with ID: 1
+2025-06-20 12:44:32 INFO  c.nt.LMS.controller.GroupController - Users found in group with ID: 1: 1
+2025-06-20 12:44:32 DEBUG o.s.w.s.m.m.a.HttpEntityMethodProcessor - Using 'application/json', given [application/json, text/plain, */*] and supported [application/json, application/*+json]
+2025-06-20 12:44:32 DEBUG o.s.w.s.m.m.a.HttpEntityMethodProcessor - Writing [StandardResponseOutDTO{status='SUCCESS', message='Group Employee fetched successfully', data=[UserOu (truncated)...]
+2025-06-20 12:44:32 DEBUG o.s.web.servlet.DispatcherServlet - Completed 200 OK
+2025-06-20 12:44:33 DEBUG o.s.web.servlet.DispatcherServlet - GET "/group/group-emps/1", parameters={}
+2025-06-20 12:44:33 DEBUG o.s.w.s.m.m.a.RequestMappingHandlerMapping - Mapped to com.nt.LMS.controller.GroupController#getUsersInGroup(long)
+2025-06-20 12:44:33 INFO  c.nt.LMS.controller.GroupController - Fetching users in group with ID: 1
+2025-06-20 12:44:33 INFO  c.nt.LMS.controller.GroupController - Users found in group with ID: 1: 1
+2025-06-20 12:44:33 DEBUG o.s.w.s.m.m.a.HttpEntityMethodProcessor - Using 'application/json', given [application/json, text/plain, */*] and supported [application/json, application/*+json]
+2025-06-20 12:44:33 DEBUG o.s.w.s.m.m.a.HttpEntityMethodProcessor - Writing [StandardResponseOutDTO{status='SUCCESS', message='Group Employee fetched successfully', data=[UserOu (truncated)...]
+2025-06-20 12:44:33 DEBUG o.s.web.servlet.DispatcherServlet - Completed 200 OK
+2025-06-20 12:44:37 DEBUG o.s.web.servlet.DispatcherServlet - GET "/group/group-emps/1", parameters={}
+2025-06-20 12:44:37 DEBUG o.s.w.s.m.m.a.RequestMappingHandlerMapping - Mapped to com.nt.LMS.controller.GroupController#getUsersInGroup(long)
+2025-06-20 12:44:37 INFO  c.nt.LMS.controller.GroupController - Fetching users in group with ID: 1
+2025-06-20 12:44:37 INFO  c.nt.LMS.controller.GroupController - Users found in group with ID: 1: 1
+2025-06-20 12:44:37 DEBUG o.s.w.s.m.m.a.HttpEntityMethodProcessor - Using 'application/json', given [application/json, text/plain, */*] and supported [application/json, application/*+json]
+2025-06-20 12:44:37 DEBUG o.s.w.s.m.m.a.HttpEntityMethodProcessor - Writing [StandardResponseOutDTO{status='SUCCESS', message='Group Employee fetched successfully', data=[UserOu (truncated)...]
+2025-06-20 12:44:37 DEBUG o.s.web.servlet.DispatcherServlet - Completed 200 OK
+2025-06-20 12:44:43 DEBUG o.s.web.servlet.DispatcherServlet - GET "/group/group-emps/1", parameters={}
+2025-06-20 12:44:43 DEBUG o.s.w.s.m.m.a.RequestMappingHandlerMapping - Mapped to com.nt.LMS.controller.GroupController#getUsersInGroup(long)
+2025-06-20 12:44:43 INFO  c.nt.LMS.controller.GroupController - Fetching users in group with ID: 1
+2025-06-20 12:44:43 INFO  c.nt.LMS.controller.GroupController - Users found in group with ID: 1: 1
+2025-06-20 12:44:43 DEBUG o.s.w.s.m.m.a.HttpEntityMethodProcessor - Using 'application/json', given [application/json, text/plain, */*] and supported [application/json, application/*+json]
+2025-06-20 12:44:43 DEBUG o.s.w.s.m.m.a.HttpEntityMethodProcessor - Writing [StandardResponseOutDTO{status='SUCCESS', message='Group Employee fetched successfully', data=[UserOu (truncated)...]
+2025-06-20 12:44:43 DEBUG o.s.web.servlet.DispatcherServlet - Completed 200 OK
+2025-06-20 12:44:55 DEBUG o.s.web.servlet.DispatcherServlet - GET "/group/group-emps/1", parameters={}
+2025-06-20 12:44:55 DEBUG o.s.w.s.m.m.a.RequestMappingHandlerMapping - Mapped to com.nt.LMS.controller.GroupController#getUsersInGroup(long)
+2025-06-20 12:44:55 INFO  c.nt.LMS.controller.GroupController - Fetching users in group with ID: 1
+2025-06-20 12:44:55 INFO  c.nt.LMS.controller.GroupController - Users found in group with ID: 1: 1
+2025-06-20 12:44:55 DEBUG o.s.w.s.m.m.a.HttpEntityMethodProcessor - Using 'application/json', given [application/json, text/plain, */*] and supported [application/json, application/*+json]
+2025-06-20 12:44:55 DEBUG o.s.w.s.m.m.a.HttpEntityMethodProcessor - Writing [StandardResponseOutDTO{status='SUCCESS', message='Group Employee fetched successfully', data=[UserOu (truncated)...]
+2025-06-20 12:44:55 DEBUG o.s.web.servlet.DispatcherServlet - Completed 200 OK
+2025-06-20 12:45:04 DEBUG o.s.web.servlet.DispatcherServlet - GET "/group/group-emps/1", parameters={}
+2025-06-20 12:45:04 DEBUG o.s.w.s.m.m.a.RequestMappingHandlerMapping - Mapped to com.nt.LMS.controller.GroupController#getUsersInGroup(long)
+2025-06-20 12:45:04 INFO  c.nt.LMS.controller.GroupController - Fetching users in group with ID: 1
+2025-06-20 12:45:04 INFO  c.nt.LMS.controller.GroupController - Users found in group with ID: 1: 1
+2025-06-20 12:45:04 DEBUG o.s.w.s.m.m.a.HttpEntityMethodProcessor - Using 'application/json', given [application/json, text/plain, */*] and supported [application/json, application/*+json]
+2025-06-20 12:45:04 DEBUG o.s.w.s.m.m.a.HttpEntityMethodProcessor - Writing [StandardResponseOutDTO{status='SUCCESS', message='Group Employee fetched successfully', data=[UserOu (truncated)...]
+2025-06-20 12:45:04 DEBUG o.s.web.servlet.DispatcherServlet - Completed 200 OK
+2025-06-20 12:45:21 DEBUG o.s.web.servlet.DispatcherServlet - GET "/group/group-emps/1", parameters={}
+2025-06-20 12:45:21 DEBUG o.s.w.s.m.m.a.RequestMappingHandlerMapping - Mapped to com.nt.LMS.controller.GroupController#getUsersInGroup(long)
+2025-06-20 12:45:21 INFO  c.nt.LMS.controller.GroupController - Fetching users in group with ID: 1
+2025-06-20 12:45:21 INFO  c.nt.LMS.controller.GroupController - Users found in group with ID: 1: 1
+2025-06-20 12:45:21 DEBUG o.s.w.s.m.m.a.HttpEntityMethodProcessor - Using 'application/json', given [application/json, text/plain, */*] and supported [application/json, application/*+json]
+2025-06-20 12:45:21 DEBUG o.s.w.s.m.m.a.HttpEntityMethodProcessor - Writing [StandardResponseOutDTO{status='SUCCESS', message='Group Employee fetched successfully', data=[UserOu (truncated)...]
+2025-06-20 12:45:21 DEBUG o.s.web.servlet.DispatcherServlet - Completed 200 OK
+2025-06-20 12:45:37 DEBUG o.s.web.servlet.DispatcherServlet - GET "/group/group-emps/1", parameters={}
+2025-06-20 12:45:37 DEBUG o.s.w.s.m.m.a.RequestMappingHandlerMapping - Mapped to com.nt.LMS.controller.GroupController#getUsersInGroup(long)
+2025-06-20 12:45:37 INFO  c.nt.LMS.controller.GroupController - Fetching users in group with ID: 1
+2025-06-20 12:45:37 INFO  c.nt.LMS.controller.GroupController - Users found in group with ID: 1: 1
+2025-06-20 12:45:37 DEBUG o.s.w.s.m.m.a.HttpEntityMethodProcessor - Using 'application/json', given [application/json, text/plain, */*] and supported [application/json, application/*+json]
+2025-06-20 12:45:37 DEBUG o.s.w.s.m.m.a.HttpEntityMethodProcessor - Writing [StandardResponseOutDTO{status='SUCCESS', message='Group Employee fetched successfully', data=[UserOu (truncated)...]
+2025-06-20 12:45:37 DEBUG o.s.web.servlet.DispatcherServlet - Completed 200 OK
+2025-06-20 12:45:43 DEBUG o.s.web.servlet.DispatcherServlet - GET "/group/group-emps/1", parameters={}
+2025-06-20 12:45:43 DEBUG o.s.w.s.m.m.a.RequestMappingHandlerMapping - Mapped to com.nt.LMS.controller.GroupController#getUsersInGroup(long)
+2025-06-20 12:45:43 INFO  c.nt.LMS.controller.GroupController - Fetching users in group with ID: 1
+2025-06-20 12:45:43 INFO  c.nt.LMS.controller.GroupController - Users found in group with ID: 1: 1
+2025-06-20 12:45:43 DEBUG o.s.w.s.m.m.a.HttpEntityMethodProcessor - Using 'application/json', given [application/json, text/plain, */*] and supported [application/json, application/*+json]
+2025-06-20 12:45:43 DEBUG o.s.w.s.m.m.a.HttpEntityMethodProcessor - Writing [StandardResponseOutDTO{status='SUCCESS', message='Group Employee fetched successfully', data=[UserOu (truncated)...]
+2025-06-20 12:45:43 DEBUG o.s.web.servlet.DispatcherServlet - Completed 200 OK
+2025-06-20 12:46:00 DEBUG o.s.web.servlet.DispatcherServlet - GET "/group/group-emps/1", parameters={}
+2025-06-20 12:46:00 DEBUG o.s.w.s.m.m.a.RequestMappingHandlerMapping - Mapped to com.nt.LMS.controller.GroupController#getUsersInGroup(long)
+2025-06-20 12:46:00 INFO  c.nt.LMS.controller.GroupController - Fetching users in group with ID: 1
+2025-06-20 12:46:00 INFO  c.nt.LMS.controller.GroupController - Users found in group with ID: 1: 1
+2025-06-20 12:46:00 DEBUG o.s.w.s.m.m.a.HttpEntityMethodProcessor - Using 'application/json', given [application/json, text/plain, */*] and supported [application/json, application/*+json]
+2025-06-20 12:46:00 DEBUG o.s.w.s.m.m.a.HttpEntityMethodProcessor - Writing [StandardResponseOutDTO{status='SUCCESS', message='Group Employee fetched successfully', data=[UserOu (truncated)...]
+2025-06-20 12:46:00 DEBUG o.s.web.servlet.DispatcherServlet - Completed 200 OK
+2025-06-20 12:46:01 DEBUG o.s.web.servlet.DispatcherServlet - GET "/group/group-emps/1", parameters={}
+2025-06-20 12:46:01 DEBUG o.s.w.s.m.m.a.RequestMappingHandlerMapping - Mapped to com.nt.LMS.controller.GroupController#getUsersInGroup(long)
+2025-06-20 12:46:01 INFO  c.nt.LMS.controller.GroupController - Fetching users in group with ID: 1
+2025-06-20 12:46:01 INFO  c.nt.LMS.controller.GroupController - Users found in group with ID: 1: 1
+2025-06-20 12:46:01 DEBUG o.s.w.s.m.m.a.HttpEntityMethodProcessor - Using 'application/json', given [application/json, text/plain, */*] and supported [application/json, application/*+json]
+2025-06-20 12:46:01 DEBUG o.s.w.s.m.m.a.HttpEntityMethodProcessor - Writing [StandardResponseOutDTO{status='SUCCESS', message='Group Employee fetched successfully', data=[UserOu (truncated)...]
+2025-06-20 12:46:01 DEBUG o.s.web.servlet.DispatcherServlet - Completed 200 OK
+2025-06-20 12:46:05 DEBUG o.s.web.servlet.DispatcherServlet - GET "/group/group-emps/1", parameters={}
+2025-06-20 12:46:05 DEBUG o.s.w.s.m.m.a.RequestMappingHandlerMapping - Mapped to com.nt.LMS.controller.GroupController#getUsersInGroup(long)
+2025-06-20 12:46:05 INFO  c.nt.LMS.controller.GroupController - Fetching users in group with ID: 1
+2025-06-20 12:46:05 INFO  c.nt.LMS.controller.GroupController - Users found in group with ID: 1: 1
+2025-06-20 12:46:05 DEBUG o.s.w.s.m.m.a.HttpEntityMethodProcessor - Using 'application/json', given [application/json, text/plain, */*] and supported [application/json, application/*+json]
+2025-06-20 12:46:06 DEBUG o.s.w.s.m.m.a.HttpEntityMethodProcessor - Writing [StandardResponseOutDTO{status='SUCCESS', message='Group Employee fetched successfully', data=[UserOu (truncated)...]
+2025-06-20 12:46:06 DEBUG o.s.web.servlet.DispatcherServlet - Completed 200 OK
+2025-06-20 12:46:15 DEBUG o.s.web.servlet.DispatcherServlet - GET "/group/group-emps/1", parameters={}
+2025-06-20 12:46:15 DEBUG o.s.w.s.m.m.a.RequestMappingHandlerMapping - Mapped to com.nt.LMS.controller.GroupController#getUsersInGroup(long)
+2025-06-20 12:46:15 INFO  c.nt.LMS.controller.GroupController - Fetching users in group with ID: 1
+2025-06-20 12:46:15 INFO  c.nt.LMS.controller.GroupController - Users found in group with ID: 1: 1
+2025-06-20 12:46:15 DEBUG o.s.w.s.m.m.a.HttpEntityMethodProcessor - Using 'application/json', given [application/json, text/plain, */*] and supported [application/json, application/*+json]
+2025-06-20 12:46:15 DEBUG o.s.w.s.m.m.a.HttpEntityMethodProcessor - Writing [StandardResponseOutDTO{status='SUCCESS', message='Group Employee fetched successfully', data=[UserOu (truncated)...]
+2025-06-20 12:46:15 DEBUG o.s.web.servlet.DispatcherServlet - Completed 200 OK
+2025-06-20 12:46:18 DEBUG o.s.web.servlet.DispatcherServlet - GET "/group/group-emps/1", parameters={}
+2025-06-20 12:46:18 DEBUG o.s.w.s.m.m.a.RequestMappingHandlerMapping - Mapped to com.nt.LMS.controller.GroupController#getUsersInGroup(long)
+2025-06-20 12:46:18 INFO  c.nt.LMS.controller.GroupController - Fetching users in group with ID: 1
+2025-06-20 12:46:18 INFO  c.nt.LMS.controller.GroupController - Users found in group with ID: 1: 1
+2025-06-20 12:46:18 DEBUG o.s.w.s.m.m.a.HttpEntityMethodProcessor - Using 'application/json', given [application/json, text/plain, */*] and supported [application/json, application/*+json]
+2025-06-20 12:46:18 DEBUG o.s.w.s.m.m.a.HttpEntityMethodProcessor - Writing [StandardResponseOutDTO{status='SUCCESS', message='Group Employee fetched successfully', data=[UserOu (truncated)...]
+2025-06-20 12:46:18 DEBUG o.s.web.servlet.DispatcherServlet - Completed 200 OK
+2025-06-20 12:46:21 DEBUG o.s.web.servlet.DispatcherServlet - GET "/group/group-emps/1", parameters={}
+2025-06-20 12:46:21 DEBUG o.s.w.s.m.m.a.RequestMappingHandlerMapping - Mapped to com.nt.LMS.controller.GroupController#getUsersInGroup(long)
+2025-06-20 12:46:21 INFO  c.nt.LMS.controller.GroupController - Fetching users in group with ID: 1
+2025-06-20 12:46:21 INFO  c.nt.LMS.controller.GroupController - Users found in group with ID: 1: 1
+2025-06-20 12:46:21 DEBUG o.s.w.s.m.m.a.HttpEntityMethodProcessor - Using 'application/json', given [application/json, text/plain, */*] and supported [application/json, application/*+json]
+2025-06-20 12:46:21 DEBUG o.s.w.s.m.m.a.HttpEntityMethodProcessor - Writing [StandardResponseOutDTO{status='SUCCESS', message='Group Employee fetched successfully', data=[UserOu (truncated)...]
+2025-06-20 12:46:21 DEBUG o.s.web.servlet.DispatcherServlet - Completed 200 OK
+2025-06-20 12:46:26 DEBUG o.s.web.servlet.DispatcherServlet - GET "/group/group-emps/1", parameters={}
+2025-06-20 12:46:26 DEBUG o.s.w.s.m.m.a.RequestMappingHandlerMapping - Mapped to com.nt.LMS.controller.GroupController#getUsersInGroup(long)
+2025-06-20 12:46:26 INFO  c.nt.LMS.controller.GroupController - Fetching users in group with ID: 1
+2025-06-20 12:46:26 INFO  c.nt.LMS.controller.GroupController - Users found in group with ID: 1: 1
+2025-06-20 12:46:26 DEBUG o.s.w.s.m.m.a.HttpEntityMethodProcessor - Using 'application/json', given [application/json, text/plain, */*] and supported [application/json, application/*+json]
+2025-06-20 12:46:26 DEBUG o.s.w.s.m.m.a.HttpEntityMethodProcessor - Writing [StandardResponseOutDTO{status='SUCCESS', message='Group Employee fetched successfully', data=[UserOu (truncated)...]
+2025-06-20 12:46:26 DEBUG o.s.web.servlet.DispatcherServlet - Completed 200 OK
+2025-06-20 12:46:45 DEBUG o.s.web.servlet.DispatcherServlet - GET "/group/group-emps/1", parameters={}
+2025-06-20 12:46:45 DEBUG o.s.w.s.m.m.a.RequestMappingHandlerMapping - Mapped to com.nt.LMS.controller.GroupController#getUsersInGroup(long)
+2025-06-20 12:46:45 INFO  c.nt.LMS.controller.GroupController - Fetching users in group with ID: 1
+2025-06-20 12:46:45 INFO  c.nt.LMS.controller.GroupController - Users found in group with ID: 1: 1
+2025-06-20 12:46:45 DEBUG o.s.w.s.m.m.a.HttpEntityMethodProcessor - Using 'application/json', given [application/json, text/plain, */*] and supported [application/json, application/*+json]
+2025-06-20 12:46:45 DEBUG o.s.w.s.m.m.a.HttpEntityMethodProcessor - Writing [StandardResponseOutDTO{status='SUCCESS', message='Group Employee fetched successfully', data=[UserOu (truncated)...]
+2025-06-20 12:46:45 DEBUG o.s.web.servlet.DispatcherServlet - Completed 200 OK
+2025-06-20 12:46:49 DEBUG o.s.web.servlet.DispatcherServlet - GET "/group/group-emps/1", parameters={}
+2025-06-20 12:46:49 DEBUG o.s.w.s.m.m.a.RequestMappingHandlerMapping - Mapped to com.nt.LMS.controller.GroupController#getUsersInGroup(long)
+2025-06-20 12:46:49 INFO  c.nt.LMS.controller.GroupController - Fetching users in group with ID: 1
+2025-06-20 12:46:49 INFO  c.nt.LMS.controller.GroupController - Users found in group with ID: 1: 1
+2025-06-20 12:46:49 DEBUG o.s.w.s.m.m.a.HttpEntityMethodProcessor - Using 'application/json', given [application/json, text/plain, */*] and supported [application/json, application/*+json]
+2025-06-20 12:46:49 DEBUG o.s.w.s.m.m.a.HttpEntityMethodProcessor - Writing [StandardResponseOutDTO{status='SUCCESS', message='Group Employee fetched successfully', data=[UserOu (truncated)...]
+2025-06-20 12:46:49 DEBUG o.s.web.servlet.DispatcherServlet - Completed 200 OK
+2025-06-20 12:46:55 DEBUG o.s.web.servlet.DispatcherServlet - GET "/group/group-emps/1", parameters={}
+2025-06-20 12:46:55 DEBUG o.s.w.s.m.m.a.RequestMappingHandlerMapping - Mapped to com.nt.LMS.controller.GroupController#getUsersInGroup(long)
+2025-06-20 12:46:55 INFO  c.nt.LMS.controller.GroupController - Fetching users in group with ID: 1
+2025-06-20 12:46:55 INFO  c.nt.LMS.controller.GroupController - Users found in group with ID: 1: 1
+2025-06-20 12:46:55 DEBUG o.s.w.s.m.m.a.HttpEntityMethodProcessor - Using 'application/json', given [application/json, text/plain, */*] and supported [application/json, application/*+json]
+2025-06-20 12:46:55 DEBUG o.s.w.s.m.m.a.HttpEntityMethodProcessor - Writing [StandardResponseOutDTO{status='SUCCESS', message='Group Employee fetched successfully', data=[UserOu (truncated)...]
+2025-06-20 12:46:55 DEBUG o.s.web.servlet.DispatcherServlet - Completed 200 OK
+2025-06-20 12:46:57 DEBUG o.s.web.servlet.DispatcherServlet - GET "/group/group-emps/1", parameters={}
+2025-06-20 12:46:57 DEBUG o.s.w.s.m.m.a.RequestMappingHandlerMapping - Mapped to com.nt.LMS.controller.GroupController#getUsersInGroup(long)
+2025-06-20 12:46:57 INFO  c.nt.LMS.controller.GroupController - Fetching users in group with ID: 1
+2025-06-20 12:46:57 INFO  c.nt.LMS.controller.GroupController - Users found in group with ID: 1: 1
+2025-06-20 12:46:57 DEBUG o.s.w.s.m.m.a.HttpEntityMethodProcessor - Using 'application/json', given [application/json, text/plain, */*] and supported [application/json, application/*+json]
+2025-06-20 12:46:57 DEBUG o.s.w.s.m.m.a.HttpEntityMethodProcessor - Writing [StandardResponseOutDTO{status='SUCCESS', message='Group Employee fetched successfully', data=[UserOu (truncated)...]
+2025-06-20 12:46:57 DEBUG o.s.web.servlet.DispatcherServlet - Completed 200 OK
+2025-06-20 12:55:58 WARN  com.zaxxer.hikari.pool.HikariPool - HikariPool-1 - Thread starvation or clock leap detected (housekeeper delta=5m34s71ms782µs100ns).
+2025-06-20 13:45:54 WARN  com.zaxxer.hikari.pool.HikariPool - HikariPool-1 - Thread starvation or clock leap detected (housekeeper delta=32m54s209ms629µs900ns).
+2025-06-20 14:01:02 WARN  com.zaxxer.hikari.pool.HikariPool - HikariPool-1 - Thread starvation or clock leap detected (housekeeper delta=14m6s772ms457µs400ns).
+2025-06-20 14:07:41 WARN  com.zaxxer.hikari.pool.HikariPool - HikariPool-1 - Thread starvation or clock leap detected (housekeeper delta=3m9s631ms224µs400ns).
+2025-06-20 14:11:40 WARN  com.zaxxer.hikari.pool.HikariPool - HikariPool-1 - Thread starvation or clock leap detected (housekeeper delta=58s414ms802µs200ns).
+2025-06-20 14:29:08 WARN  com.zaxxer.hikari.pool.HikariPool - HikariPool-1 - Thread starvation or clock leap detected (housekeeper delta=1m17s340ms153µs300ns).
+2025-06-20 14:36:40 DEBUG o.s.web.servlet.DispatcherServlet - GET "/admin/active-employees", parameters={}
+2025-06-20 14:36:40 DEBUG o.s.w.s.m.m.a.RequestMappingHandlerMapping - Mapped to com.nt.LMS.controller.AdminController#getAllEmployees()
+2025-06-20 14:36:40 DEBUG o.s.web.servlet.DispatcherServlet - GET "/group/groups", parameters={}
+2025-06-20 14:36:40 DEBUG o.s.w.s.m.m.a.RequestMappingHandlerMapping - Mapped to com.nt.LMS.controller.GroupController#getGroups()
+2025-06-20 14:36:40 INFO  c.nt.LMS.controller.AdminController - Fetching all employees
+2025-06-20 14:36:40 INFO  c.nt.LMS.controller.GroupController - Fetching groups for user: sakshi@nucleusteq.com
+2025-06-20 14:36:40 INFO  c.n.L.s.serviceImpl.AdminServiceImpl - Fetching all users
+2025-06-20 14:36:40 INFO  c.nt.LMS.controller.GroupController - Found 1 groups for user: sakshi@nucleusteq.com
+2025-06-20 14:36:40 DEBUG o.s.w.s.m.m.a.HttpEntityMethodProcessor - Using 'application/json', given [application/json, text/plain, */*] and supported [application/json, application/*+json]
+2025-06-20 14:36:40 DEBUG o.s.w.s.m.m.a.HttpEntityMethodProcessor - Writing [StandardResponseOutDTO{status='SUCCESS', message='Group fetched Successfully', data=[GroupOutDTO(gro (truncated)...]
+2025-06-20 14:36:40 INFO  c.n.L.s.serviceImpl.AdminServiceImpl - Successfully fetched 4 users
+2025-06-20 14:36:40 INFO  c.nt.LMS.controller.AdminController - Fetched 4 employees
+2025-06-20 14:36:40 DEBUG o.s.w.s.m.m.a.HttpEntityMethodProcessor - Using 'application/json', given [application/json, text/plain, */*] and supported [application/json, application/*+json]
+2025-06-20 14:36:40 DEBUG o.s.w.s.m.m.a.HttpEntityMethodProcessor - Writing [StandardResponseOutDTO{status='SUCCESS', message='User fetched Successfully', data=[UserOutDTO(userI (truncated)...]
+2025-06-20 14:36:40 DEBUG o.s.web.servlet.DispatcherServlet - Completed 200 OK
+2025-06-20 14:36:40 DEBUG o.s.web.servlet.DispatcherServlet - Completed 200 OK
+2025-06-20 14:36:50 DEBUG o.s.web.servlet.DispatcherServlet - GET "/group/group-emps/1", parameters={}
+2025-06-20 14:36:50 DEBUG o.s.w.s.m.m.a.RequestMappingHandlerMapping - Mapped to com.nt.LMS.controller.GroupController#getUsersInGroup(long)
+2025-06-20 14:36:50 INFO  c.nt.LMS.controller.GroupController - Fetching users in group with ID: 1
+2025-06-20 14:36:50 INFO  c.nt.LMS.controller.GroupController - Users found in group with ID: 1: 1
+2025-06-20 14:36:50 DEBUG o.s.w.s.m.m.a.HttpEntityMethodProcessor - Using 'application/json', given [application/json, text/plain, */*] and supported [application/json, application/*+json]
+2025-06-20 14:36:50 DEBUG o.s.w.s.m.m.a.HttpEntityMethodProcessor - Writing [StandardResponseOutDTO{status='SUCCESS', message='Group Employee fetched successfully', data=[UserOu (truncated)...]
+2025-06-20 14:36:50 DEBUG o.s.web.servlet.DispatcherServlet - Completed 200 OK
+2025-06-20 14:36:52 DEBUG o.s.web.servlet.DispatcherServlet - GET "/api/users/enrollments/3/statistics", parameters={}
+2025-06-20 14:36:52 DEBUG o.s.w.s.m.m.a.RequestMappingHandlerMapping - Mapped to com.nt.LMS.controller.UserCourseEnrollmentController#getUserEnrollments(Long)
+2025-06-20 14:36:52 DEBUG o.s.web.servlet.DispatcherServlet - GET "/api/issuances/user/history/", parameters={}
+2025-06-20 14:36:52 DEBUG o.s.w.s.h.SimpleUrlHandlerMapping - Mapped to ResourceHttpRequestHandler [classpath [META-INF/resources/], classpath [resources/], classpath [static/], classpath [public/], ServletContext [/]]
+2025-06-20 14:36:52 DEBUG o.s.w.s.r.ResourceHttpRequestHandler - Resource not found
+2025-06-20 14:36:52 DEBUG o.s.w.s.m.m.a.HttpEntityMethodProcessor - Using 'application/json', given [application/json, text/plain, */*] and supported [application/json, application/*+json]
+2025-06-20 14:36:52 DEBUG o.s.w.s.m.m.a.HttpEntityMethodProcessor - Writing [StandardResponseOutDTO{status='SUCCESS', message='Fetched Users Enrolled', data={groups=1, enrollmen (truncated)...]
+2025-06-20 14:36:52 DEBUG o.s.web.servlet.DispatcherServlet - Completed 200 OK
+2025-06-20 14:36:52 DEBUG o.s.w.s.m.s.DefaultHandlerExceptionResolver - Resolved [org.springframework.web.servlet.resource.NoResourceFoundException: No static resource api/issuances/user/history.]
+2025-06-20 14:36:52 DEBUG o.s.web.servlet.DispatcherServlet - Completed 404 NOT_FOUND
+2025-06-20 14:36:52 DEBUG o.s.web.servlet.DispatcherServlet - GET "/api/enrollment/user/3/enrolled-courses", parameters={}
+2025-06-20 14:36:52 DEBUG o.s.w.s.m.m.a.RequestMappingHandlerMapping - Mapped to com.nt.LMS.controller.EnrollmentController#getUserEnrolledCourses(Long)
+2025-06-20 14:36:52 INFO  c.n.L.c.EnrollmentController - Fetching enrolled courses for user ID: 3
+2025-06-20 14:36:52 INFO  c.n.L.c.EnrollmentController - Retrieved 1 enrolled courses for user ID: 3
+2025-06-20 14:36:52 DEBUG o.s.w.s.m.m.a.HttpEntityMethodProcessor - Using 'application/json', given [application/json, text/plain, */*] and supported [application/json, application/*+json]
+2025-06-20 14:36:52 DEBUG o.s.w.s.m.m.a.HttpEntityMethodProcessor - Writing [StandardResponseOutDTO{status='SUCCESS', message='User enrolled courses retrieved successfully', dat (truncated)...]
+2025-06-20 14:36:52 DEBUG o.s.web.servlet.DispatcherServlet - Completed 200 OK
+2025-06-20 14:36:56 DEBUG o.s.web.servlet.DispatcherServlet - GET "/group/group-emps/1", parameters={}
+2025-06-20 14:36:56 DEBUG o.s.w.s.m.m.a.RequestMappingHandlerMapping - Mapped to com.nt.LMS.controller.GroupController#getUsersInGroup(long)
+2025-06-20 14:36:56 INFO  c.nt.LMS.controller.GroupController - Fetching users in group with ID: 1
+2025-06-20 14:36:56 INFO  c.nt.LMS.controller.GroupController - Users found in group with ID: 1: 1
+2025-06-20 14:36:56 DEBUG o.s.w.s.m.m.a.HttpEntityMethodProcessor - Using 'application/json', given [application/json, text/plain, */*] and supported [application/json, application/*+json]
+2025-06-20 14:36:56 DEBUG o.s.w.s.m.m.a.HttpEntityMethodProcessor - Writing [StandardResponseOutDTO{status='SUCCESS', message='Group Employee fetched successfully', data=[UserOu (truncated)...]
+2025-06-20 14:36:56 DEBUG o.s.web.servlet.DispatcherServlet - Completed 200 OK
+2025-06-20 14:37:03 DEBUG o.s.web.servlet.DispatcherServlet - GET "/admin/active-employees", parameters={}
+2025-06-20 14:37:03 DEBUG o.s.w.s.m.m.a.RequestMappingHandlerMapping - Mapped to com.nt.LMS.controller.AdminController#getAllEmployees()
+2025-06-20 14:37:03 INFO  c.nt.LMS.controller.AdminController - Fetching all employees
+2025-06-20 14:37:03 INFO  c.n.L.s.serviceImpl.AdminServiceImpl - Fetching all users
+2025-06-20 14:37:03 DEBUG o.s.web.servlet.DispatcherServlet - GET "/group/groups", parameters={}
+2025-06-20 14:37:03 DEBUG o.s.w.s.m.m.a.RequestMappingHandlerMapping - Mapped to com.nt.LMS.controller.GroupController#getGroups()
+2025-06-20 14:37:03 INFO  c.nt.LMS.controller.GroupController - Fetching groups for user: sakshi@nucleusteq.com
+2025-06-20 14:37:03 INFO  c.nt.LMS.controller.GroupController - Found 1 groups for user: sakshi@nucleusteq.com
+2025-06-20 14:37:03 INFO  c.n.L.s.serviceImpl.AdminServiceImpl - Successfully fetched 4 users
+2025-06-20 14:37:03 INFO  c.nt.LMS.controller.AdminController - Fetched 4 employees
+2025-06-20 14:37:03 DEBUG o.s.w.s.m.m.a.HttpEntityMethodProcessor - Using 'application/json', given [application/json, text/plain, */*] and supported [application/json, application/*+json]
+2025-06-20 14:37:03 DEBUG o.s.w.s.m.m.a.HttpEntityMethodProcessor - Using 'application/json', given [application/json, text/plain, */*] and supported [application/json, application/*+json]
+2025-06-20 14:37:03 DEBUG o.s.w.s.m.m.a.HttpEntityMethodProcessor - Writing [StandardResponseOutDTO{status='SUCCESS', message='Group fetched Successfully', data=[GroupOutDTO(gro (truncated)...]
+2025-06-20 14:37:03 DEBUG o.s.w.s.m.m.a.HttpEntityMethodProcessor - Writing [StandardResponseOutDTO{status='SUCCESS', message='User fetched Successfully', data=[UserOutDTO(userI (truncated)...]
+2025-06-20 14:37:03 DEBUG o.s.web.servlet.DispatcherServlet - Completed 200 OK
+2025-06-20 14:37:03 DEBUG o.s.web.servlet.DispatcherServlet - Completed 200 OK
+2025-06-20 14:37:09 DEBUG o.s.web.servlet.DispatcherServlet - GET "/group/group-emps/1", parameters={}
+2025-06-20 14:37:09 DEBUG o.s.w.s.m.m.a.RequestMappingHandlerMapping - Mapped to com.nt.LMS.controller.GroupController#getUsersInGroup(long)
+2025-06-20 14:37:09 INFO  c.nt.LMS.controller.GroupController - Fetching users in group with ID: 1
+2025-06-20 14:37:09 INFO  c.nt.LMS.controller.GroupController - Users found in group with ID: 1: 1
+2025-06-20 14:37:09 DEBUG o.s.w.s.m.m.a.HttpEntityMethodProcessor - Using 'application/json', given [application/json, text/plain, */*] and supported [application/json, application/*+json]
+2025-06-20 14:37:09 DEBUG o.s.w.s.m.m.a.HttpEntityMethodProcessor - Writing [StandardResponseOutDTO{status='SUCCESS', message='Group Employee fetched successfully', data=[UserOu (truncated)...]
+2025-06-20 14:37:09 DEBUG o.s.web.servlet.DispatcherServlet - Completed 200 OK
+2025-06-20 14:37:15 DEBUG o.s.web.servlet.DispatcherServlet - GET "/admin/active-employees", parameters={}
+2025-06-20 14:37:15 DEBUG o.s.web.servlet.DispatcherServlet - GET "/group/groups", parameters={}
+2025-06-20 14:37:15 DEBUG o.s.w.s.m.m.a.RequestMappingHandlerMapping - Mapped to com.nt.LMS.controller.AdminController#getAllEmployees()
+2025-06-20 14:37:15 DEBUG o.s.w.s.m.m.a.RequestMappingHandlerMapping - Mapped to com.nt.LMS.controller.GroupController#getGroups()
+2025-06-20 14:37:15 INFO  c.nt.LMS.controller.AdminController - Fetching all employees
+2025-06-20 14:37:15 INFO  c.n.L.s.serviceImpl.AdminServiceImpl - Fetching all users
+2025-06-20 14:37:15 INFO  c.nt.LMS.controller.GroupController - Fetching groups for user: sakshi@nucleusteq.com
+2025-06-20 14:37:15 INFO  c.nt.LMS.controller.GroupController - Found 1 groups for user: sakshi@nucleusteq.com
+2025-06-20 14:37:15 DEBUG o.s.w.s.m.m.a.HttpEntityMethodProcessor - Using 'application/json', given [application/json, text/plain, */*] and supported [application/json, application/*+json]
+2025-06-20 14:37:15 DEBUG o.s.w.s.m.m.a.HttpEntityMethodProcessor - Writing [StandardResponseOutDTO{status='SUCCESS', message='Group fetched Successfully', data=[GroupOutDTO(gro (truncated)...]
+2025-06-20 14:37:15 DEBUG o.s.web.servlet.DispatcherServlet - Completed 200 OK
+2025-06-20 14:37:15 INFO  c.n.L.s.serviceImpl.AdminServiceImpl - Successfully fetched 4 users
+2025-06-20 14:37:15 INFO  c.nt.LMS.controller.AdminController - Fetched 4 employees
+2025-06-20 14:37:15 DEBUG o.s.w.s.m.m.a.HttpEntityMethodProcessor - Using 'application/json', given [application/json, text/plain, */*] and supported [application/json, application/*+json]
+2025-06-20 14:37:15 DEBUG o.s.w.s.m.m.a.HttpEntityMethodProcessor - Writing [StandardResponseOutDTO{status='SUCCESS', message='User fetched Successfully', data=[UserOutDTO(userI (truncated)...]
+2025-06-20 14:37:15 DEBUG o.s.web.servlet.DispatcherServlet - Completed 200 OK
+2025-06-20 14:37:19 DEBUG o.s.web.servlet.DispatcherServlet - GET "/admin/active-employees", parameters={}
+2025-06-20 14:37:19 DEBUG o.s.w.s.m.m.a.RequestMappingHandlerMapping - Mapped to com.nt.LMS.controller.AdminController#getAllEmployees()
+2025-06-20 14:37:19 INFO  c.nt.LMS.controller.AdminController - Fetching all employees
+2025-06-20 14:37:19 INFO  c.n.L.s.serviceImpl.AdminServiceImpl - Fetching all users
+2025-06-20 14:37:19 INFO  c.n.L.s.serviceImpl.AdminServiceImpl - Successfully fetched 4 users
+2025-06-20 14:37:19 INFO  c.nt.LMS.controller.AdminController - Fetched 4 employees
+2025-06-20 14:37:19 DEBUG o.s.w.s.m.m.a.HttpEntityMethodProcessor - Using 'application/json', given [application/json, text/plain, */*] and supported [application/json, application/*+json]
+2025-06-20 14:37:19 DEBUG o.s.w.s.m.m.a.HttpEntityMethodProcessor - Writing [StandardResponseOutDTO{status='SUCCESS', message='User fetched Successfully', data=[UserOutDTO(userI (truncated)...]
+2025-06-20 14:37:19 DEBUG o.s.web.servlet.DispatcherServlet - Completed 200 OK
+2025-06-20 14:37:33 DEBUG o.s.web.servlet.DispatcherServlet - GET "/admin/active-employees", parameters={}
+2025-06-20 14:37:33 DEBUG o.s.w.s.m.m.a.RequestMappingHandlerMapping - Mapped to com.nt.LMS.controller.AdminController#getAllEmployees()
+2025-06-20 14:37:33 INFO  c.nt.LMS.controller.AdminController - Fetching all employees
+2025-06-20 14:37:33 INFO  c.n.L.s.serviceImpl.AdminServiceImpl - Fetching all users
+2025-06-20 14:37:33 INFO  c.n.L.s.serviceImpl.AdminServiceImpl - Successfully fetched 4 users
+2025-06-20 14:37:33 INFO  c.nt.LMS.controller.AdminController - Fetched 4 employees
+2025-06-20 14:37:33 DEBUG o.s.w.s.m.m.a.HttpEntityMethodProcessor - Using 'application/json', given [application/json, text/plain, */*] and supported [application/json, application/*+json]
+2025-06-20 14:37:33 DEBUG o.s.w.s.m.m.a.HttpEntityMethodProcessor - Writing [StandardResponseOutDTO{status='SUCCESS', message='User fetched Successfully', data=[UserOutDTO(userI (truncated)...]
+2025-06-20 14:37:33 DEBUG o.s.web.servlet.DispatcherServlet - Completed 200 OK
+2025-06-20 14:37:38 DEBUG o.s.web.servlet.DispatcherServlet - GET "/group/group-emps/1", parameters={}
+2025-06-20 14:37:38 DEBUG o.s.w.s.m.m.a.RequestMappingHandlerMapping - Mapped to com.nt.LMS.controller.GroupController#getUsersInGroup(long)
+2025-06-20 14:37:38 INFO  c.nt.LMS.controller.GroupController - Fetching users in group with ID: 1
+2025-06-20 14:37:38 INFO  c.nt.LMS.controller.GroupController - Users found in group with ID: 1: 1
+2025-06-20 14:37:38 DEBUG o.s.w.s.m.m.a.HttpEntityMethodProcessor - Using 'application/json', given [application/json, text/plain, */*] and supported [application/json, application/*+json]
+2025-06-20 14:37:38 DEBUG o.s.w.s.m.m.a.HttpEntityMethodProcessor - Writing [StandardResponseOutDTO{status='SUCCESS', message='Group Employee fetched successfully', data=[UserOu (truncated)...]
+2025-06-20 14:37:38 DEBUG o.s.web.servlet.DispatcherServlet - Completed 200 OK
+2025-06-20 14:38:43 DEBUG o.s.web.servlet.DispatcherServlet - GET "/api/enrollment/user-course?timeRange=30days&status=all&searchTerm=", parameters={masked}
+2025-06-20 14:38:43 DEBUG o.s.web.servlet.DispatcherServlet - GET "/api/enrollment/user-bundle?timeRange=30days&status=all&searchTerm=", parameters={masked}
+2025-06-20 14:38:43 DEBUG o.s.w.s.m.m.a.RequestMappingHandlerMapping - Mapped to com.nt.LMS.controller.EnrollmentController#getUsersEnrolledFilterByCourse()
+2025-06-20 14:38:43 DEBUG o.s.w.s.m.m.a.RequestMappingHandlerMapping - Mapped to com.nt.LMS.controller.EnrollmentController#getUsersEnrolledFilterByBundle()
+2025-06-20 14:38:43 INFO  c.n.L.c.EnrollmentController - Fetching user enrollments filtered by bundle
+2025-06-20 14:38:43 INFO  c.n.L.c.EnrollmentController - Fetching user enrollments filtered by course
+2025-06-20 14:38:43 DEBUG o.s.web.servlet.DispatcherServlet - GET "/api/enrollment/user-enrollments?timeRange=30days&status=all&searchTerm=", parameters={masked}
+2025-06-20 14:38:43 DEBUG o.s.w.s.m.m.a.RequestMappingHandlerMapping - Mapped to com.nt.LMS.controller.EnrollmentController#getUserEnrollmentsFilterByUser()
+2025-06-20 14:38:43 INFO  c.n.L.c.EnrollmentController - Fetching enrollments filtered by user
+2025-06-20 14:38:43 DEBUG o.s.web.servlet.DispatcherServlet - Failed to complete request: java.lang.RuntimeException: Error connecting with course service
+2025-06-20 14:38:43 DEBUG o.s.w.c.HttpMessageConverterExtractor - Reading to [com.nt.LMS.dto.outDTO.StandardResponseOutDTO<java.util.List<com.nt.LMS.dto.outDTO.CourseInfoOutDTO>>]
+2025-06-20 14:38:43 DEBUG o.s.w.c.HttpMessageConverterExtractor - Reading to [java.lang.String] as "text/plain;charset=UTF-8"
+2025-06-20 14:38:43 DEBUG o.s.w.c.HttpMessageConverterExtractor - Reading to [java.lang.String] as "text/plain;charset=UTF-8"
+2025-06-20 14:38:43 ERROR o.a.c.c.C.[.[.[.[dispatcherServlet] - Servlet.service() for servlet [dispatcherServlet] in context with path [] threw exception [Request processing failed: java.lang.RuntimeException: Error connecting with course service] with root cause
+java.lang.RuntimeException: Error connecting with course service
+	at com.nt.LMS.service.serviceImpl.UserBundleEnrollmentServiceImpl.getUserEnrollmentsByBundle(UserBundleEnrollmentServiceImpl.java:71)
+	at com.nt.LMS.controller.EnrollmentController.getUsersEnrolledFilterByBundle(EnrollmentController.java:127)
+	at java.base/jdk.internal.reflect.NativeMethodAccessorImpl.invoke0(Native Method)
+	at java.base/jdk.internal.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:77)
+	at java.base/jdk.internal.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:43)
+	at java.base/java.lang.reflect.Method.invoke(Method.java:568)
+	at org.springframework.web.method.support.InvocableHandlerMethod.doInvoke(InvocableHandlerMethod.java:258)
+	at org.springframework.web.method.support.InvocableHandlerMethod.invokeForRequest(InvocableHandlerMethod.java:191)
+	at org.springframework.web.servlet.mvc.method.annotation.ServletInvocableHandlerMethod.invokeAndHandle(ServletInvocableHandlerMethod.java:118)
+	at org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandlerAdapter.invokeHandlerMethod(RequestMappingHandlerAdapter.java:986)
+	at org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandlerAdapter.handleInternal(RequestMappingHandlerAdapter.java:891)
+	at org.springframework.web.servlet.mvc.method.AbstractHandlerMethodAdapter.handle(AbstractHandlerMethodAdapter.java:87)
+	at org.springframework.web.servlet.DispatcherServlet.doDispatch(DispatcherServlet.java:1089)
+	at org.springframework.web.servlet.DispatcherServlet.doService(DispatcherServlet.java:979)
+	at org.springframework.web.servlet.FrameworkServlet.processRequest(FrameworkServlet.java:1014)
+	at org.springframework.web.servlet.FrameworkServlet.doGet(FrameworkServlet.java:903)
+	at jakarta.servlet.http.HttpServlet.service(HttpServlet.java:564)
+	at org.springframework.web.servlet.FrameworkServlet.service(FrameworkServlet.java:885)
+	at jakarta.servlet.http.HttpServlet.service(HttpServlet.java:658)
+	at org.apache.catalina.core.ApplicationFilterChain.internalDoFilter(ApplicationFilterChain.java:195)
+	at org.apache.catalina.core.ApplicationFilterChain.doFilter(ApplicationFilterChain.java:140)
+	at org.apache.tomcat.websocket.server.WsFilter.doFilter(WsFilter.java:51)
+	at org.apache.catalina.core.ApplicationFilterChain.internalDoFilter(ApplicationFilterChain.java:164)
+	at org.apache.catalina.core.ApplicationFilterChain.doFilter(ApplicationFilterChain.java:140)
+	at org.springframework.web.filter.OncePerRequestFilter.doFilter(OncePerRequestFilter.java:110)
+	at org.apache.catalina.core.ApplicationFilterChain.internalDoFilter(ApplicationFilterChain.java:164)
+	at org.apache.catalina.core.ApplicationFilterChain.doFilter(ApplicationFilterChain.java:140)
+	at org.springframework.web.filter.CompositeFilter$VirtualFilterChain.doFilter(CompositeFilter.java:108)
+	at org.springframework.security.web.FilterChainProxy.lambda$doFilterInternal$3(FilterChainProxy.java:231)
+	at org.springframework.security.web.FilterChainProxy$VirtualFilterChain.doFilter(FilterChainProxy.java:365)
+	at org.springframework.security.web.access.intercept.AuthorizationFilter.doFilter(AuthorizationFilter.java:101)
+	at org.springframework.security.web.FilterChainProxy$VirtualFilterChain.doFilter(FilterChainProxy.java:374)
+	at org.springframework.security.web.access.ExceptionTranslationFilter.doFilter(ExceptionTranslationFilter.java:126)
+	at org.springframework.security.web.access.ExceptionTranslationFilter.doFilter(ExceptionTranslationFilter.java:120)
+	at org.springframework.security.web.FilterChainProxy$VirtualFilterChain.doFilter(FilterChainProxy.java:374)
+	at org.springframework.security.web.session.SessionManagementFilter.doFilter(SessionManagementFilter.java:131)
+	at org.springframework.security.web.session.SessionManagementFilter.doFilter(SessionManagementFilter.java:85)
+	at org.springframework.security.web.FilterChainProxy$VirtualFilterChain.doFilter(FilterChainProxy.java:374)
+	at org.springframework.security.web.authentication.AnonymousAuthenticationFilter.doFilter(AnonymousAuthenticationFilter.java:100)
+	at org.springframework.security.web.FilterChainProxy$VirtualFilterChain.doFilter(FilterChainProxy.java:374)
+	at org.springframework.security.web.servletapi.SecurityContextHolderAwareRequestFilter.doFilter(SecurityContextHolderAwareRequestFilter.java:179)
+	at org.springframework.security.web.FilterChainProxy$VirtualFilterChain.doFilter(FilterChainProxy.java:374)
+	at org.springframework.security.web.savedrequest.RequestCacheAwareFilter.doFilter(RequestCacheAwareFilter.java:63)
+	at org.springframework.security.web.FilterChainProxy$VirtualFilterChain.doFilter(FilterChainProxy.java:374)
+	at com.nt.LMS.config.JwtFilter.doFilterInternal(JwtFilter.java:81)
+	at org.springframework.web.filter.OncePerRequestFilter.doFilter(OncePerRequestFilter.java:116)
+	at org.springframework.security.web.FilterChainProxy$VirtualFilterChain.doFilter(FilterChainProxy.java:374)
+	at org.springframework.security.web.authentication.logout.LogoutFilter.doFilter(LogoutFilter.java:107)
+	at org.springframework.security.web.authentication.logout.LogoutFilter.doFilter(LogoutFilter.java:93)
+	at org.springframework.security.web.FilterChainProxy$VirtualFilterChain.doFilter(FilterChainProxy.java:374)
+	at org.springframework.web.filter.CorsFilter.doFilterInternal(CorsFilter.java:91)
+	at org.springframework.web.filter.OncePerRequestFilter.doFilter(OncePerRequestFilter.java:116)
+	at org.springframework.security.web.FilterChainProxy$VirtualFilterChain.doFilter(FilterChainProxy.java:374)
+	at org.springframework.security.web.header.HeaderWriterFilter.doHeadersAfter(HeaderWriterFilter.java:90)
+	at org.springframework.security.web.header.HeaderWriterFilter.doFilterInternal(HeaderWriterFilter.java:75)
+	at org.springframework.web.filter.OncePerRequestFilter.doFilter(OncePerRequestFilter.java:116)
+	at org.springframework.security.web.FilterChainProxy$VirtualFilterChain.doFilter(FilterChainProxy.java:374)
+	at org.springframework.security.web.context.SecurityContextHolderFilter.doFilter(SecurityContextHolderFilter.java:82)
+	at org.springframework.security.web.context.SecurityContextHolderFilter.doFilter(SecurityContextHolderFilter.java:69)
+	at org.springframework.security.web.FilterChainProxy$VirtualFilterChain.doFilter(FilterChainProxy.java:374)
+	at org.springframework.security.web.context.request.async.WebAsyncManagerIntegrationFilter.doFilterInternal(WebAsyncManagerIntegrationFilter.java:62)
+	at org.springframework.web.filter.OncePerRequestFilter.doFilter(OncePerRequestFilter.java:116)
+	at org.springframework.security.web.FilterChainProxy$VirtualFilterChain.doFilter(FilterChainProxy.java:374)
+	at org.springframework.security.web.session.DisableEncodeUrlFilter.doFilterInternal(DisableEncodeUrlFilter.java:42)
+	at org.springframework.web.filter.OncePerRequestFilter.doFilter(OncePerRequestFilter.java:116)
+	at org.springframework.security.web.FilterChainProxy$VirtualFilterChain.doFilter(FilterChainProxy.java:374)
+	at org.springframework.security.web.FilterChainProxy.doFilterInternal(FilterChainProxy.java:233)
+	at org.springframework.security.web.FilterChainProxy.doFilter(FilterChainProxy.java:191)
+	at org.springframework.web.filter.CompositeFilter$VirtualFilterChain.doFilter(CompositeFilter.java:113)
+	at org.springframework.web.servlet.handler.HandlerMappingIntrospector.lambda$createCacheFilter$3(HandlerMappingIntrospector.java:243)
+	at org.springframework.web.filter.CompositeFilter$VirtualFilterChain.doFilter(CompositeFilter.java:113)
+	at org.springframework.web.filter.CompositeFilter.doFilter(CompositeFilter.java:74)
+	at org.springframework.security.config.annotation.web.configuration.WebMvcSecurityConfiguration$CompositeFilterChainProxy.doFilter(WebMvcSecurityConfiguration.java:238)
+	at org.springframework.web.filter.DelegatingFilterProxy.invokeDelegate(DelegatingFilterProxy.java:362)
+	at org.springframework.web.filter.DelegatingFilterProxy.doFilter(DelegatingFilterProxy.java:278)
+	at org.apache.catalina.core.ApplicationFilterChain.internalDoFilter(ApplicationFilterChain.java:164)
+	at org.apache.catalina.core.ApplicationFilterChain.doFilter(ApplicationFilterChain.java:140)
+	at org.springframework.web.filter.RequestContextFilter.doFilterInternal(RequestContextFilter.java:100)
+	at org.springframework.web.filter.OncePerRequestFilter.doFilter(OncePerRequestFilter.java:116)
+	at org.apache.catalina.core.ApplicationFilterChain.internalDoFilter(ApplicationFilterChain.java:164)
+	at org.apache.catalina.core.ApplicationFilterChain.doFilter(ApplicationFilterChain.java:140)
+	at org.springframework.web.filter.FormContentFilter.doFilterInternal(FormContentFilter.java:93)
+	at org.springframework.web.filter.OncePerRequestFilter.doFilter(OncePerRequestFilter.java:116)
+	at org.apache.catalina.core.ApplicationFilterChain.internalDoFilter(ApplicationFilterChain.java:164)
+	at org.apache.catalina.core.ApplicationFilterChain.doFilter(ApplicationFilterChain.java:140)
+	at org.springframework.web.filter.CharacterEncodingFilter.doFilterInternal(CharacterEncodingFilter.java:201)
+	at org.springframework.web.filter.OncePerRequestFilter.doFilter(OncePerRequestFilter.java:116)
+	at org.apache.catalina.core.ApplicationFilterChain.internalDoFilter(ApplicationFilterChain.java:164)
+	at org.apache.catalina.core.ApplicationFilterChain.doFilter(ApplicationFilterChain.java:140)
+	at org.apache.catalina.core.StandardWrapperValve.invoke(StandardWrapperValve.java:167)
+	at org.apache.catalina.core.StandardContextValve.invoke(StandardContextValve.java:90)
+	at org.apache.catalina.authenticator.AuthenticatorBase.invoke(AuthenticatorBase.java:483)
+	at org.apache.catalina.core.StandardHostValve.invoke(StandardHostValve.java:115)
+	at org.apache.catalina.valves.ErrorReportValve.invoke(ErrorReportValve.java:93)
+	at org.apache.catalina.core.StandardEngineValve.invoke(StandardEngineValve.java:74)
+	at org.apache.catalina.connector.CoyoteAdapter.service(CoyoteAdapter.java:344)
+	at org.apache.coyote.http11.Http11Processor.service(Http11Processor.java:397)
+	at org.apache.coyote.AbstractProcessorLight.process(AbstractProcessorLight.java:63)
+	at org.apache.coyote.AbstractProtocol$ConnectionHandler.process(AbstractProtocol.java:905)
+	at org.apache.tomcat.util.net.NioEndpoint$SocketProcessor.doRun(NioEndpoint.java:1743)
+	at org.apache.tomcat.util.net.SocketProcessorBase.run(SocketProcessorBase.java:52)
+	at org.apache.tomcat.util.threads.ThreadPoolExecutor.runWorker(ThreadPoolExecutor.java:1190)
+	at org.apache.tomcat.util.threads.ThreadPoolExecutor$Worker.run(ThreadPoolExecutor.java:659)
+	at org.apache.tomcat.util.threads.TaskThread$WrappingRunnable.run(TaskThread.java:63)
+	at java.base/java.lang.Thread.run(Thread.java:842)
+2025-06-20 14:38:43 DEBUG o.s.w.s.m.m.a.ExceptionHandlerExceptionResolver - Using @ExceptionHandler com.nt.LMS.exception.GlobalExceptionHandler#handleResourceNotFoundException(ResourceNotFoundException, HttpServletRequest)
+2025-06-20 14:38:43 DEBUG o.s.w.c.HttpMessageConverterExtractor - Reading to [java.lang.Double]
+2025-06-20 14:38:43 DEBUG o.s.w.c.HttpMessageConverterExtractor - Reading to [java.lang.Double]
+2025-06-20 14:38:43 DEBUG o.s.w.s.m.m.a.RequestResponseBodyMethodProcessor - Using 'application/json', given [application/json, text/plain, */*] and supported [application/json, application/*+json]
+2025-06-20 14:38:43 INFO  c.n.L.c.EnrollmentController - Retrieved 4 user enrollments
+2025-06-20 14:38:43 DEBUG o.s.w.s.m.m.a.HttpEntityMethodProcessor - Using 'application/json', given [application/json, text/plain, */*] and supported [application/json, application/*+json]
+2025-06-20 14:38:43 DEBUG o.s.w.s.m.m.a.RequestResponseBodyMethodProcessor - Writing [GlobalExceptionHandler.ErrorResponse(timestamp=2025-06-20T14:38:43.607557600, status=404, message=Ac (truncated)...]
+2025-06-20 14:38:43 DEBUG o.s.w.s.m.m.a.ExceptionHandlerExceptionResolver - Resolved [com.nt.LMS.exception.ResourceNotFoundException: Active owner not found]
+2025-06-20 14:38:43 DEBUG o.s.web.servlet.DispatcherServlet - Completed 404 NOT_FOUND
+2025-06-20 14:38:43 DEBUG o.s.w.s.m.m.a.HttpEntityMethodProcessor - Writing [StandardResponseOutDTO{status='SUCCESS', message='User enrollments retrieved successfully', data=[Us (truncated)...]
+2025-06-20 14:38:43 DEBUG o.s.web.servlet.DispatcherServlet - Completed 200 OK
+2025-06-20 14:38:45 DEBUG o.s.web.servlet.DispatcherServlet - GET "/admin/active-employees", parameters={}
+2025-06-20 14:38:45 DEBUG o.s.w.s.m.m.a.RequestMappingHandlerMapping - Mapped to com.nt.LMS.controller.AdminController#getAllEmployees()
+2025-06-20 14:38:45 DEBUG o.s.web.servlet.DispatcherServlet - GET "/group/all-groups", parameters={}
+2025-06-20 14:38:45 INFO  c.nt.LMS.controller.AdminController - Fetching all employees
+2025-06-20 14:38:45 INFO  c.n.L.s.serviceImpl.AdminServiceImpl - Fetching all users
+2025-06-20 14:38:45 DEBUG o.s.w.s.h.SimpleUrlHandlerMapping - Mapped to ResourceHttpRequestHandler [classpath [META-INF/resources/], classpath [resources/], classpath [static/], classpath [public/], ServletContext [/]]
+2025-06-20 14:38:45 DEBUG o.s.w.s.r.ResourceHttpRequestHandler - Resource not found
+2025-06-20 14:38:45 DEBUG o.s.w.s.m.s.DefaultHandlerExceptionResolver - Resolved [org.springframework.web.servlet.resource.NoResourceFoundException: No static resource group/all-groups.]
+2025-06-20 14:38:45 DEBUG o.s.web.servlet.DispatcherServlet - Completed 404 NOT_FOUND
+2025-06-20 14:38:45 INFO  c.n.L.s.serviceImpl.AdminServiceImpl - Successfully fetched 4 users
+2025-06-20 14:38:45 INFO  c.nt.LMS.controller.AdminController - Fetched 4 employees
+2025-06-20 14:38:45 DEBUG o.s.w.s.m.m.a.HttpEntityMethodProcessor - Using 'application/json', given [application/json, text/plain, */*] and supported [application/json, application/*+json]
+2025-06-20 14:38:45 DEBUG o.s.w.s.m.m.a.HttpEntityMethodProcessor - Writing [StandardResponseOutDTO{status='SUCCESS', message='User fetched Successfully', data=[UserOutDTO(userI (truncated)...]
+2025-06-20 14:38:45 DEBUG o.s.web.servlet.DispatcherServlet - Completed 200 OK
+2025-06-20 14:39:33 DEBUG o.s.web.servlet.DispatcherServlet - GET "/admin/active-employees", parameters={}
+2025-06-20 14:39:33 DEBUG o.s.web.servlet.DispatcherServlet - GET "/group/all-groups", parameters={}
+2025-06-20 14:39:33 DEBUG o.s.w.s.m.m.a.RequestMappingHandlerMapping - Mapped to com.nt.LMS.controller.AdminController#getAllEmployees()
+2025-06-20 14:39:33 DEBUG o.s.w.s.h.SimpleUrlHandlerMapping - Mapped to ResourceHttpRequestHandler [classpath [META-INF/resources/], classpath [resources/], classpath [static/], classpath [public/], ServletContext [/]]
+2025-06-20 14:39:33 INFO  c.nt.LMS.controller.AdminController - Fetching all employees
+2025-06-20 14:39:33 INFO  c.n.L.s.serviceImpl.AdminServiceImpl - Fetching all users
+2025-06-20 14:39:33 DEBUG o.s.w.s.r.ResourceHttpRequestHandler - Resource not found
+2025-06-20 14:39:33 DEBUG o.s.w.s.m.s.DefaultHandlerExceptionResolver - Resolved [org.springframework.web.servlet.resource.NoResourceFoundException: No static resource group/all-groups.]
+2025-06-20 14:39:33 DEBUG o.s.web.servlet.DispatcherServlet - Completed 404 NOT_FOUND
+2025-06-20 14:39:33 INFO  c.n.L.s.serviceImpl.AdminServiceImpl - Successfully fetched 4 users
+2025-06-20 14:39:33 INFO  c.nt.LMS.controller.AdminController - Fetched 4 employees
+2025-06-20 14:39:33 DEBUG o.s.w.s.m.m.a.HttpEntityMethodProcessor - Using 'application/json', given [application/json, text/plain, */*] and supported [application/json, application/*+json]
+2025-06-20 14:39:33 DEBUG o.s.w.s.m.m.a.HttpEntityMethodProcessor - Writing [StandardResponseOutDTO{status='SUCCESS', message='User fetched Successfully', data=[UserOutDTO(userI (truncated)...]
+2025-06-20 14:39:33 DEBUG o.s.web.servlet.DispatcherServlet - Completed 200 OK
+2025-06-20 14:45:02 WARN  com.zaxxer.hikari.pool.HikariPool - HikariPool-1 - Thread starvation or clock leap detected (housekeeper delta=53s810ms594µs200ns).
+2025-06-20 14:46:08 DEBUG o.s.web.servlet.DispatcherServlet - GET "/admin/active-employees", parameters={}
+2025-06-20 14:46:08 DEBUG o.s.w.s.m.m.a.RequestMappingHandlerMapping - Mapped to com.nt.LMS.controller.AdminController#getAllEmployees()
+2025-06-20 14:46:08 INFO  c.nt.LMS.controller.AdminController - Fetching all employees
+2025-06-20 14:46:08 INFO  c.n.L.s.serviceImpl.AdminServiceImpl - Fetching all users
+2025-06-20 14:46:08 DEBUG o.s.web.servlet.DispatcherServlet - GET "/group/groups", parameters={}
+2025-06-20 14:46:08 DEBUG o.s.w.s.m.m.a.RequestMappingHandlerMapping - Mapped to com.nt.LMS.controller.GroupController#getGroups()
+2025-06-20 14:46:08 INFO  c.nt.LMS.controller.GroupController - Fetching groups for user: sakshi@nucleusteq.com
+2025-06-20 14:46:08 INFO  c.nt.LMS.controller.GroupController - Found 1 groups for user: sakshi@nucleusteq.com
+2025-06-20 14:46:08 DEBUG o.s.w.s.m.m.a.HttpEntityMethodProcessor - Using 'application/json', given [application/json, text/plain, */*] and supported [application/json, application/*+json]
+2025-06-20 14:46:08 DEBUG o.s.w.s.m.m.a.HttpEntityMethodProcessor - Writing [StandardResponseOutDTO{status='SUCCESS', message='Group fetched Successfully', data=[GroupOutDTO(gro (truncated)...]
+2025-06-20 14:46:08 DEBUG o.s.web.servlet.DispatcherServlet - Completed 200 OK
+2025-06-20 14:46:08 INFO  c.n.L.s.serviceImpl.AdminServiceImpl - Successfully fetched 4 users
+2025-06-20 14:46:08 INFO  c.nt.LMS.controller.AdminController - Fetched 4 employees
+2025-06-20 14:46:08 DEBUG o.s.w.s.m.m.a.HttpEntityMethodProcessor - Using 'application/json', given [application/json, text/plain, */*] and supported [application/json, application/*+json]
+2025-06-20 14:46:08 DEBUG o.s.w.s.m.m.a.HttpEntityMethodProcessor - Writing [StandardResponseOutDTO{status='SUCCESS', message='User fetched Successfully', data=[UserOutDTO(userI (truncated)...]
+2025-06-20 14:46:08 DEBUG o.s.web.servlet.DispatcherServlet - Completed 200 OK
+2025-06-20 14:49:58 DEBUG o.s.web.servlet.DispatcherServlet - GET "/group/group-emps/1", parameters={}
+2025-06-20 14:49:58 DEBUG o.s.w.s.m.m.a.RequestMappingHandlerMapping - Mapped to com.nt.LMS.controller.GroupController#getUsersInGroup(long)
+2025-06-20 14:49:58 INFO  c.nt.LMS.controller.GroupController - Fetching users in group with ID: 1
+2025-06-20 14:49:58 INFO  c.nt.LMS.controller.GroupController - Users found in group with ID: 1: 1
+2025-06-20 14:49:58 DEBUG o.s.w.s.m.m.a.HttpEntityMethodProcessor - Using 'application/json', given [application/json, text/plain, */*] and supported [application/json, application/*+json]
+2025-06-20 14:49:58 DEBUG o.s.w.s.m.m.a.HttpEntityMethodProcessor - Writing [StandardResponseOutDTO{status='SUCCESS', message='Group Employee fetched successfully', data=[UserOu (truncated)...]
+2025-06-20 14:49:58 DEBUG o.s.web.servlet.DispatcherServlet - Completed 200 OK

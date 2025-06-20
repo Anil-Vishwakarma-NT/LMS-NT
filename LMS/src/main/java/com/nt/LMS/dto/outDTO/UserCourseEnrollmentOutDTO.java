@@ -6,6 +6,7 @@ import java.util.List;
 
 @Data
 public class UserCourseEnrollmentOutDTO {
+    private Long courseId;
     private Long ownerId;
     private Long individualEnrollments;
     private String courseName;
