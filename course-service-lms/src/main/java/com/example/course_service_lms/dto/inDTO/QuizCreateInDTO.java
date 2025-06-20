@@ -39,11 +39,9 @@ public class QuizCreateInDTO {
     @Digits(integer = 4, fraction = 2, message = "Passing score must have at most 4 integer digits and 2 decimal places")
     private BigDecimal passingScore;
 
-    @NotNull(message = "Randomize questions flag is required")
     private Boolean randomizeQuestions = false;
 
-    @NotNull(message = "Show results flag is required")
-    private Boolean showResults = true;
+    private Boolean showResults = false;
 
     @NotNull(message = "Active status is required")
     private Boolean isActive = true;

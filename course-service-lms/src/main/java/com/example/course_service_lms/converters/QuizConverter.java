@@ -34,8 +34,10 @@ public class QuizConverter {
         quiz.setTimeLimit(quizCreateInDTO.getTimeLimit());
         quiz.setAttemptsAllowed(quizCreateInDTO.getAttemptsAllowed());
         quiz.setPassingScore(quizCreateInDTO.getPassingScore());
-        quiz.setRandomizeQuestions(quizCreateInDTO.getRandomizeQuestions());
-        quiz.setShowResults(quizCreateInDTO.getShowResults());
+        if(quizCreateInDTO.getRandomizeQuestions() != null)
+            quiz.setRandomizeQuestions(quizCreateInDTO.getRandomizeQuestions());
+        if(quizCreateInDTO.getShowResults() != null)
+            quiz.setShowResults(quizCreateInDTO.getShowResults());
         quiz.setIsActive(quizCreateInDTO.getIsActive());
         quiz.setCreatedBy(quizCreateInDTO.getCreatedBy());
         quiz.setCreatedAt(LocalDateTime.now());
