@@ -82,8 +82,8 @@ public class UserPdfGeneratorService {
                 table.addCell(defaultCell(course.getDeadline() != null
                         ? formatDate(course.getDeadline().toString()) : "N/A"));
 
-                String status = determineStatus(course.getCourseCompletionPercentage(), course.getLastViewed(), course.getDeadline());
-                String adherence = determineAdherence(course.getFirstCompletedAt(), course.getDeadline());
+                String status = determineStatus(course.getCourseCompletionPercentage(), course.getFirstCompletedAt(), course.getDeadline());
+                String adherence = determineAdherence(course.getCourseCompletionPercentage(), course.getFirstCompletedAt(), course.getDeadline());
 
                 table.addCell(defaultCell(status));
                 table.addCell(defaultCell(adherence));
@@ -124,30 +124,60 @@ public class UserPdfGeneratorService {
         return isoDateTime.length() >= 10 ? isoDateTime.substring(0, 10) : isoDateTime;
     }
 
-    private String determineStatus(Double percentage, LocalDateTime lastViewed, LocalDateTime deadline) {
-        if (deadline == null) return "No Deadline";
-
+    private String determineStatus(Double percentage, LocalDateTime firstCompletedAt, LocalDateTime deadline) {
         LocalDateTime now = LocalDateTime.now();
-        boolean deadlinePassed = now.isAfter(deadline);
-        boolean lastViewedOnTime = lastViewed != null && (lastViewed.isBefore(deadline) || lastViewed.isEqual(deadline));
 
-        if (percentage == null || percentage == 0.0) {
-            return deadlinePassed ? "Completion Failed" : "Not Started";
-        }
+        if (percentage == null) percentage = 0.0;
+
+        boolean hasDeadline = deadline != null;
+        boolean deadlinePassed = hasDeadline && now.isAfter(deadline);
+        boolean deadlineNotPassed = hasDeadline && (now.isBefore(deadline) || now.isEqual(deadline));
 
         if (percentage >= 95.0) {
-            return lastViewedOnTime ? "Completed" : "Late Completion";
+            if (firstCompletedAt != null) {
+                boolean completedOnTime = !hasDeadline || !firstCompletedAt.isAfter(deadline);
+                return "Completed";
+            } else {
+                // Fallback: completed but missing timestamp
+                return hasDeadline ? "Completed" : "Completed";
+            }
         }
 
-        return deadlinePassed ? "Completion Failed" : "In Progress";
+        if (percentage > 0) {
+            return deadlinePassed ? "Completion Failed" : "In Progress";
+        }
+
+        // 0% completion
+        return deadlinePassed ? "Completion Failed" : "Not Started";
     }
 
-    private String determineAdherence(LocalDateTime firstCompletedAt, LocalDateTime deadline) {
-        if (deadline == null || firstCompletedAt == null) return "N/A";
 
-        return firstCompletedAt.isBefore(deadline) || firstCompletedAt.isEqual(deadline)
-                ? "Completed On Time"
-                : "Completed Late";
+    private String determineAdherence(Double percentage, LocalDateTime firstCompletedAt, LocalDateTime deadline) {
+        LocalDateTime now = LocalDateTime.now();
+
+        if (percentage == null) percentage = 0.0;
+
+        if (percentage >= 95.0) {
+            if (firstCompletedAt == null) {
+                return deadline == null ? "No Deadline" : "Late";
+            }
+
+            if (deadline == null) {
+                return "No Deadline";
+            }
+
+            return !firstCompletedAt.isAfter(deadline) ? "On Time" : "Late";
+        }
+
+        if (percentage > 0) {
+            if (deadline == null) return "No Deadline";
+            return now.isBefore(deadline) || now.isEqual(deadline) ? "Ongoing On Time" : "Ongoing Late";
+        }
+
+        // 0% completed
+        if (deadline == null) return "No Deadline";
+        return now.isBefore(deadline) || now.isEqual(deadline) ? "On Time (Yet to Start)" : "Late (Yet to Start)";
     }
+
 }
 
