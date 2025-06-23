@@ -9,7 +9,6 @@ import org.springframework.stereotype.Service;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
-import java.sql.Timestamp;
 import java.time.LocalDateTime;
 
 @Service
@@ -61,7 +60,6 @@ public class CoursePdfGeneratorService {
             document.add(Chunk.NEWLINE);
             document.add(Chunk.NEWLINE);
 
-
             // --- Contents Table ---
             PdfPTable contentsTable = new PdfPTable(3);
             contentsTable.setWidthPercentage(100);
@@ -82,23 +80,23 @@ public class CoursePdfGeneratorService {
             document.add(Chunk.NEWLINE);
 
             // --- Enrolled Users Table ---
-            PdfPTable usersTable = new PdfPTable(5);
+            PdfPTable usersTable = new PdfPTable(6);
             usersTable.setWidthPercentage(100);
-            usersTable.setWidths(new float[]{4, 4,4,4, 4});
+            usersTable.setWidths(new float[]{4, 3, 3, 3, 3, 3});
             usersTable.setSpacingBefore(10);
 
-            addTableHeader(usersTable, "User", "Progress (%)", "Last Viewed", "Deadline", "Status");
+            addTableHeader(usersTable, "User", "Progress (%)", "Last Viewed", "Deadline", "Status", "Adherence");
 
             for (CourseEnrolledUserReport user : report.getEnrolledUsers()) {
                 usersTable.addCell(defaultCell(user.getUserEnrolled()));
                 usersTable.addCell(defaultCell(user.getPercentageCompleted() != null
                         ? String.format("%.2f", user.getPercentageCompleted()) : "N/A"));
                 usersTable.addCell(defaultCell(user.getLastViewed() != null
-                        ?formatDate(user.getLastViewed()) : "N/A"));
+                        ? formatDate(user.getLastViewed()) : "N/A"));
                 usersTable.addCell(defaultCell(user.getDeadline() != null
                         ? formatDate(user.getDeadline()) : "N/A"));
-                usersTable.addCell(defaultCell(determineStatus(user.getPercentageCompleted(), user.getLastViewed() ,user.getDeadline())));
-
+                usersTable.addCell(defaultCell(determineStatus(user.getPercentageCompleted(), user.getDeadline())));
+                usersTable.addCell(defaultCell(determineAdherence(user.getFirstCompletedAt(), user.getDeadline())));
             }
 
             document.add(new Paragraph("Enrolled Users:", bold));
@@ -137,12 +135,10 @@ public class CoursePdfGeneratorService {
         return dateTime != null ? dateTime.toLocalDate().toString() : "N/A";
     }
 
-    private String determineStatus(Double percentage, LocalDateTime lastViewed, LocalDateTime deadline) {
+    private String determineStatus(Double percentage, LocalDateTime deadline) {
         if (deadline == null) return "No Deadline";
 
         LocalDateTime now = LocalDateTime.now();
-        boolean onTime = now.isBefore(deadline) || now.isEqual(deadline);
-        boolean lastViewedOnTime = lastViewed != null && (lastViewed.isBefore(deadline) || lastViewed.isEqual(deadline));
         boolean deadlinePassed = now.isAfter(deadline);
 
         if (percentage == null || percentage == 0.0) {
@@ -150,11 +146,16 @@ public class CoursePdfGeneratorService {
         }
 
         if (percentage >= 95.0) {
-            return lastViewedOnTime ? "Completed" : "Late Completion";
+            return "Completed";
         }
 
-        return onTime ? "In Progress" : "Completion Failed";
+        return deadlinePassed ? "Completion Failed" : "In Progress";
     }
 
-
+    private String determineAdherence(LocalDateTime firstCompletedAt, LocalDateTime deadline) {
+        if (firstCompletedAt == null) return "Not Applicable";
+        if (deadline == null) return "Not Applicable";
+        return !firstCompletedAt.isAfter(deadline) ? "Adhered" : "Not Adhered";
+    }
 }
+

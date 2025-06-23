@@ -13,12 +13,14 @@ public class CourseEnrolledUserReport {
     private Double percentageCompleted; // Can be null
     private LocalDateTime lastViewed;
     private LocalDateTime deadline;
+    private LocalDateTime firstCompletedAt;
 
-    public CourseEnrolledUserReport(String userEnrolled, Double percentageCompleted, LocalDateTime last_viewed, LocalDateTime deadline) {
+    public CourseEnrolledUserReport(String userEnrolled, Double percentageCompleted, LocalDateTime last_viewed, LocalDateTime deadline, LocalDateTime firstCompletedAt) {
         this.userEnrolled = userEnrolled;
         this.percentageCompleted = percentageCompleted;
         this.lastViewed = last_viewed;
         this.deadline = deadline;
+        this.firstCompletedAt = firstCompletedAt;
     }
 
     @Override
@@ -29,11 +31,12 @@ public class CourseEnrolledUserReport {
         return Objects.equals(userEnrolled, that.userEnrolled) &&
                 Objects.equals(percentageCompleted, that.percentageCompleted) &&
                 Objects.equals(lastViewed, that.lastViewed) &&
-                Objects.equals(deadline, that.deadline);
+                Objects.equals(deadline, that.deadline) &&
+                Objects.equals(firstCompletedAt, that.firstCompletedAt);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(userEnrolled, percentageCompleted, lastViewed, deadline);
+        return Objects.hash(userEnrolled, percentageCompleted, lastViewed, deadline, firstCompletedAt);
     }
 }

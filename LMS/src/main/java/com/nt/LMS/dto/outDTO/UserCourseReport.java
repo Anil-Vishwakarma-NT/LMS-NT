@@ -15,4 +15,5 @@ public class UserCourseReport {
     private LocalDateTime assignedAt;
     private LocalDateTime deadline;
     private String status;
+    private LocalDateTime firstCompletedAt;
 }

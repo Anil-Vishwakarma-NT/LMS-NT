@@ -22,10 +22,10 @@ public class CourseReportGeneration {
                 " SELECT c.course_id, c.title AS name, c.description, c.level, c.created_at, " +
                 " cc.title AS content_name, cc.description AS content_description, cc.created_at AS content_created_at, " +
                 " u.firstname || ' ' || u.lastname AS user_enrolled, up.course_completion_percentage AS percentage_completed, " +
-                " up.last_updated AS last_viewed, uce.deadline AS deadline " +
+                " up.last_updated AS last_viewed, up.first_completed_at, uce.deadline AS deadline " +
                 " FROM course c " +
                 " LEFT JOIN course_content cc ON c.course_id = cc.course_id " +
-                " LEFT JOIN user_course_enrollment uce ON c.course_id = uce.course_id " +
+                " LEFT JOIN enrollments uce ON c.course_id = uce.course_id " +
                 " LEFT JOIN users u ON u.user_id = uce.user_id " +
                 " LEFT JOIN user_progress up ON uce.user_id = up.user_id AND c.course_id = up.course_id AND up.content_id = cc.course_content_id " +
                 ") " +

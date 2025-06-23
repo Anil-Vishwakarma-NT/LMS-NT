@@ -9,7 +9,6 @@ import org.springframework.stereotype.Service;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
 
 @Service
 public class UserPdfGeneratorService {
@@ -62,13 +61,13 @@ public class UserPdfGeneratorService {
             document.add(Chunk.NEWLINE);
 
             // --- Course Table ---
-            PdfPTable table = new PdfPTable(8);
+            PdfPTable table = new PdfPTable(9); // Increased column count
             table.setWidthPercentage(100);
-            table.setWidths(new float[]{2, 2, 2, 2, 2, 2, 2,2});
+            table.setWidths(new float[]{2, 2, 2, 2, 2, 2, 2, 2, 2});
             table.setSpacingBefore(10);
             table.setSpacingAfter(10);
 
-            addTableHeader(table, "Course Name", "Level", "Progress (%)", "Last Viewed", "Assigned By", "Assigned At", "Deadline", "Status");
+            addTableHeader(table, "Course Name", "Level", "Progress (%)", "Last Viewed", "Assigned By", "Assigned At", "Deadline", "Status", "Adherence");
 
             for (UserCourseReport course : report.getEnrolledCourses()) {
                 table.addCell(defaultCell(course.getCourseName()));
@@ -82,8 +81,12 @@ public class UserPdfGeneratorService {
                         ? formatDate(course.getAssignedAt().toString()) : "N/A"));
                 table.addCell(defaultCell(course.getDeadline() != null
                         ? formatDate(course.getDeadline().toString()) : "N/A"));
-                table.addCell(defaultCell(determineStatus(course.getCourseCompletionPercentage(), course.getLastViewed(), course.getDeadline())));
 
+                String status = determineStatus(course.getCourseCompletionPercentage(), course.getLastViewed(), course.getDeadline());
+                String adherence = determineAdherence(course.getFirstCompletedAt(), course.getDeadline());
+
+                table.addCell(defaultCell(status));
+                table.addCell(defaultCell(adherence));
             }
 
             document.add(table);
@@ -125,9 +128,8 @@ public class UserPdfGeneratorService {
         if (deadline == null) return "No Deadline";
 
         LocalDateTime now = LocalDateTime.now();
-        boolean onTime = now.isBefore(deadline) || now.isEqual(deadline);
-        boolean lastViewedOnTime = lastViewed != null && (lastViewed.isBefore(deadline) || lastViewed.isEqual(deadline));
         boolean deadlinePassed = now.isAfter(deadline);
+        boolean lastViewedOnTime = lastViewed != null && (lastViewed.isBefore(deadline) || lastViewed.isEqual(deadline));
 
         if (percentage == null || percentage == 0.0) {
             return deadlinePassed ? "Completion Failed" : "Not Started";
@@ -137,6 +139,15 @@ public class UserPdfGeneratorService {
             return lastViewedOnTime ? "Completed" : "Late Completion";
         }
 
-        return onTime ? "In Progress" : "Completion Failed";
+        return deadlinePassed ? "Completion Failed" : "In Progress";
+    }
+
+    private String determineAdherence(LocalDateTime firstCompletedAt, LocalDateTime deadline) {
+        if (deadline == null || firstCompletedAt == null) return "N/A";
+
+        return firstCompletedAt.isBefore(deadline) || firstCompletedAt.isEqual(deadline)
+                ? "Completed On Time"
+                : "Completed Late";
     }
 }
+

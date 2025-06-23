@@ -27,11 +27,11 @@ public class UserReportGeneration {
                 "user_enrollment AS ( " +
                 "  SELECT ud.user_id, ud.name, ud.username, ud.email, ud.role, ud.created_at, " +
                 "         c.title AS course_name, c.description AS course_description, c.level AS course_level, " +
-                "         up.course_completion_percentage, up.last_updated AS last_viewed, " +
+                "         up.course_completion_percentage, up.last_updated AS last_viewed, up.first_completed_at, " +
                 "         ab.firstname || ' ' || ab.lastname AS assigned_by, " +
                 "         uce.assigned_at, uce.deadline, uce.status " +
                 "  FROM user_details ud " +
-                "  LEFT JOIN user_course_enrollment uce ON ud.user_id = uce.user_id " +
+                "  LEFT JOIN enrollments uce ON ud.user_id = uce.user_id " +
                 "  LEFT JOIN users ab ON uce.assigned_by = ab.user_id " +
                 "  LEFT JOIN course c ON uce.course_id = c.course_id " +
                 "  LEFT JOIN user_progress up ON ud.user_id = up.user_id AND uce.course_id = up.course_id " +
@@ -70,6 +70,7 @@ public class UserReportGeneration {
                 course.setDeadline(toDateTime(row.get("deadline")));
                 course.setStatus((String) row.get("status"));
                 course.setLastViewed(lastViewed);
+                course.setFirstCompletedAt(toDateTime(row.get("first_completed_at")));
                 courseMap.put(courseName, course);
             } else {
                 // Replace lastViewed if current one is newer

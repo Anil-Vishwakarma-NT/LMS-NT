@@ -44,4 +44,7 @@ public class UserProgress {
 
     @Column(nullable = false)
     private LocalDateTime lastUpdated = LocalDateTime.now();
+
+    @Column(name = "first_completed_at")
+    private LocalDateTime firstCompletedAt;
 }
