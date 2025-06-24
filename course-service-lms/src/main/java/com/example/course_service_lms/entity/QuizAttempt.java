@@ -18,16 +18,16 @@ public class QuizAttempt {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "quiz_attempt_id")
-    private Integer quizAttemptId;
+    private Long quizAttemptId;
 
     @Column(name = "attempt", nullable = false)
-    private Integer attempt;
+    private Long attempt;
 
     @Column(name = "quiz_id", nullable = false)
-    private Integer quizId;
+    private Long quizId;
 
     @Column(name = "user_id", nullable = false)
-    private Integer userId;
+    private Long userId;
 
     @Column(name = "started_at", nullable = false)
     private LocalDateTime startedAt = LocalDateTime.now();
@@ -50,7 +50,7 @@ public class QuizAttempt {
 
     public QuizAttempt() {}
 
-    public QuizAttempt(Integer quizAttemptId, Integer attempt, Integer quizId, Integer userId,
+    public QuizAttempt(Long quizAttemptId, Long attempt, Long quizId, Long userId,
                        LocalDateTime startedAt, LocalDateTime finishedAt, String scoreDetails,
                        String status, LocalDateTime createdAt, LocalDateTime updatedAt) {
         this.quizAttemptId = quizAttemptId;
