@@ -2,10 +2,7 @@ package com.nt.LMS.feignClient;
 
 
 import com.nt.LMS.config.FeignClientConfig;
-import com.nt.LMS.dto.outDTO.BundleInfoOutDTO;
-import com.nt.LMS.dto.outDTO.CourseBundleOutDTO;
-import com.nt.LMS.dto.outDTO.CourseInfoOutDTO;
-import com.nt.LMS.dto.outDTO.StandardResponseOutDTO;
+import com.nt.LMS.dto.outDTO.*;
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -47,4 +44,7 @@ public interface CourseMicroserviceClient {
 
     @GetMapping("/bundles/course-bundles/bundle-id/{id}/course-ids")
     public ResponseEntity<List<Long>> findCourseIdsByBundleId(@PathVariable("id") Long bundleId);
+
+    @GetMapping("user-progress/meta")
+    public CourseProgressWithMetaDTO getCourseProgressWithMeta(@RequestParam int userId, @RequestParam int courseId);
 }
