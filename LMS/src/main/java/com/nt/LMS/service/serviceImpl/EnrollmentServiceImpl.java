@@ -1004,7 +1004,7 @@ public class EnrollmentServiceImpl implements EnrollmentService {
                                                     return 0.0;
                                                 }
                                             })
-                                            .collect(Collectors.toList());
+                                            .toList();
 
                                     double userAverageProgress = userProgressValues.stream()
                                             .mapToDouble(Double::doubleValue)
