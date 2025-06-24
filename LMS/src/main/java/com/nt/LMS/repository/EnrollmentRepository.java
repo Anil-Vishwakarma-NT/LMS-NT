@@ -121,4 +121,6 @@ public interface EnrollmentRepository extends JpaRepository<Enrollment, Long> {
             "ORDER BY e.bundleId, e.assignedAt")
     List<Enrollment> findAllActiveIndividualBundleEnrollments();
 
+    List<Enrollment> findByUserIdAndIsActiveTrue(Long userId);
+
 }

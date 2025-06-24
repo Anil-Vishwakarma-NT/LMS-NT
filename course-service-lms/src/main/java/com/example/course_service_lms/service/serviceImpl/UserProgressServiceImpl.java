@@ -1,5 +1,6 @@
 package com.example.course_service_lms.service.serviceImpl;
 
+import com.example.course_service_lms.dto.outDTO.CourseProgressWithMetaDTO;
 import com.example.course_service_lms.dto.outDTO.UserProgressOutDTO;
 import com.example.course_service_lms.dto.inDTO.CourseContentInDTO;
 import com.example.course_service_lms.entity.UserProgress;
@@ -46,27 +47,44 @@ public class UserProgressServiceImpl implements UserProgressService {
             progress.setLastUpdated(LocalDateTime.now());
         }
 
-        // **Step 1: Save Progress First**
+        // Step 1: Save current progress first
         userProgressRepository.save(progress);
         log.info("Progress saved successfully for User {} in Course {}",
                 progressDTO.getUserId(), progressDTO.getCourseId());
 
-        // **Step 2: Compute Course Completion AFTER Saving**
+        // Step 2: Calculate course-level completion after saving
         double courseCompletionPercentage = calculateCourseCompletion(progressDTO.getUserId(), progressDTO.getCourseId());
         log.info("Calculated Course Completion Percentage for Course {}: {}",
                 progressDTO.getCourseId(), courseCompletionPercentage);
 
-        // **Step 3: Update All Previous Progress Records**
+        // Step 3: Fetch all progress records for user-course
         List<UserProgress> allProgressRecords = userProgressRepository.findProgressByUserIdAndCourseId(
                 progressDTO.getUserId(), progressDTO.getCourseId());
 
         log.info("Updating all previous progress records with course completion {}", courseCompletionPercentage);
 
-        allProgressRecords.forEach(record -> {
+        boolean shouldSetFirstCompletedAt = false;
+
+        if (courseCompletionPercentage >= 95.0) {
+            boolean alreadyCompleted = allProgressRecords.stream()
+                    .anyMatch(record -> record.getFirstCompletedAt() != null);
+
+            if (!alreadyCompleted) {
+                shouldSetFirstCompletedAt = true;
+            }
+        }
+
+        // Step 4: Update each record with course-level values
+        for (UserProgress record : allProgressRecords) {
             record.setCourseCompletionPercentage(courseCompletionPercentage);
-            record.setCourseCompleted(courseCompletionPercentage >= 100);
+            record.setCourseCompleted(courseCompletionPercentage >= 80);
+
+            if (shouldSetFirstCompletedAt) {
+                record.setFirstCompletedAt(LocalDateTime.now());
+            }
+
             userProgressRepository.save(record);
-        });
+        }
 
         log.info("Updated Course Completion Status for all records.");
     }
@@ -114,11 +132,17 @@ public class UserProgressServiceImpl implements UserProgressService {
         return completionPercentage;
     }
 
-    public Double getCourseProgress(int userId, int courseId) {
+    public CourseProgressWithMetaDTO getCourseProgressWithMeta(int userId, int courseId) {
         UserProgress progressRecord = userProgressRepository.findSingleCourseProgress(userId, courseId);
-
-        return (progressRecord != null) ? progressRecord.getCourseCompletionPercentage() : 0.0;
+        if (progressRecord == null) {
+            return new CourseProgressWithMetaDTO(0.0, null);
+        }
+        return new CourseProgressWithMetaDTO(
+                progressRecord.getCourseCompletionPercentage(),
+                progressRecord.getFirstCompletedAt()
+        );
     }
+
 
     @Override
     public Integer getLastPosition(int userId, int courseId, int contentId) {
@@ -131,7 +155,6 @@ public class UserProgressServiceImpl implements UserProgressService {
 
     public Double getContentProgress(int userId, int courseId, int contentId) {
         UserProgress progressRecord = userProgressRepository.findContentProgress(userId, courseId, contentId);
-
         return (progressRecord != null) ? progressRecord.getContentCompletionPercentage() : 0.0;
     }
 
