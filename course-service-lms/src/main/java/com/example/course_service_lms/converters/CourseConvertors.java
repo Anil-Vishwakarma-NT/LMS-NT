@@ -43,6 +43,8 @@ public final class CourseConvertors {
         courseOutDTO.setDescription(StringUtils.toProperCase(course.getDescription()));
         courseOutDTO.setLevel(course.getLevel());
         courseOutDTO.setActive(course.isActive());
+        courseOutDTO.setCreatedAt(course.getCreatedAt());
+        courseOutDTO.setUpdatedAt(course.getUpdatedAt());
         return courseOutDTO;
     }
 

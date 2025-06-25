@@ -38,6 +38,7 @@ public interface EnrollmentService {
     List<UserCourseEnrollmentOutDTO> getIndividualCourseEnrollments();
     List<UserBundleEnrollmentOutDTO> getIndividualBundleEnrollments();
 
+    List<UserCourseEnrollDetails> getUserEnrolledCourses(Long userId);
 //
 //    long countEnrollments();
 //

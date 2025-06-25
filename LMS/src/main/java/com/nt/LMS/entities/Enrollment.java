@@ -2,7 +2,6 @@ package com.nt.LMS.entities;
 
 import jakarta.persistence.*;
 import lombok.*;
-import java.math.BigDecimal;
 import java.time.LocalDateTime;
 
 @Entity
@@ -45,17 +44,11 @@ public class Enrollment {
     @Column(name = "enrollment_source", nullable = false)
     private String enrollmentSource;
 
-    @Column(name = "parent_enrollment_id")
-    private Long parentEnrollmentId;
-
     @Column(name = "started_at")
     private LocalDateTime startedAt;
 
     @Column(name = "completed_at")
     private LocalDateTime completedAt;
-
-    @Column(name = "progress_percentage", precision = 5, scale = 2)
-    private BigDecimal progressPercentage = BigDecimal.valueOf(0);
 
     @Column(name = "created_at", nullable = false)
     private LocalDateTime createdAt = LocalDateTime.now(); // default current datetime

@@ -9,7 +9,7 @@ import java.util.Objects;
 
 /**
  * Entity representing a user's response to a quiz question.
- * Maps to the user_response table in the database.
+ * Maps to the user_response table in the database
  */
 @Entity
 @Table(name = "user_response")
