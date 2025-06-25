@@ -39,6 +39,10 @@ public class UserGroup {
     @Column(nullable = false)
     private Long groupId;
 
+
+    @Column
+    private boolean is_active = true;
+
     /**
      * Constructor to create a new UserGroup association.
      *

@@ -6,6 +6,7 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 /**
@@ -41,4 +42,9 @@ public class GroupInDTO {
 
 
     private List<Long> employees;
+
+    private List<Long> courses;
+
+    private LocalDateTime deadline;
+    private LocalDateTime assignedAt;
 }

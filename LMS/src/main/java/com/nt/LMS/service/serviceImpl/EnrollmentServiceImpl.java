@@ -954,3 +954,26 @@ public class EnrollmentServiceImpl implements EnrollmentService {
         return enrolledUsers;
     }
 }
+
+
+
+
+
+    /// /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+    //get courses , users and their progress
+
+
+//     List<GroupUserOutDTO> groupUserDetails(long groupId){
+//         List<Enrollment> enrols = enrollmentRepository.findByGroupId(groupId);
+//         List<GroupUserOutDTO> userdetails = new ArrayList<>();
+//
+//         for(Enrollment enrol :enrols){
+//
+//         }
+//
+//
+//         return userdetails;
+//
+//     }
+//
+//}

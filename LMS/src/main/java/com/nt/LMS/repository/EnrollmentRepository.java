@@ -1,7 +1,9 @@
 package com.nt.LMS.repository;
 
 import com.nt.LMS.entities.Enrollment;
+import jakarta.transaction.Transactional;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
@@ -120,5 +122,18 @@ public interface EnrollmentRepository extends JpaRepository<Enrollment, Long> {
             "AND e.enrollmentSource = 'INDIVIDUAL' " +
             "ORDER BY e.bundleId, e.assignedAt")
     List<Enrollment> findAllActiveIndividualBundleEnrollments();
+
+
+
+    List<Enrollment> findByGroupId(Long groupId);
+
+    List<Enrollment> findByGroupIdAndCourseId(Long groupId,Long courseId);
+
+    List<Enrollment> findByGroupIdAndUserId(Long groupId,Long userId);
+
+    @Modifying
+    @Transactional
+    @Query("UPDATE Enrollment ug SET ug.isActive = false WHERE ug.groupId = :groupId")
+    void softDeleteByGroupId(Long groupId);
 
 }
