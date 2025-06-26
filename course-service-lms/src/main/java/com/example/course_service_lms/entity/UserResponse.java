@@ -19,19 +19,19 @@ public class UserResponse {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "response_id")
-    private Integer responseId;
+    private Long responseId;
 
     @Column(name = "user_id", nullable = false)
-    private Integer userId;
+    private Long userId;
 
     @Column(name = "quiz_id", nullable = false)
-    private Integer quizId;
+    private Long quizId;
 
     @Column(name = "question_id", nullable = false)
-    private Integer questionId;
+    private Long questionId;
 
     @Column(name = "attempt", nullable = false)
-    private Integer attempt;
+    private Long attempt;
 
     @Lob
     @Column(name = "user_answer", nullable = false, columnDefinition = "JSONB")
@@ -44,16 +44,16 @@ public class UserResponse {
     private BigDecimal pointsEarned;
 
     @Column(name = "time_spent")
-    private Integer timeSpent; // in seconds
+    private Long timeSpent; // in seconds
 
     @Column(name = "answered_at", nullable = false)
     private LocalDateTime answeredAt;
 
     public UserResponse() {}
 
-    public UserResponse(Integer responseId, Integer userId, Integer quizId, Integer questionId,
-                        Integer attempt, String userAnswer, Boolean isCorrect, BigDecimal pointsEarned,
-                        Integer timeSpent, LocalDateTime answeredAt) {
+    public UserResponse(Long responseId, Long userId, Long quizId, Long questionId,
+                        Long attempt, String userAnswer, Boolean isCorrect, BigDecimal pointsEarned,
+                        Long timeSpent, LocalDateTime answeredAt) {
         this.responseId = responseId;
         this.userId = userId;
         this.quizId = quizId;
