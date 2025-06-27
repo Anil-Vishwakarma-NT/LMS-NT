@@ -165,8 +165,15 @@ public class GroupServiceImpl implements GroupService {
                 if (userRepository.findById(id).isEmpty()) {
                     throw new ResourceNotFoundException(USER_NOT_FOUND);
                 }
-                UserGroup userGroup = new UserGroup(id, groupInDTO.getGroupId());
-                userGroupRepository.save(userGroup);
+                Optional<UserGroup> usergroup = userGroupRepository.findByUserIdAndGroupId(id,groupInDTO.getGroupId());
+                if(usergroup.isPresent()){
+                    usergroup.get().set_active(true);
+                    userGroupRepository.save(usergroup.get());
+                }
+                else {
+                    UserGroup userGroup = new UserGroup(id, groupInDTO.getGroupId());
+                    userGroupRepository.save(userGroup);
+                }
             }
 
             if(!groupInDTO.getCourses().isEmpty()){
@@ -425,7 +432,8 @@ public class GroupServiceImpl implements GroupService {
             String courseName = courseMicroserviceClient.getCourseNameById(en.getCourseId()).getBody();
             GroupCourseOutDTO gc = mp.getOrDefault(en.getCourseId(),new GroupCourseOutDTO());
             long totalenrols = gc.getEnrols()+1;
-            double progress = ((gc.getProgress()*gc.getEnrols())+ en.getProgressPercentage().doubleValue())/totalenrols;
+            double userprogress = courseMicroserviceClient.getCourseProgressWithMeta( en.getUserId().intValue() ,en.getCourseId().intValue()).getCourseCompletionPercentage();
+            double progress = ((gc.getProgress()*gc.getEnrols())+ userprogress)/totalenrols;
             gc.setCourseName(courseName);
             gc.setCourseId(en.getCourseId());
             gc.setEnrols(totalenrols);
@@ -451,7 +459,8 @@ public class GroupServiceImpl implements GroupService {
             Optional<User> usr = userRepository.findById(en.getUserId());
             GroupUserOutDTO uc = mp.getOrDefault(en.getUserId(),new GroupUserOutDTO());
             long totalenrols = uc.getEnrols()+1;
-            double progress = ((uc.getProgress()*uc.getEnrols())+ en.getProgressPercentage().doubleValue())/totalenrols;
+            double userprogress = courseMicroserviceClient.getCourseProgressWithMeta( en.getUserId().intValue() ,en.getCourseId().intValue()).getCourseCompletionPercentage();
+            double progress = ((uc.getProgress()*uc.getEnrols())+ userprogress)/totalenrols;
             uc.setFirstName(usr.get().getFirstName());
             uc.setLastName(usr.get().getLastName());
             uc.setUserId(en.getUserId());

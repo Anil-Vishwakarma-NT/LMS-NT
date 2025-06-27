@@ -45,7 +45,8 @@ public class EnrollmentsServiceImpl implements EnrollmentsService {
             String courseName = courseMicroserviceClient.getCourseNameById(en.getCourseId()).getBody();
             GroupCourseOutDTO gc = mp.getOrDefault(en.getCourseId(),new GroupCourseOutDTO());
             long totalenrols = gc.getEnrols()+1;
-            double progress = ((gc.getProgress()*gc.getEnrols())+ en.getProgressPercentage().doubleValue())/totalenrols;
+//            double userprogress = courseMicroserviceClient.getCourseProgress( en.getUserId().intValue() ,en.getCourseId());
+            double progress = ((gc.getProgress()*gc.getEnrols())+ 0)/totalenrols;
             gc.setCourseName(courseName);
             gc.setCourseId(en.getCourseId());
             gc.setEnrols(totalenrols);
@@ -71,7 +72,8 @@ public class EnrollmentsServiceImpl implements EnrollmentsService {
             Optional<User> usr = userRepository.findById(en.getUserId());
             GroupUserOutDTO uc = mp.getOrDefault(en.getUserId(),new GroupUserOutDTO());
             long totalenrols = uc.getEnrols()+1;
-            double progress = ((uc.getProgress()*uc.getEnrols())+ en.getProgressPercentage().doubleValue())/totalenrols;
+//            double userprogress = courseMicroserviceClient.getCourseProgress( en.getUserId().intValue() ,en.getCourseId());
+            double progress = ((uc.getProgress()*uc.getEnrols())+ 0)/totalenrols;
             uc.setFirstName(usr.get().getFirstName());
             uc.setLastName(usr.get().getLastName());
             uc.setUserId(en.getUserId());

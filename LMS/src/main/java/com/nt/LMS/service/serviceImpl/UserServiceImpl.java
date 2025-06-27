@@ -2,6 +2,7 @@ package com.nt.LMS.service.serviceImpl;
 
 import com.nt.LMS.constants.UserConstants;
 import com.nt.LMS.dto.UsersDetailsViewDTO;
+import com.nt.LMS.entities.Enrollment;
 import com.nt.LMS.entities.Role;
 import com.nt.LMS.entities.User;
 import com.nt.LMS.repository.EnrollmentRepository;
@@ -104,7 +105,7 @@ public final class UserServiceImpl implements UserService {  // Made the class f
         Map<String , Long> stats = new HashMap<>();
 
        //long enrols = enrollmentRepository.getAllUserEnrols(userId);
-       long enrols = 24;
+       List<Enrollment> enrols = enrollmentRepository.getIndividualUserEnrollments(userId);
        stats.put("enrollments" , enrols);
        long userGroup = userGroupRepository.getAllUserGroups(userId);
        stats.put("groups",userGroup);
