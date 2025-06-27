@@ -16,4 +16,5 @@ public class UserProgressOutDTO {
     private double lastPosition; // Timestamp or page number
     private double contentCompletionPercentage; // Individual content progress
     private LocalDateTime lastUpdated; // Timestamp for tracking updates
+    private LocalDateTime firstCompletedAt;
 }

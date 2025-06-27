@@ -13,6 +13,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 
@@ -146,5 +147,11 @@ public class CourseController {
         List<CourseInfoOutDTO> courseDTOS = courseService.getCoursesInfo();
         StandardResponseOutDTO<List<CourseInfoOutDTO>> standardResponseOutDTO = StandardResponseOutDTO.success(courseDTOS, "Fetched Course Information");
         return ResponseEntity.ok(standardResponseOutDTO);
+    }
+
+    @PostMapping("/existing-ids")
+    public ResponseEntity<List<Long>> getExistingCourseIds(@RequestBody List<Long> courseIds) {
+        List<Long> existingIds = courseService.findExistingIds(courseIds);
+        return ResponseEntity.ok(existingIds);
     }
 }

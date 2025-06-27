@@ -374,5 +374,20 @@ public class CourseBundleServiceImpl implements CourseBundleService {
                 .collect(Collectors.toList());
     }
 
+    @Override
+    public List<Long> findCourseIdsByBundleId(Long bundleId) {
+        try{
+            List<Long> courseIds = courseBundleRepository.findCourseIdsByBundleId(bundleId);
+            if (courseIds.isEmpty()) {
+                throw new ResourceNotFoundException("No Course IDs found");
+            }
+            return courseIds;
+        } catch (ResourceNotFoundException e) {
+            throw e;
+        } catch (Exception e) {
+            throw new RuntimeException("SERVER ERROR");
+        }
+    }
+
 
 }
