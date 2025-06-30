@@ -1,4 +1,4 @@
-package com.nt.LMS.dto;
+package com.nt.lms.api_gateway.dto;
 
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
@@ -7,14 +7,10 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-/**
- * Data Transfer Object (DTO) for login credentials.
- * Contains email and password used for user authentication.
- */
 @Data
-@AllArgsConstructor
 @NoArgsConstructor
-public class LoginDto {
+@AllArgsConstructor
+public class AuthRequest {
 
     /**
      * Email of the user. It must be in a valid email format and from the domain @nucleusteq.com.
@@ -27,11 +23,11 @@ public class LoginDto {
     )
     private String email;
 
+
     /**
      * The password of the user.
      * This is required for login and cannot be blank.
      */
     @NotBlank(message = "Password is required")
     private String password;
-
 }

@@ -25,7 +25,8 @@ import java.util.List;
  */
 @Slf4j
 @RestController
-@RequestMapping("/admin")
+@RequestMapping("/api/service-api/admin")
+@PreAuthorize("hasRole('admin')")
 public final class AdminController {
 
     /**
@@ -53,7 +54,6 @@ public final class AdminController {
      * @return success message
      */
     @PostMapping("/register")
-    @PreAuthorize("hasAuthority('admin')")
     public ResponseEntity<StandardResponseOutDTO> register(@Valid @RequestBody final RegisterDto registerDto) {
         log.info("Admin registration request received for: {}", registerDto.getEmail());
         StandardResponseOutDTO response = adminService.register(registerDto);
@@ -68,7 +68,7 @@ public final class AdminController {
      * @return success message
      */
     @DeleteMapping("/remove-user/{userId}")
-    @PreAuthorize("hasAuthority('admin')")
+//    @PreAuthorize("hasRole('admin')")
     public ResponseEntity<StandardResponseOutDTO<MessageOutDto>> deleteEmployee(@PathVariable final long userId) {
         log.info("Received request to delete user with ID: {}", userId);
 
@@ -83,7 +83,7 @@ public final class AdminController {
      * @return list of all employees
      */
     @GetMapping("/active-employees")
-    @PreAuthorize("hasAuthority('admin')")
+//    @PreAuthorize("hasAuthority('admin')")
     public ResponseEntity<StandardResponseOutDTO<List<UserOutDTO>>> getAllEmployees() {
         log.info("Fetching all employees");
         StandardResponseOutDTO<List<UserOutDTO>> response = adminService.getAllActiveUsers();
@@ -100,7 +100,7 @@ public final class AdminController {
      * @return list of all employees
      */
     @GetMapping("/inactive-employees")
-    @PreAuthorize("hasAuthority('admin')")
+//    @PreAuthorize("hasAuthority('admin')")
     public ResponseEntity<StandardResponseOutDTO<List<UserOutDTO>>> getAllInactiveEmployees() {
         log.info("Fetching all inactive employees");
         StandardResponseOutDTO<List<UserOutDTO>> response = adminService.getAllInactiveUsers();
@@ -118,7 +118,7 @@ public final class AdminController {
      * @return list of employees
      */
     @GetMapping("/manager-employee/{userId}")
-    @PreAuthorize("hasAuthority('admin')")
+//    @PreAuthorize("hasAuthority('admin')")
     public ResponseEntity<StandardResponseOutDTO<List<UserOutDTO>>> getManagerEmployee(@PathVariable final long userId) {
         log.info("Fetching employees for manager with ID: {}", userId);
         StandardResponseOutDTO<List<UserOutDTO>> response = adminService.getManagerEmployee(userId);
@@ -136,7 +136,7 @@ public final class AdminController {
      * @return success message
      */
     @PostMapping("/change-role")
-    @PreAuthorize("hasAuthority('admin')")
+//    @PreAuthorize("hasAuthority('admin')")
     public ResponseEntity<StandardResponseOutDTO<MessageOutDto>> changeRole(@RequestBody @Valid final UserInDTO userDto) {
         log.info("Received request to change role for user with ID: {}", userDto.getUserId());
         StandardResponseOutDTO standardResponseOutDTO = adminService.changeUserRole(userDto.getUserId(),userDto.getRole());
@@ -144,7 +144,7 @@ public final class AdminController {
     }
 
     @PutMapping("/update-user/{userId}")
-    @PreAuthorize("hasAuthority('admin')")
+//    @PreAuthorize("hasAuthority('admin')")
     public ResponseEntity<MessageOutDto> updateUser(@PathVariable final long userId , @RequestBody final UserInDTO registerDto){
 
         log.info("Received request to update user details");
@@ -156,7 +156,7 @@ public final class AdminController {
 
 
 
-    @PreAuthorize("permitAll()")
+//    @PreAuthorize("permitAll()")
     @GetMapping("/count")
     public ResponseEntity<StandardResponseOutDTO<Long>> getTotalUserCount() {
         log.info("Fetching total user count");

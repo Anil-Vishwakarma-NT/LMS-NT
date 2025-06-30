@@ -1,0 +1,105 @@
+server:
+  port: 8091
+
+spring:
+  application:
+    name: api-gateway-auth-service
+
+  # DataSource Configuration
+  datasource:
+    url: jdbc:postgresql://localhost:5432/lms_db
+    username: postgres
+    password: anil@123
+    driver-class-name: org.postgresql.Driver
+
+  # JPA / Hibernate Configuration
+  jpa:
+    database-platform: org.hibernate.dialect.PostgreSQLDialect
+    hibernate:
+      ddl-auto: update
+
+  cloud:
+    gateway:
+      routes:
+        - id: user-service
+          uri: http://localhost:8081
+          predicates:
+            - Path=/user/**
+          filters:
+            - StripPrefix=1
+            - AddRequestHeader=X-Gateway-Service, user-service
+
+        - id: course-service
+          uri: http://localhost:8080
+          predicates:
+            - Path=/course/**
+          filters:
+            - StripPrefix=1
+            - AddRequestHeader=X-Gateway-Service, course-service
+
+      default-filters:
+        - AddResponseHeader=X-Gateway-Response, Gateway says hello!
+        - AddRequestHeader=X-Request-Id, ${requestId}
+
+      # Global timeout settings
+      httpclient:
+        connect-timeout: 10000
+        response-timeout: 60s
+
+logging:
+  level:
+    root: INFO
+    org.springframework.cloud.gateway: DEBUG
+    org.springframework.security: DEBUG
+    com.nt.api_gateway: DEBUG
+
+# Management endpoints for health checks
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info,metrics
+  endpoint:
+    health:
+      show-details: always
+
+# JWT Configuration
+jwt:
+  secret: my_secret_key_my_secret_key_my_secret_key_for_production_use_stronger_key_256_bits_long
+  issuer: https://auth.nucleusteq.com
+
+  # Access token configuration (short-lived for client-to-service)
+  access-token:
+    expiration: 900000 # 15 minutes in milliseconds
+
+  # Refresh token configuration (long-lived for token refresh)
+  refresh-token:
+    expiration: 604800000 # 7 days in milliseconds
+
+  # Service token configuration (medium-lived for service-to-service)
+  service-token:
+    expiration: 3600000 # 1 hour in milliseconds
+
+# Application specific configuration
+app:
+  security:
+    # Token blacklist configuration (for logout functionality)
+    token-blacklist:
+      cleanup-interval: 3600000 # 1 hour
+      max-size: 10000
+
+    # Rate limiting configuration
+    rate-limit:
+      login-attempts: 5
+      time-window: 300000 # 5 minutes
+
+# Custom Gateway Security Configuration
+gateway:
+  security:
+    enabled: true
+  secret:
+    value: your-super-secret-gateway-key-change-this-in-production
+
+# RSA Key
+private:
+  key: -----BEGIN PRIVATE KEY-----\nMIICdAIBADANBgkqhkiG9w0BAQEFAASCAl4wggJaAgEAAoGAdnGl1fPM/dV4znQI\nuRjHkiHiNk1b39LIs3MmAG6MKY57j1Cck0oPv14z9VQUcAY8s7l/UquH0nU+g5kA\nR6KbN06eQV/OfrLwfvPi/CMgcCTO9b+4kFxXs8lGA8ivtrCmfsnhOxTTPEIFvcI2\nCTAuszkqZka79u9ZXjtU7PMz45sCAwEAAQKBgCrBQXSm6gNi0JXtysxOBpRYiNjD\nOfvkkbA9S6VyQkQp+64zEiIU5PRWY/kV3b7GcZkKx8wmwQOWcPd9/lzddJuTpeOQ\nHu1JhC19UQvULyc9UNIfF3VPuusu344m5eRt4vrqR2Xgq+hF78aHYq7YMLRbglRg\nrpi5g505UHG7NqgJAkEA37fqifiFLAgKvVXgXdP31u5xIpiLqR6HEAEGUmwsT7kI\nnshK+E+Y/i5ydXJQI/xat8JrzkXCpLtr2OJfP+XtzQJBAIeI7WGkWsM4lfWeEyH+\njUVWngBkwwjGMvhI7cQiMk5oamRWvJ9u0XD3IuFnZ1ZT3T+SmA+zZ77jbvBRjw6I\n7wcCQDnZwkGJTU6UicpqEYnRzU37/K94iOzjowNlcHAR3ueCrpL4skJBuwtHkXuD\nYuvbTs4j7WK6sVmNyZac+wp396UCQFpKKrGQdvJ0oNnme6J63IvjnxBuD8uplcz3\ncIXnrhGz16SOb8vaXGZgDPmSFDJbXhn6w5g6ERQGmSI5gw7QxEMCQHUrBZqUUxEA\nHbYuGdRDKHe3xbFhpA4WiY+Y1+F2zC3uBLMGCMcuiDoHHsarroVKNo50Te/2fJtS\nqsOp8MkKVqs=\n-----END PRIVATE KEY-----

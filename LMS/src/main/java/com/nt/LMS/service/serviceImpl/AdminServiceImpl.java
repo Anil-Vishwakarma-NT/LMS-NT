@@ -5,7 +5,6 @@ import com.nt.LMS.dto.inDTO.UserInDTO;
 import com.nt.LMS.dto.outDTO.MessageOutDto;
 import com.nt.LMS.dto.outDTO.StandardResponseOutDTO;
 import com.nt.LMS.dto.outDTO.UserOutDTO;
-import com.nt.LMS.dto.*;
 import com.nt.LMS.exception.InvalidRequestException;
 import com.nt.LMS.exception.ResourceNotFoundException;
 import com.nt.LMS.constants.UserConstants;
@@ -49,8 +48,7 @@ public final class AdminServiceImpl implements AdminService {
      * Encoder for password encryption.
      */
     @Autowired
-    private PasswordEncoder passwordEncoder;
-
+    PasswordEncoder passwordEncoder;
     /**
      * Converter for user DTOs.
      */

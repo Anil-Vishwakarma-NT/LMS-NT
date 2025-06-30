@@ -1,200 +1,166 @@
 package com.nt.LMS.config;
 
-import io.jsonwebtoken.Claims;
-import io.jsonwebtoken.ExpiredJwtException;
-import io.jsonwebtoken.JwtException;
-import io.jsonwebtoken.Jwts;
+import io.jsonwebtoken.*;
 import io.jsonwebtoken.security.Keys;
-import jakarta.servlet.http.HttpServletRequest;
+import io.jsonwebtoken.security.SignatureException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.GrantedAuthority;
-import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Component;
 
-import javax.crypto.SecretKey;
-import java.nio.charset.StandardCharsets;
-import java.util.Collection;
+import java.security.Key;
 import java.util.Date;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.List;
 import java.util.function.Function;
-import java.util.stream.Collectors;
 
-import static com.nt.LMS.constants.JwtConstant.ALLOWED_CLOCK_SKEW_SECONDS;
+import static com.nt.LMS.constants.SecurityConstant.*;
 
-/**
- * Utility class for working with JWT tokens.
- *
- * This class provides methods to generate, validate, and extract information from JWT tokens.
- * It is designed for use with Spring Security to secure applications with JWT-based authentication.
- */
 @Component
-public final class JwtUtil {
+public class JwtUtil {
 
-    /**
-     * Secret key for signing the JWT token.
-     */
-    private final SecretKey secretKey;
+    private static final Logger logger = LoggerFactory.getLogger(JwtUtil.class);
 
-    /**
-     * The expiration time for access tokens (1 hour).
-     */
-    private final long accessTokenExpiration = 1000 * 60 * 60 * 10; // 10 hour
+    @Value("${jwt.secret}")
+    private String SECRET;
 
-    /**
-     * The expiration time for refresh tokens (1 day).
-     */
-    private final long refreshTokenExpiration = 1000 * 60 * 60 * 24; // 1 day
+    @Value("${jwt.issuer}")
+    private String issuer;
 
-    /**
-     * Constructs a JwtUtil instance with the provided secret.
-     *
-     * @param secret the secret used for signing JWT tokens
-     */
-    public JwtUtil(@Value("${jwt.secret}") final String secret) {
-        this.secretKey = Keys.hmacShaKeyFor(secret.getBytes(StandardCharsets.UTF_8));
+    private Key getSigningKey() {
+        byte[] keyBytes = SECRET.getBytes();
+        return Keys.hmacShaKeyFor(keyBytes);
     }
 
-    /**
-     * Extracts the username from the JWT token.
-     *
-     * @param token the JWT token to extract the username from
-     * @return the extracted username
-     */
-    public String extractUsername(final String token) {
+    public String extractAudience(String token) {
+        return extractClaim(token, Claims::getAudience);
+    }
 
+    public Date extractExpiration(String token) {
+        return extractClaim(token, Claims::getExpiration);
+    }
+
+    public String extractSubject(String token) {
         return extractClaim(token, Claims::getSubject);
     }
 
-    /**
-     * Extracts a claim from the JWT token.
-     *
-     * @param token the JWT token to extract the claim from
-     * @param claimsResolver a function to extract the claim from the Claims object
-     * @param <T> the type of the claim
-     * @return the extracted claim
-     */
-    public <T> T extractClaim(final String token, final Function<Claims, T> claimsResolver) {
+    public String extractTokenType(String token) {
+        return extractClaim(token, claims -> (String) claims.get(CLAIM_TOKEN_TYPE));
+    }
+
+    public List<String> extractRoles(String token) {
+        return extractClaim(token, claims -> (List<String>) claims.get(CLAIM_ROLES));
+    }
+
+    public String extractScope(String token) {
+        return extractClaim(token, claims -> (String) claims.get(CLAIM_SCOPE));
+    }
+
+    public String extractUserId(String token) {
+        return extractClaim(token, claims -> (String) claims.get(CLAIM_USER_ID));
+    }
+
+    public String extractUserEmail(String token) {
+        return extractClaim(token, claims -> (String) claims.get(CLAIM_USER_EMAIL));
+    }
+
+    public String extractUserFullName(String token) {
+        return extractClaim(token, claims -> (String) claims.get(CLAIM_USER_FULL_NAME));
+    }
+
+    public List<String> extractUserRoles(String token) {
+        return extractClaim(token, claims -> (List<String>) claims.get(CLAIM_USER_ROLES));
+    }
+
+    public String extractClientId(String token) {
+        return extractClaim(token, claims -> (String) claims.get(CLAIM_CLIENT_ID));
+    }
+
+    public <T> T extractClaim(String token, Function<Claims, T> claimsResolver) {
         final Claims claims = extractAllClaims(token);
         return claimsResolver.apply(claims);
     }
 
-    /**
-     * Extracts all claims from the JWT token.
-     *
-     * @param token the JWT token to extract the claims from
-     * @return the extracted claims
-     * @throws JwtException if the token is invalid
-     */
-    private Claims extractAllClaims(final String token) {
+    private Claims extractAllClaims(String token) {
+        return Jwts.parserBuilder()
+                .setSigningKey(getSigningKey())
+                .build()
+                .parseClaimsJws(token)
+                .getBody();
+    }
+
+    public Boolean isTokenExpired(String token) {
         try {
-            Claims claims = Jwts.parserBuilder()
-                    .setSigningKey(secretKey)
-                    .setAllowedClockSkewSeconds(ALLOWED_CLOCK_SKEW_SECONDS)
-                    .build()
-                    .parseClaimsJws(token)
-                    .getBody();
-
-            return claims;
+            final Date expiration = extractExpiration(token);
+            return expiration.before(new Date());
         } catch (ExpiredJwtException e) {
-            throw e; // Re-throw or handle it based on your use case
-        } catch (JwtException e) {
-            System.out.println("Invalid token: " + e.getMessage());
-            throw e;
+            logger.debug("Token is expired: {}", e.getMessage());
+            return true;
         }
     }
 
-    /**
-     * Generates an access token for the specified user details.
-     *
-     * @param userDetails the user details to generate the token for
-     * @return the generated access token
-     */
-    public String generateAccessToken(final UserDetails userDetails) {
-        Map<String, Object> claims = new HashMap<>();
-        claims.put("roles", userDetails.getAuthorities().stream()
-                .map(authority -> authority.getAuthority())
-                .collect(Collectors.joining(",")));
+    public Boolean validateServiceToken(String token, String expectedAudience) {
+        try {
+            final String tokenAudience = extractAudience(token);
+            final String tokenType = extractTokenType(token);
+            final List<String> roles = extractRoles(token);
 
-        return createToken(claims, userDetails.getUsername(), accessTokenExpiration);
-    }
+            boolean isValidAudience = expectedAudience == null ||
+                    expectedAudience.equals(tokenAudience);
 
-    /**
-     * Generates a refresh token for the specified user details.
-     *
-     * @param userDetails the user details to generate the refresh token for
-     * @return the generated refresh token
-     */
-    public String generateRefreshToken(final UserDetails userDetails) {
-        return createToken(new HashMap<>(), userDetails.getUsername(), refreshTokenExpiration);
-    }
-
-    /**
-     * Creates a JWT token with the specified claims, subject, and expiration time.
-     *
-     * @param claims the claims to include in the token
-     * @param subject the subject (usually the username) of the token
-     * @param expiration the expiration time for the token
-     * @return the created JWT token
-     */
-    private String createToken(final Map<String, Object> claims, final String subject, final long expiration) {
-        long issuedAt = System.currentTimeMillis();
-        long expiryAt = issuedAt + expiration;
-
-        return Jwts.builder()
-                .setClaims(claims)
-                .setSubject(subject)
-                .setIssuedAt(new Date(issuedAt))
-                .setExpiration(new Date(expiryAt))
-                .signWith(secretKey)
-                .compact();
-    }
-
-    /**
-     * Validates the JWT token.
-     *
-     * @param token the JWT token to validate
-     * @param userDetails the user details to validate the token against
-     * @return true if the token is valid, false otherwise
-     */
-    public boolean validateToken(final String token, final UserDetails userDetails) {
-        final String username = extractUsername(token);
-        return (username.equals(userDetails.getUsername()) && !isTokenExpired(token));
-    }
-
-    /**
-     * Checks if the JWT token has expired.
-     *
-     * @param token the JWT token to check
-     * @return true if the token is expired, false otherwise
-     */
-    private boolean isTokenExpired(final String token) {
-        return extractClaim(token, Claims::getExpiration).before(new Date());
-    }
-
-    public static String getEmailFromToken() {
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        if (authentication != null && authentication.isAuthenticated()) {
-            Object principal = authentication.getPrincipal();
-            if (principal instanceof UserDetails) {
-                return ((UserDetails) principal).getUsername();
-            }
-            return principal.toString();
+            return (TOKEN_TYPE_SERVICE.equals(tokenType) &&
+                    isValidAudience &&
+                    roles.contains(ROLE_SERVICE) &&
+                    !isTokenExpired(token));
+        } catch (Exception e) {
+            logger.debug("Service token validation failed: {}", e.getMessage());
+            return false;
         }
-        return null;
     }
 
-    public static String getRoleFromToken() {
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        if (authentication != null && authentication.isAuthenticated()) {
-            Collection<? extends GrantedAuthority> authorities = authentication.getAuthorities();
-            if (authorities != null && !authorities.isEmpty()) {
-                return authorities.iterator().next().getAuthority(); // Role
-            }
+    public Boolean validateToken(String token) {
+        try {
+            Jwts.parserBuilder()
+                    .setSigningKey(getSigningKey())
+                    .build()
+                    .parseClaimsJws(token);
+            return true;
+        } catch (SignatureException e) {
+            logger.error("Invalid JWT signature: {}", e.getMessage());
+        } catch (MalformedJwtException e) {
+            logger.error("Invalid JWT token: {}", e.getMessage());
+        } catch (ExpiredJwtException e) {
+            logger.error("JWT token is expired: {}", e.getMessage());
+        } catch (UnsupportedJwtException e) {
+            logger.error("JWT token is unsupported: {}", e.getMessage());
+        } catch (IllegalArgumentException e) {
+            logger.error("JWT claims string is empty: {}", e.getMessage());
+        } catch (Exception e) {
+            logger.error("JWT token validation failed: {}", e.getMessage());
         }
-        return null;
+        return false;
     }
 
+    public boolean hasScope(String token, String requiredScope) {
+        try {
+            String scopes = extractScope(token);
+            if (scopes == null) return false;
+
+            return scopes.contains(requiredScope)
+                    || scopes.contains("internal.read")
+                    || scopes.contains("internal.write");
+        } catch (Exception e) {
+            logger.debug("Scope validation failed: {}", e.getMessage());
+            return false;
+        }
+    }
+
+    public boolean hasUserRole(String token, String requiredRole) {
+        try {
+            List<String> userRoles = extractUserRoles(token);
+            return userRoles != null && userRoles.contains(requiredRole);
+        } catch (Exception e) {
+            logger.debug("User role validation failed: {}", e.getMessage());
+            return false;
+        }
+    }
 }

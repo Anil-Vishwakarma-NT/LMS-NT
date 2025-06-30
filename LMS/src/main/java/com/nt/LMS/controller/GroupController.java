@@ -26,7 +26,7 @@ import java.util.List;
  * Controller for handling group-related operations.
  */
 @RestController
-@RequestMapping("/group")
+@RequestMapping("api/service-api/group")
 @Slf4j
 public final class GroupController {
 

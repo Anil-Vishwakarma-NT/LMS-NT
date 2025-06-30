@@ -22,7 +22,7 @@ import java.util.List;
  */
 @Slf4j
 @RestController
-@RequestMapping("/manager")
+@RequestMapping("api/service-api/manager")
 public class ManagerController {
 
     /**
