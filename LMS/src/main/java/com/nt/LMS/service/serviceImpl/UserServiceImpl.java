@@ -103,9 +103,7 @@ public final class UserServiceImpl implements UserService {  // Made the class f
     @Override
     public Map<String , Long> userStatistics(long userId){
         Map<String , Long> stats = new HashMap<>();
-
-       //long enrols = enrollmentRepository.getAllUserEnrols(userId);
-       List<Enrollment> enrols = enrollmentRepository.getIndividualUserEnrollments(userId);
+         Long enrols = enrollmentRepository.getUserTotalEnrollments(userId);
        stats.put("enrollments" , enrols);
        long userGroup = userGroupRepository.getAllUserGroups(userId);
        stats.put("groups",userGroup);
