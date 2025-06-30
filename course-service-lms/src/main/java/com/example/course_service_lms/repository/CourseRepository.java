@@ -3,6 +3,7 @@ package com.example.course_service_lms.repository;
 import com.example.course_service_lms.entity.Course;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 import java.awt.print.Pageable;
@@ -38,4 +39,7 @@ public interface CourseRepository extends JpaRepository<Course, Long> {
     boolean existsById(Long id);
 
     List<Course> findTop5ByOrderByCreatedAtDesc();
+
+    @Query("SELECT c.courseId FROM Course c WHERE c.courseId IN :courseIds")
+    List<Long> findExistingIds(@Param("courseIds") List<Long> courseIds);
 }

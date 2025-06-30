@@ -1,5 +1,6 @@
 package com.example.course_service_lms.controller;
 
+import com.example.course_service_lms.dto.outDTO.CourseProgressWithMetaDTO;
 import com.example.course_service_lms.dto.outDTO.UserProgressOutDTO;
 import com.example.course_service_lms.service.UserProgressService;
 import lombok.RequiredArgsConstructor;
@@ -20,11 +21,10 @@ public class UserProgressController {
         userProgressService.updateProgress(progressDTO);
     }
 
-    @GetMapping
-    public Double getCourseProgress(@RequestParam int userId, @RequestParam int courseId) {
-        return userProgressService.getCourseProgress(userId, courseId);
+    @GetMapping("/meta")
+    public CourseProgressWithMetaDTO getCourseProgressWithMeta(@RequestParam int userId, @RequestParam int courseId) {
+        return userProgressService.getCourseProgressWithMeta(userId, courseId);
     }
-
 
     @GetMapping("/last-position")
     public Integer getLastPosition(@RequestParam int userId, @RequestParam int courseId, @RequestParam int contentId) {
@@ -32,7 +32,7 @@ public class UserProgressController {
     }
 
     @GetMapping("/content")
-    public Double getCourseProgress(@RequestParam int userId, @RequestParam int courseId, @RequestParam int contentId) {
+    public Double getContentProgress(@RequestParam int userId, @RequestParam int courseId, @RequestParam int contentId) {
         return userProgressService.getContentProgress(userId, courseId, contentId);
     }
 

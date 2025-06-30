@@ -5,6 +5,7 @@ import com.nt.LMS.dto.UsersDetailsViewDTO;
 import com.nt.LMS.entities.User;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
@@ -60,5 +61,9 @@ public interface UserRepository extends JpaRepository<User, Long> {
     LIMIT 5
     """, nativeQuery = true)
     List<Object[]> fetchRecentUserDetails();
+
+    @Query("SELECT u.userId FROM User u WHERE u.userId IN :userIds")
+    List<Long> findExistingIds(@Param("userIds") List<Long> userIds);
+
 
 }

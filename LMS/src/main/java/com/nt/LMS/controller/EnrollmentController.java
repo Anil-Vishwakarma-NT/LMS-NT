@@ -1,14 +1,13 @@
 package com.nt.LMS.controller;
 
-import com.nt.LMS.dto.inDTO.EnrollmentInDTO;
+import com.nt.LMS.dto.inDTO.EnrollmentRequestInDTO;
 import com.nt.LMS.dto.outDTO.*;
+import com.nt.LMS.entities.Enrollment;
 import com.nt.LMS.service.EnrollmentService;
-import com.nt.LMS.service.UserBundleEnrollmentService;
-import com.nt.LMS.service.UserCourseEnrollmentService;
+import com.nt.LMS.service.serviceImpl.EnrollmentServiceImpl;
 import jakarta.validation.Valid;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -24,185 +23,55 @@ import java.util.List;
 @CrossOrigin(origins = "http://localhost:3000", allowCredentials = "true")
 public class EnrollmentController {
 
-    private final EnrollmentService enrollmentService;
-    private final UserCourseEnrollmentService userCourseEnrollmentService;
-    private final UserBundleEnrollmentService userBundleEnrollmentService;
-
-    /**
-     * Constructor-based dependency injection for better testability.
-     *
-     * @param enrollmentService service for general enrollment operations
-     * @param userCourseEnrollmentService service for user-course enrollment operations
-     * @param userBundleEnrollmentService service for user-bundle enrollment operations
-     */
     @Autowired
-    public EnrollmentController(EnrollmentService enrollmentService,
-                                UserCourseEnrollmentService userCourseEnrollmentService,
-                                UserBundleEnrollmentService userBundleEnrollmentService) {
-        this.enrollmentService = enrollmentService;
-        this.userCourseEnrollmentService = userCourseEnrollmentService;
-        this.userBundleEnrollmentService = userBundleEnrollmentService;
-    }
+    EnrollmentService enrollmentService;
 
-    /**
-     * Enrolls a user in a course or bundle.
-     *
-     * @param enrollmentInDTO DTO containing enrollment details
-     * @return ResponseEntity with enrollment confirmation message
-     */
     @PostMapping("/enroll")
-    public ResponseEntity<StandardResponseOutDTO<EnrollmentOutDTO>> enroll(
-            @Valid @RequestBody EnrollmentInDTO enrollmentInDTO) {
-
-        log.info("Received enrollment request for user ID: {}", enrollmentInDTO.getUserId());
-
-        EnrollmentOutDTO response = enrollmentService.enrollUser(enrollmentInDTO);
-        StandardResponseOutDTO<EnrollmentOutDTO> standardResponse = StandardResponseOutDTO
-                .success(response, "User enrolled successfully");
-
-        log.info("User enrollment completed successfully");
-        return ResponseEntity.status(HttpStatus.CREATED).body(standardResponse);
+    public ResponseEntity<StandardResponseOutDTO<List<EnrollmentOutDTO>>> enroll(@Valid @RequestBody EnrollmentRequestInDTO enrollmentRequestInDTO) {
+        List<EnrollmentOutDTO> enrollments =  enrollmentService.enroll(enrollmentRequestInDTO);
+        StandardResponseOutDTO<List<EnrollmentOutDTO>> standardResponseOutDTO = StandardResponseOutDTO.success(enrollments, "Enrollment Successful");
+        return ResponseEntity.ok(standardResponseOutDTO);
     }
 
-    /**
-     * Retrieves the total count of enrollments in the system.
-     *
-     * @return ResponseEntity containing the total enrollment count
-     */
-    @GetMapping("/count")
-    public ResponseEntity<StandardResponseOutDTO<Long>> getTotalEnrollmentCount() {
-        log.info("Fetching total enrollments count");
-
-        long count = enrollmentService.countEnrollments();
-        StandardResponseOutDTO<Long> response = StandardResponseOutDTO
-                .success(count, "Total enrollment count retrieved successfully");
-
-        log.info("Total enrollments count retrieved: {}", count);
-        return ResponseEntity.ok(response);
+    @GetMapping("/statistics")
+    public ResponseEntity<StandardResponseOutDTO<EnrollmentDashBoardStatsOutDTO>> getEnrollmentStatistics() {
+            EnrollmentDashBoardStatsOutDTO stats = enrollmentService.getEnrollmentStats();
+            StandardResponseOutDTO<EnrollmentDashBoardStatsOutDTO> standardResponseOutDTO = StandardResponseOutDTO.success(stats, "Fetched Enrollment Statistics");
+            return ResponseEntity.ok(standardResponseOutDTO);
     }
 
-    /**
-     * Retrieves comprehensive enrollment statistics for dashboard.
-     *
-     * @return ResponseEntity containing enrollment dashboard statistics
-     */
-    @GetMapping("/stats")
-    public ResponseEntity<StandardResponseOutDTO<EnrollmentDashBoardStatsOutDTO>> getEnrollmentStats() {
-        log.info("Fetching enrollment statistics for dashboard");
-
-        EnrollmentDashBoardStatsOutDTO stats = enrollmentService.getEnrollmentStats();
-        StandardResponseOutDTO<EnrollmentDashBoardStatsOutDTO> response = StandardResponseOutDTO
-                .success(stats, "Enrollment statistics retrieved successfully");
-
-        log.info("Enrollment statistics retrieved successfully");
-        return ResponseEntity.ok(response);
+    @GetMapping("/user-enrollments/{id}")
+    public ResponseEntity<StandardResponseOutDTO<UserEnrollmentsOutDTO>> getUserEnrollmentsByUserId(@PathVariable("id") Long userId) {
+        UserEnrollmentsOutDTO userEnrollmentsOutDTO = enrollmentService.getUserEnrollmentsByUserID(userId);
+        StandardResponseOutDTO<UserEnrollmentsOutDTO> standardResponseOutDTO = StandardResponseOutDTO.success(userEnrollmentsOutDTO, "User Enrollment Fetched");
+        return ResponseEntity.ok(standardResponseOutDTO);
     }
 
-    /**
-     * Retrieves all user enrollments filtered by course.
-     *
-     * @return ResponseEntity containing list of user-course enrollments
-     */
-    @GetMapping("/user-course")
-    public ResponseEntity<StandardResponseOutDTO<List<UserCourseEnrollmentOutDTO>>> getUsersEnrolledFilterByCourse() {
-        log.info("Fetching user enrollments filtered by course");
-
-        List<UserCourseEnrollmentOutDTO> userCourseEnrollments = userCourseEnrollmentService.getUserEnrollmentsByCourse();
-        StandardResponseOutDTO<List<UserCourseEnrollmentOutDTO>> response = StandardResponseOutDTO
-                .success(userCourseEnrollments, "User course enrollments retrieved successfully");
-
-        log.info("Retrieved {} user course enrollments", userCourseEnrollments.size());
-        return ResponseEntity.ok(response);
-    }
-
-    /**
-     * Retrieves all user enrollments filtered by bundle.
-     *
-     * @return ResponseEntity containing list of user-bundle enrollments
-     */
-    @GetMapping("/user-bundle")
-    public ResponseEntity<StandardResponseOutDTO<List<UserBundleEnrollmentOutDTO>>> getUsersEnrolledFilterByBundle() {
-        log.info("Fetching user enrollments filtered by bundle");
-
-        List<UserBundleEnrollmentOutDTO> userBundleEnrollments = userBundleEnrollmentService.getUserEnrollmentsByBundle();
-        StandardResponseOutDTO<List<UserBundleEnrollmentOutDTO>> response = StandardResponseOutDTO
-                .success(userBundleEnrollments, "User bundle enrollments retrieved successfully");
-
-        log.info("Retrieved {} user bundle enrollments", userBundleEnrollments.size());
-        return ResponseEntity.ok(response);
-    }
-
-    /**
-     * Retrieves all enrollments filtered by user.
-     *
-     * @return ResponseEntity containing list of user enrollments
-     */
     @GetMapping("/user-enrollments")
-    public ResponseEntity<StandardResponseOutDTO<List<UserEnrollmentsOutDTO>>> getUserEnrollmentsFilterByUser() {
-        log.info("Fetching enrollments filtered by user");
-
-        List<UserEnrollmentsOutDTO> userEnrollments = enrollmentService.getEnrollmentsForUser();
-        StandardResponseOutDTO<List<UserEnrollmentsOutDTO>> response = StandardResponseOutDTO
-                .success(userEnrollments, "User enrollments retrieved successfully");
-
-        log.info("Retrieved {} user enrollments", userEnrollments.size());
-        return ResponseEntity.ok(response);
+    public ResponseEntity<StandardResponseOutDTO<List<UserEnrollmentsOutDTO>>> getUserEnrollments() {
+        List<UserEnrollmentsOutDTO> userEnrollmentsOutDTOs = enrollmentService.getAllUsersEnrollments();
+        StandardResponseOutDTO<List<UserEnrollmentsOutDTO>> standardResponseOutDTO = StandardResponseOutDTO.success(userEnrollmentsOutDTOs, "User Enrollment Fetched");
+        return ResponseEntity.ok(standardResponseOutDTO);
     }
 
-    /**
-     * Retrieves all courses enrolled by a specific user.
-     *
-     * @param userId ID of the user whose enrolled courses are to be retrieved
-     * @return ResponseEntity containing list of user's enrolled course details
-     */
-    @GetMapping("/user/{userId}/enrolled-courses")
-    public ResponseEntity<StandardResponseOutDTO<List<UserEnrollDetailsOutDTO>>> getUserEnrolledCourses(
-            @PathVariable Long userId) {
-
-        log.info("Fetching enrolled courses for user ID: {}", userId);
-
-        List<UserEnrollDetailsOutDTO> enrollments = userCourseEnrollmentService.getUserEnrolledCourses(userId);
-        StandardResponseOutDTO<List<UserEnrollDetailsOutDTO>> response = StandardResponseOutDTO
-                .success(enrollments, "User enrolled courses retrieved successfully");
-
-        log.info("Retrieved {} enrolled courses for user ID: {}", enrollments.size(), userId);
-        return ResponseEntity.ok(response);
+    @GetMapping("/user-course-enrollments")
+    public ResponseEntity<StandardResponseOutDTO<List<UserCourseEnrollmentOutDTO>>> getUserCourseEnrollments() {
+        List<UserCourseEnrollmentOutDTO> userCourseEnrollmentOutDTOS = enrollmentService.getIndividualCourseEnrollments();
+        StandardResponseOutDTO<List<UserCourseEnrollmentOutDTO>> standardResponseOutDTO = StandardResponseOutDTO.success(userCourseEnrollmentOutDTOS, "Fetched Course Enrollments for User");
+        return ResponseEntity.ok(standardResponseOutDTO);
     }
 
-    /**
-     * Health check endpoint for the enrollment service.
-     *
-     * @return ResponseEntity indicating service health
-     */
-    @GetMapping("/health")
-    public ResponseEntity<StandardResponseOutDTO<String>> healthCheck() {
-        log.debug("Health check requested for enrollment service");
-
-        StandardResponseOutDTO<String> response = StandardResponseOutDTO
-                .success("UP", "Enrollment Service is running");
-
-        return ResponseEntity.ok(response);
+    @GetMapping("/user-bundle-enrollments")
+    public ResponseEntity<StandardResponseOutDTO<List<UserBundleEnrollmentOutDTO>>> getUserBundleEnrollments() {
+        List<UserBundleEnrollmentOutDTO> userBundleEnrollmentOutDTOS = enrollmentService.getIndividualBundleEnrollments();
+        StandardResponseOutDTO<List<UserBundleEnrollmentOutDTO>> standardResponseOutDTO = StandardResponseOutDTO.success(userBundleEnrollmentOutDTOS, "Fetched Bundle Enrollments for User");
+        return ResponseEntity.ok(standardResponseOutDTO);
     }
 
-    /**
-     * Retrieves enrollment count for a specific user.
-     *
-     * @param userId ID of the user
-     * @return ResponseEntity containing the user's enrollment count
-     */
-    @GetMapping("/user/{userId}/count")
-    public ResponseEntity<StandardResponseOutDTO<Integer>> getUserEnrollmentCount(
-            @PathVariable Long userId) {
-
-        log.info("Fetching enrollment count for user ID: {}", userId);
-
-        List<UserEnrollDetailsOutDTO> enrollments = userCourseEnrollmentService.getUserEnrolledCourses(userId);
-        int count = enrollments.size();
-
-        StandardResponseOutDTO<Integer> response = StandardResponseOutDTO
-                .success(count, "User enrollment count retrieved successfully");
-
-        log.info("User ID {} has {} enrollments", userId, count);
-        return ResponseEntity.ok(response);
+    @GetMapping("/userCourses/{userId}")
+    public ResponseEntity<StandardResponseOutDTO<List<UserCourseEnrollDetails>>> getEnrolledCoursesByUserId(@PathVariable Long userId) {
+        List<UserCourseEnrollDetails> enrolledCourses = enrollmentService.getUserEnrolledCourses(userId);
+        return ResponseEntity.ok(StandardResponseOutDTO.success(enrolledCourses, "Fetched enrolled courses successfully"));
     }
+
 }

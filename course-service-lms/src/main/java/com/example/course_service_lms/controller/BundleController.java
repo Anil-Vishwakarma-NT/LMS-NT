@@ -12,6 +12,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.Collections;
 import java.util.List;
 
 /**
@@ -138,5 +139,11 @@ public class BundleController {
         String bundleName = bundleService.getBundleNameById(id);
         log.info("Bundle name retrieved: {}", bundleName);
         return ResponseEntity.ok(StandardResponseOutDTO.success(bundleName, "Bundle name retrieved successfully"));
+    }
+
+    @PostMapping("/existing-ids")
+    public ResponseEntity<List<Long>> getExistingBundleIds(@RequestBody List<Long> bundleIds) {
+        List<Long> existingIds = bundleService.findExistingIds(bundleIds);
+        return ResponseEntity.ok(existingIds);
     }
 }

@@ -60,6 +60,7 @@ dependencies {
 //	implementation 'javax.validation:javax.validation-api:2.0.1.Final'
 //	implementation 'org.hibernate.validator:hibernate-validator:6.1.5.Final'
 	implementation("org.springframework.cloud:spring-cloud-starter-openfeign:4.2.1")
+	implementation 'com.itextpdf:itextpdf:5.5.13.3'
 
 	testImplementation 'org.junit.jupiter:junit-jupiter:5.10.0'
 	testImplementation 'org.mockito:mockito-core:5.6.0'

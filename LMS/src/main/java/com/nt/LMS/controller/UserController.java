@@ -1,6 +1,7 @@
 package com.nt.LMS.controller;
 
 
+import com.nt.LMS.dto.outDTO.StandardResponseOutDTO;
 import com.nt.LMS.dto.outDTO.UserOutDTO;
 import lombok.extern.slf4j.Slf4j;
 import com.nt.LMS.entities.User;
@@ -35,4 +36,26 @@ public class UserController {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(null);
         }
     }
+
+    @GetMapping("/{userId}")
+    public ResponseEntity<StandardResponseOutDTO<UserOutDTO>> getUserNameById(@PathVariable long userId) {
+        Optional<User> userOpt = userRepository.findById(userId);
+
+        if (userOpt.isEmpty()) {
+            return ResponseEntity
+                    .status(HttpStatus.NOT_FOUND)
+                    .body(StandardResponseOutDTO.error("User not found"));
+        }
+
+        User user = userOpt.get();
+        UserOutDTO userOutDTO = new UserOutDTO();
+        userOutDTO.setUserId(user.getUserId());
+        userOutDTO.setFirstName(user.getFirstName());
+        userOutDTO.setLastName(user.getLastName());
+
+        return ResponseEntity.ok(
+                StandardResponseOutDTO.success(userOutDTO, "Fetched user info")
+        );
+    }
+
 }

@@ -7,6 +7,8 @@ import java.util.List;
 @Data
 public class UserBundleEnrollmentOutDTO {
 
+    private Long bundleId;  // Add this field
+
     private String bundleName;
 
     private Long totalCourses;
