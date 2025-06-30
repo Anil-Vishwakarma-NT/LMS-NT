@@ -3,6 +3,7 @@ import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
 import com.example.course_service_lms.dto.inDTO.CourseInDTO;
+import com.example.course_service_lms.dto.outDTO.CourseOutDTO;
 import com.example.course_service_lms.entity.Course;
 import com.example.course_service_lms.exception.ResourceAlreadyExistsException;
 import com.example.course_service_lms.exception.ResourceNotFoundException;
@@ -73,9 +74,9 @@ class CourseServiceImplTest {
     void testGetCourseById_Success() {
         when(courseRepository.findById(1L)).thenReturn(Optional.of(course));
 
-        Optional<Course> result = courseService.getCourseById(1L);
+        CourseOutDTO result = courseService.getCourseById(1L);
 
-        assertTrue(result.isPresent());
+        assertTrue(result !=null);
         assertEquals("Java Basics", result.get().getTitle());
     }
 
