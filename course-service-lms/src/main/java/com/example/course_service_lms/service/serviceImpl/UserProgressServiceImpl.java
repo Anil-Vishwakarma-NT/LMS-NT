@@ -115,7 +115,8 @@ public class UserProgressServiceImpl implements UserProgressService {
         }).toList();
     }
 
-    private double calculateCourseCompletion(int userId, long courseId) {
+
+    public double calculateCourseCompletion(int userId, long courseId) {
         log.info("Calculating Course Completion for UserId: {}, CourseId: {}", userId, courseId);
         List<UserProgress> progressList = userProgressRepository.findProgressByUserIdAndCourseId(userId, courseId);
         int totalContents = courseContentRepository.findByCourseId(courseId).size();

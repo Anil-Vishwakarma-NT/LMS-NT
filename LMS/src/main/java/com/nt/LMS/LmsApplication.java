@@ -23,7 +23,7 @@ public class LmsApplication {
      */
     public static void main(final String[] args) {
         SpringApplication.run(LmsApplication.class, args);
-        System.out.println("Welcome to the Learning Management System...");
+        System.out.println("Welcome to th e Learning Management System...");
     }
 
 }

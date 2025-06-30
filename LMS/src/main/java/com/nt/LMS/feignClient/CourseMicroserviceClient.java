@@ -47,4 +47,5 @@ public interface CourseMicroserviceClient {
 
     @GetMapping("user-progress/meta")
     public CourseProgressWithMetaDTO getCourseProgressWithMeta(@RequestParam int userId, @RequestParam int courseId);
-}
+
+  }
