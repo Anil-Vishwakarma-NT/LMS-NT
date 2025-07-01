@@ -9,6 +9,8 @@ import com.nt.LMS.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.Optional;
@@ -24,6 +26,25 @@ public class UserController {
     @GetMapping("/getUserId")
     public ResponseEntity<UserOutDTO> getUserIdByEmail(@RequestParam String email) {
         Optional<User> user = userRepository.findByEmailIgnoreCase(email);
+
+        if (user.isPresent()) {
+            UserOutDTO userOutDTO = new UserOutDTO();
+            userOutDTO.setUserId(user.get().getUserId());
+            userOutDTO.setFirstName(user.get().getFirstName());
+            userOutDTO.setLastName(user.get().getLastName());
+
+            return ResponseEntity.ok(userOutDTO);
+        } else {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(null);
+        }
+    }
+
+
+    @GetMapping("/getUserDetails")
+    public ResponseEntity<UserOutDTO> getUserIdByAuth() {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        String username = authentication.getName();
+        Optional<User> user = userRepository.findByEmailIgnoreCase(username);
 
         if (user.isPresent()) {
             UserOutDTO userOutDTO = new UserOutDTO();
