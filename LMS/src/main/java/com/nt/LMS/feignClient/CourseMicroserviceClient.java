@@ -2,19 +2,14 @@ package com.nt.LMS.feignClient;
 
 
 import com.nt.LMS.config.FeignTokenInterceptor;
-import com.nt.LMS.dto.outDTO.BundleInfoOutDTO;
-import com.nt.LMS.dto.outDTO.CourseBundleOutDTO;
-import com.nt.LMS.dto.outDTO.CourseInfoOutDTO;
-import com.nt.LMS.dto.outDTO.StandardResponseOutDTO;
+import com.nt.LMS.dto.outDTO.*;
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
-@FeignClient(name = "course-service-lms", url = "http://localhost:8080/api",configuration = FeignTokenInterceptor.class)
+@FeignClient(name = "course-service", url = "http://localhost:8080/api",configuration = FeignTokenInterceptor.class)
 public interface CourseMicroserviceClient {
 
     @GetMapping("/course/{id}/exists")

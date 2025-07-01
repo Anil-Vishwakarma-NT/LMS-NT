@@ -54,6 +54,7 @@ public class AuthServiceImp {
                     }
 
 //                    String decodedPassword = rsaDecryptUtil.decrypt(request.getPassword());
+//                    System.out.println("Passowrd" + decodedPassword);
                     Authentication auth = new UsernamePasswordAuthenticationToken(
                             request.getEmail(), request.getPassword()
                     );
