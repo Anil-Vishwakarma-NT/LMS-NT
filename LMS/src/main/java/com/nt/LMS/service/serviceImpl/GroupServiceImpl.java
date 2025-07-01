@@ -68,10 +68,6 @@ public class GroupServiceImpl implements GroupService {
     @Autowired
     private UserGroupRepository userGroupRepository;
 
-
-    @Autowired
-    private EnrollmentsService enrollmentsService;
-
     @Autowired
     private EnrollmentRepository enrollmentRepository;
 
@@ -100,14 +96,14 @@ public class GroupServiceImpl implements GroupService {
 
             Group group = new Group(groupName, user.getUserId());
             group = groupRepository.save(group);
-            log.info("Group '{}' created successfully by '{}'", groupName, username);
-   if(!employeeId.isEmpty()){
-       Group finalGroup = group;
-       employeeId.forEach(employee -> {
-           UserGroup usr = new UserGroup(employee,finalGroup.getGroupId());
-           userGroupRepository.save(usr);
-       });
-   }
+                    log.info("Group '{}' created successfully by '{}'", groupName, username);
+           if(!employeeId.isEmpty()){
+               Group finalGroup = group;
+               employeeId.forEach(employee -> {
+                   UserGroup userGroup= new UserGroup(employee,finalGroup.getGroupId());
+                   userGroupRepository.save(userGroup);
+               });
+           }
             MessageOutDto messageOutDto = new MessageOutDto(GROUP_CREATED);
             return StandardResponseOutDTO.success(messageOutDto,GROUP_CREATED);
         } catch (Exception e) {
@@ -159,7 +155,6 @@ public class GroupServiceImpl implements GroupService {
             if (groupRepository.findById(groupInDTO.getGroupId()).isEmpty()) {
                 throw new ResourceNotFoundException(GROUP_NOT_FOUND);
             }
-
 
             for(Long id :groupInDTO.getEmployees()) {
                 if (userRepository.findById(id).isEmpty()) {
@@ -388,7 +383,7 @@ public class GroupServiceImpl implements GroupService {
         // Get the 5 most recent groups
         List<Group> recentGroups = groupRepository.findTop5ByOrderByGroupIdDesc();
         List<GroupSummaryOutDTO> groupSummary =  convertToGroupSummaries(recentGroups);
-        return StandardResponseOutDTO.success(groupSummary, "Group summary feched successfully");
+        return StandardResponseOutDTO.success(groupSummary, "Group summary fetched successfully");
     }
 
     /**
@@ -438,7 +433,6 @@ public class GroupServiceImpl implements GroupService {
             gc.setCourseId(en.getCourseId());
             gc.setEnrols(totalenrols);
             gc.setProgress(progress);
-
             mp.put(en.getCourseId(),gc);
         }
 
@@ -466,12 +460,10 @@ public class GroupServiceImpl implements GroupService {
             uc.setUserId(en.getUserId());
             uc.setEnrols(totalenrols);
             uc.setProgress(progress);
-
             mp.put(en.getUserId(),uc);
         }
 
         for(UserGroup user : usrgrp){
-
             if(!mp.containsKey(user.getUserId()) && user.is_active()){
                 Optional<User> usr = userRepository.findById(user.getUserId());
                 GroupUserOutDTO uc = new GroupUserOutDTO();
@@ -487,8 +479,6 @@ public class GroupServiceImpl implements GroupService {
 
             }
         }
-
-
         return StandardResponseOutDTO.success( new ArrayList<>(mp.values()),"Successfully fetched course details.");
     }
 }

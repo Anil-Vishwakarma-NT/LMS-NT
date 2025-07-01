@@ -43,7 +43,7 @@ public final class GroupController {
      * @return success message.
      */
     @PostMapping("/create-group")
-    public ResponseEntity<StandardResponseOutDTO<MessageOutDto>> createGroup(@Valid @RequestBody final GroupInDTO groupInDTO) {
+    public ResponseEntity<StandardResponseOutDTO<MessageOutDto>> createGroup(@Valid @RequestBody final GroupInDTO groupInDTO) {  // alag alag dto
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         String username = authentication.getName();
         log.info("Attempting to create a group with name: {}", groupInDTO.getGroupName());
@@ -127,7 +127,7 @@ public final class GroupController {
     }
 
     @GetMapping("/group-courses/{groupId}")
-    public ResponseEntity<StandardResponseOutDTO<List<GroupCourseOutDTO>>> getCourseDetails(@PathVariable final long groupId){
+    public ResponseEntity<StandardResponseOutDTO<List<GroupCourseOutDTO>>> getCourseDetails(@PathVariable final long groupId){     // pass group id in dto
         log.info("Attempting to get course details of groupId : {}",groupId);
         StandardResponseOutDTO<List<GroupCourseOutDTO>> response = groupService.getCourseDetail(groupId);
 
@@ -139,7 +139,7 @@ public final class GroupController {
      * @return list of groups.
      */
     @GetMapping("/groups")
-    public ResponseEntity<StandardResponseOutDTO<List<GroupOutDTO>>> getGroups() {
+    public ResponseEntity<StandardResponseOutDTO<List<GroupOutDTO>>> getGroups() {                  // change group/groups to group
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         String username = authentication.getName();
 
@@ -152,6 +152,22 @@ public final class GroupController {
         }
 
         log.info("Found {} groups for user: {}", response.getData().size(), username);
+        return new ResponseEntity<>(response,HttpStatus.OK);
+    }
+
+    @GetMapping("/Allgroups")
+    public ResponseEntity<StandardResponseOutDTO<List<GroupOutDTO>>> getAllGroups() {                  // change group/groups to group
+
+        log.info("Fetching groups ");
+        StandardResponseOutDTO<List<GroupOutDTO>> response = groupService.getAllGroups();
+
+
+        if (response.getData().isEmpty()) {
+            log.warn("No groups found ");
+            return new ResponseEntity<>(response, HttpStatus.NO_CONTENT);
+        }
+
+        log.info("Found {} groups ", response.getData().size());
         return new ResponseEntity<>(response,HttpStatus.OK);
     }
 
