@@ -19,9 +19,9 @@ import java.util.List;
  * Exception handling is managed by GlobalExceptionHandler.
  */
 @RestController
-@RequestMapping("/api/quizzes")
+@RequestMapping("/api/service-api/quizzes")
 @Slf4j
-@CrossOrigin("http://localhost:3000")
+
 public class QuizController {
 
     /**

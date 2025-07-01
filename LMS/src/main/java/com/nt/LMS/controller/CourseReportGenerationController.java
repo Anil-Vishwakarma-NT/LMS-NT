@@ -15,7 +15,7 @@ import org.springframework.web.bind.annotation.*;
 import java.io.IOException;
 
 @RestController
-@RequestMapping("/api/report")
+@RequestMapping("/api/service-api/report")
 @RequiredArgsConstructor
 public class CourseReportGenerationController {
 

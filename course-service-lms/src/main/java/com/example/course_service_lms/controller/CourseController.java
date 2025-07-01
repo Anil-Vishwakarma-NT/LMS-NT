@@ -24,8 +24,7 @@ import org.springframework.web.bind.annotation.CrossOrigin;
  */
 @Slf4j
 @RestController
-@RequestMapping("/api/course")
-@CrossOrigin("http://localhost:3000")
+@RequestMapping("/api/service-api/course")
 public class CourseController {
 
     /**

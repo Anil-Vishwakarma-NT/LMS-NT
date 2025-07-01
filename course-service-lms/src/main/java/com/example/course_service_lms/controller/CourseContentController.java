@@ -21,8 +21,7 @@ import java.util.List;
  */
 @Slf4j
 @RestController
-@RequestMapping("/api/course-content")
-@CrossOrigin(origins = "http://localhost:3000", allowCredentials = "true")
+@RequestMapping("/api/service-api/course-content")
 public class CourseContentController {
 
     private final CourseContentService courseContentService;

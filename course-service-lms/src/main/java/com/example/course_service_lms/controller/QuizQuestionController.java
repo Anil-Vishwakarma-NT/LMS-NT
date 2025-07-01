@@ -22,7 +22,7 @@ import java.util.List;
  * and deleting quiz questions.</p>
  */
 @RestController
-@RequestMapping("/api/quiz-questions")
+@RequestMapping("/api/service-api/quiz-questions")
 @RequiredArgsConstructor
 @Slf4j
 public class QuizQuestionController {

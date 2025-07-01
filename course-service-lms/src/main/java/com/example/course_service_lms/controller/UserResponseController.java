@@ -22,7 +22,7 @@ import java.util.List;
  * Provides endpoints for CRUD operations and various query operations.
  */
 @RestController
-@RequestMapping("/api/v1/user-responses")
+@RequestMapping("/api/service-api/v1/user-responses")
 @RequiredArgsConstructor
 @Slf4j
 public class UserResponseController {

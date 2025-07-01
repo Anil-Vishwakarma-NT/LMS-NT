@@ -20,9 +20,8 @@ import java.util.List;
  * Exception handling is managed by GlobalExceptionHandler.
  */
 @RestController
-@RequestMapping("/api/bundles")
+@RequestMapping("/api/service-api/bundles")
 @Slf4j
-@CrossOrigin("http://localhost:3000")
 public class BundleController {
 
     /**

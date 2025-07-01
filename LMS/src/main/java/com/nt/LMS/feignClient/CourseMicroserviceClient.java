@@ -25,7 +25,7 @@ public interface CourseMicroserviceClient {
     public ResponseEntity<String> getCourseNameById(@PathVariable("id") Long id);
 
     @GetMapping("/bundles/{id}/name")
-    public ResponseEntity<String> getBundleNameById(@PathVariable("id") Long id);
+    public ResponseEntity<StandardResponseOutDTO<String>> getBundleNameById(@PathVariable("id") Long id);
 
     @GetMapping("/course/info")
     public ResponseEntity<StandardResponseOutDTO<List<CourseInfoOutDTO>>> getCourseInfo();

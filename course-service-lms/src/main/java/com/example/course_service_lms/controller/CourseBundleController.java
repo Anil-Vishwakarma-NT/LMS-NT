@@ -28,7 +28,7 @@ import java.util.List;
  * in the Course Service of the LMS.
  */
 @RestController
-@RequestMapping("/api/bundles/course-bundles")
+@RequestMapping("/api/service-api/course-bundles")
 @RequiredArgsConstructor
 @Slf4j
 public class CourseBundleController {

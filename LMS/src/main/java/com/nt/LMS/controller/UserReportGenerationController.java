@@ -18,7 +18,7 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 
 @RestController
-@RequestMapping("/api/report")
+@RequestMapping("/api/service-api/report")
 @RequiredArgsConstructor
 public class UserReportGenerationController {
 
