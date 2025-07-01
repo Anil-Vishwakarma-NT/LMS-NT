@@ -1,11 +1,12 @@
 package com.nt.LMS.dto.outDTO;
 
+
 import lombok.Data;
 
 import java.time.LocalDateTime;
 
 @Data
-public class CourseInfoOutDTO {
+public class CourseDeadlinesDTO {
 
     private String title;
 
@@ -13,13 +14,5 @@ public class CourseInfoOutDTO {
 
     private Long courseId;
 
-    private String description;
-
-    private String courseLevel;
-
-    private boolean isActive;
-
-    private LocalDateTime updatedAt;
-
-
+   private  LocalDateTime deadline;
 }

@@ -68,10 +68,10 @@ public class CourseController {
      * @return ResponseEntity containing the Course wrapped in Optional.
      */
     @GetMapping("/{id}")
-    public ResponseEntity<StandardResponseOutDTO<CourseOutDTO>> getCourseById(@PathVariable final Long id) {
+    public ResponseEntity<StandardResponseOutDTO<CourseInfoOutDTO>> getCourseById(@PathVariable final Long id) {
         log.info("Received request to get course by ID: {}", id);
-        CourseOutDTO course = courseService.getCourseById(id);
-        StandardResponseOutDTO<CourseOutDTO> standardResponseOutDTO = StandardResponseOutDTO.success(course,"Fetched Course Details");
+        CourseInfoOutDTO course = courseService.getCourseById(id);
+        StandardResponseOutDTO<CourseInfoOutDTO> standardResponseOutDTO = StandardResponseOutDTO.success(course,"Fetched Course Details");
         return ResponseEntity.ok(standardResponseOutDTO);
     }
 
