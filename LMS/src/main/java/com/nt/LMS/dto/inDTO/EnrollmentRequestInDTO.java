@@ -19,14 +19,9 @@ public class EnrollmentRequestInDTO {
     private List<Long> courseIds;
     private List<Long> bundleIds;
 
+    @NotNull(message = "Deadline is required")
     private LocalDateTime deadline;
     private String status = "ACTIVE";
-
-    // Optional: Force enrollment even if conflicts exist
-    private boolean forceEnrollment = false;
-
-    // Optional: Skip creating individual enrollments for group enrollments
-    private boolean groupEnrollmentOnly = false;
 
     public EnrollmentRequestInDTO() {}
 
@@ -86,23 +81,6 @@ public class EnrollmentRequestInDTO {
     public void setStatus(String status) {
         this.status = status;
     }
-
-    public boolean isForceEnrollment() {
-        return forceEnrollment;
-    }
-
-    public void setForceEnrollment(boolean forceEnrollment) {
-        this.forceEnrollment = forceEnrollment;
-    }
-
-    public boolean isGroupEnrollmentOnly() {
-        return groupEnrollmentOnly;
-    }
-
-    public void setGroupEnrollmentOnly(boolean groupEnrollmentOnly) {
-        this.groupEnrollmentOnly = groupEnrollmentOnly;
-    }
-
     // Validation helper methods
     public boolean hasUsers() {
         return userIds != null && !userIds.isEmpty();
