@@ -35,8 +35,7 @@ public class QuizAttempt {
     @Column(name = "finished_at")
     private LocalDateTime finishedAt;
 
-    @Lob
-    @Column(name = "score_details", columnDefinition = "JSONB")
+    @Column(name = "score_details", columnDefinition = "TEXT")
     private String scoreDetails;
 
     @Column(name = "status", nullable = false, length = 20)
