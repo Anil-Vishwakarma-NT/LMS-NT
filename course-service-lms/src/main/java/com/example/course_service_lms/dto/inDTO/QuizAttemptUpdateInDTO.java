@@ -15,7 +15,7 @@ public class QuizAttemptUpdateInDTO {
 
     private String scoreDetails;
 
-    @Pattern(regexp = "STARTED|IN_PROGRESS|COMPLETED|ABANDONED|TIMED_OUT",
-            message = "Status must be one of: STARTED, IN_PROGRESS, COMPLETED, ABANDONED, TIMED_OUT")
+    @Pattern(regexp = "IN_PROGRESS|COMPLETED|ABANDONED|TIMED_OUT",
+            message = "Status must be one of: IN_PROGRESS, COMPLETED, ABANDONED, TIMED_OUT")
     private String status;
 }

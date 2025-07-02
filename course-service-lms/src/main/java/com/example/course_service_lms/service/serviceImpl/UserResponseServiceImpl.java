@@ -4,13 +4,18 @@ import com.example.course_service_lms.converters.UserResponseConverter;
 import com.example.course_service_lms.dto.inDTO.UserResponseInDTO;
 import com.example.course_service_lms.dto.inDTO.UserResponseUpdateInDTO;
 import com.example.course_service_lms.dto.outDTO.UserResponseOutDTO;
+import com.example.course_service_lms.entity.QuizQuestion;
 import com.example.course_service_lms.entity.UserResponse;
 import com.example.course_service_lms.exception.ResourceAlreadyExistsException;
 import com.example.course_service_lms.exception.ResourceNotFoundException;
+import com.example.course_service_lms.repository.QuizQuestionRepository;
 import com.example.course_service_lms.repository.UserResponseRepository;
 import com.example.course_service_lms.service.UserResponseService;
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
@@ -18,7 +23,12 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.function.Function;
+import java.util.stream.Collectors;
 
 /**
  * Implementation of UserResponseService interface.
@@ -32,52 +42,313 @@ public class UserResponseServiceImpl implements UserResponseService {
 
     private final UserResponseRepository userResponseRepository;
     private final UserResponseConverter userResponseConverter;
+    @Autowired
+    private QuizQuestionRepository quizQuestionRepository;
 
     @Override
-    public UserResponseOutDTO createUserResponse(UserResponseInDTO userResponseInDTO) {
-        log.info("Creating user response for user ID: {}, quiz ID: {}, question ID: {}, attempt: {}",
-                userResponseInDTO.getUserId(), userResponseInDTO.getQuizId(),
-                userResponseInDTO.getQuestionId(), userResponseInDTO.getAttempt());
+    @Transactional
+    public List<UserResponseOutDTO> createUserResponse(List<UserResponseInDTO> userResponseInDTOList) {
+        log.info("Creating user responses for {} questions", userResponseInDTOList.size());
+
+        if (userResponseInDTOList.isEmpty()) {
+            throw new IllegalArgumentException("User response list cannot be empty");
+        }
 
         try {
-            // Check if response already exists for this user, question, and attempt
-            boolean responseExists = userResponseRepository.existsByUserIdAndQuestionIdAndAttempt(
-                    userResponseInDTO.getUserId(),
-                    userResponseInDTO.getQuestionId(),
-                    userResponseInDTO.getAttempt()
-            );
-
-            if (responseExists) {
-                log.warn("User response already exists for user ID: {}, question ID: {}, attempt: {}",
-                        userResponseInDTO.getUserId(), userResponseInDTO.getQuestionId(), userResponseInDTO.getAttempt());
-                throw new ResourceAlreadyExistsException(
-                        String.format("User response already exists for user ID: %d, question ID: %d, attempt: %d",
-                                userResponseInDTO.getUserId(), userResponseInDTO.getQuestionId(), userResponseInDTO.getAttempt())
-                );
+            // Check for existing responses
+            for (UserResponseInDTO dto : userResponseInDTOList) {
+                boolean exists = userResponseRepository.existsByUserIdAndQuestionIdAndAttempt(
+                        dto.getUserId(), dto.getQuestionId(), dto.getAttempt());
+                if (exists) {
+                    throw new ResourceAlreadyExistsException(
+                            String.format("User response already exists for user ID: %d, question ID: %d, attempt: %d",
+                                    dto.getUserId(), dto.getQuestionId(), dto.getAttempt()));
+                }
             }
 
-            // Convert DTO to entity
-            UserResponse userResponse = userResponseConverter.convertToEntity(userResponseInDTO);
+            // Get all question IDs from the DTOs
+            Set<Long> questionIds = userResponseInDTOList.stream()
+                    .map(UserResponseInDTO::getQuestionId)
+                    .collect(Collectors.toSet());
 
-            // Set answered time if not provided
-            if (userResponse.getAnsweredAt() == null) {
-                userResponse.setAnsweredAt(LocalDateTime.now());
-            }
+            // Fetch all questions in batch
+            List<QuizQuestion> questions = quizQuestionRepository.findAllById(questionIds);
 
-            // Save the entity
-            UserResponse savedUserResponse = userResponseRepository.save(userResponse);
-            log.info("User response created successfully with ID: {}", savedUserResponse.getResponseId());
+            // Create a map for quick lookup
+            Map<Long, QuizQuestion> questionMap = questions.stream()
+                    .collect(Collectors.toMap(QuizQuestion::getQuestionId, Function.identity()));
 
-            // Convert and return DTO
-            return userResponseConverter.convertToOutDTO(savedUserResponse);
+            // Convert all DTOs to entities with answer validation
+            List<UserResponse> userResponses = userResponseInDTOList.stream()
+                    .map(dto -> {
+                        UserResponse entity = userResponseConverter.convertToEntity(dto);
 
-        } catch (ResourceAlreadyExistsException e) {
-            log.error("Failed to create user response - already exists: {}", e.getMessage());
+                        // Set timestamp if not provided
+                        if (entity.getAnsweredAt() == null) {
+                            entity.setAnsweredAt(LocalDateTime.now());
+                        }
+
+                        // Get the corresponding question
+                        QuizQuestion question = questionMap.get(dto.getQuestionId());
+                        if (question == null) {
+                            throw new ResourceNotFoundException(
+                                    String.format("Question with ID %d not found", dto.getQuestionId()));
+                        }
+
+                        // Validate answer and calculate points
+                        boolean isCorrect = validateAnswer(dto.getUserAnswer(), question);
+                        entity.setIsCorrect(isCorrect);
+
+                        // Calculate points earned
+                        BigDecimal pointsEarned = isCorrect ? question.getPoints() : BigDecimal.ZERO;
+                        entity.setPointsEarned(pointsEarned);
+
+                        return entity;
+                    })
+                    .collect(Collectors.toList());
+
+            // Save all entities in batch
+            List<UserResponse> savedResponses = userResponseRepository.saveAll(userResponses);
+
+            log.info("User responses created successfully. Total created: {}", savedResponses.size());
+
+            // Convert all saved entities to DTOs
+            return userResponseConverter.convertToOutDTOList(savedResponses);
+
+        } catch (ResourceAlreadyExistsException | ResourceNotFoundException e) {
+            log.error("Failed to create user responses: {}", e.getMessage());
             throw e;
         } catch (Exception e) {
-            log.error("Unexpected error occurred while creating user response for user ID: {}, quiz ID: {}, question ID: {}",
-                    userResponseInDTO.getUserId(), userResponseInDTO.getQuizId(), userResponseInDTO.getQuestionId(), e);
-            throw new RuntimeException("Failed to create user response", e);
+            log.error("Unexpected error occurred while creating user responses", e);
+            throw new RuntimeException("Failed to create user responses", e);
+        }
+    }
+
+    /**
+     * Validates if the user's answer is correct based on the question type and correct answer.
+     *
+     * @param userAnswer    the user's answer in JSON format
+     * @param question      the quiz question entity
+     * @return true if the answer is correct, false otherwise
+     */
+    private boolean validateAnswer(String userAnswer, QuizQuestion question) {
+        try {
+            String questionType = question.getQuestionType().toLowerCase();
+            String correctAnswer = question.getCorrectAnswer();
+
+            switch (questionType) {
+                case "multiple_choice":
+                case "single_choice":
+                    return validateSingleChoiceAnswer(userAnswer, correctAnswer);
+
+                case "multiple_select":
+                    return validateMultipleChoiceAnswer(userAnswer, correctAnswer);
+
+                case "text":
+                case "short_answer":
+                    return validateTextAnswer(userAnswer, correctAnswer);
+
+                case "true_false":
+                case "boolean":
+                    return validateBooleanAnswer(userAnswer, correctAnswer);
+
+                case "numeric":
+                    return validateNumericAnswer(userAnswer, correctAnswer);
+
+                default:
+                    log.warn("Unknown question type: {}. Defaulting to text comparison.", questionType);
+                    return validateTextAnswer(userAnswer, correctAnswer);
+            }
+        } catch (Exception e) {
+            log.error("Error validating answer for question type: {}", question.getQuestionType(), e);
+            return false;
+        }
+    }
+
+    /**
+     * Validates single choice answers (radio buttons, dropdowns).
+     */
+    private boolean validateSingleChoiceAnswer(String userAnswer, String correctAnswer) {
+        try {
+            ObjectMapper mapper = new ObjectMapper();
+
+            // Parse user answer
+            String selectedOption = null;
+            if (userAnswer.startsWith("\"") && userAnswer.endsWith("\"")) {
+                // Simple string value
+                selectedOption = userAnswer.substring(1, userAnswer.length() - 1);
+            } else if (userAnswer.startsWith("{")) {
+                // JSON object format
+                JsonNode userNode = mapper.readTree(userAnswer);
+                selectedOption = userNode.has("answer") ? userNode.get("answer").asText() :
+                        userNode.has("selected") ? userNode.get("selected").asText() : userAnswer;
+            } else {
+                selectedOption = userAnswer;
+            }
+
+            // Parse correct answer
+            String correctOption = correctAnswer;
+            if (correctAnswer.startsWith("{")) {
+                JsonNode correctNode = mapper.readTree(correctAnswer);
+                correctOption = correctNode.has("answer") ? correctNode.get("answer").asText() :
+                        correctNode.has("correct") ? correctNode.get("correct").asText() : correctAnswer;
+            }
+
+            return selectedOption != null && selectedOption.trim().equalsIgnoreCase(correctOption.trim());
+
+        } catch (Exception e) {
+            log.error("Error parsing single choice answer", e);
+            return false;
+        }
+    }
+
+    /**
+     * Validates multiple choice answers (checkboxes).
+     */
+    private boolean validateMultipleChoiceAnswer(String userAnswer, String correctAnswer) {
+        try {
+            ObjectMapper mapper = new ObjectMapper();
+
+            // Parse user answer
+            Set<String> userSelections = new HashSet<>();
+            JsonNode userNode = mapper.readTree(userAnswer);
+
+            if (userNode.isArray()) {
+                for (JsonNode node : userNode) {
+                    userSelections.add(node.asText().trim().toLowerCase());
+                }
+            } else if (userNode.has("selected") && userNode.get("selected").isArray()) {
+                for (JsonNode node : userNode.get("selected")) {
+                    userSelections.add(node.asText().trim().toLowerCase());
+                }
+            }
+
+            // Parse correct answer
+            Set<String> correctSelections = new HashSet<>();
+            JsonNode correctNode = mapper.readTree(correctAnswer);
+
+            if (correctNode.isArray()) {
+                for (JsonNode node : correctNode) {
+                    correctSelections.add(node.asText().trim().toLowerCase());
+                }
+            } else if (correctNode.has("correct") && correctNode.get("correct").isArray()) {
+                for (JsonNode node : correctNode.get("correct")) {
+                    correctSelections.add(node.asText().trim().toLowerCase());
+                }
+            }
+
+            return userSelections.equals(correctSelections);
+
+        } catch (Exception e) {
+            log.error("Error parsing multiple choice answer", e);
+            return false;
+        }
+    }
+
+    /**
+     * Validates text-based answers.
+     */
+    private boolean validateTextAnswer(String userAnswer, String correctAnswer) {
+        try {
+            ObjectMapper mapper = new ObjectMapper();
+
+            String userText = userAnswer;
+            String correctText = correctAnswer;
+
+            // Try to parse as JSON if it looks like JSON
+            if (userAnswer.startsWith("{")) {
+                JsonNode userNode = mapper.readTree(userAnswer);
+                userText = userNode.has("answer") ? userNode.get("answer").asText() : userAnswer;
+            }
+
+            if (correctAnswer.startsWith("{")) {
+                JsonNode correctNode = mapper.readTree(correctAnswer);
+                correctText = correctNode.has("answer") ? correctNode.get("answer").asText() : correctAnswer;
+            }
+
+            // Remove quotes if present
+            userText = userText.replaceAll("^\"|\"$", "");
+            correctText = correctText.replaceAll("^\"|\"$", "");
+
+            return userText.trim().equalsIgnoreCase(correctText.trim());
+
+        } catch (Exception e) {
+            log.error("Error parsing text answer", e);
+            return userAnswer.trim().equalsIgnoreCase(correctAnswer.trim());
+        }
+    }
+
+    /**
+     * Validates boolean/true-false answers.
+     */
+    private boolean validateBooleanAnswer(String userAnswer, String correctAnswer) {
+        try {
+            ObjectMapper mapper = new ObjectMapper();
+
+            Boolean userBoolean = null;
+            Boolean correctBoolean = null;
+
+            // Parse user answer
+            if (userAnswer.startsWith("{")) {
+                JsonNode userNode = mapper.readTree(userAnswer);
+                userBoolean = userNode.has("answer") ? userNode.get("answer").asBoolean() :
+                        Boolean.parseBoolean(userAnswer);
+            } else {
+                userBoolean = Boolean.parseBoolean(userAnswer.replaceAll("^\"|\"$", ""));
+            }
+
+            // Parse correct answer
+            if (correctAnswer.startsWith("{")) {
+                JsonNode correctNode = mapper.readTree(correctAnswer);
+                correctBoolean = correctNode.has("answer") ? correctNode.get("answer").asBoolean() :
+                        Boolean.parseBoolean(correctAnswer);
+            } else {
+                correctBoolean = Boolean.parseBoolean(correctAnswer.replaceAll("^\"|\"$", ""));
+            }
+
+            return userBoolean.equals(correctBoolean);
+
+        } catch (Exception e) {
+            log.error("Error parsing boolean answer", e);
+            return false;
+        }
+    }
+
+    /**
+     * Validates numeric answers.
+     */
+    private boolean validateNumericAnswer(String userAnswer, String correctAnswer) {
+        try {
+            ObjectMapper mapper = new ObjectMapper();
+
+            Double userNumber = null;
+            Double correctNumber = null;
+
+            // Parse user answer
+            if (userAnswer.startsWith("{")) {
+                JsonNode userNode = mapper.readTree(userAnswer);
+                userNumber = userNode.has("answer") ? userNode.get("answer").asDouble() :
+                        Double.parseDouble(userAnswer);
+            } else {
+                userNumber = Double.parseDouble(userAnswer.replaceAll("^\"|\"$", ""));
+            }
+
+            // Parse correct answer
+            if (correctAnswer.startsWith("{")) {
+                JsonNode correctNode = mapper.readTree(correctAnswer);
+                correctNumber = correctNode.has("answer") ? correctNode.get("answer").asDouble() :
+                        Double.parseDouble(correctAnswer);
+            } else {
+                correctNumber = Double.parseDouble(correctAnswer.replaceAll("^\"|\"$", ""));
+            }
+
+            // Use a small epsilon for floating point comparison
+            double epsilon = 0.001;
+            return Math.abs(userNumber - correctNumber) < epsilon;
+
+        } catch (Exception e) {
+            log.error("Error parsing numeric answer", e);
+            return false;
         }
     }
 

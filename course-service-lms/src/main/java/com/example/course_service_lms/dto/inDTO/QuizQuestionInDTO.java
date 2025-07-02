@@ -22,7 +22,7 @@ public class QuizQuestionInDTO {
     @NotBlank(message = "Question type is required")
     @Size(max = 20, message = "Question type cannot exceed 20 characters")
     @Pattern(regexp = "^(MCQ_SINGLE|MCQ_MULTIPLE|SHORT_ANSWER)$",
-            message = "Question type must be one of: MULTIPLE_CHOICE, TRUE_FALSE, SHORT_ANSWER, ESSAY, FILL_IN_BLANK")
+            message = "Question type must be one of: MCQ_SINGLE, MCQ_MULTIPLE, SHORT_ANSWER")
     private String questionType;
 
     @Size(max = 10000, message = "Options cannot exceed 10000 characters")
