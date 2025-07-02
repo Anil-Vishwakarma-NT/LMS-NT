@@ -1,7 +1,9 @@
 package com.nt.LMS.repository;
 
 import com.nt.LMS.entities.Group;
+import jakarta.transaction.Transactional;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
@@ -41,5 +43,10 @@ public interface GroupRepository extends JpaRepository<Group, Long> {
 
     @Query("SELECT g.groupId FROM Group g WHERE g.groupId IN :groupIds")
     List<Long> findExistingIds(@Param("groupIds") List<Long> groupIds);
+
+    @Modifying
+    @Transactional
+    @Query("UPDATE Group ug SET ug.is_active = false WHERE ug.groupId = :groupId")
+    void softDeleteByGroupId(Long groupId);
 
 }

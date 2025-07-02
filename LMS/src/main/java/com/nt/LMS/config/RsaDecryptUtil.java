@@ -33,6 +33,9 @@ public class RsaDecryptUtil {
                     .replace("-----END PRIVATE KEY-----", "")
                     .replaceAll("\\s+", "");
 
+
+
+            System.out.print(privateKeyPEM);
             byte[] keyBytes = Base64.getDecoder().decode(privateKeyPEM);
             PKCS8EncodedKeySpec spec = new PKCS8EncodedKeySpec(keyBytes);
             KeyFactory kf = KeyFactory.getInstance("RSA");

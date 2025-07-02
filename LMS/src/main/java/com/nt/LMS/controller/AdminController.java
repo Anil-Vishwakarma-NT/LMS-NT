@@ -153,9 +153,6 @@ public final class AdminController {
                 HttpStatus.OK
         );
     }
-
-
-
     @PreAuthorize("permitAll()")
     @GetMapping("/count")
     public ResponseEntity<StandardResponseOutDTO<Long>> getTotalUserCount() {

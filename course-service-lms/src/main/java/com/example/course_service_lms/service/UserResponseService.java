@@ -18,10 +18,10 @@ public interface UserResponseService {
     /**
      * Create a new user response
      *
-     * @param userResponseInDTO the user response data
+     * @param userResponseInDTOList the user response data
      * @return created user response DTO
      */
-    UserResponseOutDTO createUserResponse(UserResponseInDTO userResponseInDTO);
+    List<UserResponseOutDTO> createUserResponse(List<UserResponseInDTO> userResponseInDTOList);
 
     /**
      * Get user response by ID
