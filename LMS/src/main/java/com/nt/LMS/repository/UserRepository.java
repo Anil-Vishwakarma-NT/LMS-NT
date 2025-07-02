@@ -3,7 +3,9 @@ package com.nt.LMS.repository;
 
 import com.nt.LMS.dto.UsersDetailsViewDTO;
 import com.nt.LMS.entities.User;
+import jakarta.transaction.Transactional;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
@@ -64,6 +66,8 @@ public interface UserRepository extends JpaRepository<User, Long> {
 
     @Query("SELECT u.userId FROM User u WHERE u.userId IN :userIds")
     List<Long> findExistingIds(@Param("userIds") List<Long> userIds);
+
+
 
 
 }

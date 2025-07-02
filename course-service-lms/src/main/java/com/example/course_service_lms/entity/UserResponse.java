@@ -1,7 +1,11 @@
 package com.example.course_service_lms.entity;
 
+
 import jakarta.persistence.*;
 import lombok.Data;
+import org.hibernate.annotations.JdbcTypeCode;
+import org.hibernate.type.SqlTypes;
+
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
@@ -33,9 +37,11 @@ public class UserResponse {
     @Column(name = "attempt", nullable = false)
     private Long attempt;
 
-    @Lob
-    @Column(name = "user_answer", nullable = false, columnDefinition = "JSONB")
-    private String userAnswer;
+//    @Column(name = "user_answer", nullable = false, columnDefinition = "TEXT")
+//    private String userAnswer;
+@Column(name = "user_answer", nullable = false, columnDefinition = "jsonb")
+@JdbcTypeCode(SqlTypes.JSON)
+private String userAnswer;
 
     @Column(name = "is_correct", nullable = false)
     private Boolean isCorrect;

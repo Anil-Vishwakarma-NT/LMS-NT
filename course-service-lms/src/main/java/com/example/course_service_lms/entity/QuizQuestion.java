@@ -31,14 +31,6 @@ public class QuizQuestion {
     @Column(name = "question_type", nullable = false, length = 20)
     private String questionType;
 
-//    @JdbcTypeCode(SqlTypes.JSON)
-//    @Column(name = "options", columnDefinition = "JSONB")
-//    private String options;
-//
-//    @JdbcTypeCode(SqlTypes.JSON)
-//    @Column(name = "correct_answer", nullable = false, columnDefinition = "JSONB")
-//    private String correctAnswer;
-
      // Changed: Remove JdbcTypeCode annotation for simple string storage
      @Column(name = "options", columnDefinition = "TEXT")
      private String options;

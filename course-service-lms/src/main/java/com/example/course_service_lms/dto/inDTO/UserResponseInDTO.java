@@ -61,23 +61,6 @@ public class UserResponseInDTO {
     private String userAnswer;
 
     /**
-     * Whether the user's answer is correct.
-     * This field is required for scoring purposes.
-     */
-    @NotNull(message = "Correctness indicator is required")
-    private Boolean isCorrect;
-
-    /**
-     * Points earned for this response.
-     * Must be non-negative and can have up to 2 decimal places.
-     */
-    @NotNull(message = "Points earned is required")
-    @DecimalMin(value = "0.0", inclusive = true, message = "Points earned cannot be negative")
-    @DecimalMax(value = "999.99", message = "Points earned cannot exceed 999.99")
-    @Digits(integer = 3, fraction = 2, message = "Points earned must have at most 3 integer digits and 2 decimal places")
-    private BigDecimal pointsEarned;
-
-    /**
      * Time spent on this question in seconds.
      * Optional field, can be null if time tracking is not required.
      */
@@ -104,21 +87,17 @@ public class UserResponseInDTO {
      * @param questionId    the ID of the question
      * @param attempt       the attempt number
      * @param userAnswer    the user's answer in JSON format
-     * @param isCorrect     whether the answer is correct
-     * @param pointsEarned  points earned for this response
      * @param timeSpent     time spent on the question in seconds
      * @param answeredAt    timestamp when answered
      */
     public UserResponseInDTO(Long userId, Long quizId, Long questionId, Long attempt,
-                             String userAnswer, Boolean isCorrect, BigDecimal pointsEarned,
+                             String userAnswer,
                              Long timeSpent, LocalDateTime answeredAt) {
         this.userId = userId;
         this.quizId = quizId;
         this.questionId = questionId;
         this.attempt = attempt;
         this.userAnswer = userAnswer;
-        this.isCorrect = isCorrect;
-        this.pointsEarned = pointsEarned;
         this.timeSpent = timeSpent;
         this.answeredAt = answeredAt;
     }

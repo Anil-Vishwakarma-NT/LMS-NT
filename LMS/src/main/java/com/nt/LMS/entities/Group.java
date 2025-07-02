@@ -42,6 +42,10 @@ public class Group {
     @Column(nullable = false)
     private long creatorId;
 
+
+    @Column
+    private boolean is_active = true;
+
     /**
      * Constructor to initialize group with name and creator ID.
      *

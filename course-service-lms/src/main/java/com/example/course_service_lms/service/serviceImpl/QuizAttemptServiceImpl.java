@@ -1,8 +1,8 @@
 package com.example.course_service_lms.service.serviceImpl;
 
-
 import com.example.course_service_lms.dto.inDTO.QuizAttemptCreateInDTO;
 import com.example.course_service_lms.dto.inDTO.QuizAttemptUpdateInDTO;
+import com.example.course_service_lms.dto.outDTO.QuizAttemptOutDTO;
 import com.example.course_service_lms.entity.QuizAttempt;
 import com.example.course_service_lms.exception.ResourceAlreadyExistsException;
 import com.example.course_service_lms.exception.ResourceNotFoundException;
@@ -12,6 +12,7 @@ import com.example.course_service_lms.service.QuizAttemptService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -19,6 +20,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 /**
  * Service implementation for QuizAttempt operations
@@ -29,10 +31,11 @@ import java.util.Optional;
 @Transactional
 public class QuizAttemptServiceImpl implements QuizAttemptService {
 
+    public static final String IN_PROGRESS = "IN_PROGRESS";
     private final QuizAttemptRepository quizAttemptRepository;
 
     @Override
-    public QuizAttempt createQuizAttempt(QuizAttemptCreateInDTO dto) {
+    public QuizAttemptOutDTO createQuizAttempt(QuizAttemptCreateInDTO dto) {
         log.info("Creating new quiz attempt for user: {} and quiz: {}", dto.getUserId(), dto.getQuizId());
 
         // Validate input
@@ -50,17 +53,17 @@ public class QuizAttemptServiceImpl implements QuizAttemptService {
         quizAttempt.setQuizId(dto.getQuizId());
         quizAttempt.setUserId(dto.getUserId());
         quizAttempt.setStartedAt(LocalDateTime.now());
-        quizAttempt.setStatus("STARTED");
+        quizAttempt.setStatus(IN_PROGRESS);
         quizAttempt.setCreatedAt(LocalDateTime.now());
         quizAttempt.setUpdatedAt(LocalDateTime.now());
 
         QuizAttempt savedAttempt = quizAttemptRepository.save(quizAttempt);
         log.info("Created quiz attempt with ID: {}", savedAttempt.getQuizAttemptId());
-        return savedAttempt;
+        return convertToOutDTO(savedAttempt);
     }
 
     @Override
-    public QuizAttempt updateQuizAttempt(Long quizAttemptId, QuizAttemptUpdateInDTO dto) {
+    public QuizAttemptOutDTO updateQuizAttempt(Long quizAttemptId, QuizAttemptUpdateInDTO dto) {
         log.info("Updating quiz attempt with ID: {}", quizAttemptId);
 
         if (quizAttemptId == null) {
@@ -100,72 +103,87 @@ public class QuizAttemptServiceImpl implements QuizAttemptService {
 
         QuizAttempt updatedAttempt = quizAttemptRepository.save(existingAttempt);
         log.info("Updated quiz attempt with ID: {}", quizAttemptId);
-        return updatedAttempt;
+        return convertToOutDTO(updatedAttempt);
     }
 
     @Override
     @Transactional(readOnly = true)
-    public Optional<QuizAttempt> getQuizAttemptById(Long quizAttemptId) {
+    public Optional<QuizAttemptOutDTO> getQuizAttemptById(Long quizAttemptId) {
         log.debug("Fetching quiz attempt with ID: {}", quizAttemptId);
 
         if (quizAttemptId == null) {
             throw new ResourceNotValidException("Quiz attempt ID cannot be null");
         }
 
-        return quizAttemptRepository.findById(quizAttemptId);
+        return quizAttemptRepository.findById(quizAttemptId)
+                .map(this::convertToOutDTO);
     }
 
     @Override
     @Transactional(readOnly = true)
-    public Page<QuizAttempt> getAllQuizAttempts(Pageable pageable) {
+    public Page<QuizAttemptOutDTO> getAllQuizAttempts(Pageable pageable) {
         log.debug("Fetching all quiz attempts with pagination");
 
         if (pageable == null) {
             throw new ResourceNotValidException("Pageable cannot be null");
         }
 
-        return quizAttemptRepository.findAll(pageable);
+        Page<QuizAttempt> attemptPage = quizAttemptRepository.findAll(pageable);
+        List<QuizAttemptOutDTO> attemptDTOs = attemptPage.getContent().stream()
+                .map(this::convertToOutDTO)
+                .collect(Collectors.toList());
+
+        return new PageImpl<>(attemptDTOs, pageable, attemptPage.getTotalElements());
     }
 
     @Override
     @Transactional(readOnly = true)
-    public List<QuizAttempt> getQuizAttemptsByUserId(Long userId) {
+    public List<QuizAttemptOutDTO> getQuizAttemptsByUserId(Long userId) {
         log.debug("Fetching quiz attempts for user: {}", userId);
 
         if (userId == null) {
             throw new ResourceNotValidException("User ID cannot be null");
         }
 
-        return quizAttemptRepository.findByUserIdOrderByCreatedAtDesc(userId);
+        return quizAttemptRepository.findByUserIdOrderByCreatedAtDesc(userId)
+                .stream()
+                .map(this::convertToOutDTO)
+                .collect(Collectors.toList());
     }
 
     @Override
     @Transactional(readOnly = true)
-    public List<QuizAttempt> getQuizAttemptsByQuizId(Long quizId) {
+    public List<QuizAttemptOutDTO> getQuizAttemptsByQuizId(Long quizId) {
         log.debug("Fetching quiz attempts for quiz: {}", quizId);
 
         if (quizId == null) {
             throw new ResourceNotValidException("Quiz ID cannot be null");
         }
 
-        return quizAttemptRepository.findByQuizIdOrderByCreatedAtDesc(quizId);
+        return quizAttemptRepository.findByQuizIdOrderByCreatedAtDesc(quizId)
+                .stream()
+                .map(this::convertToOutDTO)
+                .collect(Collectors.toList());
     }
 
     @Override
     @Transactional(readOnly = true)
-    public List<QuizAttempt> getQuizAttemptsByUserAndQuiz(Long userId, Long quizId) {
+    public List<QuizAttemptOutDTO> getQuizAttemptsByUserAndQuiz(Long userId, Long quizId) {
         log.debug("Fetching quiz attempts for user: {} and quiz: {}", userId, quizId);
 
         if (userId == null || quizId == null) {
             throw new ResourceNotValidException("User ID and Quiz ID cannot be null");
         }
 
-        return quizAttemptRepository.findByUserIdAndQuizIdOrderByAttemptDesc(userId, quizId);
+        return quizAttemptRepository.findByUserIdAndQuizIdOrderByAttemptDesc(userId, quizId)
+                .stream()
+                .map(this::convertToOutDTO)
+                .collect(Collectors.toList());
     }
 
     @Override
     @Transactional(readOnly = true)
-    public List<QuizAttempt> getQuizAttemptsByStatus(String status) {
+    public List<QuizAttemptOutDTO> getQuizAttemptsByStatus(String status) {
         log.debug("Fetching quiz attempts with status: {}", status);
 
         if (status == null || status.trim().isEmpty()) {
@@ -176,19 +194,23 @@ public class QuizAttemptServiceImpl implements QuizAttemptService {
             throw new ResourceNotValidException("Invalid status: " + status);
         }
 
-        return quizAttemptRepository.findByStatusOrderByCreatedAtDesc(status);
+        return quizAttemptRepository.findByStatusOrderByCreatedAtDesc(status)
+                .stream()
+                .map(this::convertToOutDTO)
+                .collect(Collectors.toList());
     }
 
     @Override
     @Transactional(readOnly = true)
-    public Optional<QuizAttempt> getLatestAttemptByUserAndQuiz(Long userId, Long quizId) {
+    public Optional<QuizAttemptOutDTO> getLatestAttemptByUserAndQuiz(Long userId, Long quizId) {
         log.debug("Fetching latest attempt for user: {} and quiz: {}", userId, quizId);
 
         if (userId == null || quizId == null) {
             throw new ResourceNotValidException("User ID and Quiz ID cannot be null");
         }
 
-        return quizAttemptRepository.findLatestAttemptByUserAndQuiz(userId, quizId);
+        return quizAttemptRepository.findLatestAttemptByUserAndQuiz(userId, quizId)
+                .map(this::convertToOutDTO);
     }
 
     @Override
@@ -208,7 +230,7 @@ public class QuizAttemptServiceImpl implements QuizAttemptService {
     }
 
     @Override
-    public QuizAttempt completeAttempt(Long quizAttemptId, String scoreDetails) {
+    public QuizAttemptOutDTO completeAttempt(Long quizAttemptId, String scoreDetails) {
         log.info("Completing quiz attempt with ID: {}", quizAttemptId);
 
         if (quizAttemptId == null) {
@@ -219,7 +241,7 @@ public class QuizAttemptServiceImpl implements QuizAttemptService {
                 .orElseThrow(() -> new ResourceNotFoundException("QuizAttempt not found with ID: " + quizAttemptId));
 
         // Validate that attempt can be completed
-        if (!"STARTED".equals(attempt.getStatus()) && !"IN_PROGRESS".equals(attempt.getStatus())) {
+        if (!"IN_PROGRESS".equals(attempt.getStatus())) {
             throw new ResourceNotValidException("Cannot complete quiz attempt with status: " + attempt.getStatus());
         }
 
@@ -228,11 +250,12 @@ public class QuizAttemptServiceImpl implements QuizAttemptService {
         attempt.setScoreDetails(scoreDetails);
         attempt.setUpdatedAt(LocalDateTime.now());
 
-        return quizAttemptRepository.save(attempt);
+        QuizAttempt savedAttempt = quizAttemptRepository.save(attempt);
+        return convertToOutDTO(savedAttempt);
     }
 
     @Override
-    public QuizAttempt abandonAttempt(Long quizAttemptId) {
+    public QuizAttemptOutDTO abandonAttempt(Long quizAttemptId) {
         log.info("Abandoning quiz attempt with ID: {}", quizAttemptId);
 
         if (quizAttemptId == null) {
@@ -243,7 +266,7 @@ public class QuizAttemptServiceImpl implements QuizAttemptService {
                 .orElseThrow(() -> new ResourceNotFoundException("QuizAttempt not found with ID: " + quizAttemptId));
 
         // Validate that attempt can be abandoned
-        if (!"STARTED".equals(attempt.getStatus()) && !"IN_PROGRESS".equals(attempt.getStatus())) {
+        if (!"IN_PROGRESS".equals(attempt.getStatus())) {
             throw new ResourceNotValidException("Cannot abandon quiz attempt with status: " + attempt.getStatus());
         }
 
@@ -251,11 +274,12 @@ public class QuizAttemptServiceImpl implements QuizAttemptService {
         attempt.setFinishedAt(LocalDateTime.now());
         attempt.setUpdatedAt(LocalDateTime.now());
 
-        return quizAttemptRepository.save(attempt);
+        QuizAttempt savedAttempt = quizAttemptRepository.save(attempt);
+        return convertToOutDTO(savedAttempt);
     }
 
     @Override
-    public QuizAttempt timeOutAttempt(Long quizAttemptId) {
+    public QuizAttemptOutDTO timeOutAttempt(Long quizAttemptId) {
         log.info("Timing out quiz attempt with ID: {}", quizAttemptId);
 
         if (quizAttemptId == null) {
@@ -266,7 +290,7 @@ public class QuizAttemptServiceImpl implements QuizAttemptService {
                 .orElseThrow(() -> new ResourceNotFoundException("QuizAttempt not found with ID: " + quizAttemptId));
 
         // Validate that attempt can be timed out
-        if (!"STARTED".equals(attempt.getStatus()) && !"IN_PROGRESS".equals(attempt.getStatus())) {
+        if (!"IN_PROGRESS".equals(attempt.getStatus())) {
             throw new ResourceNotValidException("Cannot time out quiz attempt with status: " + attempt.getStatus());
         }
 
@@ -274,7 +298,8 @@ public class QuizAttemptServiceImpl implements QuizAttemptService {
         attempt.setFinishedAt(LocalDateTime.now());
         attempt.setUpdatedAt(LocalDateTime.now());
 
-        return quizAttemptRepository.save(attempt);
+        QuizAttempt savedAttempt = quizAttemptRepository.save(attempt);
+        return convertToOutDTO(savedAttempt);
     }
 
     @Override
@@ -300,10 +325,28 @@ public class QuizAttemptServiceImpl implements QuizAttemptService {
     }
 
     /**
+     * Converts QuizAttempt entity to QuizAttemptOutDTO
+     */
+    private QuizAttemptOutDTO convertToOutDTO(QuizAttempt quizAttempt) {
+        QuizAttemptOutDTO dto = new QuizAttemptOutDTO();
+        dto.setQuizAttemptId(quizAttempt.getQuizAttemptId());
+        dto.setAttempt(quizAttempt.getAttempt());
+        dto.setQuizId(quizAttempt.getQuizId());
+        dto.setUserId(quizAttempt.getUserId());
+        dto.setStartedAt(quizAttempt.getStartedAt());
+        dto.setFinishedAt(quizAttempt.getFinishedAt());
+        dto.setScoreDetails(quizAttempt.getScoreDetails());
+        dto.setStatus(quizAttempt.getStatus());
+        dto.setCreatedAt(quizAttempt.getCreatedAt());
+        dto.setUpdatedAt(quizAttempt.getUpdatedAt());
+        return dto;
+    }
+
+    /**
      * Validates if the given status is valid
      */
     private boolean isValidStatus(String status) {
-        return status.equals("STARTED") || status.equals("IN_PROGRESS") ||
+        return status.equals("IN_PROGRESS") ||
                 status.equals("COMPLETED") || status.equals("ABANDONED") ||
                 status.equals("TIMED_OUT");
     }
@@ -313,12 +356,7 @@ public class QuizAttemptServiceImpl implements QuizAttemptService {
      */
     private boolean isInvalidStatusTransition(String currentStatus, String newStatus) {
         // Once completed, abandoned, or timed out, status cannot be changed
-        if ("COMPLETED".equals(currentStatus) || "ABANDONED".equals(currentStatus) ||
-                "TIMED_OUT".equals(currentStatus)) {
-            return true;
-        }
-
-        // Other transitions are generally valid
-        return false;
+        return "COMPLETED".equals(currentStatus) || "ABANDONED".equals(currentStatus) ||
+                "TIMED_OUT".equals(currentStatus);
     }
 }

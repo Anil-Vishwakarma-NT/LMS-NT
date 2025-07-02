@@ -82,7 +82,8 @@ public class CourseServiceImpl implements CourseService {
         Course course = findCourseByIdOrThrow(courseId);
         log.info("Course found: '{}'", course.getTitle());
 
-        return CourseConvertors.courseToCourseOutDTO(course);
+        CourseOutDTO courseOutDTO = CourseConvertors.courseToCourseOutDTO(course);
+        return courseOutDTO;
     }
 
 
