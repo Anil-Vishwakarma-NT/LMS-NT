@@ -56,6 +56,7 @@ public final class AdminController {
     @PostMapping("/register")
     public ResponseEntity<StandardResponseOutDTO> register(@Valid @RequestBody final RegisterDto registerDto) {
         log.info("Admin registration request received for: {}", registerDto.getEmail());
+
         StandardResponseOutDTO response = adminService.register(registerDto);
         log.info("Admin registered successfully: {}", registerDto.getEmail());
         return new ResponseEntity<>(response, HttpStatus.CREATED);
