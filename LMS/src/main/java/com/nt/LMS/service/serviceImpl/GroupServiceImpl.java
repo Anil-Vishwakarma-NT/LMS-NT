@@ -287,15 +287,17 @@ public class GroupServiceImpl implements GroupService {
 
             List<UserOutDTO> response = new ArrayList<>();
             for (UserGroup ug : userGroupList) {
-                User user = userRepository.findById(ug.getUserId())
-                        .orElseThrow(() -> new ResourceNotFoundException(USER_NOT_FOUND));
+                if (ug.is_active()) {
+                    User user = userRepository.findById(ug.getUserId())
+                            .orElseThrow(() -> new ResourceNotFoundException(USER_NOT_FOUND));
 
-                User manager = userRepository.findById(user.getManagerId())
-                        .orElseThrow(() -> new ResourceNotFoundException(USER_NOT_FOUND));
+                    User manager = userRepository.findById(user.getManagerId())
+                            .orElseThrow(() -> new ResourceNotFoundException(USER_NOT_FOUND));
 
-                UserOutDTO dto = userDTOConverter.userToOutDto(user,
-                        manager.getFirstName() + " " + manager.getLastName(),"employee");
-                response.add(dto);
+                    UserOutDTO dto = userDTOConverter.userToOutDto(user,
+                            manager.getFirstName() + " " + manager.getLastName(), "employee");
+                    response.add(dto);
+                }
             }
 
             return StandardResponseOutDTO.success(response,"Group Employee fetched successfully");
