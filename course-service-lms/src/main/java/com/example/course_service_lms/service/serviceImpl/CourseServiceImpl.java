@@ -77,13 +77,13 @@ public class CourseServiceImpl implements CourseService {
     }
 
     @Override
-    public Optional<CourseOutDTO> getCourseById(final Long courseId) {
+    public CourseOutDTO getCourseById(final Long courseId) {
         log.info("Fetching course by ID: {}", courseId);
         Course course = findCourseByIdOrThrow(courseId);
         log.info("Course found: '{}'", course.getTitle());
 
         CourseOutDTO courseOutDTO = CourseConvertors.courseToCourseOutDTO(course);
-        return Optional.of(courseOutDTO);
+        return courseOutDTO;
     }
 
 

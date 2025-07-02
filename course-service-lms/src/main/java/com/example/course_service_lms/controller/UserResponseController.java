@@ -33,16 +33,26 @@ public class UserResponseController {
      * Create a new user response
      */
     @PostMapping
-    public ResponseEntity<StandardResponseOutDTO<UserResponseOutDTO>> createUserResponse(
-            @Valid @RequestBody final UserResponseInDTO userResponseInDTO) {
-        log.info("Received request to create user response for user ID: {}, quiz ID: {}, question ID: {}",
-                userResponseInDTO.getUserId(), userResponseInDTO.getQuizId(), userResponseInDTO.getQuestionId());
+    public ResponseEntity<StandardResponseOutDTO<List<UserResponseOutDTO>>> createUserResponse(
+            @Valid @RequestBody final List<UserResponseInDTO> userResponseInDTOList) {
+        log.info("Received request to create user responses for {} questions", userResponseInDTOList.size());
 
-        UserResponseOutDTO createdUserResponse = userResponseService.createUserResponse(userResponseInDTO);
+        if (userResponseInDTOList.isEmpty()) {
+            log.warn("Empty user response list provided");
+            return ResponseEntity.badRequest()
+                    .body(StandardResponseOutDTO.error("User response list cannot be empty"));
+        }
 
-        log.info("User response created successfully with ID: {}", createdUserResponse.getResponseId());
+        UserResponseInDTO firstResponse = userResponseInDTOList.get(0);
+        log.info("Processing responses for user ID: {}, quiz ID: {}",
+                firstResponse.getUserId(), firstResponse.getQuizId());
+
+        List<UserResponseOutDTO> createdUserResponses = userResponseService.createUserResponse(userResponseInDTOList);
+
+        log.info("User responses created successfully. Total responses: {}", createdUserResponses.size());
         return ResponseEntity.status(HttpStatus.CREATED)
-                .body(StandardResponseOutDTO.success(createdUserResponse, "User response created successfully"));
+                .body(StandardResponseOutDTO.success(createdUserResponses,
+                        String.format("Successfully created %d user responses", createdUserResponses.size())));
     }
 
     /**

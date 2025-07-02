@@ -1,5 +1,6 @@
 package com.nt.LMS.service;
 
+import com.nt.LMS.dto.inDTO.GroupInDTO;
 import com.nt.LMS.dto.outDTO.*;
 
 import java.util.List;
@@ -16,7 +17,7 @@ public interface GroupService {
      * @param username The username of the creator.
      * @return A MessageOutDto indicating the result of the operation.
      */
-    StandardResponseOutDTO<MessageOutDto> createGroup(String groupName, String username);
+    StandardResponseOutDTO<MessageOutDto> createGroup(String groupName, String username ,List<Long> employeeId);
 
     /**
      * Deletes a group.
@@ -29,11 +30,13 @@ public interface GroupService {
     /**
      * Adds a user to a group.
      *
-     * @param userId The ID of the user to be added.
+     * @param employees The ID of the user to be added.
      * @param groupId The ID of the group to add the user to.
      * @return A MessageOutDto indicating the result of the operation.
      */
-    StandardResponseOutDTO<MessageOutDto> addUserToGroup(long userId, long groupId);
+    StandardResponseOutDTO<MessageOutDto> addUserToGroup(GroupInDTO groupInDTO ,String username);
+
+    StandardResponseOutDTO<MessageOutDto> updateGroup (long groupId , String groupName);
 
     /**
      * Removes a user from a group.
@@ -75,4 +78,9 @@ public interface GroupService {
      * @return a list containing summaries of the most recently created groups with member counts
      */
     StandardResponseOutDTO<List<GroupSummaryOutDTO>> getRecentGroupSummaries();
+
+
+    StandardResponseOutDTO<List<GroupCourseOutDTO>> getCourseDetail(long groupId);
+    public StandardResponseOutDTO<List<GroupUserOutDTO>> getUserDetail(long groupId);
+
 }

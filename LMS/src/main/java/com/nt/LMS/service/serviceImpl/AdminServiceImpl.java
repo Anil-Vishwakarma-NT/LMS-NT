@@ -242,9 +242,6 @@ public final class AdminServiceImpl implements AdminService {
         }
     }
 
-
-
-
     /**
      * Changes a user's role.
      *

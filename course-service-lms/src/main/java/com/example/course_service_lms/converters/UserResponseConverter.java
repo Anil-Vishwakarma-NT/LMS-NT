@@ -34,8 +34,6 @@ public class UserResponseConverter {
         entity.setQuestionId(inDTO.getQuestionId());
         entity.setAttempt(inDTO.getAttempt());
         entity.setUserAnswer(inDTO.getUserAnswer());
-        entity.setIsCorrect(inDTO.getIsCorrect());
-        entity.setPointsEarned(inDTO.getPointsEarned());
         entity.setTimeSpent(inDTO.getTimeSpent());
         entity.setAnsweredAt(inDTO.getAnsweredAt() != null ? inDTO.getAnsweredAt() : LocalDateTime.now());
 

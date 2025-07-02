@@ -84,7 +84,7 @@ public final class AdminController {
      * @return list of all employees
      */
     @GetMapping("/active-employees")
-//    @PreAuthorize("hasAuthority('admin')")
+    @PreAuthorize("hasAuthority('admin')")
     public ResponseEntity<StandardResponseOutDTO<List<UserOutDTO>>> getAllEmployees() {
         log.info("Fetching all employees");
         StandardResponseOutDTO<List<UserOutDTO>> response = adminService.getAllActiveUsers();
@@ -144,13 +144,13 @@ public final class AdminController {
         return new ResponseEntity<>(standardResponseOutDTO,HttpStatus.OK);
     }
 
-    @PutMapping("/update-user/{userId}")
-//    @PreAuthorize("hasAuthority('admin')")
-    public ResponseEntity<MessageOutDto> updateUser(@PathVariable final long userId , @RequestBody final UserInDTO registerDto){
+    @PatchMapping("/update-user/{userId}")
+    @PreAuthorize("hasAuthority('admin')")
+    public ResponseEntity<MessageOutDto> updateUser(@PathVariable final long userId , @RequestBody final UserInDTO userInDTO){
 
         log.info("Received request to update user details");
         return new ResponseEntity<>(
-                adminService.updateUserDetails(registerDto,userId),
+                adminService.updateUserDetails(userInDTO,userId),
                 HttpStatus.OK
         );
     }

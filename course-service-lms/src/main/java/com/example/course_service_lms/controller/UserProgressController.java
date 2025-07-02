@@ -35,6 +35,7 @@ public class UserProgressController {
         return userProgressService.getContentProgress(userId, courseId, contentId);
     }
 
+
 }
 
 

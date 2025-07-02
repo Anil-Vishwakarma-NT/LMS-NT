@@ -2,6 +2,7 @@ package com.example.course_service_lms.service;
 
 import com.example.course_service_lms.dto.inDTO.QuizAttemptCreateInDTO;
 import com.example.course_service_lms.dto.inDTO.QuizAttemptUpdateInDTO;
+import com.example.course_service_lms.dto.outDTO.QuizAttemptOutDTO;
 import com.example.course_service_lms.entity.QuizAttempt;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -17,47 +18,47 @@ public interface QuizAttemptService {
     /**
      * Create a new quiz attempt
      */
-    QuizAttempt createQuizAttempt(QuizAttemptCreateInDTO dto);
+    QuizAttemptOutDTO createQuizAttempt(QuizAttemptCreateInDTO dto);
 
     /**
      * Update an existing quiz attempt
      */
-    QuizAttempt updateQuizAttempt(Long quizAttemptId, QuizAttemptUpdateInDTO dto);
+    QuizAttemptOutDTO updateQuizAttempt(Long quizAttemptId, QuizAttemptUpdateInDTO dto);
 
     /**
      * Get quiz attempt by ID
      */
-    Optional<QuizAttempt> getQuizAttemptById(Long quizAttemptId);
+    Optional<QuizAttemptOutDTO> getQuizAttemptById(Long quizAttemptId);
 
     /**
      * Get all quiz attempts with pagination
      */
-    Page<QuizAttempt> getAllQuizAttempts(Pageable pageable);
+    Page<QuizAttemptOutDTO> getAllQuizAttempts(Pageable pageable);
 
     /**
      * Get quiz attempts by user ID
      */
-    List<QuizAttempt> getQuizAttemptsByUserId(Long userId);
+    List<QuizAttemptOutDTO> getQuizAttemptsByUserId(Long userId);
 
     /**
      * Get quiz attempts by quiz ID
      */
-    List<QuizAttempt> getQuizAttemptsByQuizId(Long quizId);
+    List<QuizAttemptOutDTO> getQuizAttemptsByQuizId(Long quizId);
 
     /**
      * Get quiz attempts by user and quiz
      */
-    List<QuizAttempt> getQuizAttemptsByUserAndQuiz(Long userId, Long quizId);
+    List<QuizAttemptOutDTO> getQuizAttemptsByUserAndQuiz(Long userId, Long quizId);
 
     /**
      * Get quiz attempts by status
      */
-    List<QuizAttempt> getQuizAttemptsByStatus(String status);
+    List<QuizAttemptOutDTO> getQuizAttemptsByStatus(String status);
 
     /**
      * Get latest attempt for a user and quiz
      */
-    Optional<QuizAttempt> getLatestAttemptByUserAndQuiz(Long userId, Long quizId);
+    Optional<QuizAttemptOutDTO> getLatestAttemptByUserAndQuiz(Long userId, Long quizId);
 
     /**
      * Delete quiz attempt by ID
@@ -67,17 +68,17 @@ public interface QuizAttemptService {
     /**
      * Mark attempt as completed
      */
-    QuizAttempt completeAttempt(Long quizAttemptId, String scoreDetails);
+    QuizAttemptOutDTO completeAttempt(Long quizAttemptId, String scoreDetails);
 
     /**
      * Mark attempt as abandoned
      */
-    QuizAttempt abandonAttempt(Long quizAttemptId);
+    QuizAttemptOutDTO abandonAttempt(Long quizAttemptId);
 
     /**
      * Mark attempt as timed out
      */
-    QuizAttempt timeOutAttempt(Long quizAttemptId);
+    QuizAttemptOutDTO timeOutAttempt(Long quizAttemptId);
 
     /**
      * Check if attempt exists

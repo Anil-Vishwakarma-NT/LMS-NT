@@ -79,10 +79,10 @@ public class CourseControllerTest {
 
         when(courseService.getCourseById(1L)).thenReturn(Optional.of(course));
 
-        ResponseEntity<Optional<Course>> response = courseController.getCourseById(1L);
+        ResponseEntity<CourseOutDTO> response = courseController.getCourseById(1L);
 
         assertEquals(200, response.getStatusCodeValue());
-        assertTrue(response.getBody().isPresent());
+        assertTrue(response.getBody() != null);
         assertEquals("Spring Security", response.getBody().get().getTitle());
     }
 
