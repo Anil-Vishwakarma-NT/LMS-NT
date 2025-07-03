@@ -36,7 +36,7 @@ public class QuizAttemptController {
         log.info("REST request to create QuizAttempt for user: {} and quiz: {}", dto.getUserId(), dto.getQuizId());
 
         QuizAttemptOutDTO createdAttempt = quizAttemptService.createQuizAttempt(dto);
-        return new ResponseEntity<>(createdAttempt, HttpStatus.CREATED);
+        return new ResponseEntity<>(createdAttempt, HttpStatus.OK);
     }
 
     /**

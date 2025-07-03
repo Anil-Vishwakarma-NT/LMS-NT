@@ -55,8 +55,15 @@ public interface QuizAttemptRepository extends JpaRepository<QuizAttempt, Long> 
     /**
      * Check if user has any active attempts for a quiz
      */
-    @Query("SELECT COUNT(qa) > 0 FROM QuizAttempt qa WHERE qa.userId = :userId AND qa.quizId = :quizId AND qa.status IN ('STARTED', 'IN_PROGRESS')")
+    @Query("SELECT COUNT(qa) > 0 FROM QuizAttempt qa WHERE qa.userId = :userId AND qa.quizId = :quizId AND qa.status IN ('IN_PROGRESS')")
     boolean hasActiveAttempt(@Param("userId") Long userId, @Param("quizId") Long quizId);
 
     QuizAttempt findTopByUserIdAndQuizIdOrderByAttemptDesc(Long userId, Long quizId);
+
+    /**
+     * Find the single active attempt for a user and quiz
+     * Since there's only one active attempt per user per quiz, this returns Optional<QuizAttempt>
+     */
+    @Query("SELECT qa FROM QuizAttempt qa WHERE qa.userId = :userId AND qa.quizId = :quizId AND qa.status IN ('IN_PROGRESS')")
+    Optional<QuizAttempt> findActiveAttemptByUserAndQuiz(@Param("userId") Long userId, @Param("quizId") Long quizId);
 }
