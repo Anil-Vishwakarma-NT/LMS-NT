@@ -1,6 +1,9 @@
 package com.nt.LMS.service;
 
 import com.nt.LMS.dto.UsersDetailsViewDTO;
+import com.nt.LMS.dto.outDTO.CourseDeadlinesDTO;
+import com.nt.LMS.dto.outDTO.CourseInfoOutDTO;
+import com.nt.LMS.dto.outDTO.StandardResponseOutDTO;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
@@ -16,4 +19,6 @@ public interface UserService extends UserDetailsService {
     List<UsersDetailsViewDTO> getRecentUserDetails();
 
     public Map<String , Long> userStatistics(long userId);
+
+    StandardResponseOutDTO<List<CourseDeadlinesDTO>> deadlineCourses(String email);
 }

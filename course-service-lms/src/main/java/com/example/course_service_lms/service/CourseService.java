@@ -40,7 +40,7 @@ public interface CourseService {
      * @param courseId the ID of the course to retrieve
      * @return an {@link Optional} containing the course if found, or empty if not
      */
-    CourseOutDTO getCourseById(Long courseId);
+    CourseInfoOutDTO getCourseById(Long courseId);
 
     String getCourseNameById(Long courseId);
 
