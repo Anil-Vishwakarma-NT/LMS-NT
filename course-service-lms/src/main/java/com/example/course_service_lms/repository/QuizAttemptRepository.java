@@ -57,4 +57,6 @@ public interface QuizAttemptRepository extends JpaRepository<QuizAttempt, Long> 
      */
     @Query("SELECT COUNT(qa) > 0 FROM QuizAttempt qa WHERE qa.userId = :userId AND qa.quizId = :quizId AND qa.status IN ('STARTED', 'IN_PROGRESS')")
     boolean hasActiveAttempt(@Param("userId") Long userId, @Param("quizId") Long quizId);
+
+    QuizAttempt findTopByUserIdAndQuizIdOrderByAttemptDesc(Long userId, Long quizId);
 }
