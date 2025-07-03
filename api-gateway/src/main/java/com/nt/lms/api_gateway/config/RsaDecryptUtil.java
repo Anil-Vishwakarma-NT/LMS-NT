@@ -1,4 +1,4 @@
-package com.nt.LMS.config;
+package com.nt.lms.api_gateway.config;
 
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;

@@ -9,7 +9,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
-@FeignClient(name = "course-service", url = "http://localhost:8080/api",configuration = FeignTokenInterceptor.class)
+@FeignClient(name = "course-service", url = "http://localhost:8080/api/service-api",configuration = FeignTokenInterceptor.class)
 public interface CourseMicroserviceClient {
 
     @GetMapping("/course/{id}/exists")

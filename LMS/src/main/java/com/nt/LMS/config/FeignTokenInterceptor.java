@@ -37,7 +37,7 @@ public class FeignTokenInterceptor implements RequestInterceptor {
             ServicePrincipal principal = (ServicePrincipal) authentication.getPrincipal();
 
             try {
-                String targetService = "product-service";
+                String targetService = "course-service";
 
                 if (targetService != null) {
                     String currentToken = getCurrentServiceToken();
