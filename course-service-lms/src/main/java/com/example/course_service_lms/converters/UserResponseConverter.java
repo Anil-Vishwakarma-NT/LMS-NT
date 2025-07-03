@@ -34,7 +34,6 @@ public class UserResponseConverter {
         entity.setQuestionId(inDTO.getQuestionId());
         entity.setAttempt(inDTO.getAttempt());
         entity.setUserAnswer(inDTO.getUserAnswer());
-        entity.setTimeSpent(inDTO.getTimeSpent());
         entity.setAnsweredAt(inDTO.getAnsweredAt() != null ? inDTO.getAnsweredAt() : LocalDateTime.now());
 
         return entity;
@@ -60,7 +59,6 @@ public class UserResponseConverter {
                 entity.getUserAnswer(),
                 entity.getIsCorrect(),
                 entity.getPointsEarned(),
-                entity.getTimeSpent(),
                 entity.getAnsweredAt()
         );
     }
@@ -80,7 +78,6 @@ public class UserResponseConverter {
         entity.setUserAnswer(updateDTO.getUserAnswer());
         entity.setIsCorrect(updateDTO.getIsCorrect());
         entity.setPointsEarned(updateDTO.getPointsEarned());
-        entity.setTimeSpent(updateDTO.getTimeSpent());
 
         if (updateDTO.getAnsweredAt() != null) {
             entity.setAnsweredAt(updateDTO.getAnsweredAt());

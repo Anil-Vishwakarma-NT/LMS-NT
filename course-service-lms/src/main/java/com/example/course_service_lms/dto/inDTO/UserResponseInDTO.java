@@ -61,13 +61,6 @@ public class UserResponseInDTO {
     private String userAnswer;
 
     /**
-     * Time spent on this question in seconds.
-     * Optional field, can be null if time tracking is not required.
-     */
-    @Min(value = 0, message = "Time spent cannot be negative")
-    private Long timeSpent;
-
-    /**
      * Timestamp when the answer was submitted.
      * If not provided, will be set to current time during processing.
      */
@@ -87,18 +80,15 @@ public class UserResponseInDTO {
      * @param questionId    the ID of the question
      * @param attempt       the attempt number
      * @param userAnswer    the user's answer in JSON format
-     * @param timeSpent     time spent on the question in seconds
      * @param answeredAt    timestamp when answered
      */
     public UserResponseInDTO(Long userId, Long quizId, Long questionId, Long attempt,
-                             String userAnswer,
-                             Long timeSpent, LocalDateTime answeredAt) {
+                             String userAnswer, LocalDateTime answeredAt) {
         this.userId = userId;
         this.quizId = quizId;
         this.questionId = questionId;
         this.attempt = attempt;
         this.userAnswer = userAnswer;
-        this.timeSpent = timeSpent;
         this.answeredAt = answeredAt;
     }
 }
