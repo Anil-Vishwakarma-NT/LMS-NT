@@ -48,4 +48,7 @@ public interface CourseMicroserviceClient {
     @GetMapping("user-progress/meta")
     public CourseProgressWithMetaDTO getCourseProgressWithMeta(@RequestParam int userId, @RequestParam int courseId);
 
-  }
+    @GetMapping("/course/{id}")
+    public ResponseEntity<StandardResponseOutDTO<CourseInfoOutDTO>> getCourseById(@PathVariable final Long id) ;
+
+    }

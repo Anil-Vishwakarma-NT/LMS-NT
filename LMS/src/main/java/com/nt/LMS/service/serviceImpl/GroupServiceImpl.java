@@ -174,18 +174,24 @@ public class GroupServiceImpl implements GroupService {
             if(!groupInDTO.getCourses().isEmpty()){
                 for(Long courseId : groupInDTO.getCourses()) {
                     for(Long userId:groupInDTO.getEmployees()) {
-                        Enrollment enrol = new Enrollment();
-                        enrol.setGroupId(groupInDTO.getGroupId());
-                        enrol.setUserId(userId);
-                        enrol.setCourseId(courseId);
-                        enrol.setAssignedBy(user.getUserId());
-                        enrol.setAssignedAt(groupInDTO.getAssignedAt());
-                        enrol.setDeadline(groupInDTO.getDeadline());
-                        enrol.setStatus("active");
-                        enrol.setEnrollmentSource("GROUP");
-                        enrol.setCreatedAt(groupInDTO.getAssignedAt());
-                        enrol.setUpdatedAt(groupInDTO.getAssignedAt());
-                        enrollmentRepository.save(enrol);
+                        Optional<Enrollment> existing = enrollmentRepository.findByGroupIdAndUserIdAndCourseId(groupInDTO.getGroupId(), userId, courseId);
+                        if (existing.isPresent()) {
+                            existing.get().setActive(true);
+                            enrollmentRepository.save(existing.get());
+                        } else {
+                            Enrollment enrol = new Enrollment();
+                            enrol.setGroupId(groupInDTO.getGroupId());
+                            enrol.setUserId(userId);
+                            enrol.setCourseId(courseId);
+                            enrol.setAssignedBy(user.getUserId());
+                            enrol.setAssignedAt(groupInDTO.getAssignedAt());
+                            enrol.setDeadline(groupInDTO.getDeadline());
+                            enrol.setStatus("active");
+                            enrol.setEnrollmentSource("GROUP");
+                            enrol.setCreatedAt(groupInDTO.getAssignedAt());
+                            enrol.setUpdatedAt(groupInDTO.getAssignedAt());
+                            enrollmentRepository.save(enrol);
+                        }
                     }
                 }
             }
@@ -234,6 +240,7 @@ public class GroupServiceImpl implements GroupService {
                     .orElseThrow(() -> new ResourceNotFoundException(USER_NOT_FOUND_IN_GROUP));
 
             userGroupRepository.softDeleteByGroupIdAndUserId(userGroup.getGroupId(),userGroup.getUserId());
+            enrollmentRepository.softDeleteByGroupIdAndUserId(userGroup.getGroupId(),userGroup.getUserId());
             MessageOutDto messageOutDto = new MessageOutDto(USER_REMOVED_SUCCESSFULLY);
             return StandardResponseOutDTO.success(messageOutDto,null);
         } catch (Exception e) {
@@ -245,17 +252,20 @@ public class GroupServiceImpl implements GroupService {
     public StandardResponseOutDTO<List<CourseInfoOutDTO>> getUserCourses(final long groupId, final long userId ){
         try{
             List<Enrollment> enrols = enrollmentRepository.findByGroupIdAndUserId(groupId,userId);
-            System.out.println("Enrols has values    " + enrols.isEmpty() + " " + groupId + "  " + userId);
+            System.out.println("Enrols has values  " + enrols.isEmpty() + " " + groupId + "  " + userId);
             log.info("enrols fetched");
             List<CourseInfoOutDTO> courses = courseMicroserviceClient.getCourseInfo().getBody().getData();
-
+            List<Enrollment> groupcourses = enrollmentRepository.findByGroupId(groupId);
             log.info("courses fetched");
             Set<Long> enrolledCourseIds = enrols.stream()
                     .map(Enrollment::getCourseId)
                     .collect(Collectors.toSet());
+            Set<Long> enrolledGroupCourseIds = groupcourses.stream()
+                    .map(Enrollment::getCourseId)
+                    .collect(Collectors.toSet());
             log.info("enrolled courses  fetched");
             List<CourseInfoOutDTO> notEnrolledCourses = courses.stream()
-                    .filter(course -> !enrolledCourseIds.contains(course.getCourseId()))
+                    .filter(course -> !enrolledCourseIds.contains(course.getCourseId()) && enrolledGroupCourseIds.contains(course.getCourseId()))
                     .collect(Collectors.toList());
 
             return  StandardResponseOutDTO.success(notEnrolledCourses , null);
@@ -268,42 +278,7 @@ public class GroupServiceImpl implements GroupService {
 
 
 
-    /**
-     * Gets all users in a group.
-     *
-     * @param groupId the group ID
-     * @return list of users
-     */
-    @Override
-    public StandardResponseOutDTO<List<UserOutDTO>> getUsersInGroup(final long groupId) {
-        try {
-            Group group = groupRepository.findById(groupId)
-                    .orElseThrow(() -> new ResourceNotFoundException(GROUP_NOT_FOUND));
 
-            List<UserGroup> userGroupList = userGroupRepository.findAllByGroupId(groupId);
-            if (userGroupList.isEmpty()) {
-                return StandardResponseOutDTO.success(Collections.emptyList(), USER_NOT_FOUND_IN_GROUP);
-            }
-
-            List<UserOutDTO> response = new ArrayList<>();
-            for (UserGroup ug : userGroupList) {
-                User user = userRepository.findById(ug.getUserId())
-                        .orElseThrow(() -> new ResourceNotFoundException(USER_NOT_FOUND));
-
-                User manager = userRepository.findById(user.getManagerId())
-                        .orElseThrow(() -> new ResourceNotFoundException(USER_NOT_FOUND));
-
-                UserOutDTO dto = userDTOConverter.userToOutDto(user,
-                        manager.getFirstName() + " " + manager.getLastName(),"employee");
-                response.add(dto);
-            }
-
-            return StandardResponseOutDTO.success(response,"Group Employee fetched successfully");
-        } catch (Exception e) {
-            log.error("Error fetching users in group ID: {}", groupId, e);
-            throw new RuntimeException(GROUP_FAILURE + groupId, e);
-        }
-    }
 
     /**
      * Gets groups created by a user or assigned by admin.
@@ -423,17 +398,19 @@ public class GroupServiceImpl implements GroupService {
 
         Map<Long , GroupCourseOutDTO > mp = new HashMap<>();
 
-        for (Enrollment en : enrols){
-            String courseName = courseMicroserviceClient.getCourseNameById(en.getCourseId()).getBody();
-            GroupCourseOutDTO gc = mp.getOrDefault(en.getCourseId(),new GroupCourseOutDTO());
-            long totalenrols = gc.getEnrols()+1;
-            double userprogress = courseMicroserviceClient.getCourseProgressWithMeta( en.getUserId().intValue() ,en.getCourseId().intValue()).getCourseCompletionPercentage();
-            double progress = ((gc.getProgress()*gc.getEnrols())+ userprogress)/totalenrols;
-            gc.setCourseName(courseName);
-            gc.setCourseId(en.getCourseId());
-            gc.setEnrols(totalenrols);
-            gc.setProgress(progress);
-            mp.put(en.getCourseId(),gc);
+        for (Enrollment en : enrols) {
+            if (en.getIsActive()) {
+                String courseName = courseMicroserviceClient.getCourseNameById(en.getCourseId()).getBody();
+                GroupCourseOutDTO gc = mp.getOrDefault(en.getCourseId(), new GroupCourseOutDTO());
+                long totalenrols = gc.getEnrols() + 1;
+                double userprogress = courseMicroserviceClient.getCourseProgressWithMeta(en.getUserId().intValue(), en.getCourseId().intValue()).getCourseCompletionPercentage();
+                double progress = ((gc.getProgress() * gc.getEnrols()) + userprogress) / totalenrols;
+                gc.setCourseName(courseName);
+                gc.setCourseId(en.getCourseId());
+                gc.setEnrols(totalenrols);
+                gc.setProgress(progress);
+                mp.put(en.getCourseId(), gc);
+            }
         }
 
 
@@ -449,18 +426,20 @@ public class GroupServiceImpl implements GroupService {
 
         Map<Long , GroupUserOutDTO > mp = new HashMap<>();
 
-        for (Enrollment en : enrols){
-            Optional<User> usr = userRepository.findById(en.getUserId());
-            GroupUserOutDTO uc = mp.getOrDefault(en.getUserId(),new GroupUserOutDTO());
-            long totalenrols = uc.getEnrols()+1;
-            double userprogress = courseMicroserviceClient.getCourseProgressWithMeta( en.getUserId().intValue() ,en.getCourseId().intValue()).getCourseCompletionPercentage();
-            double progress = ((uc.getProgress()*uc.getEnrols())+ userprogress)/totalenrols;
-            uc.setFirstName(usr.get().getFirstName());
-            uc.setLastName(usr.get().getLastName());
-            uc.setUserId(en.getUserId());
-            uc.setEnrols(totalenrols);
-            uc.setProgress(progress);
-            mp.put(en.getUserId(),uc);
+        for (Enrollment en : enrols) {
+            if (en.getIsActive()) {
+                Optional<User> usr = userRepository.findById(en.getUserId());
+                GroupUserOutDTO uc = mp.getOrDefault(en.getUserId(), new GroupUserOutDTO());
+                long totalenrols = uc.getEnrols() + 1;
+                double userprogress = courseMicroserviceClient.getCourseProgressWithMeta(en.getUserId().intValue(), en.getCourseId().intValue()).getCourseCompletionPercentage();
+                double progress = ((uc.getProgress() * uc.getEnrols()) + userprogress) / totalenrols;
+                uc.setFirstName(usr.get().getFirstName());
+                uc.setLastName(usr.get().getLastName());
+                uc.setUserId(en.getUserId());
+                uc.setEnrols(totalenrols);
+                uc.setProgress(progress);
+                mp.put(en.getUserId(), uc);
+            }
         }
 
         for(UserGroup user : usrgrp){

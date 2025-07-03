@@ -53,7 +53,7 @@ public interface GroupService {
      * @param groupId The ID of the group to fetch users from.
      * @return A list of UserOutDTO representing the users in the group.
      */
-    StandardResponseOutDTO<List<UserOutDTO>> getUsersInGroup(long groupId);
+//    StandardResponseOutDTO<List<UserOutDTO>> getUsersInGroup(long groupId);
 
     /**
      * Retrieves all groups associated with a specific email.
