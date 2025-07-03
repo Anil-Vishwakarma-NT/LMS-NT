@@ -1,7 +1,10 @@
 package com.nt.LMS.controller;
 
+import com.nt.LMS.config.ServicePrincipal;
 import com.nt.LMS.dto.inDTO.GroupInDTO;
 import com.nt.LMS.dto.outDTO.*;
+import com.nt.LMS.exception.ResourceNotFoundException;
+import com.nt.LMS.exception.UnauthorizedAccessException;
 import com.nt.LMS.repository.UserRepository;
 import com.nt.LMS.service.EnrollmentsService;
 import com.nt.LMS.service.serviceImpl.GroupServiceImpl;
@@ -21,7 +24,7 @@ import java.util.List;
  * Controller for handling group-related operations.
  */
 @RestController
-@RequestMapping("api/service-api/group")
+@RequestMapping("/api/service-api/group")
 @Slf4j
 public final class GroupController {
 
@@ -45,7 +48,12 @@ public final class GroupController {
     @PostMapping("/create-group")
     public ResponseEntity<StandardResponseOutDTO<MessageOutDto>> createGroup(@Valid @RequestBody final GroupInDTO groupInDTO) {  // alag alag dto
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        String username = authentication.getName();
+
+        if (!(authentication.getPrincipal() instanceof ServicePrincipal principal)) {
+            throw new UnauthorizedAccessException("Authentication failed");
+        }
+
+        String username = principal.getUserEmail();
         log.info("Attempting to create a group with name: {}", groupInDTO.getGroupName());
         StandardResponseOutDTO<MessageOutDto> response = groupService.createGroup(groupInDTO.getGroupName(), username ,groupInDTO.getEmployees());
         return new ResponseEntity<>(response, HttpStatus.CREATED);
@@ -88,7 +96,12 @@ public final class GroupController {
     public ResponseEntity<StandardResponseOutDTO<MessageOutDto>> addUserToGroup(@Valid @RequestBody  GroupInDTO groupInDTO) {
         log.info("Attempting to add user with ID: to group with ID: {}", groupInDTO.getGroupId());
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        String username = authentication.getName();
+
+        if (!(authentication.getPrincipal() instanceof ServicePrincipal principal)) {
+            throw new UnauthorizedAccessException("Authentication failed");
+        }
+
+        String username = principal.getUserEmail();
         StandardResponseOutDTO<MessageOutDto> response = groupService.addUserToGroup(groupInDTO ,username );
         return new ResponseEntity<>(response, HttpStatus.OK);
     }
@@ -141,17 +154,21 @@ public final class GroupController {
     @GetMapping("/groups")
     public ResponseEntity<StandardResponseOutDTO<List<GroupOutDTO>>> getGroups() {                  // change group/groups to group
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        String username = authentication.getName();
 
-        log.info("Fetching groups for user: {}", username);
-        StandardResponseOutDTO<List<GroupOutDTO>> response = groupService.getGroups(username);
+        if (!(authentication.getPrincipal() instanceof ServicePrincipal principal)) {
+            throw new UnauthorizedAccessException("Authentication failed");
+        }
+
+        String email = principal.getUserEmail();
+        log.info("Fetching groups for user: {}", email);
+        StandardResponseOutDTO<List<GroupOutDTO>> response = groupService.getGroups(email);
 
         if (response.getData().isEmpty()) {
-            log.warn("No groups found for user: {}", username);
+            log.warn("No groups found for user: {}", email);
             return new ResponseEntity<>(response, HttpStatus.NO_CONTENT);
         }
 
-        log.info("Found {} groups for user: {}", response.getData().size(), username);
+        log.info("Found {} groups for user: {}", response.getData().size(), email);
         return new ResponseEntity<>(response,HttpStatus.OK);
     }
 
