@@ -11,6 +11,8 @@ public class QuizAttemptOutDTO {
 
     private Long attempt;
 
+    private Long attemptsLeft;
+
     private Long quizId;
 
     private Long userId;

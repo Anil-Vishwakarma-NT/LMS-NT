@@ -3,6 +3,7 @@ package com.example.course_service_lms.service.serviceImpl;
 import com.example.course_service_lms.dto.inDTO.QuizAttemptCreateInDTO;
 import com.example.course_service_lms.dto.inDTO.QuizAttemptUpdateInDTO;
 import com.example.course_service_lms.dto.outDTO.QuizAttemptOutDTO;
+import com.example.course_service_lms.dto.outDTO.QuizQuestionOutDTO;
 import com.example.course_service_lms.entity.Quiz;
 import com.example.course_service_lms.entity.QuizAttempt;
 import com.example.course_service_lms.exception.ResourceAlreadyExistsException;
@@ -77,7 +78,9 @@ public class QuizAttemptServiceImpl implements QuizAttemptService {
 
         QuizAttempt savedAttempt = quizAttemptRepository.save(quizAttempt);
         log.info("Created quiz attempt with ID: {} (attempt number: {})", savedAttempt.getQuizAttemptId(), nextAttemptNumber);
-        return convertToOutDTO(savedAttempt);
+        QuizAttemptOutDTO quizAttemptOutDTO = convertToOutDTO(savedAttempt);
+        quizAttemptOutDTO.setAttemptsLeft(quiz.getAttemptsAllowed() - quizAttempt.getAttempt());
+        return quizAttemptOutDTO;
     }
 
     @Override
