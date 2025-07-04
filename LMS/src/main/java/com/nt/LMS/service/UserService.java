@@ -1,6 +1,7 @@
 package com.nt.LMS.service;
 
 import com.nt.LMS.dto.UsersDetailsViewDTO;
+import com.nt.LMS.dto.outDTO.UserCourseEnrollDetails;
 import com.nt.LMS.entities.User;
 import com.nt.LMS.dto.outDTO.CourseDeadlinesDTO;
 import com.nt.LMS.dto.outDTO.CourseInfoOutDTO;
@@ -22,6 +23,8 @@ public interface UserService extends UserDetailsService {
     public Map<String , Long> userStatistics(long userId);
 
     StandardResponseOutDTO<List<CourseDeadlinesDTO>> deadlineCourses(String email);
+
+    public List<UserCourseEnrollDetails> getUserEnrolledCourses(Long userId);
 }
 
 

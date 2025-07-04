@@ -69,6 +69,7 @@ public class EnrollmentController {
 
     @GetMapping("/userCourses/{userId}")
     public ResponseEntity<StandardResponseOutDTO<List<UserCourseEnrollDetails>>> getEnrolledCoursesByUserId(@PathVariable Long userId) {
+        System.out.println(userId);
         List<UserCourseEnrollDetails> enrolledCourses = enrollmentService.getUserEnrolledCourses(userId);
         return ResponseEntity.ok(StandardResponseOutDTO.success(enrolledCourses, "Fetched enrolled courses successfully"));
     }
