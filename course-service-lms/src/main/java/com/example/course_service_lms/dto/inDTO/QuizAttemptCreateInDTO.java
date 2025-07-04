@@ -10,10 +10,6 @@ import lombok.Data;
 @Data
 public class QuizAttemptCreateInDTO {
 
-    @NotNull(message = "Attempt number is required")
-    @Positive(message = "Attempt number must be positive")
-    private Long attempt;
-
     @NotNull(message = "Quiz ID is required")
     @Positive(message = "Quiz ID must be positive")
     private Long quizId;
