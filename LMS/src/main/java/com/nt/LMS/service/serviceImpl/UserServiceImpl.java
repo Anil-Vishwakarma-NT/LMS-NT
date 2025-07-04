@@ -1,10 +1,14 @@
 package com.nt.LMS.service.serviceImpl;
 
-import com.nt.LMS.constants.UserConstants;
 import com.nt.LMS.dto.UsersDetailsViewDTO;
+import com.nt.LMS.dto.outDTO.CourseDeadlinesDTO;
+import com.nt.LMS.dto.outDTO.CourseInfoOutDTO;
+import com.nt.LMS.dto.outDTO.StandardResponseOutDTO;
 import com.nt.LMS.entities.Enrollment;
 import com.nt.LMS.entities.Role;
 import com.nt.LMS.entities.User;
+import com.nt.LMS.exception.ResourceNotFoundException;
+import com.nt.LMS.feignClient.CourseMicroserviceClient;
 import com.nt.LMS.repository.EnrollmentRepository;
 import com.nt.LMS.repository.RoleRepository;
 import com.nt.LMS.repository.UserGroupRepository;
@@ -16,8 +20,11 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 import java.sql.Timestamp;
+import java.time.LocalDate;
 import java.util.*;
 import java.util.stream.Collectors;
+
+import static com.nt.LMS.constants.UserConstants.USER_NOT_FOUND;
 
 
 /**
@@ -49,6 +56,10 @@ public final class UserServiceImpl implements UserService {  // Made the class f
 
     @Autowired
     private UserGroupRepository userGroupRepository;
+
+
+    @Autowired
+    private CourseMicroserviceClient courseMicroserviceClient;
     /**
      * Loads the user details based on the provided email.
      * It retrieves the user and their associated role, and then constructs a UserDetails object
@@ -62,7 +73,7 @@ public final class UserServiceImpl implements UserService {  // Made the class f
     public UserDetails loadUserByUsername(final String email) throws UsernameNotFoundException {  // Marked email as final
         // Fetch the user by email
         User user = userRepository.findByEmailIgnoreCase(email)
-                .orElseThrow(() -> new UsernameNotFoundException(UserConstants.USER_NOT_FOUND + " : " + email));
+                .orElseThrow(() -> new UsernameNotFoundException(USER_NOT_FOUND + " : " + email));
 
         // Fetch the role of the user
         Optional<Role> role = roleRepository.findById(user.getRoleId());
@@ -74,6 +85,9 @@ public final class UserServiceImpl implements UserService {  // Made the class f
                 .authorities(role.get().getName())
                 .build();
     }
+
+
+
 
     @Override
     public long countActiveUsers() {
@@ -110,6 +124,49 @@ public final class UserServiceImpl implements UserService {  // Made the class f
 
        return stats;
     }
+
+    @Override
+    public StandardResponseOutDTO<List<CourseDeadlinesDTO>> deadlineCourses(String email){
+        try {
+            Optional<User> user = userRepository.findByEmailIgnoreCase(email);
+            if (user.isPresent()) {
+                List<Enrollment> enrols = enrollmentRepository.findByUserId(user.get().getUserId());
+                LocalDate today = LocalDate.now();
+                LocalDate later = today.plusDays(5);
+
+                List<Enrollment> filteredEnrols = enrols.stream()
+                        .filter(enrol ->
+                                enrol.getDeadline() != null &&
+                                        !enrol.getDeadline().isBefore(today.atStartOfDay()) &&
+                                        !enrol.getDeadline().isAfter(later.atStartOfDay())
+                        )
+                        .collect(Collectors.toList());
+
+                List<CourseDeadlinesDTO> courses = new ArrayList<>();
+                for (Enrollment enrol : filteredEnrols) {
+                    CourseInfoOutDTO course = courseMicroserviceClient.getCourseById(enrol.getCourseId()).getBody().getData();
+                    CourseDeadlinesDTO deadlinecourse = new CourseDeadlinesDTO();
+                    deadlinecourse.setCourseId(course.getCourseId());
+                    deadlinecourse.setTitle(course.getTitle());
+                    deadlinecourse.setOwnerId(course.getOwnerId());
+                    deadlinecourse.setDeadline(enrol.getDeadline());
+                    courses.add(deadlinecourse);
+                }
+
+                return StandardResponseOutDTO.success(courses , null);
+
+            } else {
+                throw new ResourceNotFoundException(USER_NOT_FOUND);
+            }
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+
+
+
+
 
 
 }
