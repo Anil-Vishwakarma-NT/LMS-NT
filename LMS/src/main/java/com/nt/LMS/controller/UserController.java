@@ -56,11 +56,13 @@ public class UserController {
         if (user.isPresent()) {
             UserOutDTO userOutDTO = new UserOutDTO();
             userOutDTO.setUserId(user.get().getUserId());
+            System.out.println("USER ID" + userOutDTO.getUserId());
             userOutDTO.setFirstName(user.get().getFirstName());
             userOutDTO.setLastName(user.get().getLastName());
 
             return ResponseEntity.ok(userOutDTO);
         } else {
+            System.out.println("USER ID" + "NOT FOUND");
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(null);
         }
     }
@@ -90,6 +92,7 @@ public class UserController {
     public ResponseEntity<StandardResponseOutDTO<List<CourseDeadlinesDTO>>> getUserDeadlines(){
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         String username = authentication.getName();
+        System.out.println("GET DEADLINES " + username);
         StandardResponseOutDTO<List<CourseDeadlinesDTO>> deadlines = userService.deadlineCourses(username);
         return new  ResponseEntity<>(deadlines,HttpStatus.OK);
     }
