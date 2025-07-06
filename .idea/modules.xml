@@ -4,7 +4,6 @@
     <modules>
       <module fileurl="file://$PROJECT_DIR$/.idea/LMS-NT.iml" filepath="$PROJECT_DIR$/.idea/LMS-NT.iml" />
       <module fileurl="file://$PROJECT_DIR$/.idea/modules/LMS.main.iml" filepath="$PROJECT_DIR$/.idea/modules/LMS.main.iml" />
-      <module fileurl="file://$PROJECT_DIR$/.idea/modules/api-gateway.main.iml" filepath="$PROJECT_DIR$/.idea/modules/api-gateway.main.iml" />
       <module fileurl="file://$PROJECT_DIR$/.idea/modules/course-service-lms.main.iml" filepath="$PROJECT_DIR$/.idea/modules/course-service-lms.main.iml" />
     </modules>
   </component>

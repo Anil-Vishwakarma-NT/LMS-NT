@@ -1,10 +1,12 @@
 package com.nt.LMS.controller;
 
 
+import com.nt.LMS.config.ServicePrincipal;
 import com.nt.LMS.dto.outDTO.CourseDeadlinesDTO;
 import com.nt.LMS.dto.outDTO.CourseInfoOutDTO;
 import com.nt.LMS.dto.outDTO.StandardResponseOutDTO;
 import com.nt.LMS.dto.outDTO.UserOutDTO;
+import com.nt.LMS.exception.UnauthorizedAccessException;
 import com.nt.LMS.service.UserService;
 import lombok.extern.slf4j.Slf4j;
 import com.nt.LMS.entities.User;
@@ -90,8 +92,15 @@ public class UserController {
 
     @GetMapping("/getDeadlines")
     public ResponseEntity<StandardResponseOutDTO<List<CourseDeadlinesDTO>>> getUserDeadlines(){
+//        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+//        String username = authentication.getName();
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        String username = authentication.getName();
+
+        if (!(authentication.getPrincipal() instanceof ServicePrincipal principal)) {
+            throw new UnauthorizedAccessException("Authentication failed");
+        }
+
+        String username = principal.getUserEmail();
         System.out.println("GET DEADLINES " + username);
         StandardResponseOutDTO<List<CourseDeadlinesDTO>> deadlines = userService.deadlineCourses(username);
         return new  ResponseEntity<>(deadlines,HttpStatus.OK);
