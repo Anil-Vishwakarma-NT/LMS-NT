@@ -30,8 +30,5 @@ public class UserResponseUpdateInDTO {
     @Digits(integer = 3, fraction = 2, message = "Points earned must have at most 3 integer digits and 2 decimal places")
     private BigDecimal pointsEarned;
 
-    @Min(value = 0, message = "Time spent cannot be negative")
-    private Long timeSpent; // in seconds
-
     private LocalDateTime answeredAt;
 }

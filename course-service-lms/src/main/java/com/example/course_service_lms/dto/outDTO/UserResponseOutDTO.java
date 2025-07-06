@@ -60,12 +60,6 @@ public class UserResponseOutDTO {
     private BigDecimal pointsEarned;
 
     /**
-     * Time spent on this question in seconds.
-     * Can be null if time tracking was not enabled.
-     */
-    private Long timeSpent;
-
-    /**
      * Timestamp when the answer was submitted.
      * Formatted as ISO 8601 date-time string.
      */
@@ -88,12 +82,11 @@ public class UserResponseOutDTO {
      * @param userAnswer    the user's answer in JSON format
      * @param isCorrect     whether the answer is correct
      * @param pointsEarned  points earned for this response
-     * @param timeSpent     time spent on the question in seconds
      * @param answeredAt    timestamp when answered
      */
     public UserResponseOutDTO(Long responseId, Long userId, Long quizId, Long questionId,
                               Long attempt, String userAnswer, Boolean isCorrect,
-                              BigDecimal pointsEarned, Long timeSpent, LocalDateTime answeredAt) {
+                              BigDecimal pointsEarned, LocalDateTime answeredAt) {
         this.responseId = responseId;
         this.userId = userId;
         this.quizId = quizId;
@@ -102,7 +95,6 @@ public class UserResponseOutDTO {
         this.userAnswer = userAnswer;
         this.isCorrect = isCorrect;
         this.pointsEarned = pointsEarned;
-        this.timeSpent = timeSpent;
         this.answeredAt = answeredAt;
     }
 }

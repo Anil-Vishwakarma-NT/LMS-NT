@@ -49,9 +49,6 @@ private String userAnswer;
     @Column(name = "points_earned", nullable = false, precision = 5, scale = 2)
     private BigDecimal pointsEarned;
 
-    @Column(name = "time_spent")
-    private Long timeSpent; // in seconds
-
     @Column(name = "answered_at", nullable = false)
     private LocalDateTime answeredAt;
 
@@ -59,7 +56,7 @@ private String userAnswer;
 
     public UserResponse(Long responseId, Long userId, Long quizId, Long questionId,
                         Long attempt, String userAnswer, Boolean isCorrect, BigDecimal pointsEarned,
-                        Long timeSpent, LocalDateTime answeredAt) {
+                        LocalDateTime answeredAt) {
         this.responseId = responseId;
         this.userId = userId;
         this.quizId = quizId;
@@ -68,7 +65,6 @@ private String userAnswer;
         this.userAnswer = userAnswer;
         this.isCorrect = isCorrect;
         this.pointsEarned = pointsEarned;
-        this.timeSpent = timeSpent;
         this.answeredAt = answeredAt;
     }
 
@@ -84,13 +80,12 @@ private String userAnswer;
                 Objects.equals(userAnswer, that.userAnswer) &&
                 Objects.equals(isCorrect, that.isCorrect) &&
                 Objects.equals(pointsEarned, that.pointsEarned) &&
-                Objects.equals(timeSpent, that.timeSpent) &&
                 Objects.equals(answeredAt, that.answeredAt);
     }
 
     @Override
     public int hashCode() {
         return Objects.hash(responseId, userId, quizId, questionId, attempt, userAnswer,
-                isCorrect, pointsEarned, timeSpent, answeredAt);
+                isCorrect, pointsEarned, answeredAt);
     }
 }

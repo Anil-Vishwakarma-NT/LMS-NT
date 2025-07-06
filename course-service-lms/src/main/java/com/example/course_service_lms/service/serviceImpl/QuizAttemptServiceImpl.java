@@ -3,11 +3,14 @@ package com.example.course_service_lms.service.serviceImpl;
 import com.example.course_service_lms.dto.inDTO.QuizAttemptCreateInDTO;
 import com.example.course_service_lms.dto.inDTO.QuizAttemptUpdateInDTO;
 import com.example.course_service_lms.dto.outDTO.QuizAttemptOutDTO;
+import com.example.course_service_lms.dto.outDTO.QuizQuestionOutDTO;
+import com.example.course_service_lms.entity.Quiz;
 import com.example.course_service_lms.entity.QuizAttempt;
 import com.example.course_service_lms.exception.ResourceAlreadyExistsException;
 import com.example.course_service_lms.exception.ResourceNotFoundException;
 import com.example.course_service_lms.exception.ResourceNotValidException;
 import com.example.course_service_lms.repository.QuizAttemptRepository;
+import com.example.course_service_lms.repository.QuizRepository;
 import com.example.course_service_lms.service.QuizAttemptService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -33,6 +36,7 @@ public class QuizAttemptServiceImpl implements QuizAttemptService {
 
     public static final String IN_PROGRESS = "IN_PROGRESS";
     private final QuizAttemptRepository quizAttemptRepository;
+    private final QuizRepository quizRepository;
 
     @Override
     public QuizAttemptOutDTO createQuizAttempt(QuizAttemptCreateInDTO dto) {
@@ -43,25 +47,51 @@ public class QuizAttemptServiceImpl implements QuizAttemptService {
             throw new ResourceNotValidException("User ID and Quiz ID are required");
         }
 
+        Quiz quiz = quizRepository.findById(dto.getQuizId()).orElseThrow(
+                () -> new ResourceNotFoundException("Quiz Not Found")
+        );
+
         // Check if user has any active attempts for this quiz
-        if (quizAttemptRepository.hasActiveAttempt(dto.getUserId(), dto.getQuizId())) {
-            throw new ResourceAlreadyExistsException("User already has an active attempt for this quiz");
+        Optional<QuizAttempt> activeAttempt = quizAttemptRepository.findActiveAttemptByUserAndQuiz(dto.getUserId(), dto.getQuizId());
+
+        if (activeAttempt.isPresent()) {
+            log.info("User {} already has an active attempt for quiz {}, returning existing attempt",
+                    dto.getUserId(), dto.getQuizId());
+
+            QuizAttempt existingAttempt = activeAttempt.get();
+            QuizAttemptOutDTO existingAttemptOutDTO = convertToOutDTO(existingAttempt);
+            existingAttemptOutDTO.setAttemptsLeft(quiz.getAttemptsAllowed() - existingAttempt.getAttempt());
+            return existingAttemptOutDTO;
         }
 
+        // Get the latest attempt for this user and quiz
+        QuizAttempt existingAttempt = quizAttemptRepository.findTopByUserIdAndQuizIdOrderByAttemptDesc(dto.getUserId(), dto.getQuizId());
+
+        // Calculate the next attempt number
+        Long nextAttemptNumber = (existingAttempt != null) ? existingAttempt.getAttempt() + 1 : 1;
+
+        // Check if user has exceeded maximum attempts
+        if (nextAttemptNumber > quiz.getAttemptsAllowed()) {
+            throw new ResourceNotValidException("User has exceeded maximum allowed attempts for this quiz");
+        }
+
+        // Create new attempt
         QuizAttempt quizAttempt = new QuizAttempt();
-        quizAttempt.setAttempt(dto.getAttempt());
+        quizAttempt.setAttempt(nextAttemptNumber); // Set the calculated attempt number
         quizAttempt.setQuizId(dto.getQuizId());
         quizAttempt.setUserId(dto.getUserId());
         quizAttempt.setStartedAt(LocalDateTime.now());
-        quizAttempt.setStatus(IN_PROGRESS);
+        quizAttempt.setStatus("IN_PROGRESS");
         quizAttempt.setCreatedAt(LocalDateTime.now());
         quizAttempt.setUpdatedAt(LocalDateTime.now());
 
         QuizAttempt savedAttempt = quizAttemptRepository.save(quizAttempt);
-        log.info("Created quiz attempt with ID: {}", savedAttempt.getQuizAttemptId());
-        return convertToOutDTO(savedAttempt);
-    }
+        log.info("Created quiz attempt with ID: {} (attempt number: {})", savedAttempt.getQuizAttemptId(), nextAttemptNumber);
 
+        QuizAttemptOutDTO quizAttemptOutDTO = convertToOutDTO(savedAttempt);
+        quizAttemptOutDTO.setAttemptsLeft(quiz.getAttemptsAllowed() - quizAttempt.getAttempt());
+        return quizAttemptOutDTO;
+    }
     @Override
     public QuizAttemptOutDTO updateQuizAttempt(Long quizAttemptId, QuizAttemptUpdateInDTO dto) {
         log.info("Updating quiz attempt with ID: {}", quizAttemptId);
