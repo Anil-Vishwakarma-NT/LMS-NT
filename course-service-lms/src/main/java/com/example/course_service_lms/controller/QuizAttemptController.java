@@ -20,9 +20,8 @@ import java.util.List;
 import java.util.Optional;
 
 @RestController
-@RequestMapping("/api/quiz-attempt")
+@RequestMapping("/api/service-api/quiz-attempt")
 @Slf4j
-@CrossOrigin("http://localhost:3000")
 public class QuizAttemptController {
 
     @Autowired

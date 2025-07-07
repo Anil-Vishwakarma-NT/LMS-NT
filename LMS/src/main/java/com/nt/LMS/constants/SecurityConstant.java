@@ -28,7 +28,7 @@ public class SecurityConstant {
     public static final String CLAIM_TOKEN_TYPE = "token_type";
     public static final String CLAIM_ROLES = "roles";
     public static final String CLAIM_SCOPE = "scope";
-    public static final String CLAIM_USER_ID = "user_id";
+    public static final String CLAIM_USER_ID = "userId";
     public static final String CLAIM_USER_EMAIL = "user_email";
     public static final String CLAIM_USER_FULL_NAME = "fullName";
     public static final String CLAIM_USER_ROLES = "user_roles";

@@ -43,7 +43,7 @@ public class SecurityConfig {
                         .pathMatchers("api/client-api/auth/login", "api/client-api/auth/refresh","/api/client-api/password/**").permitAll()
 
                         // Token introspection - requires authentication
-                        .pathMatchers( "/auth/logout").authenticated()
+                        .pathMatchers( "api/client-api/auth/logout").authenticated()
 
                         // Service endpoints - require authentication
                         .pathMatchers("/employee/**", "/order/**", "/product/**", "/api/token-api/**").authenticated()

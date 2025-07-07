@@ -16,7 +16,7 @@ import jakarta.validation.Valid;
  * Controller for handling quiz submissions
  */
 @RestController
-@RequestMapping("/api/quiz-submissions")
+@RequestMapping("/api/service-api/quiz-submissions")
 @RequiredArgsConstructor
 @Slf4j
 public class QuizSubmissionController {

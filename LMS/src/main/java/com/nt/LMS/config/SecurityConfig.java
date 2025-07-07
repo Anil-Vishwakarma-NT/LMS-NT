@@ -27,9 +27,8 @@ public class SecurityConfig {
                 .authorizeHttpRequests(authz -> authz
                         // user endpoints - require authentication
                         .requestMatchers("/api/auth/**").permitAll()
-                        .requestMatchers("/api/enrollment/**").permitAll()
-                        .requestMatchers("/api/users/enrollments/**").permitAll()
-                        .requestMatchers("/api/service-api/admin/**","/api/service-api/enrollment/**").hasRole("ADMIN")
+                        .requestMatchers("/api/service-api/enrollment/**").permitAll()
+                        .requestMatchers("/api/service-api/admin/**").hasRole("ADMIN")
                         .requestMatchers("/employee/**").hasAnyAuthority("employee", "admin")
                         .requestMatchers("/manager/**").hasAnyAuthority("manager", "admin")
                         .requestMatchers("/group/all-groups").permitAll()
