@@ -11,7 +11,7 @@ public class CourseOutDTO {
     private String title;
     private String description;
     private String level;
-    private boolean isActive;
+    private boolean Active;
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
 }

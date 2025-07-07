@@ -61,7 +61,7 @@ public class Course {
     private String level;
 
     @Column(name = "is_active")
-    private boolean isActive;
+    private boolean Active;
 
     @Column(name = "created_at")
     private LocalDateTime createdAt;
@@ -78,13 +78,13 @@ public class Course {
      * @param description  the course description
      * @param level        the course difficulty level
      */
-    public Course(long courseId, long ownerId, String title, String description, String level, boolean isActive, LocalDateTime createdAt, LocalDateTime updatedAt) {
+    public Course(long courseId, long ownerId, String title, String description, String level, boolean Active, LocalDateTime createdAt, LocalDateTime updatedAt) {
         this.courseId = courseId;
         this.ownerId = ownerId;
         this.title = title;
         this.description = description;
         this.level = level;
-        this.isActive = isActive;
+        this.Active = Active;
         this.createdAt = createdAt;
         this.updatedAt = updatedAt;
     }
@@ -100,12 +100,12 @@ public class Course {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         Course course = (Course) o;
-        return courseId == course.courseId && ownerId == course.ownerId && isActive == course.isActive && Objects.equals(title, course.title) && Objects.equals(description, course.description) && Objects.equals(level, course.level) && Objects.equals(createdAt, course.createdAt) && Objects.equals(updatedAt, course.updatedAt);
+        return courseId == course.courseId && ownerId == course.ownerId && Active == course.Active && Objects.equals(title, course.title) && Objects.equals(description, course.description) && Objects.equals(level, course.level) && Objects.equals(createdAt, course.createdAt) && Objects.equals(updatedAt, course.updatedAt);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(courseId, ownerId, title, description, level, isActive, createdAt, updatedAt);
+        return Objects.hash(courseId, ownerId, title, description, level, Active, createdAt, updatedAt);
     }
 }
 
