@@ -39,8 +39,7 @@ public class UserResponse {
 
 //    @Column(name = "user_answer", nullable = false, columnDefinition = "TEXT")
 //    private String userAnswer;
-@Column(name = "user_answer", nullable = false, columnDefinition = "jsonb")
-@JdbcTypeCode(SqlTypes.JSON)
+@Column(name = "user_answer", nullable = false, columnDefinition = "TEXT")
 private String userAnswer;
 
     @Column(name = "is_correct", nullable = false)
