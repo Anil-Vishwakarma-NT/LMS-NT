@@ -7,16 +7,16 @@ spring:
 
   # DataSource Configuration
   datasource:
-    url: jdbc:postgresql://localhost:5432/lms_db
+    url: jdbc:postgresql://localhost:5432/lms
     username: postgres
-    password: anil@123
+    password: root
     driver-class-name: org.postgresql.Driver
 
   # JPA / Hibernate Configuration
   jpa:
     database-platform: org.hibernate.dialect.PostgreSQLDialect
     hibernate:
-      ddl-auto: update
+      ddl-auto: validate
 
   cloud:
     gateway:
