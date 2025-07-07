@@ -156,6 +156,7 @@ public class JwtAuthFilter implements WebFilter {
         ServerHttpRequest.Builder builder = request.mutate()
                 .header(SERVICE_TOKEN_HEADER, serviceToken)
                 .header(ORIGINAL_TOKEN_TYPE_HEADER, originalTokenType);
+//                .header(HttpHeaders.AUTHORIZATION, serviceToken);
 
         if (gatewaySecurityEnabled) {
             long timestamp = System.currentTimeMillis();
@@ -166,8 +167,8 @@ public class JwtAuthFilter implements WebFilter {
                     .header(GATEWAY_TIMESTAMP_HEADER, String.valueOf(timestamp))
                     .header(GATEWAY_NONCE_HEADER, nonce)
                     .header(GATEWAY_SIGNATURE_HEADER, signature)
-                    .header(GATEWAY_SOURCE_HEADER, GATEWAY_SOURCE_VALUE)
-                    .header(HttpHeaders.USER_AGENT, USER_AGENT_HEADER_VALUE);
+                    .header(GATEWAY_SOURCE_HEADER, GATEWAY_SOURCE_VALUE);
+//                    .header(HttpHeaders.USER_AGENT, USER_AGENT_HEADER_VALUE);
         }
 
         return builder.build();
