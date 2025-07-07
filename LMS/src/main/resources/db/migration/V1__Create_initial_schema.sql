@@ -267,7 +267,7 @@ CREATE TABLE user_response (
     quiz_id BIGINT NOT NULL,
     question_id BIGINT NOT NULL,
     attempt BIGINT NOT NULL,
-    user_answer JSONB NOT NULL,
+    user_answer TEXT NOT NULL,
     is_correct BOOLEAN NOT NULL,
     points_earned DECIMAL(5,2) NOT NULL,
     answered_at TIMESTAMP NOT NULL DEFAULT NOW(),

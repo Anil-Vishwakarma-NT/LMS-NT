@@ -72,4 +72,6 @@ public interface QuizQuestionRepository extends JpaRepository<QuizQuestion, Long
      * @return list of questions with position greater than or equal to specified
      */
     List<QuizQuestion> findByQuizIdAndPositionGreaterThanEqual(Long quizId, Integer position);
+
+    List<QuizQuestion> findByQuizId(Long quizId);
 }

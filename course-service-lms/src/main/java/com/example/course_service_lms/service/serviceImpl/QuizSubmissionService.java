@@ -6,9 +6,11 @@ import com.example.course_service_lms.dto.outDTO.QuizAttemptOutDTO;
 import com.example.course_service_lms.dto.outDTO.QuizSubmissionResultOutDTO;
 import com.example.course_service_lms.dto.outDTO.UserResponseOutDTO;
 import com.example.course_service_lms.entity.QuizAttempt;
+import com.example.course_service_lms.entity.QuizQuestion;
 import com.example.course_service_lms.exception.ResourceNotFoundException;
 import com.example.course_service_lms.exception.ResourceNotValidException;
 import com.example.course_service_lms.repository.QuizAttemptRepository;
+import com.example.course_service_lms.repository.QuizQuestionRepository;
 import com.example.course_service_lms.service.QuizAttemptService;
 import com.example.course_service_lms.service.UserResponseService;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -22,6 +24,8 @@ import java.time.LocalDateTime;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 /**
  * Service for handling quiz submissions (both manual and automatic)
@@ -34,6 +38,7 @@ public class QuizSubmissionService {
     private final UserResponseService userResponseService;
     private final QuizAttemptService quizAttemptService;
     private final QuizAttemptRepository quizAttemptRepository;
+    private final QuizQuestionRepository quizQuestionRepository;
     private final ObjectMapper objectMapper;
 
     /**
@@ -223,17 +228,7 @@ public class QuizSubmissionService {
         try {
             QuizScoreCalculation calculation = new QuizScoreCalculation();
 
-            if (responses == null || responses.isEmpty()) {
-                // No responses submitted
-                calculation.setTotalScore(BigDecimal.ZERO);
-                calculation.setCorrectAnswers(0L);
-                calculation.setTotalQuestions(0L);
-                calculation.setMaxPossibleScore(BigDecimal.ZERO);
-                calculation.setPercentageScore(BigDecimal.ZERO);
-                return calculation;
-            }
-
-            // Calculate from user responses
+            // Get total score from user responses
             BigDecimal totalScore;
             Long correctAnswers;
 
@@ -277,25 +272,56 @@ public class QuizSubmissionService {
                 throw new RuntimeException("Unexpected error while counting correct answers", e);
             }
 
-            calculation.setTotalScore(totalScore);
-            calculation.setCorrectAnswers(correctAnswers);
-            calculation.setTotalQuestions((long) responses.size());
+            // Calculate max possible score from the original quiz questions
+            BigDecimal maxPossibleScore = BigDecimal.ZERO;
+            Long totalQuestions = 0L;
 
-            // Calculate max possible score from responses
-            BigDecimal maxPossibleScore = responses.stream()
-                    .map(response -> response.getPointsEarned() != null ?
-                            response.getPointsEarned() : BigDecimal.ZERO)
-                    .reduce(BigDecimal.ZERO, BigDecimal::add);
+            if (responses != null && !responses.isEmpty()) {
+                // Get question IDs from responses
+                Set<Long> questionIds = responses.stream()
+                        .map(UserResponseOutDTO::getQuestionId)
+                        .collect(Collectors.toSet());
 
+                // Fetch the original questions to get their points
+                List<QuizQuestion> questions = quizQuestionRepository.findAllById(questionIds);
+
+                maxPossibleScore = questions.stream()
+                        .map(QuizQuestion::getPoints)
+                        .reduce(BigDecimal.ZERO, BigDecimal::add);
+
+                totalQuestions = (long) questions.size();
+
+                log.debug("Calculated max possible score from {} questions: {}", questions.size(), maxPossibleScore);
+            } else {
+                // If no responses, calculate from all questions in the quiz
+                List<QuizQuestion> allQuestions = quizQuestionRepository.findByQuizId(attempt.getQuizId());
+
+                maxPossibleScore = allQuestions.stream()
+                        .map(QuizQuestion::getPoints)
+                        .reduce(BigDecimal.ZERO, BigDecimal::add);
+
+                totalQuestions = (long) allQuestions.size();
+
+                log.debug("No responses provided, calculated max possible score from all {} quiz questions: {}",
+                        allQuestions.size(), maxPossibleScore);
+            }
+
+            calculation.setTotalScore(totalScore != null ? totalScore : BigDecimal.ZERO);
+            calculation.setCorrectAnswers(correctAnswers != null ? correctAnswers : 0L);
+            calculation.setTotalQuestions(totalQuestions);
             calculation.setMaxPossibleScore(maxPossibleScore);
 
-            // Calculate percentage
+            // Calculate percentage score
             BigDecimal percentageScore = BigDecimal.ZERO;
             if (maxPossibleScore.compareTo(BigDecimal.ZERO) > 0) {
-                percentageScore = totalScore.multiply(BigDecimal.valueOf(100))
+                percentageScore = calculation.getTotalScore()
+                        .multiply(BigDecimal.valueOf(100))
                         .divide(maxPossibleScore, 2, BigDecimal.ROUND_HALF_UP);
             }
             calculation.setPercentageScore(percentageScore);
+
+            log.info("Score calculation completed - Total Score: {}, Max Possible: {}, Percentage: {}%",
+                    calculation.getTotalScore(), maxPossibleScore, percentageScore);
 
             return calculation;
         } catch (ResourceNotFoundException e) {
