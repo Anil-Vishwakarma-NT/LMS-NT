@@ -67,7 +67,7 @@ public class CourseInDTO {
     private String courseLevel;
 
     @NotNull(message = "Is Active field is required")
-    private boolean isActive;
+    private boolean Active;
 
     /**
      * All-args constructor for initializing all fields.
@@ -77,12 +77,12 @@ public class CourseInDTO {
      * @param description  Description of the course
      * @param courseLevel  Level of the course (e.g., BEGINNER)
      */
-    public CourseInDTO(String title, Long ownerId, String description, String courseLevel, boolean isActive) {
+    public CourseInDTO(String title, Long ownerId, String description, String courseLevel, boolean Active) {
         this.title = title;
         this.ownerId = ownerId;
         this.description = description;
         this.courseLevel = courseLevel;
-        this.isActive = isActive;
+        this.Active = Active;
     }
 
     /**
@@ -102,11 +102,11 @@ public class CourseInDTO {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         CourseInDTO courseInDTO = (CourseInDTO) o;
-        return isActive == courseInDTO.isActive && Objects.equals(title, courseInDTO.title) && Objects.equals(ownerId, courseInDTO.ownerId) && Objects.equals(description, courseInDTO.description) && Objects.equals(courseLevel, courseInDTO.courseLevel);
+        return Active == courseInDTO.Active && Objects.equals(title, courseInDTO.title) && Objects.equals(ownerId, courseInDTO.ownerId) && Objects.equals(description, courseInDTO.description) && Objects.equals(courseLevel, courseInDTO.courseLevel);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(title, ownerId, description, courseLevel, isActive);
+        return Objects.hash(title, ownerId, description, courseLevel, Active);
     }
 }
