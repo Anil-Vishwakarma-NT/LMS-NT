@@ -5,6 +5,7 @@ import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 import java.util.Objects;
 
@@ -12,6 +13,7 @@ import static com.example.course_service_lms.constants.BundleConstants.INT_VALUE
 import static com.example.course_service_lms.constants.CourseConstants.*;
 
 @Data
+@NoArgsConstructor
 public class UpdateCourseInDTO {
 
     /**
@@ -46,14 +48,14 @@ public class UpdateCourseInDTO {
     private String courseLevel;
 
     @NotNull(message = "Is Active field is required")
-    private boolean isActive;
+    private boolean Active;
 
-    public UpdateCourseInDTO(String title, Long ownerId, String description, String courseLevel, String image, boolean isActive) {
+    public UpdateCourseInDTO(String title, Long ownerId, String description, String courseLevel, boolean Active) {
         this.title = title;
         this.ownerId = ownerId;
         this.description = description;
         this.courseLevel = courseLevel;
-        this.isActive = isActive;
+        this.Active = Active;
     }
 
     @Override
@@ -61,11 +63,11 @@ public class UpdateCourseInDTO {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         UpdateCourseInDTO that = (UpdateCourseInDTO) o;
-        return isActive == that.isActive && Objects.equals(title, that.title) && Objects.equals(ownerId, that.ownerId) && Objects.equals(description, that.description) && Objects.equals(courseLevel, that.courseLevel);
+        return Active == that.Active && Objects.equals(title, that.title) && Objects.equals(ownerId, that.ownerId) && Objects.equals(description, that.description) && Objects.equals(courseLevel, that.courseLevel);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(title, ownerId, description, courseLevel, isActive);
+        return Objects.hash(title, ownerId, description, courseLevel, Active);
     }
 }

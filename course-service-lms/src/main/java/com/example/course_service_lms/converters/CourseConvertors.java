@@ -130,7 +130,6 @@ public final class CourseConvertors {
                 course.getOwnerId(),
                 course.getDescription(),
                 course.getLevel(),
-                null, // Assuming image parameter in constructor
                 course.isActive()
         );
     }
