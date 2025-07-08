@@ -187,9 +187,9 @@ public class JwtAuthFilter implements WebFilter {
 
     private String extractTargetService(ServerHttpRequest request) {
         String path = request.getPath().value();
-        if (path.startsWith("/user/")) return USER_SERVICE;
-        if (path.startsWith("/course/")) return COURSE_SERVICE;
-        if (path.startsWith("/product/")) return PRODUCT_SERVICE;
+        if (path.startsWith("/lms/user/")) return USER_SERVICE;
+        if (path.startsWith("/lms/course/")) return COURSE_SERVICE;
+//        if (path.startsWith("/lms/product/")) return PRODUCT_SERVICE;
         return UNKNOWN_SERVICE;
     }
 

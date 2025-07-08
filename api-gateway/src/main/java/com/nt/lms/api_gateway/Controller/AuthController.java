@@ -12,7 +12,7 @@ import java.util.Map;
 
 @Slf4j
 @RestController
-@RequestMapping("api/client-api/auth")
+@RequestMapping("lms/api/client-api/auth")
 public class AuthController {
 
     /**
