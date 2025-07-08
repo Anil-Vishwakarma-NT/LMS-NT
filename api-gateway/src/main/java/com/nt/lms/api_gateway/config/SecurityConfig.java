@@ -40,13 +40,13 @@ public class SecurityConfig {
                 .securityContextRepository(NoOpServerSecurityContextRepository.getInstance())
                 .authorizeExchange(exchange -> exchange
                         // Auth endpoints - public access
-                        .pathMatchers("api/client-api/auth/login", "api/client-api/auth/refresh","/api/client-api/password/**").permitAll()
+                        .pathMatchers("/lms/api/client-api/auth/login", "/lms/api/client-api/auth/refresh","/lms/api/client-api/password/**").permitAll()
 
                         // Token introspection - requires authentication
-                        .pathMatchers( "api/client-api/auth/logout").authenticated()
+                        .pathMatchers( "/lms/api/client-api/auth/logout").authenticated()
 
                         // Service endpoints - require authentication
-                        .pathMatchers("/employee/**", "/order/**", "/product/**", "/api/token-api/**").authenticated()
+                        .pathMatchers("/api/token-api/**").authenticated()
 
                         // Any other request requires authentication
                         .anyExchange().authenticated()

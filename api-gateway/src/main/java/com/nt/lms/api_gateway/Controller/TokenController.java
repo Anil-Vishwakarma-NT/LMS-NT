@@ -16,7 +16,7 @@ import reactor.core.publisher.Mono;
 import static com.nt.lms.api_gateway.constant.SecurityConstant.*;
 
 @RestController
-@RequestMapping("/api/token-api")
+@RequestMapping("/lms/api/token-api")
 @Slf4j
 public class TokenController {
 

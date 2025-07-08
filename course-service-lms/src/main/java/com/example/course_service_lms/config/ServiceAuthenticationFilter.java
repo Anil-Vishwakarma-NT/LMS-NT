@@ -77,6 +77,7 @@ public class ServiceAuthenticationFilter extends OncePerRequestFilter {
             }
             System.out.println(isGatewayRequest);
             System.out.println(serviceToken);
+            System.out.println(request.getRequestURL());
 
             logger.debug("Token subject: {}, isGatewayRequest: {}", clientId, isGatewayRequest);
 

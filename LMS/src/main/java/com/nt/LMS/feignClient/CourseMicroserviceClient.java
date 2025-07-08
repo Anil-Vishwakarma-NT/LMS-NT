@@ -42,7 +42,7 @@ public interface CourseMicroserviceClient {
     @PostMapping("/bundles/existing-ids")
     public ResponseEntity<List<Long>> getExistingBundleIds(@RequestBody List<Long> bundleIds);
 
-    @GetMapping("/bundles/course-bundles/bundle-id/{id}/course-ids")
+    @GetMapping("/course-bundles/bundle-id/{id}/course-ids")
     public ResponseEntity<List<Long>> findCourseIdsByBundleId(@PathVariable("id") Long bundleId);
 
     @GetMapping("user-progress/meta")

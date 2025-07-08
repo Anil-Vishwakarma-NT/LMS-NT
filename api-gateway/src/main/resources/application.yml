@@ -9,37 +9,55 @@ spring:
   datasource:
     url: jdbc:postgresql://localhost:5432/lms_db
     username: postgres
-    password: anil@123
+    password: root
     driver-class-name: org.postgresql.Driver
 
   # JPA / Hibernate Configuration
   jpa:
     database-platform: org.hibernate.dialect.PostgreSQLDialect
     hibernate:
-      ddl-auto: update
+      ddl-auto: validate
 
   cloud:
     gateway:
       routes:
-        - id: user-service
+        # More specific routes first
+        - id: user-service-client-api
           uri: http://localhost:8081
           predicates:
-            - Path=/user/**
+            - Path=/lms/user/api/client-api/**
           filters:
-            - StripPrefix=1
+            - RewritePath=/lms/user/api/client-api/(?<segment>.*), /api/service-api/${segment}
             - AddRequestHeader=X-Gateway-Service, user-service
 
-        - id: course-service
+        - id: course-service-client-api
           uri: http://localhost:8080
           predicates:
-            - Path=/course/**
+            - Path=/lms/course/api/client-api/**
           filters:
-            - StripPrefix=1
+            - RewritePath=/lms/course/api/client-api/(?<segment>.*), /api/service-api/${segment}
             - AddRequestHeader=X-Gateway-Service, course-service
 
-      default-filters:
-        - AddResponseHeader=X-Gateway-Response, Gateway says hello!
-        - AddRequestHeader=X-Request-Id, ${requestId}
+#        # General routes (less specific)
+#        - id: user-service-general
+#          uri: http://localhost:8081
+#          predicates:
+#            - Path=/user/**
+#          filters:
+#            - StripPrefix=1
+#            - AddRequestHeader=X-Gateway-Service, user-service
+#
+#        - id: course-service-general
+#          uri: http://localhost:8080
+#          predicates:
+#            - Path=/course/**
+#          filters:
+#            - StripPrefix=1
+#            - AddRequestHeader=X-Gateway-Service, course-service
+#
+#      default-filters:
+#        - AddResponseHeader=X-Gateway-Response, Gateway says hello!
+#        - AddRequestHeader=X-Request-Id, ${requestId}
 
       # Global timeout settings
       httpclient:
@@ -49,7 +67,11 @@ spring:
 logging:
   level:
     root: INFO
-    org.springframework.cloud.gateway: DEBUG
+    org.springframework.cloud.gateway: TRACE
+    org.springframework.cloud.gateway.filter: TRACE
+    org.springframework.cloud.gateway.route: TRACE
+    org.springframework.cloud.gateway.handler: TRACE
+    org.springframework.cloud.gateway.handler.predicate: TRACE
     org.springframework.security: DEBUG
     com.nt.api_gateway: DEBUG
 
@@ -99,7 +121,6 @@ gateway:
     enabled: true
   secret:
     value: your-super-secret-gateway-key-change-this-in-production
-
 # RSA Key
 private:
   key: |

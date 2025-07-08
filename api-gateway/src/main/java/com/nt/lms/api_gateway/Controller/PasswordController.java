@@ -14,7 +14,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
-@RequestMapping("/api/client-api/password")
+@RequestMapping("/lms/api/client-api/password")
 public class PasswordController {
 
     @Autowired

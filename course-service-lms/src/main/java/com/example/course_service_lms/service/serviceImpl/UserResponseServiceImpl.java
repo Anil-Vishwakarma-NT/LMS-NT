@@ -97,6 +97,7 @@ public class UserResponseServiceImpl implements UserResponseService {
 
                         // Validate answer and calculate points
                         boolean isCorrect = validateAnswer(dto.getUserAnswer(), question);
+                        System.out.println(dto.getQuestionId() + " IS " + isCorrect);
                         entity.setIsCorrect(isCorrect);
 
                         // Calculate points earned
@@ -126,6 +127,7 @@ public class UserResponseServiceImpl implements UserResponseService {
 
     /**
      * Validates if the user's answer is correct based on the question type and correct answer.
+     * Fixed version with proper JSON array handling
      *
      * @param userAnswer    the user's answer in JSON format
      * @param question      the quiz question entity
@@ -136,24 +138,19 @@ public class UserResponseServiceImpl implements UserResponseService {
             String questionType = question.getQuestionType().toLowerCase();
             String correctAnswer = question.getCorrectAnswer();
 
+            log.debug("Validating answer for question {}: type={}, userAnswer={}, correctAnswer={}",
+                    question.getQuestionId(), questionType, userAnswer, correctAnswer);
+
             switch (questionType) {
-                case "multiple_choice":
-                case "single_choice":
+                case "mcq_single":
                     return validateSingleChoiceAnswer(userAnswer, correctAnswer);
 
-                case "multiple_select":
+                case "mcq_multiple":
                     return validateMultipleChoiceAnswer(userAnswer, correctAnswer);
 
-                case "text":
                 case "short_answer":
+                case "text":
                     return validateTextAnswer(userAnswer, correctAnswer);
-
-                case "true_false":
-                case "boolean":
-                    return validateBooleanAnswer(userAnswer, correctAnswer);
-
-                case "numeric":
-                    return validateNumericAnswer(userAnswer, correctAnswer);
 
                 default:
                     log.warn("Unknown question type: {}. Defaulting to text comparison.", questionType);
@@ -167,43 +164,67 @@ public class UserResponseServiceImpl implements UserResponseService {
 
     /**
      * Validates single choice answers (radio buttons, dropdowns).
+     * Fixed to handle JSON array format properly
      */
     private boolean validateSingleChoiceAnswer(String userAnswer, String correctAnswer) {
         try {
             ObjectMapper mapper = new ObjectMapper();
 
-            // Parse user answer
             String selectedOption = null;
-            if (userAnswer.startsWith("\"") && userAnswer.endsWith("\"")) {
-                // Simple string value
+
+            // Handle JSON array format like ["b"]
+            if (userAnswer.trim().startsWith("[") && userAnswer.trim().endsWith("]")) {
+                JsonNode userArray = mapper.readTree(userAnswer);
+                if (userArray.isArray() && userArray.size() > 0) {
+                    selectedOption = userArray.get(0).asText();
+                }
+            }
+            // Handle simple string with quotes
+            else if (userAnswer.startsWith("\"") && userAnswer.endsWith("\"")) {
                 selectedOption = userAnswer.substring(1, userAnswer.length() - 1);
-            } else if (userAnswer.startsWith("{")) {
-                // JSON object format
+            }
+            // Handle JSON object format
+            else if (userAnswer.startsWith("{")) {
                 JsonNode userNode = mapper.readTree(userAnswer);
                 selectedOption = userNode.has("answer") ? userNode.get("answer").asText() :
-                        userNode.has("selected") ? userNode.get("selected").asText() : userAnswer;
-            } else {
-                selectedOption = userAnswer;
+                        userNode.has("selected") ? userNode.get("selected").asText() : null;
+            }
+            // Handle plain text
+            else {
+                selectedOption = userAnswer.trim();
             }
 
             // Parse correct answer
             String correctOption = correctAnswer;
-            if (correctAnswer.startsWith("{")) {
+            if (correctAnswer.startsWith("[") && correctAnswer.endsWith("]")) {
+                JsonNode correctArray = mapper.readTree(correctAnswer);
+                if (correctArray.isArray() && correctArray.size() > 0) {
+                    correctOption = correctArray.get(0).asText();
+                }
+            } else if (correctAnswer.startsWith("{")) {
                 JsonNode correctNode = mapper.readTree(correctAnswer);
                 correctOption = correctNode.has("answer") ? correctNode.get("answer").asText() :
                         correctNode.has("correct") ? correctNode.get("correct").asText() : correctAnswer;
             }
 
-            return selectedOption != null && selectedOption.trim().equalsIgnoreCase(correctOption.trim());
+            boolean isCorrect = selectedOption != null &&
+                    selectedOption.trim().equalsIgnoreCase(correctOption.trim());
+
+            log.debug("Single choice validation: selected='{}', correct='{}', result={}",
+                    selectedOption, correctOption, isCorrect);
+
+            return isCorrect;
 
         } catch (Exception e) {
-            log.error("Error parsing single choice answer", e);
+            log.error("Error parsing single choice answer: userAnswer={}, correctAnswer={}",
+                    userAnswer, correctAnswer, e);
             return false;
         }
     }
 
     /**
      * Validates multiple choice answers (checkboxes).
+     * Fixed to handle JSON array format properly
      */
     private boolean validateMultipleChoiceAnswer(String userAnswer, String correctAnswer) {
         try {
@@ -211,42 +232,59 @@ public class UserResponseServiceImpl implements UserResponseService {
 
             // Parse user answer
             Set<String> userSelections = new HashSet<>();
-            JsonNode userNode = mapper.readTree(userAnswer);
 
-            if (userNode.isArray()) {
-                for (JsonNode node : userNode) {
-                    userSelections.add(node.asText().trim().toLowerCase());
+            if (userAnswer.trim().startsWith("[") && userAnswer.trim().endsWith("]")) {
+                JsonNode userArray = mapper.readTree(userAnswer);
+                if (userArray.isArray()) {
+                    for (JsonNode node : userArray) {
+                        userSelections.add(node.asText().trim().toLowerCase());
+                    }
                 }
-            } else if (userNode.has("selected") && userNode.get("selected").isArray()) {
-                for (JsonNode node : userNode.get("selected")) {
-                    userSelections.add(node.asText().trim().toLowerCase());
+            } else if (userAnswer.startsWith("{")) {
+                JsonNode userNode = mapper.readTree(userAnswer);
+                if (userNode.has("selected") && userNode.get("selected").isArray()) {
+                    for (JsonNode node : userNode.get("selected")) {
+                        userSelections.add(node.asText().trim().toLowerCase());
+                    }
                 }
             }
 
             // Parse correct answer
             Set<String> correctSelections = new HashSet<>();
-            JsonNode correctNode = mapper.readTree(correctAnswer);
 
-            if (correctNode.isArray()) {
-                for (JsonNode node : correctNode) {
-                    correctSelections.add(node.asText().trim().toLowerCase());
+            if (correctAnswer.trim().startsWith("[") && correctAnswer.trim().endsWith("]")) {
+                JsonNode correctArray = mapper.readTree(correctAnswer);
+                if (correctArray.isArray()) {
+                    for (JsonNode node : correctArray) {
+                        correctSelections.add(node.asText().trim().toLowerCase());
+                    }
                 }
-            } else if (correctNode.has("correct") && correctNode.get("correct").isArray()) {
-                for (JsonNode node : correctNode.get("correct")) {
-                    correctSelections.add(node.asText().trim().toLowerCase());
+            } else if (correctAnswer.startsWith("{")) {
+                JsonNode correctNode = mapper.readTree(correctAnswer);
+                if (correctNode.has("correct") && correctNode.get("correct").isArray()) {
+                    for (JsonNode node : correctNode.get("correct")) {
+                        correctSelections.add(node.asText().trim().toLowerCase());
+                    }
                 }
             }
 
-            return userSelections.equals(correctSelections);
+            boolean isCorrect = userSelections.equals(correctSelections);
+
+            log.debug("Multiple choice validation: userSelections={}, correctSelections={}, result={}",
+                    userSelections, correctSelections, isCorrect);
+
+            return isCorrect;
 
         } catch (Exception e) {
-            log.error("Error parsing multiple choice answer", e);
+            log.error("Error parsing multiple choice answer: userAnswer={}, correctAnswer={}",
+                    userAnswer, correctAnswer, e);
             return false;
         }
     }
 
     /**
      * Validates text-based answers.
+     * Fixed to handle JSON array format properly
      */
     private boolean validateTextAnswer(String userAnswer, String correctAnswer) {
         try {
@@ -255,13 +293,26 @@ public class UserResponseServiceImpl implements UserResponseService {
             String userText = userAnswer;
             String correctText = correctAnswer;
 
-            // Try to parse as JSON if it looks like JSON
-            if (userAnswer.startsWith("{")) {
+            // Handle JSON array format like ["sdcvsdf"]
+            if (userAnswer.trim().startsWith("[") && userAnswer.trim().endsWith("]")) {
+                JsonNode userArray = mapper.readTree(userAnswer);
+                if (userArray.isArray() && userArray.size() > 0) {
+                    userText = userArray.get(0).asText();
+                }
+            }
+            // Handle JSON object format
+            else if (userAnswer.startsWith("{")) {
                 JsonNode userNode = mapper.readTree(userAnswer);
                 userText = userNode.has("answer") ? userNode.get("answer").asText() : userAnswer;
             }
 
-            if (correctAnswer.startsWith("{")) {
+            // Handle correct answer parsing
+            if (correctAnswer.trim().startsWith("[") && correctAnswer.trim().endsWith("]")) {
+                JsonNode correctArray = mapper.readTree(correctAnswer);
+                if (correctArray.isArray() && correctArray.size() > 0) {
+                    correctText = correctArray.get(0).asText();
+                }
+            } else if (correctAnswer.startsWith("{")) {
                 JsonNode correctNode = mapper.readTree(correctAnswer);
                 correctText = correctNode.has("answer") ? correctNode.get("answer").asText() : correctAnswer;
             }
@@ -270,85 +321,17 @@ public class UserResponseServiceImpl implements UserResponseService {
             userText = userText.replaceAll("^\"|\"$", "");
             correctText = correctText.replaceAll("^\"|\"$", "");
 
-            return userText.trim().equalsIgnoreCase(correctText.trim());
+            boolean isCorrect = userText.trim().equalsIgnoreCase(correctText.trim());
+
+            log.debug("Text answer validation: userText='{}', correctText='{}', result={}",
+                    userText, correctText, isCorrect);
+
+            return isCorrect;
 
         } catch (Exception e) {
-            log.error("Error parsing text answer", e);
+            log.error("Error parsing text answer: userAnswer={}, correctAnswer={}",
+                    userAnswer, correctAnswer, e);
             return userAnswer.trim().equalsIgnoreCase(correctAnswer.trim());
-        }
-    }
-
-    /**
-     * Validates boolean/true-false answers.
-     */
-    private boolean validateBooleanAnswer(String userAnswer, String correctAnswer) {
-        try {
-            ObjectMapper mapper = new ObjectMapper();
-
-            Boolean userBoolean = null;
-            Boolean correctBoolean = null;
-
-            // Parse user answer
-            if (userAnswer.startsWith("{")) {
-                JsonNode userNode = mapper.readTree(userAnswer);
-                userBoolean = userNode.has("answer") ? userNode.get("answer").asBoolean() :
-                        Boolean.parseBoolean(userAnswer);
-            } else {
-                userBoolean = Boolean.parseBoolean(userAnswer.replaceAll("^\"|\"$", ""));
-            }
-
-            // Parse correct answer
-            if (correctAnswer.startsWith("{")) {
-                JsonNode correctNode = mapper.readTree(correctAnswer);
-                correctBoolean = correctNode.has("answer") ? correctNode.get("answer").asBoolean() :
-                        Boolean.parseBoolean(correctAnswer);
-            } else {
-                correctBoolean = Boolean.parseBoolean(correctAnswer.replaceAll("^\"|\"$", ""));
-            }
-
-            return userBoolean.equals(correctBoolean);
-
-        } catch (Exception e) {
-            log.error("Error parsing boolean answer", e);
-            return false;
-        }
-    }
-
-    /**
-     * Validates numeric answers.
-     */
-    private boolean validateNumericAnswer(String userAnswer, String correctAnswer) {
-        try {
-            ObjectMapper mapper = new ObjectMapper();
-
-            Double userNumber = null;
-            Double correctNumber = null;
-
-            // Parse user answer
-            if (userAnswer.startsWith("{")) {
-                JsonNode userNode = mapper.readTree(userAnswer);
-                userNumber = userNode.has("answer") ? userNode.get("answer").asDouble() :
-                        Double.parseDouble(userAnswer);
-            } else {
-                userNumber = Double.parseDouble(userAnswer.replaceAll("^\"|\"$", ""));
-            }
-
-            // Parse correct answer
-            if (correctAnswer.startsWith("{")) {
-                JsonNode correctNode = mapper.readTree(correctAnswer);
-                correctNumber = correctNode.has("answer") ? correctNode.get("answer").asDouble() :
-                        Double.parseDouble(correctAnswer);
-            } else {
-                correctNumber = Double.parseDouble(correctAnswer.replaceAll("^\"|\"$", ""));
-            }
-
-            // Use a small epsilon for floating point comparison
-            double epsilon = 0.001;
-            return Math.abs(userNumber - correctNumber) < epsilon;
-
-        } catch (Exception e) {
-            log.error("Error parsing numeric answer", e);
-            return false;
         }
     }
 
