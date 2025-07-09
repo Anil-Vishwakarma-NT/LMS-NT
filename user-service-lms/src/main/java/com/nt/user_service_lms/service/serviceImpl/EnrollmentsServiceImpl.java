@@ -85,7 +85,7 @@ public class EnrollmentsServiceImpl implements EnrollmentsService {
 
         for(UserGroup user : usrgrp){
 
-            if(!mp.containsKey(user.getUserId()) && user.is_active()){
+            if(!mp.containsKey(user.getUserId()) && user.isActive()){
                 Optional<User> usr = userRepository.findById(user.getUserId());
                 GroupUserOutDTO uc = new GroupUserOutDTO();
                 long totalenrols = 0;

@@ -158,7 +158,7 @@ public class GroupServiceImpl implements GroupService {
                 }
                 Optional<UserGroup> usergroup = userGroupRepository.findByUserIdAndGroupId(id,groupInDTO.getGroupId());
                 if(usergroup.isPresent()){
-                    usergroup.get().set_active(true);
+                    usergroup.get().setActive(true);
                     userGroupRepository.save(usergroup.get());
                 }
                 else {
@@ -458,7 +458,7 @@ public class GroupServiceImpl implements GroupService {
         }
 
         for(UserGroup user : usrgrp){
-            if(!mp.containsKey(user.getUserId()) && user.is_active()){
+            if(!mp.containsKey(user.getUserId()) && user.isActive()){
                 Optional<User> usr = userRepository.findById(user.getUserId());
                 GroupUserOutDTO uc = new GroupUserOutDTO();
                 long totalenrols = 0;
