@@ -321,7 +321,7 @@ public class EnrollmentServiceImpl implements EnrollmentService {
         // Build and return DTO
         UserEnrollmentsOutDTO result = new UserEnrollmentsOutDTO();
         result.setUserId(userId);
-        result.setUserName(user.getUserName());
+        result.setUserName(user.getFirstName() + " " + user.getLastName());
         result.setCourseEnrollments((long) courseEnrollments.size());
         result.setBundleEnrollments((long) bundleEnrollments.size());
         result.setTotalCourses(totalCourses);
@@ -602,7 +602,7 @@ public class EnrollmentServiceImpl implements EnrollmentService {
         // Build and return DTO
         UserEnrollmentsOutDTO result = new UserEnrollmentsOutDTO();
         result.setUserId(userId);
-        result.setUserName(user.getUserName());
+        result.setUserName(user.getFirstName() + " " + user.getLastName());
         result.setCourseEnrollments((long) courseEnrollments.size());
         result.setBundleEnrollments((long) bundleEnrollments.size());
         result.setTotalCourses(totalCourses);
