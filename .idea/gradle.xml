@@ -4,20 +4,11 @@
   <component name="GradleSettings">
     <option name="linkedExternalProjectsSettings">
       <GradleProjectSettings>
-        <option name="externalProjectPath" value="$PROJECT_DIR$/LMS" />
+        <option name="externalProjectPath" value="$PROJECT_DIR$/api-gateway-lms" />
         <option name="gradleJvm" value="#JAVA_HOME" />
         <option name="modules">
           <set>
-            <option value="$PROJECT_DIR$/LMS" />
-          </set>
-        </option>
-      </GradleProjectSettings>
-      <GradleProjectSettings>
-        <option name="externalProjectPath" value="$PROJECT_DIR$/api-gateway" />
-        <option name="gradleJvm" value="#JAVA_HOME" />
-        <option name="modules">
-          <set>
-            <option value="$PROJECT_DIR$/api-gateway" />
+            <option value="$PROJECT_DIR$/api-gateway-lms" />
           </set>
         </option>
       </GradleProjectSettings>
@@ -27,6 +18,15 @@
         <option name="modules">
           <set>
             <option value="$PROJECT_DIR$/course-service-lms" />
+          </set>
+        </option>
+      </GradleProjectSettings>
+      <GradleProjectSettings>
+        <option name="externalProjectPath" value="$PROJECT_DIR$/user-service-lms" />
+        <option name="gradleJvm" value="#JAVA_HOME" />
+        <option name="modules">
+          <set>
+            <option value="$PROJECT_DIR$/user-service-lms" />
           </set>
         </option>
       </GradleProjectSettings>

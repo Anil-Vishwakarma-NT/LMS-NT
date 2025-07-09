@@ -1,0 +1,176 @@
+package com.nt.user_service_lms.controller;
+
+import com.nt.user_service_lms.dto.*;
+import com.nt.user_service_lms.dto.inDTO.UserInDTO;
+import com.nt.user_service_lms.dto.outDTO.MessageOutDto;
+import com.nt.user_service_lms.dto.outDTO.StandardResponseOutDTO;
+import com.nt.user_service_lms.dto.outDTO.UserOutDTO;
+import com.nt.user_service_lms.service.serviceImpl.GroupServiceImpl;
+import com.nt.user_service_lms.service.serviceImpl.UserServiceImpl;
+import com.nt.user_service_lms.service.serviceImpl.AdminServiceImpl;
+import jakarta.validation.Valid;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
+
+/**
+ * Controller for Admin functionalities such as registering users,
+ * deleting users, listing employees, assigning roles, etc.
+ */
+@Slf4j
+@RestController
+@RequestMapping("/api/service-api/admin")
+@PreAuthorize("hasRole('admin')")
+public final class AdminController {
+
+    /**
+     * Service for user operations.
+     */
+    @Autowired
+    private UserServiceImpl userService;
+
+    /**
+     * Service for admin operations.
+     */
+    @Autowired
+    private AdminServiceImpl adminService;
+
+    /**
+     * Service for group operations.
+     */
+    @Autowired
+    private GroupServiceImpl groupService;
+
+    /**
+     * Registers new user.
+     *
+     * @param registerDto the user registration information
+     * @return success message
+     */
+    @PostMapping("/register")
+    public ResponseEntity<StandardResponseOutDTO> register(@Valid @RequestBody final RegisterDto registerDto) {
+        log.info("Admin registration request received for: {}", registerDto.getEmail());
+
+        StandardResponseOutDTO response = adminService.register(registerDto);
+        log.info("Admin registered successfully: {}", registerDto.getEmail());
+        return new ResponseEntity<>(response, HttpStatus.CREATED);
+    }
+
+    /**
+     * Deletes a user by ID.
+     *
+     * @param userId the ID of the user to delete
+     * @return success message
+     */
+    @DeleteMapping("/remove-user/{userId}")
+//    @PreAuthorize("hasRole('admin')")
+    public ResponseEntity<StandardResponseOutDTO<MessageOutDto>> deleteEmployee(@PathVariable final long userId) {
+        log.info("Received request to delete user with ID: {}", userId);
+
+        StandardResponseOutDTO response = adminService.employeeDeletion(userId);
+        log.info("User with ID: {} deleted successfully", userId);
+        return new ResponseEntity<>(response, HttpStatus.OK);
+    }
+
+    /**
+     * Gets all employees.
+     *
+     * @return list of all employees
+     */
+    @GetMapping("/active-employees")
+    @PreAuthorize("hasAuthority('admin')")
+    public ResponseEntity<StandardResponseOutDTO<List<UserOutDTO>>> getAllEmployees() {
+        log.info("Fetching all employees");
+        StandardResponseOutDTO<List<UserOutDTO>> response = adminService.getAllActiveUsers();
+        log.info("Fetched {} employees", response.getData().size());
+        if (response.getData().isEmpty()) {
+            return new ResponseEntity<>(response, HttpStatus.NO_CONTENT);
+        }
+        return new ResponseEntity<>(response, HttpStatus.OK);
+    }
+
+    /**
+     * Gets all inactive employees.
+     *
+     * @return list of all employees
+     */
+    @GetMapping("/inactive-employees")
+//    @PreAuthorize("hasAuthority('admin')")
+    public ResponseEntity<StandardResponseOutDTO<List<UserOutDTO>>> getAllInactiveEmployees() {
+        log.info("Fetching all inactive employees");
+        StandardResponseOutDTO<List<UserOutDTO>> response = adminService.getAllInactiveUsers();
+        log.info("Fetched {} inactive employees", response.getData().size());
+        if (response.getData().isEmpty()) {
+            return new ResponseEntity<>(response, HttpStatus.NO_CONTENT);
+        }
+        return new ResponseEntity<>(response, HttpStatus.OK);
+    }
+
+    /**
+     * Gets employees under a manager.
+     *
+     * @param userId manager's user ID
+     * @return list of employees
+     */
+    @GetMapping("/manager-employee/{userId}")
+//    @PreAuthorize("hasAuthority('admin')")
+    public ResponseEntity<StandardResponseOutDTO<List<UserOutDTO>>> getManagerEmployee(@PathVariable final long userId) {
+        log.info("Fetching employees for manager with ID: {}", userId);
+        StandardResponseOutDTO<List<UserOutDTO>> response = adminService.getManagerEmployee(userId);
+        if (response.getData().isEmpty()) {
+            return new ResponseEntity<>(response, HttpStatus.NO_CONTENT);
+        }
+        log.info("Fetched {} employees for manager with ID: {}", response.getData().size(), userId);
+        return new ResponseEntity<>(response, HttpStatus.OK);
+    }
+
+    /**
+     * Changes a user's role.
+     *
+     * @param userDto user ID and new role
+     * @return success message
+     */
+    @PostMapping("/change-role")
+//    @PreAuthorize("hasAuthority('admin')")
+    public ResponseEntity<StandardResponseOutDTO<MessageOutDto>> changeRole(@RequestBody @Valid final UserInDTO userDto) {
+        log.info("Received request to change role for user with ID: {}", userDto.getUserId());
+        StandardResponseOutDTO standardResponseOutDTO = adminService.changeUserRole(userDto.getUserId(),userDto.getRole());
+        return new ResponseEntity<>(standardResponseOutDTO,HttpStatus.OK);
+    }
+
+    @PatchMapping("/update-user/{userId}")
+    @PreAuthorize("hasAuthority('admin')")
+    public ResponseEntity<MessageOutDto> updateUser(@PathVariable final long userId , @RequestBody final UserInDTO userInDTO){
+
+        log.info("Received request to update user details");
+        return new ResponseEntity<>(
+                adminService.updateUserDetails(userInDTO,userId),
+                HttpStatus.OK
+        );
+    }
+
+
+
+//    @PreAuthorize("permitAll()")
+    @GetMapping("/count")
+    public ResponseEntity<StandardResponseOutDTO<Long>> getTotalUserCount() {
+        log.info("Fetching total user count");
+        long count = userService.countActiveUsers();
+        log.info("Total user count retrieved: {}", count);
+        StandardResponseOutDTO<Long> standardResponseOutDTO = StandardResponseOutDTO.success(count, "Fetched User Count");
+        return ResponseEntity.ok(standardResponseOutDTO);
+    }
+
+    @GetMapping("/users/recent")
+    public ResponseEntity<StandardResponseOutDTO<List<UsersDetailsViewDTO>>> getRecentUsers() {
+        List<UsersDetailsViewDTO> usersDetailsViewDTOS = userService.getRecentUserDetails();
+        StandardResponseOutDTO<List<UsersDetailsViewDTO>> standardResponseOutDTO = StandardResponseOutDTO.success(usersDetailsViewDTOS, "Fetched Recent Users");
+        return ResponseEntity.ok(standardResponseOutDTO);
+    }
+
+}

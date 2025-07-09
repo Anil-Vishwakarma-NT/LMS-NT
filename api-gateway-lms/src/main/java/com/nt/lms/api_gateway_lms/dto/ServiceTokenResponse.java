@@ -1,0 +1,12 @@
+package com.nt.lms.api_gateway_lms.dto;
+
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+
+@Data
+@AllArgsConstructor
+@NoArgsConstructor
+public class ServiceTokenResponse {
+    private String serviceToken ;
+}
