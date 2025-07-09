@@ -1,96 +1,137 @@
-package com.nt.course_service_lms.entityTest;
-import com.nt.course_service_lms.entity.CourseContent;
+package com.example.course_service_lms.entityTest;
+
+import com.example.course_service_lms.entity.CourseContent;
 import org.junit.jupiter.api.Test;
+
+import java.time.LocalDateTime;
+
 import static org.assertj.core.api.Assertions.assertThat;
 
 class CourseContentTest {
 
     @Test
+    void testNoArgsConstructorAndSetters() {
+        CourseContent cc = new CourseContent();
+        LocalDateTime now = LocalDateTime.now();
+
+        cc.setCourseContentId(1L);
+        cc.setCourseId(100L);
+        cc.setTitle("Intro");
+        cc.setDescription("Introduction to the course");
+        cc.setResourceLink("http://example.com");
+        cc.setActive(true);
+        cc.setCreatedAt(now);
+        cc.setUpdatedAt(now);
+
+        assertThat(cc.getCourseContentId()).isEqualTo(1L);
+        assertThat(cc.getCourseId()).isEqualTo(100L);
+        assertThat(cc.getTitle()).isEqualTo("Intro");
+        assertThat(cc.getDescription()).isEqualTo("Introduction to the course");
+        assertThat(cc.getResourceLink()).isEqualTo("http://example.com");
+        assertThat(cc.isActive()).isTrue();
+        assertThat(cc.getCreatedAt()).isEqualTo(now);
+        assertThat(cc.getUpdatedAt()).isEqualTo(now);
+    }
+
+    @Test
     void testAllArgsConstructor() {
-        // Given
-        CourseContent courseContent = new CourseContent(1L, 101L, "Java Basics", "Introduction to Java", "http://video.com", "http://resource.com");
+        CourseContent cc = new CourseContent(
+                2L,
+                101L,
+                "Module 1",
+                "Module 1 Description",
+                "http://resource.com"
+        );
 
-        // Then
-        assertThat(courseContent.getCourseContentId()).isEqualTo(1L);
-        assertThat(courseContent.getCourseId()).isEqualTo(101L);
-        assertThat(courseContent.getTitle()).isEqualTo("Java Basics");
-        assertThat(courseContent.getDescription()).isEqualTo("Introduction to Java");
-        assertThat(courseContent.getVideoLink()).isEqualTo("http://video.com");
-        assertThat(courseContent.getResourceLink()).isEqualTo("http://resource.com");
+        assertThat(cc.getCourseContentId()).isEqualTo(2L);
+        assertThat(cc.getCourseId()).isEqualTo(101L);
+        assertThat(cc.getTitle()).isEqualTo("Module 1");
+        assertThat(cc.getDescription()).isEqualTo("Module 1 Description");
+        assertThat(cc.getResourceLink()).isEqualTo("http://resource.com");
+
+        // Check default values
+        assertThat(cc.isActive()).isFalse();
+        assertThat(cc.getCreatedAt()).isNull();
+        assertThat(cc.getUpdatedAt()).isNull();
     }
 
     @Test
-    void testNoArgsConstructor() {
-        // When
-        CourseContent courseContent = new CourseContent();
+    void testEquals_SameValues() {
+        CourseContent cc1 = new CourseContent(1L, 2L, "Title", "Desc", "link");
+        CourseContent cc2 = new CourseContent(1L, 2L, "Title", "Desc", "link");
 
-        // Then
-        assertThat(courseContent).isNotNull();
-        assertThat(courseContent.getCourseContentId()).isEqualTo(0L);
-        assertThat(courseContent.getCourseId()).isEqualTo(0L);
-        assertThat(courseContent.getTitle()).isNull();
-        assertThat(courseContent.getDescription()).isNull();
-        assertThat(courseContent.getVideoLink()).isNull();
-        assertThat(courseContent.getResourceLink()).isNull();
+        assertThat(cc1).isEqualTo(cc2);
+        assertThat(cc1.hashCode()).isEqualTo(cc2.hashCode());
     }
 
     @Test
-    void testSettersAndGetters() {
-        // Given
-        CourseContent courseContent = new CourseContent();
-        courseContent.setCourseContentId(1L);
-        courseContent.setCourseId(101L);
-        courseContent.setTitle("Java Basics");
-        courseContent.setDescription("Introduction to Java");
-        courseContent.setVideoLink("http://video.com");
-        courseContent.setResourceLink("http://resource.com");
+    void testEquals_DifferentValues() {
+        CourseContent cc1 = new CourseContent(1L, 2L, "Title", "Desc", "link");
+        CourseContent cc2 = new CourseContent(9L, 2L, "Title", "Desc", "link");
+        CourseContent cc3 = new CourseContent(1L, 99L, "Title", "Desc", "link");
+        CourseContent cc4 = new CourseContent(1L, 2L, "Different", "Desc", "link");
+        CourseContent cc5 = new CourseContent(1L, 2L, "Title", "Different", "link");
+        CourseContent cc6 = new CourseContent(1L, 2L, "Title", "Desc", "different");
 
-        // Then
-        assertThat(courseContent.getCourseContentId()).isEqualTo(1L);
-        assertThat(courseContent.getCourseId()).isEqualTo(101L);
-        assertThat(courseContent.getTitle()).isEqualTo("Java Basics");
-        assertThat(courseContent.getDescription()).isEqualTo("Introduction to Java");
-        assertThat(courseContent.getVideoLink()).isEqualTo("http://video.com");
-        assertThat(courseContent.getResourceLink()).isEqualTo("http://resource.com");
+        assertThat(cc1).isNotEqualTo(cc2);
+        assertThat(cc1).isNotEqualTo(cc3);
+        assertThat(cc1).isNotEqualTo(cc4);
+        assertThat(cc1).isNotEqualTo(cc5);
+        assertThat(cc1).isNotEqualTo(cc6);
     }
 
     @Test
-    void testEqualsAndHashCode() {
-        // Given
-        CourseContent content1 = new CourseContent(1L, 101L, "Title1", "Description1", "VideoLink1", "ResourceLink1");
-        CourseContent content2 = new CourseContent(1L, 101L, "Title1", "Description1", "VideoLink1", "ResourceLink1");
+    void testEquals_NullAndDifferentClass() {
+        CourseContent cc = new CourseContent(1L, 2L, "Title", "Desc", "link");
 
-        // Then
-        assertThat(content1).isEqualTo(content2);
-        assertThat(content1.hashCode()).isEqualTo(content2.hashCode());
+        assertThat(cc).isNotEqualTo(null);
+        assertThat(cc).isNotEqualTo("string");
     }
 
     @Test
-    void testEqualsAndHashCodeAfterModification() {
-        // Given
-        CourseContent content1 = new CourseContent(1L, 101L, "Title1", "Description1", "VideoLink1", "ResourceLink1");
-        CourseContent content2 = new CourseContent(1L, 101L, "Title1", "Description1", "VideoLink1", "ResourceLink1");
+    void testHashCode_DifferentObjects() {
+        CourseContent cc1 = new CourseContent(1L, 2L, "Title", "Desc", "link");
+        CourseContent cc2 = new CourseContent(3L, 4L, "Another", "Other", "none");
 
-        // Modify content2
-        content2.setTitle("Modified Title");
-
-        // Then
-        assertThat(content1).isNotEqualTo(content2);
-        assertThat(content1.hashCode()).isNotEqualTo(content2.hashCode());
+        assertThat(cc1.hashCode()).isNotEqualTo(cc2.hashCode());
     }
 
     @Test
-    void testToString() {
-        // Given
-        CourseContent courseContent = new CourseContent(1L, 101L, "Java Basics", "Introduction to Java", "http://video.com", "http://resource.com");
+    void testEqualsAndHashCode_AfterFieldModification() {
+        CourseContent cc1 = new CourseContent(1L, 2L, "Title", "Desc", "link");
+        CourseContent cc2 = new CourseContent(1L, 2L, "Title", "Desc", "link");
 
-        // Then
-        assertThat(courseContent.toString())
-                .contains("courseContentId=1")
-                .contains("courseId=101")
-                .contains("title=Java Basics")
-                .contains("description=Introduction to Java")
-                .contains("videoLink=http://video.com")
-                .contains("resourceLink=http://resource.com");
+        assertThat(cc1).isEqualTo(cc2);
+
+        cc2.setTitle("Changed");
+
+        assertThat(cc1).isNotEqualTo(cc2);
+        assertThat(cc1.hashCode()).isNotEqualTo(cc2.hashCode());
+    }
+
+    @Test
+    void testToString_ShouldContainFieldValues() {
+        CourseContent cc = new CourseContent();
+        LocalDateTime now = LocalDateTime.now();
+
+        cc.setCourseContentId(10L);
+        cc.setCourseId(20L);
+        cc.setTitle("Lesson 1");
+        cc.setDescription("Basics");
+        cc.setResourceLink("http://link.com");
+        cc.setActive(true);
+        cc.setCreatedAt(now);
+        cc.setUpdatedAt(now);
+
+        String str = cc.toString();
+
+        assertThat(str).contains("courseContentId=10");
+        assertThat(str).contains("courseId=20");
+        assertThat(str).contains("title=Lesson 1");
+        assertThat(str).contains("description=Basics");
+        assertThat(str).contains("resourceLink=http://link.com");
+        assertThat(str).contains("isActive=true");
+        assertThat(str).contains("createdAt=");
+        assertThat(str).contains("updatedAt=");
     }
 }

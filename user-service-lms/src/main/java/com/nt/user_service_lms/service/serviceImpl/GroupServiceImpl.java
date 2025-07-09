@@ -138,8 +138,6 @@ public class GroupServiceImpl implements GroupService {
     /**
      * Adds a user to a group.
      *
-     * @param employees the user ID
-     * @param groupId the group ID
      * @return a success or failure message
      */
     @Override
@@ -247,6 +245,7 @@ public class GroupServiceImpl implements GroupService {
         }
     }
 
+    @Override
     public StandardResponseOutDTO<List<CourseInfoOutDTO>> getUserCourses(final long groupId, final long userId ){
         try{
             List<Enrollment> enrols = enrollmentRepository.findByGroupIdAndUserId(groupId,userId);
@@ -294,7 +293,7 @@ public class GroupServiceImpl implements GroupService {
             if (user.getUserId() == UserConstants.getAdminId()) {
                 List<Group> adminGroups = groupRepository.findAll();
                 for (Group group : adminGroups) {
-                    if (group.is_active()) {
+                    if (group.isActive()) {
                         GroupOutDTO gout = groupDTOConverter.groupToOutDto(group,
                                 user.getFirstName() + " " + user.getLastName());
                         groupOutList.add(gout);
@@ -305,7 +304,7 @@ public class GroupServiceImpl implements GroupService {
                 List<Group> userGroups = groupRepository.findByCreatorId(user.getUserId());
 
                 for (Group group : userGroups) {
-                    if (group.is_active()) {
+                    if (group.isActive()) {
                         GroupOutDTO gout = groupDTOConverter.groupToOutDto(group,
                                 user.getFirstName() + " " + user.getLastName());
                         groupOutList.add(gout);
@@ -348,6 +347,24 @@ public class GroupServiceImpl implements GroupService {
     public long countGroups() {
 
         return groupRepository.count();
+    }
+
+    @Override
+    public StandardResponseOutDTO<List<GroupOutDTO>> getAllActiveGroups() {
+            List<Group> groups = groupRepository.findByIsActiveTrue();
+            if(groups.isEmpty()) {
+                return StandardResponseOutDTO.success(null, "No Groups Found");
+            }
+            List<GroupOutDTO> groupOutDTOS = new ArrayList<>();
+            for (Group group : groups) {
+                User creator = userRepository.findById(group.getCreatorId())
+                        .orElseThrow(() -> new ResourceNotFoundException(USER_NOT_FOUND));
+                GroupOutDTO gout = groupDTOConverter.groupToOutDto(group,
+                        creator.getFirstName() + " " + creator.getLastName());
+                groupOutDTOS.add(gout);
+            }
+
+            return StandardResponseOutDTO.success(groupOutDTOS,"All Groups fetched successfully");
     }
 
 

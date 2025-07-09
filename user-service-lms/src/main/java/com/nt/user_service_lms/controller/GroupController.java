@@ -6,6 +6,7 @@ import com.nt.user_service_lms.dto.outDTO.*;
 import com.nt.user_service_lms.exception.UnauthorizedAccessException;
 import com.nt.user_service_lms.repository.UserRepository;
 import com.nt.user_service_lms.service.EnrollmentsService;
+import com.nt.user_service_lms.service.GroupService;
 import com.nt.user_service_lms.service.serviceImpl.GroupServiceImpl;
 import jakarta.validation.Valid;
 import lombok.extern.slf4j.Slf4j;
@@ -24,11 +25,11 @@ import java.util.List;
 @RestController
 @RequestMapping("/api/service-api/group")
 @Slf4j
-public final class GroupController {
+public class GroupController {
 
     /** Service class to handle group logic. */
     @Autowired
-    private GroupServiceImpl groupService;
+    private GroupService groupService;
 
     /** Repository for accessing user data. */
     @Autowired
@@ -186,14 +187,34 @@ public final class GroupController {
         return new ResponseEntity<>(response,HttpStatus.OK);
     }
 
+    @GetMapping("/all-active-groups")
+    public ResponseEntity<StandardResponseOutDTO<List<GroupOutDTO>>> getAllActiveGroups() {                  // change group/groups to group
+
+        log.info("Fetching groups ");
+        StandardResponseOutDTO<List<GroupOutDTO>> response = groupService.getAllActiveGroups();
+
+
+        if (response.getData().isEmpty()) {
+            log.warn("No groups found ");
+            return new ResponseEntity<>(response, HttpStatus.NO_CONTENT);
+        }
+
+        log.info("Found {} groups ", response.getData().size());
+        return new ResponseEntity<>(response,HttpStatus.OK);
+    }
+
     @GetMapping("/count")
-    public ResponseEntity<MessageOutDto> getGroupCount() {
+    public ResponseEntity<StandardResponseOutDTO<Long>> getGroupCount() {
         log.info("Received request to get total Group count.");
         long count = groupService.countGroups();
         log.info("Total Group count retrieved: {}", count);
-        MessageOutDto message =new MessageOutDto();
-        message.setMessage(""+count);
-        return ResponseEntity.ok(message);
+
+        StandardResponseOutDTO<Long> response = new StandardResponseOutDTO<>();
+        response.setData(count);
+        response.setMessage("Group count retrieved successfully.");
+        response.setStatus("success");
+
+        return new ResponseEntity<>(response, HttpStatus.OK);
     }
 
     @GetMapping("/recent")
