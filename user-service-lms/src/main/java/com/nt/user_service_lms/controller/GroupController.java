@@ -204,13 +204,17 @@ public class GroupController {
     }
 
     @GetMapping("/count")
-    public ResponseEntity<MessageOutDto> getGroupCount() {
+    public ResponseEntity<StandardResponseOutDTO<Long>> getGroupCount() {
         log.info("Received request to get total Group count.");
         long count = groupService.countGroups();
         log.info("Total Group count retrieved: {}", count);
-        MessageOutDto message =new MessageOutDto();
-        message.setMessage(""+count);
-        return ResponseEntity.ok(message);
+
+        StandardResponseOutDTO<Long> response = new StandardResponseOutDTO<>();
+        response.setData(count);
+        response.setMessage("Group count retrieved successfully.");
+        response.setStatus("success");
+
+        return new ResponseEntity<>(response, HttpStatus.OK);
     }
 
     @GetMapping("/recent")

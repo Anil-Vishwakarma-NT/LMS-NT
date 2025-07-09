@@ -1,13 +1,13 @@
-package com.nt.course_service_lms.converterTest;
+package com.example.course_service_lms.converterTest;
 
-import com.nt.course_service_lms.converters.CourseContentConverters;
-import com.nt.course_service_lms.dto.inDTO.CourseContentInDTO;
-import com.nt.course_service_lms.entity.CourseContent;
+import com.example.course_service_lms.converters.CourseContentConverters;
+import com.example.course_service_lms.dto.inDTO.CourseContentInDTO;
+import com.example.course_service_lms.entity.CourseContent;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-class CourseContentConvertersTest {
+class CourseContentConverterTest {
 
     @Test
     void testCourseContentDtoToCourseContent() {
