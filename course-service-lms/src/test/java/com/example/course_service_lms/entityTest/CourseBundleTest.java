@@ -2,95 +2,121 @@ package com.example.course_service_lms.entityTest;
 
 import com.example.course_service_lms.entity.CourseBundle;
 import org.junit.jupiter.api.Test;
+
+import java.time.LocalDateTime;
+
 import static org.assertj.core.api.Assertions.assertThat;
 
 class CourseBundleTest {
 
     @Test
-    void testConstructorInitialization() {
+    void testNoArgsConstructorAndSetters() {
         // Given
-        long courseBundleId = 1L;
-        long bundleId = 2L;
-        long courseId = 3L;
+        CourseBundle cb = new CourseBundle();
+        LocalDateTime now = LocalDateTime.now();
 
         // When
-        CourseBundle courseBundle = new CourseBundle(courseBundleId, bundleId, courseId);
+        cb.setCourseBundleId(1L);
+        cb.setBundleId(2L);
+        cb.setCourseId(3L);
+        cb.setActive(true);
+        cb.setCreatedAt(now);
+        cb.setUpdatedAt(now);
 
         // Then
-        assertThat(courseBundle.getCourseBundleId()).isEqualTo(courseBundleId);
-        assertThat(courseBundle.getBundleId()).isEqualTo(bundleId);
-        assertThat(courseBundle.getCourseId()).isEqualTo(courseId);
+        assertThat(cb.getCourseBundleId()).isEqualTo(1L);
+        assertThat(cb.getBundleId()).isEqualTo(2L);
+        assertThat(cb.getCourseId()).isEqualTo(3L);
+        assertThat(cb.isActive()).isTrue();
+        assertThat(cb.getCreatedAt()).isEqualTo(now);
+        assertThat(cb.getUpdatedAt()).isEqualTo(now);
     }
 
     @Test
-    void testGettersAndSetters() {
+    void testAllArgsConstructorOnlySetsThreeFields() {
         // Given
-        CourseBundle courseBundle = new CourseBundle();
-        long courseBundleId = 5L;
-        long bundleId = 10L;
-        long courseId = 15L;
-
-        // When
-        courseBundle.setCourseBundleId(courseBundleId);
-        courseBundle.setBundleId(bundleId);
-        courseBundle.setCourseId(courseId);
+        CourseBundle cb = new CourseBundle(10L, 20L, 30L);
 
         // Then
-        assertThat(courseBundle.getCourseBundleId()).isEqualTo(courseBundleId);
-        assertThat(courseBundle.getBundleId()).isEqualTo(bundleId);
-        assertThat(courseBundle.getCourseId()).isEqualTo(courseId);
+        assertThat(cb.getCourseBundleId()).isEqualTo(10L);
+        assertThat(cb.getBundleId()).isEqualTo(20L);
+        assertThat(cb.getCourseId()).isEqualTo(30L);
+        assertThat(cb.isActive()).isFalse(); // Default
+        assertThat(cb.getCreatedAt()).isNull();
+        assertThat(cb.getUpdatedAt()).isNull();
     }
 
     @Test
-    void testEquals() {
+    void testEquals_SameValues() {
         // Given
-        CourseBundle courseBundle1 = new CourseBundle(1L, 2L, 3L);
-        CourseBundle courseBundle2 = new CourseBundle(1L, 2L, 3L);
-        CourseBundle courseBundle3 = new CourseBundle(4L, 5L, 6L);
+        CourseBundle cb1 = new CourseBundle(1L, 2L, 3L);
+        CourseBundle cb2 = new CourseBundle(1L, 2L, 3L);
 
         // Then
-        assertThat(courseBundle1).isEqualTo(courseBundle2); // Equal objects
-        assertThat(courseBundle1).isNotEqualTo(courseBundle3); // Non-equal objects
-        assertThat(courseBundle1).isNotEqualTo(null); // Not equal to null
+        assertThat(cb1).isEqualTo(cb2);
+        assertThat(cb1.hashCode()).isEqualTo(cb2.hashCode());
     }
 
     @Test
-    void testHashCode() {
-        // Given
-        CourseBundle courseBundle1 = new CourseBundle(1L, 2L, 3L);
-        CourseBundle courseBundle2 = new CourseBundle(1L, 2L, 3L);
-        CourseBundle courseBundle3 = new CourseBundle(4L, 5L, 6L);
+    void testEquals_DifferentValues() {
+        CourseBundle cb1 = new CourseBundle(1L, 2L, 3L);
+        CourseBundle cb2 = new CourseBundle(9L, 2L, 3L);
+        CourseBundle cb3 = new CourseBundle(1L, 9L, 3L);
+        CourseBundle cb4 = new CourseBundle(1L, 2L, 9L);
 
-        // Then
-        assertThat(courseBundle1.hashCode()).isEqualTo(courseBundle2.hashCode()); // Hash codes match
-        assertThat(courseBundle1.hashCode()).isNotEqualTo(courseBundle3.hashCode()); // Hash codes differ
+        assertThat(cb1).isNotEqualTo(cb2);
+        assertThat(cb1).isNotEqualTo(cb3);
+        assertThat(cb1).isNotEqualTo(cb4);
     }
 
     @Test
-    void testNoArgsConstructor() {
-        // When
-        CourseBundle courseBundle = new CourseBundle();
+    void testEquals_OtherClassAndNull() {
+        CourseBundle cb = new CourseBundle(1L, 2L, 3L);
 
-        // Then
-        assertThat(courseBundle.getCourseBundleId()).isEqualTo(0L);
-        assertThat(courseBundle.getBundleId()).isEqualTo(0L);
-        assertThat(courseBundle.getCourseId()).isEqualTo(0L);
+        assertThat(cb).isNotEqualTo(null);
+        assertThat(cb).isNotEqualTo("some string");
+    }
+
+    @Test
+    void testHashCode_DifferentObjects() {
+        CourseBundle cb1 = new CourseBundle(1L, 2L, 3L);
+        CourseBundle cb2 = new CourseBundle(4L, 5L, 6L);
+
+        assertThat(cb1.hashCode()).isNotEqualTo(cb2.hashCode());
     }
 
     @Test
     void testEqualsAndHashCodeAfterFieldModification() {
-        // Given
-        CourseBundle courseBundle1 = new CourseBundle(1L, 2L, 3L);
-        CourseBundle courseBundle2 = new CourseBundle(1L, 2L, 3L);
+        CourseBundle cb1 = new CourseBundle(1L, 2L, 3L);
+        CourseBundle cb2 = new CourseBundle(1L, 2L, 3L);
 
-        // Ensure they are initially equal
-        assertThat(courseBundle1).isEqualTo(courseBundle2);
+        assertThat(cb1).isEqualTo(cb2);
+        assertThat(cb1.hashCode()).isEqualTo(cb2.hashCode());
 
-        // Modify one field
-        courseBundle2.setCourseId(4L);
+        cb2.setCourseId(99L);
 
-        // Then
-        assertThat(courseBundle1).isNotEqualTo(courseBundle2); // No longer equal
-        assertThat(courseBundle1.hashCode()).isNotEqualTo(courseBundle2.hashCode()); // Hash codes differ
+        assertThat(cb1).isNotEqualTo(cb2);
+        assertThat(cb1.hashCode()).isNotEqualTo(cb2.hashCode());
+    }
+
+    @Test
+    void testToStringContainsFields() {
+        LocalDateTime now = LocalDateTime.now();
+        CourseBundle cb = new CourseBundle();
+        cb.setCourseBundleId(1L);
+        cb.setBundleId(2L);
+        cb.setCourseId(3L);
+        cb.setActive(true);
+        cb.setCreatedAt(now);
+        cb.setUpdatedAt(now);
+
+        String result = cb.toString();
+
+        assertThat(result).contains("courseBundleId=1");
+        assertThat(result).contains("bundleId=2");
+        assertThat(result).contains("courseId=3");
+        assertThat(result).contains("isActive=true");
+        assertThat(result).contains("createdAt=");
+        assertThat(result).contains("updatedAt=");
     }
 }

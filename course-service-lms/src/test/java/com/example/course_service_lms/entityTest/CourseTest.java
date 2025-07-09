@@ -113,7 +113,6 @@ public class CourseTest {
         Course course = new Course(6L, 60L, "AI Course", "Intro to AI", "BEGINNER", true, now, now);
 
         String toString = course.toString();
-
         assertTrue(toString.contains("courseId=6"));
         assertTrue(toString.contains("ownerId=60"));
         assertTrue(toString.contains("title=AI Course"));

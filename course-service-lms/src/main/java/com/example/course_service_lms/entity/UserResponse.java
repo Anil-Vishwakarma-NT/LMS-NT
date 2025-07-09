@@ -1,11 +1,7 @@
 package com.example.course_service_lms.entity;
 
-
 import jakarta.persistence.*;
 import lombok.Data;
-import org.hibernate.annotations.JdbcTypeCode;
-import org.hibernate.type.SqlTypes;
-
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
@@ -13,46 +9,87 @@ import java.util.Objects;
 
 /**
  * Entity representing a user's response to a quiz question.
- * Maps to the user_response table in the database
+ * Maps to the user_response table in the database.
  */
 @Entity
 @Table(name = "user_response")
 @Data
 public class UserResponse {
 
+    /**
+     * Unique identifier for the user response.
+     */
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "response_id")
     private Long responseId;
 
+    /**
+     * ID of the user who submitted the response.
+     */
     @Column(name = "user_id", nullable = false)
     private Long userId;
 
+    /**
+     * ID of the quiz associated with the response.
+     */
     @Column(name = "quiz_id", nullable = false)
     private Long quizId;
 
+    /**
+     * ID of the question answered by the user.
+     */
     @Column(name = "question_id", nullable = false)
     private Long questionId;
 
+    /**
+     * Attempt number of the quiz when this response was submitted.
+     */
     @Column(name = "attempt", nullable = false)
     private Long attempt;
 
-//    @Column(name = "user_answer", nullable = false, columnDefinition = "TEXT")
-//    private String userAnswer;
-@Column(name = "user_answer", nullable = false, columnDefinition = "TEXT")
-private String userAnswer;
+    /**
+     * The user's submitted answer (stored as text).
+     */
+    @Column(name = "user_answer", nullable = false, columnDefinition = "TEXT")
+    private String userAnswer;
 
+    /**
+     * Indicates whether the user's answer was correct.
+     */
     @Column(name = "is_correct", nullable = false)
     private Boolean isCorrect;
 
+    /**
+     * Points earned by the user for this response.
+     */
     @Column(name = "points_earned", nullable = false, precision = 5, scale = 2)
     private BigDecimal pointsEarned;
 
+    /**
+     * Timestamp when the user answered the question.
+     */
     @Column(name = "answered_at", nullable = false)
     private LocalDateTime answeredAt;
 
+    /**
+     * Default constructor.
+     */
     public UserResponse() {}
 
+    /**
+     * Parameterized constructor to initialize all fields.
+     *
+     * @param responseId Unique identifier for the response
+     * @param userId ID of the user
+     * @param quizId ID of the quiz
+     * @param questionId ID of the question
+     * @param attempt Attempt number
+     * @param userAnswer Answer provided by the user
+     * @param isCorrect Whether the answer is correct
+     * @param pointsEarned Points earned for this response
+     * @param answeredAt Time when the answer was submitted
+     */
     public UserResponse(Long responseId, Long userId, Long quizId, Long questionId,
                         Long attempt, String userAnswer, Boolean isCorrect, BigDecimal pointsEarned,
                         LocalDateTime answeredAt) {
@@ -67,6 +104,12 @@ private String userAnswer;
         this.answeredAt = answeredAt;
     }
 
+    /**
+     * Equality check based on all fields.
+     *
+     * @param o Object to compare
+     * @return true if equal, false otherwise
+     */
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
@@ -82,6 +125,11 @@ private String userAnswer;
                 Objects.equals(answeredAt, that.answeredAt);
     }
 
+    /**
+     * Generates hash code based on all fields.
+     *
+     * @return hash code
+     */
     @Override
     public int hashCode() {
         return Objects.hash(responseId, userId, quizId, questionId, attempt, userAnswer,
