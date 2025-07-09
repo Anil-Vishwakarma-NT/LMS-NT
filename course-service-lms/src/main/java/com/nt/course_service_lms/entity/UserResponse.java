@@ -1,4 +1,4 @@
-package com.example.course_service_lms.entity;
+package com.nt.course_service_lms.entity;
 
 import jakarta.persistence.*;
 import lombok.Data;
