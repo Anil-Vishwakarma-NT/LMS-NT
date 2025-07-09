@@ -57,22 +57,21 @@ public class ServiceAuthenticationFilter extends OncePerRequestFilter {
                                     FilterChain filterChain) throws ServletException, IOException {
 
         try {
+            // for the static content
             String path = request.getRequestURI();
-            System.out.println(path);
             if (path.startsWith("/video/") || path.startsWith("/pdf/")) {
                 filterChain.doFilter(request, response); // allow public static resources
                 return;
             }
 
             String serviceToken = request.getHeader(HEADER_X_SERVICE_TOKEN);
-            System.out.println(serviceToken);
             String clientId = null;
+
             if (serviceToken != null) {
                 try {
                     clientId = jwtUtil.extractClientId(serviceToken); // may return null
                 } catch (Exception e) {
                     logger.warn("Failed to extract subject from token: {}", e.getMessage());
-//                    throw new ResourceNotFoundException("failed to fetch the clientId from the token" + e.getMessage());
                     handleUnauthorized(response,"failed to fetch the clientId from the token, jwt token is expired");
                     return;
                 }
@@ -82,22 +81,17 @@ public class ServiceAuthenticationFilter extends OncePerRequestFilter {
             if ("NA".equals(clientId)) {
                 isGatewayRequest = false;
             }
-            System.out.println(isGatewayRequest);
-            System.out.println(serviceToken);
-//            System.out.println(request.getRequestURL());
 
             logger.debug("Token subject: {}, isGatewayRequest: {}", clientId, isGatewayRequest);
 
             if (isGatewayRequest) {
                 // Gateway requests are always allowed, but validated
-                System.out.println("gateway header .......................");
                 if (!handleGatewayRequest(request, response)) {
                     return;
                 }
             } else {
                 // Direct requests — allowed only when gatewayValidationEnabled is false
                 if (!gatewayValidationEnabled) {
-                    System.out.println("direct header...............");
                     if (!handleDirectRequest(request, response)) {
                         return;
                     }
@@ -110,7 +104,6 @@ public class ServiceAuthenticationFilter extends OncePerRequestFilter {
             filterChain.doFilter(request, response);
 
         } finally {
-//            ServiceTokenContext.clear();
             logger.debug("Cleared service token context after request processing");
         }
     }
@@ -140,10 +133,7 @@ public class ServiceAuthenticationFilter extends OncePerRequestFilter {
         }
 
         if (serviceToken != null && jwtUtil.validateServiceToken(serviceToken, expectedAudience)) {
-//            ServiceTokenContext.setCurrentToken(serviceToken);
-//            ServiceTokenContext.setOriginalTokenType(originalTokenType);
             setServiceAuthentication(serviceToken, originalTokenType);
-//            logger.debug("Gateway service token stored in context and authentication set");
             return true;
         } else {
             handleUnauthorized(response, "Invalid or missing service token for gateway request");
@@ -178,7 +168,6 @@ public class ServiceAuthenticationFilter extends OncePerRequestFilter {
         if (signature == null || timestamp == null || nonce == null) {
             return false;
         }
-
         try {
             long requestTime = Long.parseLong(timestamp);
             long currentTime = System.currentTimeMillis();
@@ -207,7 +196,6 @@ public class ServiceAuthenticationFilter extends OncePerRequestFilter {
             throws IOException {
 
         logger.debug("Processing Direct Request");
-        System.out.println("Direct request received ..................");
         String directSecret = request.getHeader(directSecretHeader);
 
         if (directSecret == null) {
@@ -226,9 +214,6 @@ public class ServiceAuthenticationFilter extends OncePerRequestFilter {
             String serviceToken = authHeader.substring(BEARER_PREFIX.length());
             try {
                 if (jwtUtil.validateServiceToken(serviceToken, expectedAudience)) {
-//                    ServiceTokenContext.setCurrentToken(serviceToken);
-//                    ServiceTokenContext.setOriginalTokenType(TOKEN_TYPE_SERVICE);
-
                     setServiceAuthentication(serviceToken, TOKEN_TYPE_SERVICE);
                     logger.debug("Direct service token stored in context and authentication set");
                     return true;

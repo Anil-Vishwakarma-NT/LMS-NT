@@ -58,14 +58,12 @@ public class ServiceAuthenticationFilter extends OncePerRequestFilter {
 
         try {
             String serviceToken = request.getHeader(HEADER_X_SERVICE_TOKEN);
-            System.out.println(serviceToken);
             String clientId = null;
             if (serviceToken != null) {
                 try {
                     clientId = jwtUtil.extractClientId(serviceToken); // may return null
                 } catch (Exception e) {
                     logger.warn("Failed to extract subject from token: {}", e.getMessage());
-//                    throw new ResourceNotFoundException("failed to fetch the clientId from the token" + e.getMessage());
                     handleUnauthorized(response,"failed to fetch the clientId from the token, jwt token is expired");
                     return;
                 }
@@ -75,22 +73,17 @@ public class ServiceAuthenticationFilter extends OncePerRequestFilter {
             if ("NA".equals(clientId)) {
                 isGatewayRequest = false;
             }
-            System.out.println(isGatewayRequest);
-            System.out.println(serviceToken);
-            System.out.println(request.getRequestURL());
 
             logger.debug("Token subject: {}, isGatewayRequest: {}", clientId, isGatewayRequest);
 
             if (isGatewayRequest) {
                 // Gateway requests are always allowed, but validated
-                System.out.println("gateway header .......................");
                 if (!handleGatewayRequest(request, response)) {
                     return;
                 }
             } else {
                 // Direct requests — allowed only when gatewayValidationEnabled is false
                 if (!gatewayValidationEnabled) {
-                    System.out.println("direct header...............");
                     if (!handleDirectRequest(request, response)) {
                         return;
                     }
@@ -200,7 +193,6 @@ public class ServiceAuthenticationFilter extends OncePerRequestFilter {
             throws IOException {
 
         logger.debug("Processing Direct Request");
-        System.out.println("Direct request received ..................");
         String directSecret = request.getHeader(directSecretHeader);
 
         if (directSecret == null) {
