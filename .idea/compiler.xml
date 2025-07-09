@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="CompilerConfiguration">
+    <annotationProcessing>
+      <profile name="Gradle Imported" enabled="true">
+        <outputRelativeToContentRoot value="true" />
+        <processorPath useClasspath="false">
+          <entry name="$USER_HOME$/.gradle/caches/modules-2/files-2.1/org.projectlombok/lombok/1.18.38/57f8f5e02e92a30fd21b80cbd426a4172b5f8e29/lombok-1.18.38.jar" />
+        </processorPath>
+        <module name="com.nt.lms.api-gateway-lms.main" />
+      </profile>
+    </annotationProcessing>
+    <bytecodeTargetLevel>
+      <module name="api-gateway-lms.main" target="17" />
+      <module name="api-gateway-lms.test" target="17" />
+      <module name="api-gateway.main" target="17" />
+      <module name="api-gateway.test" target="17" />
+      <module name="com.nt.LMS.main" target="17" />
+      <module name="com.nt.LMS.test" target="17" />
+      <module name="LMS" target="17" />
+      <module name="lms-course-service" target="17" />
+      <module name="lms-course-service.main" target="17" />
+      <module name="lms-course-service.test" target="17" />
+      <module name="lms-user-service" target="17" />
+      <module name="LMS.main" target="17" />
+      <module name="LMS.test" target="17" />
+    </bytecodeTargetLevel>
+  </component>
+</project>

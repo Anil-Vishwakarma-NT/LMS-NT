@@ -1,0 +1,149 @@
+server:
+  port: 8091
+
+spring:
+  application:
+    name: api-gateway-auth-service
+
+  # DataSource Configuration
+  datasource:
+    url: jdbc:postgresql://localhost:5432/lms_db
+    username: postgres
+    password: root
+    driver-class-name: org.postgresql.Driver
+
+  # JPA / Hibernate Configuration
+  jpa:
+    database-platform: org.hibernate.dialect.PostgreSQLDialect
+    hibernate:
+      ddl-auto: validate
+
+  cloud:
+    gateway:
+      routes:
+        # More specific routes first
+        - id: user-service-client-api
+          uri: http://localhost:8081
+          predicates:
+            - Path=/lms/user/api/client-api/**
+          filters:
+            - RewritePath=/lms/user/api/client-api/(?<segment>.*), /api/service-api/${segment}
+            - AddRequestHeader=X-Gateway-Service, user-service
+
+        - id: course-service-client-api
+          uri: http://localhost:8080
+          predicates:
+            - Path=/lms/course/api/client-api/**
+          filters:
+            - RewritePath=/lms/course/api/client-api/(?<segment>.*), /api/service-api/${segment}
+            - AddRequestHeader=X-Gateway-Service, course-service
+
+        - id: course-service-static-files
+          uri: http://localhost:8080
+          predicates:
+            - Path=/lms/course/static/**
+          filters:
+            - StripPrefix=3
+
+#        # General routes (less specific)
+#        - id: user-service-general
+#          uri: http://localhost:8081
+#          predicates:
+#            - Path=/user/**
+#          filters:
+#            - StripPrefix=1
+#            - AddRequestHeader=X-Gateway-Service, user-service
+#
+#        - id: course-service-general
+#          uri: http://localhost:8080
+#          predicates:
+#            - Path=/course/**
+#          filters:
+#            - StripPrefix=1
+#            - AddRequestHeader=X-Gateway-Service, course-service
+#
+#      default-filters:
+#        - AddResponseHeader=X-Gateway-Response, Gateway says hello!
+#        - AddRequestHeader=X-Request-Id, ${requestId}
+
+      # Global timeout settings
+      httpclient:
+        connect-timeout: 10000
+        response-timeout: 60s
+
+logging:
+  level:
+    root: INFO
+    org.springframework.cloud.gateway: TRACE
+    org.springframework.cloud.gateway.filter: TRACE
+    org.springframework.cloud.gateway.route: TRACE
+    org.springframework.cloud.gateway.handler: TRACE
+    org.springframework.cloud.gateway.handler.predicate: TRACE
+    org.springframework.security: DEBUG
+    com.nt.api_gateway: DEBUG
+
+# Management endpoints for health checks
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info,metrics
+  endpoint:
+    health:
+      show-details: always
+
+# JWT Configuration
+jwt:
+  secret: my_secret_key_my_secret_key_my_secret_key_for_production_use_stronger_key_256_bits_long
+  issuer: https://auth.nucleusteq.com
+
+  # Access token configuration (short-lived for client-to-service)
+  access-token:
+    expiration: 900000 # 15 minutes in milliseconds
+
+  # Refresh token configuration (long-lived for token refresh)
+  refresh-token:
+    expiration: 604800000 # 7 days in milliseconds
+
+  # Service token configuration (medium-lived for service-to-service)
+  service-token:
+    expiration: 3600000 # 1 hour in milliseconds
+
+# Application specific configuration
+app:
+  security:
+    # Token blacklist configuration (for logout functionality)
+    token-blacklist:
+      cleanup-interval: 3600000 # 1 hour
+      max-size: 10000
+
+    # Rate limiting configuration
+    rate-limit:
+      login-attempts: 5
+      time-window: 300000 # 5 minutes
+
+# Custom Gateway Security Configuration
+gateway:
+  security:
+    enabled: true
+  secret:
+    value: your-super-secret-gateway-key-change-this-in-production
+# RSA Key
+private:
+  key: |
+    -----BEGIN PRIVATE KEY-----
+    MIICdAIBADANBgkqhkiG9w0BAQEFAASCAl4wggJaAgEAAoGAdnGl1fPM/dV4znQI
+    uRjHkiHiNk1b39LIs3MmAG6MKY57j1Cck0oPv14z9VQUcAY8s7l/UquH0nU+g5kA
+    R6KbN06eQV/OfrLwfvPi/CMgcCTO9b+4kFxXs8lGA8ivtrCmfsnhOxTTPEIFvcI2
+    CTAuszqKZka79u9ZXjtU7PMz45sCAwEAAQKBgCrBQXSm6gNi0JXtysxOBpRYiNjD
+    OfvkkbA9S6VyQkQp+64zEiIU5PRWY/kV3b7GcZkKx8wmwQOWcPd9/lzddJuTpeOQ
+    Hu1JhC19UQvULyc9UNIfF3VPuusu344m5eRt4vrqR2Xgq+hF78aHYq7YMLRbglRg
+    rpi5g505UHG7NqgJAkEA37fqifiFLAgKvVXgXdP31u5xIpiLqR6HEAEGUmwsT7kI
+    nshK+E+Y/i5ydXJQI/xat8JrzkXCpLtr2OJfP+XtzQJBAIeI7WGkWsM4lfWeEyH+
+    jUVWngBkwwjGMvhI7cQiMk5oamRWvJ9u0XD3IuFnZ1ZT3T+SmA+zZ77jbvBRjw6I
+    7wcCQDnZwkGJTU6UicpqEYnRzU37/K94iOzjowNlcHAR3ueCrpL4skJBuwtHkXuD
+    YuvbTs4j7WK6sVmNyZac+wp396UCQFpKKrGQdvJ0oNnme6J63IvjnxBuD8uplcz3
+    cIXnrhGz16SOb8vaXGZgDPmSFDJbXhn6w5g6ERQGmSI5gw7QxEMCQHUrBZqUUxEA
+    HbYuGdRDKHe3xbFhpA4WiY+Y1+F2zC3uBLMGCMcuiDoHHsarroVKNo50Te/2fJtS
+    qsOp8MkKVqs=
+    -----END PRIVATE KEY-----
