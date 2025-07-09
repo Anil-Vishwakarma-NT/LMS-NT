@@ -1,0 +1,202 @@
+package com.nt.user_service_lms.service.serviceImpl;
+
+import com.nt.user_service_lms.dto.UsersDetailsViewDTO;
+import com.nt.user_service_lms.dto.outDTO.CourseDeadlinesDTO;
+import com.nt.user_service_lms.dto.outDTO.CourseInfoOutDTO;
+import com.nt.user_service_lms.dto.outDTO.StandardResponseOutDTO;
+import com.nt.user_service_lms.dto.outDTO.UserCourseEnrollDetails;
+import com.nt.user_service_lms.entities.Enrollment;
+import com.nt.user_service_lms.entities.Role;
+import com.nt.user_service_lms.entities.User;
+import com.nt.user_service_lms.exception.ResourceNotFoundException;
+import com.nt.user_service_lms.feignClient.CourseMicroserviceClient;
+import com.nt.user_service_lms.repository.EnrollmentRepository;
+import com.nt.user_service_lms.repository.RoleRepository;
+import com.nt.user_service_lms.repository.UserGroupRepository;
+import com.nt.user_service_lms.repository.UserRepository;
+import com.nt.user_service_lms.service.UserService;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
+import org.springframework.stereotype.Service;
+import java.sql.Timestamp;
+import java.time.LocalDate;
+import java.util.*;
+import java.util.stream.Collectors;
+
+import static com.nt.user_service_lms.constants.UserConstants.USER_NOT_FOUND;
+
+
+/**
+ * Implementation of the UserService interface that handles user-related operations.
+ * This class provides the method to load user details by username (email).
+ *
+ * <p> It interacts with the user repository to fetch user data and role details. </p>
+ */
+@Slf4j
+@Service
+public final class UserServiceImpl implements UserService {  // Made the class final since it's not intended for extension
+
+    /**
+     * To access user table.
+     */
+    @Autowired
+    private UserRepository userRepository;
+
+    /**
+     * To access role table.
+     */
+    @Autowired
+    private RoleRepository roleRepository;
+
+
+    @Autowired
+    private EnrollmentRepository enrollmentRepository;
+
+
+    @Autowired
+    private UserGroupRepository userGroupRepository;
+
+
+    @Autowired
+    private CourseMicroserviceClient courseMicroserviceClient;
+    /**
+     * Loads the user details based on the provided email.
+     * It retrieves the user and their associated role, and then constructs a UserDetails object
+     * for Spring Security authentication.
+     *
+     * @param email The email of the user to be loaded.
+     * @return The UserDetails object containing user information and their authorities.
+     * @throws UsernameNotFoundException If the user is not found with the given email.
+     */
+    @Override
+    public UserDetails loadUserByUsername(final String email) throws UsernameNotFoundException {  // Marked email as final
+        // Fetch the user by email
+        User user = userRepository.findByEmailIgnoreCase(email)
+                .orElseThrow(() -> new UsernameNotFoundException(USER_NOT_FOUND + " : " + email));
+
+        // Fetch the role of the user
+        Optional<Role> role = roleRepository.findById(user.getRoleId());
+
+        // Return the user details for Spring Security
+        return org.springframework.security.core.userdetails.User.builder()
+                .username(user.getEmail())
+                .password(user.getPassword())
+                .authorities(role.get().getName())
+                .build();
+    }
+
+
+
+
+    @Override
+    public long countActiveUsers() {
+        return userRepository.findAll()
+                .stream()
+                .filter(user -> user.isActive() && user.getUserId() != 1)
+                .count();
+    }
+
+    @Override
+    public List<UsersDetailsViewDTO> getRecentUserDetails() {
+        List<Object[]> results = userRepository.fetchRecentUserDetails();
+
+        return results.stream().map(obj -> {
+            UsersDetailsViewDTO dto = new UsersDetailsViewDTO();
+            dto.setFullName((String) obj[0]);
+            dto.setEmail((String) obj[1]);
+            dto.setRole((String) obj[2]);
+            dto.setManagerName((String) obj[3]);
+            dto.setCreatedAt((Timestamp) obj[4]);
+            return dto;
+        }).collect(Collectors.toList());
+    }
+
+
+
+    @Override
+    public Map<String , Long> userStatistics(long userId){
+        Map<String , Long> stats = new HashMap<>();
+         Long enrols = enrollmentRepository.getUserTotalEnrollments(userId);
+       stats.put("enrollments" , enrols);
+       long userGroup = userGroupRepository.getAllUserGroups(userId);
+       stats.put("groups",userGroup);
+
+       return stats;
+    }
+
+    @Override
+    public StandardResponseOutDTO<List<CourseDeadlinesDTO>> deadlineCourses(String email){
+        try {
+            Optional<User> user = userRepository.findByEmailIgnoreCase(email);
+            if (user.isPresent()) {
+                List<Enrollment> enrols = enrollmentRepository.findByUserId(user.get().getUserId());
+                LocalDate today = LocalDate.now();
+                LocalDate later = today.plusDays(5);
+
+                List<Enrollment> filteredEnrols = enrols.stream()
+                        .filter(enrol ->
+                                enrol.getDeadline() != null &&
+                                        !enrol.getDeadline().isBefore(today.atStartOfDay()) &&
+                                        !enrol.getDeadline().isAfter(later.atStartOfDay())
+                        )
+                        .collect(Collectors.toList());
+
+                List<CourseDeadlinesDTO> courses = new ArrayList<>();
+                for (Enrollment enrol : filteredEnrols) {
+                    CourseInfoOutDTO course = courseMicroserviceClient.getCourseById(enrol.getCourseId()).getBody().getData();
+                    CourseDeadlinesDTO deadlinecourse = new CourseDeadlinesDTO();
+                    deadlinecourse.setCourseId(course.getCourseId());
+                    deadlinecourse.setTitle(course.getTitle());
+                    deadlinecourse.setOwnerId(course.getOwnerId());
+                    deadlinecourse.setDeadline(enrol.getDeadline());
+                    courses.add(deadlinecourse);
+                }
+
+                return StandardResponseOutDTO.success(courses , null);
+
+            } else {
+                throw new ResourceNotFoundException(USER_NOT_FOUND);
+            }
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    @Override
+    public List<UserCourseEnrollDetails> getUserEnrolledCourses(Long userId) {
+        List<Enrollment> enrollments = enrollmentRepository.findByUserIdAndIsActiveTrue(userId);
+
+        Map<Long, Enrollment> earliestCourseEnrollments = new HashMap<>();
+
+        for (Enrollment e : enrollments) {
+            Long courseId = e.getCourseId();
+            if (courseId == null) continue;
+
+            if (!earliestCourseEnrollments.containsKey(courseId) ||
+                    e.getAssignedAt().isBefore(earliestCourseEnrollments.get(courseId).getAssignedAt())) {
+                earliestCourseEnrollments.put(courseId, e);
+            }
+        }
+
+        return earliestCourseEnrollments.values().stream()
+                .map(e -> {
+                    UserCourseEnrollDetails dto = new UserCourseEnrollDetails();
+                    dto.setCourseId(e.getCourseId());
+                    dto.setAssignedById(e.getAssignedBy()); // assuming it's Long
+                    dto.setEnrollmentDate(e.getAssignedAt());
+                    dto.setDeadline(e.getDeadline());
+                    return dto;
+                })
+                .collect(Collectors.toList());
+    }
+
+
+
+
+
+}
+
+
+
