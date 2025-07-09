@@ -72,6 +72,10 @@ public interface GroupService {
 
     long countGroups();
 
+    StandardResponseOutDTO<List<GroupOutDTO>> getAllActiveGroups();
+
+    StandardResponseOutDTO<List<CourseInfoOutDTO>> getUserCourses(final long groupId, final long userId );
+
     /**
      * Retrieves summaries of the 5 most recent groups.
      *

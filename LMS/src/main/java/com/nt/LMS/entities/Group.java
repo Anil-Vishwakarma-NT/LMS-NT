@@ -28,23 +28,24 @@ public class Group {
      */
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "group_id")
     private Long groupId;
 
     /**
      * The name of the group.
      */
-    @Column(nullable = false)
+    @Column(name = "group_name", nullable = false)
     private String groupName;
 
     /**
      * The ID of the user who created the group.
      */
-    @Column(nullable = false)
+    @Column(name ="creator_id", nullable = false)
     private long creatorId;
 
 
-    @Column
-    private boolean is_active = true;
+    @Column(name = "is_active")
+    private boolean isActive = true;
 
     /**
      * Constructor to initialize group with name and creator ID.

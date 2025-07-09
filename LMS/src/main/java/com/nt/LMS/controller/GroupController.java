@@ -7,6 +7,7 @@ import com.nt.LMS.exception.ResourceNotFoundException;
 import com.nt.LMS.exception.UnauthorizedAccessException;
 import com.nt.LMS.repository.UserRepository;
 import com.nt.LMS.service.EnrollmentsService;
+import com.nt.LMS.service.GroupService;
 import com.nt.LMS.service.serviceImpl.GroupServiceImpl;
 import jakarta.validation.Valid;
 import lombok.extern.slf4j.Slf4j;
@@ -26,11 +27,11 @@ import java.util.List;
 @RestController
 @RequestMapping("/api/service-api/group")
 @Slf4j
-public final class GroupController {
+public class GroupController {
 
     /** Service class to handle group logic. */
     @Autowired
-    private GroupServiceImpl groupService;
+    private GroupService groupService;
 
     /** Repository for accessing user data. */
     @Autowired
@@ -177,6 +178,22 @@ public final class GroupController {
 
         log.info("Fetching groups ");
         StandardResponseOutDTO<List<GroupOutDTO>> response = groupService.getAllGroups();
+
+
+        if (response.getData().isEmpty()) {
+            log.warn("No groups found ");
+            return new ResponseEntity<>(response, HttpStatus.NO_CONTENT);
+        }
+
+        log.info("Found {} groups ", response.getData().size());
+        return new ResponseEntity<>(response,HttpStatus.OK);
+    }
+
+    @GetMapping("/all-active-groups")
+    public ResponseEntity<StandardResponseOutDTO<List<GroupOutDTO>>> getAllActiveGroups() {                  // change group/groups to group
+
+        log.info("Fetching groups ");
+        StandardResponseOutDTO<List<GroupOutDTO>> response = groupService.getAllActiveGroups();
 
 
         if (response.getData().isEmpty()) {
