@@ -6,6 +6,7 @@ import com.nt.user_service_lms.dto.outDTO.*;
 import com.nt.user_service_lms.exception.UnauthorizedAccessException;
 import com.nt.user_service_lms.repository.UserRepository;
 import com.nt.user_service_lms.service.EnrollmentsService;
+import com.nt.user_service_lms.service.GroupService;
 import com.nt.user_service_lms.service.serviceImpl.GroupServiceImpl;
 import jakarta.validation.Valid;
 import lombok.extern.slf4j.Slf4j;
