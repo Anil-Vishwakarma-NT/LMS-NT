@@ -66,7 +66,7 @@ public interface CourseMicroserviceClient {
      * @return a response entity containing the bundle name
      */
     @GetMapping("/bundles/{id}/name")
-    ResponseEntity<StandardResponseOutDTO<String>> getBundleNameById(@PathVariable("id") Long id);
+    public ResponseEntity<StandardResponseOutDTO<String>> getBundleNameById(@PathVariable("id") Long id);
 
     /**
      * Retrieves information for all courses.
@@ -92,7 +92,7 @@ public interface CourseMicroserviceClient {
      * @return a response entity containing the course progress as a double
      */
     @GetMapping("/user-progress")
-    ResponseEntity<Double> getCourseProgress(@RequestParam int userId, @RequestParam int courseId);
+    public ResponseEntity<Double> getCourseProgress(@RequestParam Long userId, @RequestParam Long courseId);
 
     /**
      * Retrieves the existing course IDs from a list.
@@ -129,7 +129,7 @@ public interface CourseMicroserviceClient {
      * @return a DTO containing course progress with meta information
      */
     @GetMapping("user-progress/meta")
-    CourseProgressWithMetaDTO getCourseProgressWithMeta(@RequestParam int userId, @RequestParam int courseId);
+    public CourseProgressWithMetaDTO getCourseProgressWithMeta(@RequestParam Long userId, @RequestParam Long courseId);
 
     /**
      * Retrieves course information by course ID.

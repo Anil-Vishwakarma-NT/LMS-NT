@@ -14,22 +14,22 @@ public interface UserProgressRepository extends JpaRepository<UserProgress, Inte
 
     // Fetch user progress for a specific content
     @Query("SELECT u FROM UserProgress u WHERE u.userId = :userId AND u.contentId = :contentId")
-    Optional<UserProgress> findProgressByUserIdAndContentId(@Param("userId") int userId, @Param("contentId") int contentId);
+    Optional<UserProgress> findProgressByUserIdAndContentId(@Param("userId") Long userId, @Param("contentId") Long contentId);
 
     // Fetch all progress records for a specific course
     @Query("SELECT u FROM UserProgress u WHERE u.userId = :userId AND u.courseId = :courseId")
-    List<UserProgress> findProgressByUserIdAndCourseId(@Param("userId") int userId, @Param("courseId") long courseId);
+    List<UserProgress> findProgressByUserIdAndCourseId(@Param("userId") Long userId, @Param("courseId") long courseId);
 
     @Query("SELECT u FROM UserProgress u WHERE u.userId = :userId AND u.courseId = :courseId ORDER BY u.progressId ASC LIMIT 1")
-    UserProgress findSingleCourseProgress(int userId, int courseId);
+    UserProgress findSingleCourseProgress(Long userId, Long courseId);
 
     @Query("SELECT u.lastPosition FROM UserProgress u WHERE u.userId = :userId AND u.courseId = :courseId AND u.contentId = :contentId")
-    Double findLastPosition(int userId, int courseId, int contentId);
+    Double findLastPosition(Long userId, Long courseId, Long contentId);
 
     @Query("SELECT u.contentType FROM UserProgress u WHERE u.userId = :userId AND u.contentId = :contentId")
-    String findContentType(@Param("userId") int userId, @Param("contentId") int contentId);
+    String findContentType(@Param("userId") Long userId, @Param("contentId") Long contentId);
 
     @Query("SELECT u FROM UserProgress u WHERE u.userId = :userId AND u.courseId = :courseId and u.contentId = :contentId ORDER BY u.progressId ASC")
-    UserProgress findContentProgress(int userId, int courseId, int contentId);
+    UserProgress findContentProgress(Long userId, Long courseId, Long contentId);
 
 }
