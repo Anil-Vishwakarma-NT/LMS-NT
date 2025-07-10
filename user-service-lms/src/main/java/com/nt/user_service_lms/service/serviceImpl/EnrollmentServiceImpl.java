@@ -365,8 +365,8 @@ public class EnrollmentServiceImpl implements EnrollmentService {
             // Get course progress
             try {
                 CourseProgressWithMetaDTO progressData = courseMicroserviceClient.getCourseProgressWithMeta(
-                        enrollment.getUserId().intValue(),
-                        enrollment.getCourseId().intValue()
+                        enrollment.getUserId(),
+                        enrollment.getCourseId()
                 );
                 courseDTO.setProgress((float) progressData.getCourseCompletionPercentage());
             } catch (Exception e) {
@@ -446,8 +446,8 @@ public class EnrollmentServiceImpl implements EnrollmentService {
                 // Get course progress
                 try {
                     CourseProgressWithMetaDTO progressData = courseMicroserviceClient.getCourseProgressWithMeta(
-                            userId.intValue(),
-                            courseId.intValue()
+                            userId,
+                            courseId
                     );
                     courseDTO.setProgress((float) progressData.getCourseCompletionPercentage());
                 } catch (Exception e) {
@@ -628,8 +628,8 @@ public class EnrollmentServiceImpl implements EnrollmentService {
             // Get course progress
             try {
                 CourseProgressWithMetaDTO progressData = courseMicroserviceClient.getCourseProgressWithMeta(
-                        userId.intValue(),
-                        enrollment.getCourseId().intValue()
+                        userId,
+                        enrollment.getCourseId()
                 );
                 courseDTO.setProgress((float) progressData.getCourseCompletionPercentage());
             } catch (Exception e) {
@@ -698,8 +698,8 @@ public class EnrollmentServiceImpl implements EnrollmentService {
             // Get course progress
             try {
                 CourseProgressWithMetaDTO progressData = courseMicroserviceClient.getCourseProgressWithMeta(
-                        userId.intValue(),
-                        courseId.intValue()
+                        userId,
+                        courseId
                 );
                 courseDTO.setProgress((float) progressData.getCourseCompletionPercentage());
             } catch (Exception e) {
@@ -882,8 +882,8 @@ public class EnrollmentServiceImpl implements EnrollmentService {
                                     try {
                                         CourseProgressWithMetaDTO progressData = courseMicroserviceClient
                                                 .getCourseProgressWithMeta(
-                                                        enrollment.getUserId().intValue(),
-                                                        courseId.intValue()
+                                                        enrollment.getUserId(),
+                                                        courseId
                                                 );
                                         userDTO.setProgress(progressData.getCourseCompletionPercentage());
                                     } catch (Exception e) {
@@ -996,8 +996,8 @@ public class EnrollmentServiceImpl implements EnrollmentService {
                                                 try {
                                                     CourseProgressWithMetaDTO progressData = courseMicroserviceClient
                                                             .getCourseProgressWithMeta(
-                                                                    userId.intValue(),
-                                                                    enrollment.getCourseId().intValue()
+                                                                    userId,
+                                                                    enrollment.getCourseId()
                                                             );
                                                     return progressData.getCourseCompletionPercentage();
                                                 } catch (Exception e) {

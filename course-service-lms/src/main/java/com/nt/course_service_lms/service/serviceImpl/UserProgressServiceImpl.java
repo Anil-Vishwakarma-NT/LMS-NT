@@ -89,7 +89,7 @@ public class UserProgressServiceImpl implements UserProgressService {
         log.info("Updated Course Completion Status for all records.");
     }
 
-    public List<CourseContentInDTO> getUserCourseContent(int userId, long courseId) {
+    public List<CourseContentInDTO> getUserCourseContent(Long userId, long courseId) {
         log.info("Fetching Course Content for CourseId: {}", courseId);
         List<CourseContent> courseContents = courseContentRepository.findByCourseId(courseId);
         List<UserProgress> userProgressList = userProgressRepository.findProgressByUserIdAndCourseId(userId, courseId);
@@ -116,7 +116,7 @@ public class UserProgressServiceImpl implements UserProgressService {
     }
 
 
-    public double calculateCourseCompletion(int userId, long courseId) {
+    public double calculateCourseCompletion(Long userId, long courseId) {
         log.info("Calculating Course Completion for UserId: {}, CourseId: {}", userId, courseId);
         List<UserProgress> progressList = userProgressRepository.findProgressByUserIdAndCourseId(userId, courseId);
         int totalContents = courseContentRepository.findByCourseId(courseId).size();
@@ -133,7 +133,7 @@ public class UserProgressServiceImpl implements UserProgressService {
         return completionPercentage;
     }
 
-    public CourseProgressWithMetaDTO getCourseProgressWithMeta(int userId, int courseId) {
+    public CourseProgressWithMetaDTO getCourseProgressWithMeta(Long userId, Long courseId) {
         UserProgress progressRecord = userProgressRepository.findSingleCourseProgress(userId, courseId);
         if (progressRecord == null) {
             return new CourseProgressWithMetaDTO(0.0, null);
@@ -146,7 +146,7 @@ public class UserProgressServiceImpl implements UserProgressService {
 
 
     @Override
-    public Integer getLastPosition(int userId, int courseId, int contentId) {
+    public Integer getLastPosition(Long userId, Long courseId, Long contentId) {
         log.info("Fetching last position for UserId: {}, CourseId: {}, ContentId: {}", userId, courseId, contentId);
 
         Double lastPosition = userProgressRepository.findLastPosition(userId, courseId, contentId);
@@ -154,7 +154,7 @@ public class UserProgressServiceImpl implements UserProgressService {
         return (lastPosition != null) ? lastPosition.intValue() : 0;
     }
 
-    public Double getContentProgress(int userId, int courseId, int contentId) {
+    public Double getContentProgress(Long userId, Long courseId, Long contentId) {
         UserProgress progressRecord = userProgressRepository.findContentProgress(userId, courseId, contentId);
         return (progressRecord != null) ? progressRecord.getContentCompletionPercentage() : 0.0;
     }

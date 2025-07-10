@@ -34,7 +34,7 @@ public interface CourseMicroserviceClient {
     public  ResponseEntity<StandardResponseOutDTO<List<BundleInfoOutDTO>>> getBundleInfo();
 
     @GetMapping("/user-progress")
-    public ResponseEntity<Double> getCourseProgress(@RequestParam int userId, @RequestParam int courseId);
+    public ResponseEntity<Double> getCourseProgress(@RequestParam Long userId, @RequestParam Long courseId);
 
     @PostMapping("/course/existing-ids")
     public ResponseEntity<List<Long>> getExistingCourseIds(@RequestBody List<Long> courseIds);
@@ -46,7 +46,7 @@ public interface CourseMicroserviceClient {
     public ResponseEntity<List<Long>> findCourseIdsByBundleId(@PathVariable("id") Long bundleId);
 
     @GetMapping("user-progress/meta")
-    public CourseProgressWithMetaDTO getCourseProgressWithMeta(@RequestParam int userId, @RequestParam int courseId);
+    public CourseProgressWithMetaDTO getCourseProgressWithMeta(@RequestParam Long userId, @RequestParam Long courseId);
 
     @GetMapping("/course/{id}")
     public ResponseEntity<StandardResponseOutDTO<CourseInfoOutDTO>> getCourseById(@PathVariable final Long id) ;
