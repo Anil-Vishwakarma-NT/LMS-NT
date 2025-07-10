@@ -15,6 +15,7 @@ import java.util.function.Function;
 import java.util.stream.Collectors;
 
 import static com.nt.lms.api_gateway_lms.constant.SecurityConstant.*;
+import static java.security.KeyRep.Type.SECRET;
 
 @Component
 @Slf4j
@@ -23,20 +24,20 @@ public class JwtUtil {
     @Value("${jwt.secret:" + DEFAULT_JWT_SECRET + "}")
     private String SECRET;
 
-    @Value("${jwt.access-token.expiration:" + DEFAULT_ACCESS_TOKEN_EXPIRATION + "}")
+    @Value("${jwt.access-token.expiration:}")
     private Long accessTokenExpiration;
 
-    @Value("${jwt.refresh-token.expiration:" + DEFAULT_REFRESH_TOKEN_EXPIRATION + "}")
+    @Value("${jwt.refresh-token.expiration:}")
     private Long refreshTokenExpiration;
 
-    @Value("${jwt.service-token.expiration:" + DEFAULT_SERVICE_TOKEN_EXPIRATION + "}")
+    @Value("${jwt.service-token.expiration:}")
     private Long serviceTokenExpiration;
 
     @Value("${jwt.issuer:" + DEFAULT_JWT_ISSUER + "}")
     private String issuer;
 
     private Key getSigningKey() {
-        byte[] keyBytes = SECRET.getBytes();
+        byte[] keyBytes = Base64.getDecoder().decode(SECRET);
         return Keys.hmacShaKeyFor(keyBytes);
     }
 
