@@ -20008,3 +20008,368 @@ feign.FeignException$Unauthorized: [401] during [GET] to [http://localhost:8080/
 2025-07-10 12:32:15 DEBUG o.s.w.s.m.m.a.HttpEntityMethodProcessor - Using 'application/json', given [application/json, text/plain, */*] and supported [application/json, application/*+json]
 2025-07-10 12:32:15 DEBUG o.s.w.s.m.m.a.HttpEntityMethodProcessor - Writing [StandardResponseOutDTO{status='SUCCESS', message='Fetched user info', data=UserOutDTO(userId=1, user (truncated)...]
 2025-07-10 12:32:15 DEBUG o.s.web.servlet.DispatcherServlet - Completed 200 OK
+2025-07-10 14:07:54 INFO  o.h.validator.internal.util.Version - HV000001: Hibernate Validator 8.0.2.Final
+2025-07-10 14:07:54 INFO  c.n.u.UserServiceLmsApplication - Starting UserServiceLmsApplication using Java 17.0.12 with PID 3208 (C:\Users\DELL\Desktop\LMS-NT\user-service-lms\build\classes\java\main started by DELL in C:\Users\DELL\Desktop\LMS-NT)
+2025-07-10 14:07:54 INFO  c.n.u.UserServiceLmsApplication - No active profile set, falling back to 1 default profile: "default"
+2025-07-10 14:07:56 INFO  o.s.d.r.c.RepositoryConfigurationDelegate - Bootstrapping Spring Data JPA repositories in DEFAULT mode.
+2025-07-10 14:07:56 INFO  o.s.d.r.c.RepositoryConfigurationDelegate - Finished Spring Data repository scanning in 186 ms. Found 6 JPA repository interfaces.
+2025-07-10 14:07:57 INFO  o.s.cloud.context.scope.GenericScope - BeanFactory id=a1bb5da5-72bd-32c5-9e7d-d2645f204298
+2025-07-10 14:07:57 INFO  o.s.b.w.e.tomcat.TomcatWebServer - Tomcat initialized with port 8081 (http)
+2025-07-10 14:07:58 INFO  o.a.coyote.http11.Http11NioProtocol - Initializing ProtocolHandler ["http-nio-8081"]
+2025-07-10 14:07:58 INFO  o.a.catalina.core.StandardService - Starting service [Tomcat]
+2025-07-10 14:07:58 INFO  o.a.catalina.core.StandardEngine - Starting Servlet engine: [Apache Tomcat/10.1.39]
+2025-07-10 14:07:58 INFO  o.a.c.c.C.[Tomcat].[localhost].[/] - Initializing Spring embedded WebApplicationContext
+2025-07-10 14:07:58 INFO  o.s.b.w.s.c.ServletWebServerApplicationContext - Root WebApplicationContext: initialization completed in 3769 ms
+2025-07-10 14:07:58 INFO  com.zaxxer.hikari.HikariDataSource - HikariPool-1 - Starting...
+2025-07-10 14:07:59 INFO  com.zaxxer.hikari.pool.HikariPool - HikariPool-1 - Added connection org.postgresql.jdbc.PgConnection@790ac3e0
+2025-07-10 14:07:59 INFO  com.zaxxer.hikari.HikariDataSource - HikariPool-1 - Start completed.
+2025-07-10 14:07:59 INFO  org.flywaydb.core.FlywayExecutor - Database: jdbc:postgresql://localhost:5432/lms (PostgreSQL 16.3)
+2025-07-10 14:07:59 INFO  o.f.core.internal.command.DbValidate - Successfully validated 2 migrations (execution time 00:00.082s)
+2025-07-10 14:07:59 INFO  o.f.core.internal.command.DbMigrate - Current version of schema "public": 2
+2025-07-10 14:07:59 INFO  o.f.core.internal.command.DbMigrate - Schema "public" is up to date. No migration necessary.
+2025-07-10 14:07:59 INFO  o.h.jpa.internal.util.LogHelper - HHH000204: Processing PersistenceUnitInfo [name: default]
+2025-07-10 14:07:59 INFO  org.hibernate.Version - HHH000412: Hibernate ORM core version 6.6.11.Final
+2025-07-10 14:07:59 INFO  o.h.c.i.RegionFactoryInitiator - HHH000026: Second-level cache disabled
+2025-07-10 14:08:00 INFO  o.s.o.j.p.SpringPersistenceUnitInfo - No LoadTimeWeaver setup: ignoring JPA class transformer
+2025-07-10 14:08:00 WARN  org.hibernate.orm.deprecation - HHH90000025: PostgreSQLDialect does not need to be specified explicitly using 'hibernate.dialect' (remove the property setting and it will be selected by default)
+2025-07-10 14:08:00 INFO  o.hibernate.orm.connections.pooling - HHH10001005: Database info:
+	Database JDBC URL [Connecting through datasource 'HikariDataSource (HikariPool-1)']
+	Database driver: undefined/unknown
+	Database version: 16.3
+	Autocommit mode: undefined/unknown
+	Isolation level: undefined/unknown
+	Minimum pool size: undefined/unknown
+	Maximum pool size: undefined/unknown
+2025-07-10 14:08:02 INFO  o.h.e.t.j.p.i.JtaPlatformInitiator - HHH000489: No JTA platform available (set 'hibernate.transaction.jta.platform' to enable JTA platform integration)
+2025-07-10 14:08:02 INFO  o.s.o.j.LocalContainerEntityManagerFactoryBean - Initialized JPA EntityManagerFactory for persistence unit 'default'
+2025-07-10 14:08:04 INFO  o.s.d.j.r.query.QueryEnhancerFactory - Hibernate is in classpath; If applicable, HQL parser will be used.
+2025-07-10 14:08:08 WARN  o.s.b.a.o.j.JpaBaseConfiguration$JpaWebConfiguration - spring.jpa.open-in-view is enabled by default. Therefore, database queries may be performed during view rendering. Explicitly configure spring.jpa.open-in-view to disable this warning
+2025-07-10 14:08:09 INFO  o.s.s.c.a.a.c.InitializeUserDetailsBeanManagerConfigurer$InitializeUserDetailsManagerConfigurer - Global AuthenticationManager configured with UserDetailsService bean with name userServiceImpl
+2025-07-10 14:08:10 DEBUG o.s.w.s.m.m.a.RequestMappingHandlerMapping - 44 mappings in 'requestMappingHandlerMapping'
+2025-07-10 14:08:10 DEBUG o.s.w.s.h.SimpleUrlHandlerMapping - Patterns [/webjars/**, /**] in 'resourceHandlerMapping'
+2025-07-10 14:08:11 DEBUG o.s.w.s.m.m.a.RequestMappingHandlerAdapter - ControllerAdvice beans: 0 @ModelAttribute, 0 @InitBinder, 1 RequestBodyAdvice, 1 ResponseBodyAdvice
+2025-07-10 14:08:11 DEBUG o.s.w.s.m.m.a.ExceptionHandlerExceptionResolver - ControllerAdvice beans: 1 @ExceptionHandler, 1 ResponseBodyAdvice
+2025-07-10 14:08:12 INFO  o.a.coyote.http11.Http11NioProtocol - Starting ProtocolHandler ["http-nio-8081"]
+2025-07-10 14:08:12 INFO  o.s.b.w.e.tomcat.TomcatWebServer - Tomcat started on port 8081 (http) with context path '/'
+2025-07-10 14:08:13 INFO  c.n.u.UserServiceLmsApplication - Started UserServiceLmsApplication in 19.796 seconds (process running for 21.953)
+2025-07-10 14:08:39 INFO  o.a.c.c.C.[Tomcat].[localhost].[/] - Initializing Spring DispatcherServlet 'dispatcherServlet'
+2025-07-10 14:08:39 INFO  o.s.web.servlet.DispatcherServlet - Initializing Servlet 'dispatcherServlet'
+2025-07-10 14:08:39 DEBUG o.s.web.servlet.DispatcherServlet - Detected StandardServletMultipartResolver
+2025-07-10 14:08:39 DEBUG o.s.web.servlet.DispatcherServlet - Detected AcceptHeaderLocaleResolver
+2025-07-10 14:08:39 DEBUG o.s.web.servlet.DispatcherServlet - Detected FixedThemeResolver
+2025-07-10 14:08:39 DEBUG o.s.web.servlet.DispatcherServlet - Detected org.springframework.web.servlet.view.DefaultRequestToViewNameTranslator@781f8d26
+2025-07-10 14:08:39 DEBUG o.s.web.servlet.DispatcherServlet - Detected org.springframework.web.servlet.support.SessionFlashMapManager@3e095ba6
+2025-07-10 14:08:39 DEBUG o.s.web.servlet.DispatcherServlet - enableLoggingRequestDetails='false': request parameters and headers will be masked to prevent unsafe logging of potentially sensitive data
+2025-07-10 14:08:39 INFO  o.s.web.servlet.DispatcherServlet - Completed initialization in 16 ms
+2025-07-10 14:08:39 DEBUG o.s.web.servlet.DispatcherServlet - GET "/api/service-api/admin/users/recent", parameters={}
+2025-07-10 14:08:39 DEBUG o.s.web.servlet.DispatcherServlet - GET "/api/service-api/admin/count", parameters={}
+2025-07-10 14:08:39 DEBUG o.s.web.servlet.DispatcherServlet - GET "/api/service-api/enrollment/statistics", parameters={}
+2025-07-10 14:08:39 DEBUG o.s.web.servlet.DispatcherServlet - GET "/api/service-api/group/count", parameters={}
+2025-07-10 14:08:39 DEBUG o.s.w.s.m.m.a.RequestMappingHandlerMapping - Mapped to com.nt.user_service_lms.controller.EnrollmentController#getEnrollmentStatistics()
+2025-07-10 14:08:39 DEBUG o.s.w.s.m.m.a.RequestMappingHandlerMapping - Mapped to com.nt.user_service_lms.controller.AdminController#getTotalUserCount()
+2025-07-10 14:08:39 DEBUG o.s.w.s.m.m.a.RequestMappingHandlerMapping - Mapped to com.nt.user_service_lms.controller.AdminController#getRecentUsers()
+2025-07-10 14:08:39 DEBUG o.s.w.s.m.m.a.RequestMappingHandlerMapping - Mapped to com.nt.user_service_lms.controller.GroupController#getGroupCount()
+2025-07-10 14:08:39 INFO  c.n.u.controller.GroupController - Received request to get total Group count.
+2025-07-10 14:08:39 INFO  c.n.u.controller.AdminController - Fetching total user count
+2025-07-10 14:08:40 INFO  c.n.u.controller.GroupController - Total Group count retrieved: 7
+2025-07-10 14:08:40 INFO  c.n.u.controller.AdminController - Total user count retrieved: 12
+2025-07-10 14:08:40 DEBUG o.s.w.s.m.m.a.HttpEntityMethodProcessor - Using 'application/json', given [application/json, text/plain, */*] and supported [application/json, application/*+json]
+2025-07-10 14:08:40 DEBUG o.s.w.s.m.m.a.HttpEntityMethodProcessor - Using 'application/json', given [application/json, text/plain, */*] and supported [application/json, application/*+json]
+2025-07-10 14:08:40 DEBUG o.s.w.s.m.m.a.HttpEntityMethodProcessor - Using 'application/json', given [application/json, text/plain, */*] and supported [application/json, application/*+json]
+2025-07-10 14:08:40 DEBUG o.s.w.s.m.m.a.HttpEntityMethodProcessor - Writing [StandardResponseOutDTO{status='success', message='Group count retrieved successfully.', data=7}]
+2025-07-10 14:08:40 DEBUG o.s.w.s.m.m.a.HttpEntityMethodProcessor - Writing [StandardResponseOutDTO{status='SUCCESS', message='Fetched User Count', data=12}]
+2025-07-10 14:08:40 DEBUG o.s.w.s.m.m.a.HttpEntityMethodProcessor - Writing [StandardResponseOutDTO{status='SUCCESS', message='Fetched Recent Users', data=[UsersDetailsViewDTO(f (truncated)...]
+2025-07-10 14:08:40 DEBUG o.s.web.servlet.DispatcherServlet - Completed 200 OK
+2025-07-10 14:08:40 DEBUG o.s.web.servlet.DispatcherServlet - Completed 200 OK
+2025-07-10 14:08:40 DEBUG o.s.web.servlet.DispatcherServlet - Completed 200 OK
+2025-07-10 14:08:40 DEBUG o.s.w.s.m.m.a.HttpEntityMethodProcessor - Using 'application/json', given [application/json, text/plain, */*] and supported [application/json, application/*+json]
+2025-07-10 14:08:40 DEBUG o.s.w.s.m.m.a.HttpEntityMethodProcessor - Writing [StandardResponseOutDTO{status='SUCCESS', message='Fetched Enrollment Statistics', data=EnrollmentDas (truncated)...]
+2025-07-10 14:08:40 DEBUG o.s.web.servlet.DispatcherServlet - Completed 200 OK
+2025-07-10 14:08:52 DEBUG o.s.web.servlet.DispatcherServlet - GET "/api/service-api/admin/count", parameters={}
+2025-07-10 14:08:52 DEBUG o.s.web.servlet.DispatcherServlet - GET "/api/service-api/enrollment/statistics", parameters={}
+2025-07-10 14:08:52 DEBUG o.s.w.s.m.m.a.RequestMappingHandlerMapping - Mapped to com.nt.user_service_lms.controller.AdminController#getTotalUserCount()
+2025-07-10 14:08:52 DEBUG o.s.w.s.m.m.a.RequestMappingHandlerMapping - Mapped to com.nt.user_service_lms.controller.EnrollmentController#getEnrollmentStatistics()
+2025-07-10 14:08:52 INFO  c.n.u.controller.AdminController - Fetching total user count
+2025-07-10 14:08:52 DEBUG o.s.web.servlet.DispatcherServlet - GET "/api/service-api/admin/users/recent", parameters={}
+2025-07-10 14:08:52 DEBUG o.s.w.s.m.m.a.RequestMappingHandlerMapping - Mapped to com.nt.user_service_lms.controller.AdminController#getRecentUsers()
+2025-07-10 14:08:52 DEBUG o.s.web.servlet.DispatcherServlet - GET "/api/service-api/group/count", parameters={}
+2025-07-10 14:08:52 DEBUG o.s.w.s.m.m.a.RequestMappingHandlerMapping - Mapped to com.nt.user_service_lms.controller.GroupController#getGroupCount()
+2025-07-10 14:08:52 INFO  c.n.u.controller.GroupController - Received request to get total Group count.
+2025-07-10 14:08:52 INFO  c.n.u.controller.GroupController - Total Group count retrieved: 7
+2025-07-10 14:08:52 DEBUG o.s.w.s.m.m.a.HttpEntityMethodProcessor - Using 'application/json', given [application/json, text/plain, */*] and supported [application/json, application/*+json]
+2025-07-10 14:08:52 DEBUG o.s.w.s.m.m.a.HttpEntityMethodProcessor - Writing [StandardResponseOutDTO{status='success', message='Group count retrieved successfully.', data=7}]
+2025-07-10 14:08:52 DEBUG o.s.w.s.m.m.a.HttpEntityMethodProcessor - Using 'application/json', given [application/json, text/plain, */*] and supported [application/json, application/*+json]
+2025-07-10 14:08:52 DEBUG o.s.web.servlet.DispatcherServlet - Completed 200 OK
+2025-07-10 14:08:52 DEBUG o.s.w.s.m.m.a.HttpEntityMethodProcessor - Writing [StandardResponseOutDTO{status='SUCCESS', message='Fetched Recent Users', data=[UsersDetailsViewDTO(f (truncated)...]
+2025-07-10 14:08:52 INFO  c.n.u.controller.AdminController - Total user count retrieved: 12
+2025-07-10 14:08:52 DEBUG o.s.w.s.m.m.a.HttpEntityMethodProcessor - Using 'application/json', given [application/json, text/plain, */*] and supported [application/json, application/*+json]
+2025-07-10 14:08:52 DEBUG o.s.w.s.m.m.a.HttpEntityMethodProcessor - Writing [StandardResponseOutDTO{status='SUCCESS', message='Fetched User Count', data=12}]
+2025-07-10 14:08:52 DEBUG o.s.web.servlet.DispatcherServlet - Completed 200 OK
+2025-07-10 14:08:52 DEBUG o.s.web.servlet.DispatcherServlet - Completed 200 OK
+2025-07-10 14:08:52 DEBUG o.s.w.s.m.m.a.HttpEntityMethodProcessor - Using 'application/json', given [application/json, text/plain, */*] and supported [application/json, application/*+json]
+2025-07-10 14:08:52 DEBUG o.s.w.s.m.m.a.HttpEntityMethodProcessor - Writing [StandardResponseOutDTO{status='SUCCESS', message='Fetched Enrollment Statistics', data=EnrollmentDas (truncated)...]
+2025-07-10 14:08:52 DEBUG o.s.web.servlet.DispatcherServlet - Completed 200 OK
+2025-07-10 14:08:59 DEBUG o.s.web.servlet.DispatcherServlet - GET "/api/service-api/group/groups", parameters={}
+2025-07-10 14:08:59 DEBUG o.s.web.servlet.DispatcherServlet - GET "/api/service-api/admin/active-employees", parameters={}
+2025-07-10 14:08:59 DEBUG o.s.w.s.m.m.a.RequestMappingHandlerMapping - Mapped to com.nt.user_service_lms.controller.GroupController#getGroups()
+2025-07-10 14:08:59 DEBUG o.s.w.s.m.m.a.RequestMappingHandlerMapping - Mapped to com.nt.user_service_lms.controller.AdminController#getAllEmployees()
+2025-07-10 14:08:59 INFO  c.n.u.controller.GroupController - Fetching groups for user: admin1@nucleusteq.com
+2025-07-10 14:08:59 INFO  c.n.u.controller.AdminController - Fetching all employees
+2025-07-10 14:08:59 INFO  c.n.u.s.serviceImpl.AdminServiceImpl - Fetching all users
+2025-07-10 14:08:59 INFO  c.n.u.controller.GroupController - Found 7 groups for user: admin1@nucleusteq.com
+2025-07-10 14:08:59 DEBUG o.s.w.s.m.m.a.HttpEntityMethodProcessor - Using 'application/json', given [application/json, text/plain, */*] and supported [application/json, application/*+json]
+2025-07-10 14:08:59 DEBUG o.s.w.s.m.m.a.HttpEntityMethodProcessor - Writing [StandardResponseOutDTO{status='SUCCESS', message='Group fetched Successfully', data=[GroupOutDTO(gro (truncated)...]
+2025-07-10 14:08:59 DEBUG o.s.web.servlet.DispatcherServlet - Completed 200 OK
+2025-07-10 14:08:59 INFO  c.n.u.s.serviceImpl.AdminServiceImpl - Successfully fetched 12 users
+2025-07-10 14:08:59 INFO  c.n.u.controller.AdminController - Fetched 12 employees
+2025-07-10 14:08:59 DEBUG o.s.w.s.m.m.a.HttpEntityMethodProcessor - Using 'application/json', given [application/json, text/plain, */*] and supported [application/json, application/*+json]
+2025-07-10 14:08:59 DEBUG o.s.w.s.m.m.a.HttpEntityMethodProcessor - Writing [StandardResponseOutDTO{status='SUCCESS', message='User fetched Successfully', data=[UserOutDTO(userI (truncated)...]
+2025-07-10 14:08:59 DEBUG o.s.web.servlet.DispatcherServlet - Completed 200 OK
+2025-07-10 14:09:02 DEBUG o.s.web.servlet.DispatcherServlet - GET "/api/service-api/admin/active-employees", parameters={}
+2025-07-10 14:09:02 DEBUG o.s.w.s.m.m.a.RequestMappingHandlerMapping - Mapped to com.nt.user_service_lms.controller.AdminController#getAllEmployees()
+2025-07-10 14:09:02 INFO  c.n.u.controller.AdminController - Fetching all employees
+2025-07-10 14:09:02 INFO  c.n.u.s.serviceImpl.AdminServiceImpl - Fetching all users
+2025-07-10 14:09:02 INFO  c.n.u.s.serviceImpl.AdminServiceImpl - Successfully fetched 12 users
+2025-07-10 14:09:02 INFO  c.n.u.controller.AdminController - Fetched 12 employees
+2025-07-10 14:09:02 DEBUG o.s.w.s.m.m.a.HttpEntityMethodProcessor - Using 'application/json', given [application/json, text/plain, */*] and supported [application/json, application/*+json]
+2025-07-10 14:09:02 DEBUG o.s.w.s.m.m.a.HttpEntityMethodProcessor - Writing [StandardResponseOutDTO{status='SUCCESS', message='User fetched Successfully', data=[UserOutDTO(userI (truncated)...]
+2025-07-10 14:09:02 DEBUG o.s.web.servlet.DispatcherServlet - Completed 200 OK
+2025-07-10 14:09:02 DEBUG o.s.web.servlet.DispatcherServlet - GET "/api/service-api/admin/inactive-employees", parameters={}
+2025-07-10 14:09:02 DEBUG o.s.w.s.m.m.a.RequestMappingHandlerMapping - Mapped to com.nt.user_service_lms.controller.AdminController#getAllInactiveEmployees()
+2025-07-10 14:09:02 INFO  c.n.u.controller.AdminController - Fetching all inactive employees
+2025-07-10 14:09:02 INFO  c.n.u.s.serviceImpl.AdminServiceImpl - Fetching all  inactive users
+2025-07-10 14:09:02 INFO  c.n.u.s.serviceImpl.AdminServiceImpl - Successfully fetched 0 inactive users
+2025-07-10 14:09:02 INFO  c.n.u.controller.AdminController - Fetched 0 inactive employees
+2025-07-10 14:09:02 DEBUG o.s.w.s.m.m.a.HttpEntityMethodProcessor - Using 'application/json', given [application/json, text/plain, */*] and supported [application/json, application/*+json]
+2025-07-10 14:09:02 DEBUG o.s.w.s.m.m.a.HttpEntityMethodProcessor - Writing [StandardResponseOutDTO{status='SUCCESS', message='User fetched Successfully', data=[]}]
+2025-07-10 14:09:02 DEBUG o.s.web.servlet.DispatcherServlet - Completed 204 NO_CONTENT
+2025-07-10 14:09:04 DEBUG o.s.web.servlet.DispatcherServlet - GET "/api/service-api/admin/active-employees", parameters={}
+2025-07-10 14:09:04 DEBUG o.s.w.s.m.m.a.RequestMappingHandlerMapping - Mapped to com.nt.user_service_lms.controller.AdminController#getAllEmployees()
+2025-07-10 14:09:04 DEBUG o.s.web.servlet.DispatcherServlet - GET "/api/service-api/enrollment/statistics", parameters={}
+2025-07-10 14:09:04 INFO  c.n.u.controller.AdminController - Fetching all employees
+2025-07-10 14:09:04 INFO  c.n.u.s.serviceImpl.AdminServiceImpl - Fetching all users
+2025-07-10 14:09:04 DEBUG o.s.w.s.m.m.a.RequestMappingHandlerMapping - Mapped to com.nt.user_service_lms.controller.EnrollmentController#getEnrollmentStatistics()
+2025-07-10 14:09:04 DEBUG o.s.web.servlet.DispatcherServlet - GET "/api/service-api/enrollment/user-enrollments", parameters={}
+2025-07-10 14:09:04 DEBUG o.s.w.s.m.m.a.RequestMappingHandlerMapping - Mapped to com.nt.user_service_lms.controller.EnrollmentController#getUserEnrollments()
+2025-07-10 14:09:04 DEBUG o.s.w.s.m.m.a.HttpEntityMethodProcessor - Using 'application/json', given [application/json, text/plain, */*] and supported [application/json, application/*+json]
+2025-07-10 14:09:04 DEBUG o.s.w.s.m.m.a.HttpEntityMethodProcessor - Writing [StandardResponseOutDTO{status='SUCCESS', message='Fetched Enrollment Statistics', data=EnrollmentDas (truncated)...]
+2025-07-10 14:09:04 INFO  c.n.u.s.serviceImpl.AdminServiceImpl - Successfully fetched 12 users
+2025-07-10 14:09:04 DEBUG o.s.web.servlet.DispatcherServlet - Completed 200 OK
+2025-07-10 14:09:04 INFO  c.n.u.controller.AdminController - Fetched 12 employees
+2025-07-10 14:09:04 DEBUG o.s.w.s.m.m.a.HttpEntityMethodProcessor - Using 'application/json', given [application/json, text/plain, */*] and supported [application/json, application/*+json]
+2025-07-10 14:09:04 DEBUG o.s.w.s.m.m.a.HttpEntityMethodProcessor - Writing [StandardResponseOutDTO{status='SUCCESS', message='User fetched Successfully', data=[UserOutDTO(userI (truncated)...]
+2025-07-10 14:09:04 DEBUG o.s.web.servlet.DispatcherServlet - Completed 200 OK
+2025-07-10 14:09:07 DEBUG o.s.web.servlet.DispatcherServlet - GET "/api/service-api/enrollment/statistics", parameters={}
+2025-07-10 14:09:07 DEBUG o.s.w.s.m.m.a.RequestMappingHandlerMapping - Mapped to com.nt.user_service_lms.controller.EnrollmentController#getEnrollmentStatistics()
+2025-07-10 14:09:07 DEBUG o.s.web.servlet.DispatcherServlet - GET "/api/service-api/admin/count", parameters={}
+2025-07-10 14:09:08 DEBUG o.s.w.s.m.m.a.RequestMappingHandlerMapping - Mapped to com.nt.user_service_lms.controller.AdminController#getTotalUserCount()
+2025-07-10 14:09:08 INFO  c.n.u.controller.AdminController - Fetching total user count
+2025-07-10 14:09:08 DEBUG o.s.w.s.m.m.a.HttpEntityMethodProcessor - Using 'application/json', given [application/json, text/plain, */*] and supported [application/json, application/*+json]
+2025-07-10 14:09:08 DEBUG o.s.web.servlet.DispatcherServlet - GET "/api/service-api/group/count", parameters={}
+2025-07-10 14:09:08 DEBUG o.s.w.s.m.m.a.RequestMappingHandlerMapping - Mapped to com.nt.user_service_lms.controller.GroupController#getGroupCount()
+2025-07-10 14:09:08 INFO  c.n.u.controller.GroupController - Received request to get total Group count.
+2025-07-10 14:09:08 INFO  c.n.u.controller.GroupController - Total Group count retrieved: 7
+2025-07-10 14:09:08 INFO  c.n.u.controller.AdminController - Total user count retrieved: 12
+2025-07-10 14:09:08 DEBUG o.s.w.s.m.m.a.HttpEntityMethodProcessor - Using 'application/json', given [application/json, text/plain, */*] and supported [application/json, application/*+json]
+2025-07-10 14:09:08 DEBUG o.s.w.s.m.m.a.HttpEntityMethodProcessor - Writing [StandardResponseOutDTO{status='success', message='Group count retrieved successfully.', data=7}]
+2025-07-10 14:09:08 DEBUG o.s.w.s.m.m.a.HttpEntityMethodProcessor - Using 'application/json', given [application/json, text/plain, */*] and supported [application/json, application/*+json]
+2025-07-10 14:09:08 DEBUG o.s.w.s.m.m.a.HttpEntityMethodProcessor - Writing [StandardResponseOutDTO{status='SUCCESS', message='Fetched User Count', data=12}]
+2025-07-10 14:09:08 DEBUG o.s.web.servlet.DispatcherServlet - Completed 200 OK
+2025-07-10 14:09:08 DEBUG o.s.web.servlet.DispatcherServlet - Completed 200 OK
+2025-07-10 14:09:08 DEBUG o.s.w.s.m.m.a.HttpEntityMethodProcessor - Writing [StandardResponseOutDTO{status='SUCCESS', message='User Enrollment Fetched', data=[UserEnrollmentsOut (truncated)...]
+2025-07-10 14:09:08 DEBUG o.s.w.s.m.m.a.HttpEntityMethodProcessor - Using 'application/json', given [application/json, text/plain, */*] and supported [application/json, application/*+json]
+2025-07-10 14:09:08 DEBUG o.s.w.s.m.m.a.HttpEntityMethodProcessor - Writing [StandardResponseOutDTO{status='SUCCESS', message='Fetched Enrollment Statistics', data=EnrollmentDas (truncated)...]
+2025-07-10 14:09:08 DEBUG o.s.web.servlet.DispatcherServlet - Completed 200 OK
+2025-07-10 14:09:08 DEBUG o.s.web.servlet.DispatcherServlet - Completed 200 OK
+2025-07-10 14:09:08 DEBUG o.s.web.servlet.DispatcherServlet - GET "/api/service-api/admin/users/recent", parameters={}
+2025-07-10 14:09:08 DEBUG o.s.w.s.m.m.a.RequestMappingHandlerMapping - Mapped to com.nt.user_service_lms.controller.AdminController#getRecentUsers()
+2025-07-10 14:09:08 DEBUG o.s.w.s.m.m.a.HttpEntityMethodProcessor - Using 'application/json', given [application/json, text/plain, */*] and supported [application/json, application/*+json]
+2025-07-10 14:09:08 DEBUG o.s.w.s.m.m.a.HttpEntityMethodProcessor - Writing [StandardResponseOutDTO{status='SUCCESS', message='Fetched Recent Users', data=[UsersDetailsViewDTO(f (truncated)...]
+2025-07-10 14:09:08 DEBUG o.s.web.servlet.DispatcherServlet - Completed 200 OK
+2025-07-10 14:09:08 DEBUG o.s.web.servlet.DispatcherServlet - GET "/api/service-api/enrollment/user-enrollments", parameters={}
+2025-07-10 14:09:08 DEBUG o.s.w.s.m.m.a.RequestMappingHandlerMapping - Mapped to com.nt.user_service_lms.controller.EnrollmentController#getUserEnrollments()
+2025-07-10 14:09:10 DEBUG o.s.w.s.m.m.a.HttpEntityMethodProcessor - Using 'application/json', given [application/json, text/plain, */*] and supported [application/json, application/*+json]
+2025-07-10 14:09:10 DEBUG o.s.w.s.m.m.a.HttpEntityMethodProcessor - Writing [StandardResponseOutDTO{status='SUCCESS', message='User Enrollment Fetched', data=[UserEnrollmentsOut (truncated)...]
+2025-07-10 14:09:10 DEBUG o.s.web.servlet.DispatcherServlet - Completed 200 OK
+2025-07-10 14:09:14 DEBUG o.s.web.servlet.DispatcherServlet - GET "/api/service-api/admin/active-employees", parameters={}
+2025-07-10 14:09:14 DEBUG o.s.web.servlet.DispatcherServlet - GET "/api/service-api/group/groups", parameters={}
+2025-07-10 14:09:14 DEBUG o.s.w.s.m.m.a.RequestMappingHandlerMapping - Mapped to com.nt.user_service_lms.controller.GroupController#getGroups()
+2025-07-10 14:09:14 DEBUG o.s.w.s.m.m.a.RequestMappingHandlerMapping - Mapped to com.nt.user_service_lms.controller.AdminController#getAllEmployees()
+2025-07-10 14:09:14 INFO  c.n.u.controller.AdminController - Fetching all employees
+2025-07-10 14:09:14 INFO  c.n.u.controller.GroupController - Fetching groups for user: admin1@nucleusteq.com
+2025-07-10 14:09:14 INFO  c.n.u.s.serviceImpl.AdminServiceImpl - Fetching all users
+2025-07-10 14:09:14 INFO  c.n.u.controller.GroupController - Found 7 groups for user: admin1@nucleusteq.com
+2025-07-10 14:09:14 DEBUG o.s.w.s.m.m.a.HttpEntityMethodProcessor - Using 'application/json', given [application/json, text/plain, */*] and supported [application/json, application/*+json]
+2025-07-10 14:09:14 DEBUG o.s.w.s.m.m.a.HttpEntityMethodProcessor - Writing [StandardResponseOutDTO{status='SUCCESS', message='Group fetched Successfully', data=[GroupOutDTO(gro (truncated)...]
+2025-07-10 14:09:14 DEBUG o.s.web.servlet.DispatcherServlet - Completed 200 OK
+2025-07-10 14:09:14 INFO  c.n.u.s.serviceImpl.AdminServiceImpl - Successfully fetched 12 users
+2025-07-10 14:09:14 INFO  c.n.u.controller.AdminController - Fetched 12 employees
+2025-07-10 14:09:14 DEBUG o.s.w.s.m.m.a.HttpEntityMethodProcessor - Using 'application/json', given [application/json, text/plain, */*] and supported [application/json, application/*+json]
+2025-07-10 14:09:14 DEBUG o.s.w.s.m.m.a.HttpEntityMethodProcessor - Writing [StandardResponseOutDTO{status='SUCCESS', message='User fetched Successfully', data=[UserOutDTO(userI (truncated)...]
+2025-07-10 14:09:14 DEBUG o.s.web.servlet.DispatcherServlet - Completed 200 OK
+2025-07-10 14:09:17 DEBUG o.s.web.servlet.DispatcherServlet - GET "/api/service-api/admin/active-employees", parameters={}
+2025-07-10 14:09:17 DEBUG o.s.w.s.m.m.a.RequestMappingHandlerMapping - Mapped to com.nt.user_service_lms.controller.AdminController#getAllEmployees()
+2025-07-10 14:09:17 INFO  c.n.u.controller.AdminController - Fetching all employees
+2025-07-10 14:09:17 INFO  c.n.u.s.serviceImpl.AdminServiceImpl - Fetching all users
+2025-07-10 14:09:17 INFO  c.n.u.s.serviceImpl.AdminServiceImpl - Successfully fetched 12 users
+2025-07-10 14:09:17 INFO  c.n.u.controller.AdminController - Fetched 12 employees
+2025-07-10 14:09:17 DEBUG o.s.w.s.m.m.a.HttpEntityMethodProcessor - Using 'application/json', given [application/json, text/plain, */*] and supported [application/json, application/*+json]
+2025-07-10 14:09:17 DEBUG o.s.w.s.m.m.a.HttpEntityMethodProcessor - Writing [StandardResponseOutDTO{status='SUCCESS', message='User fetched Successfully', data=[UserOutDTO(userI (truncated)...]
+2025-07-10 14:09:17 DEBUG o.s.web.servlet.DispatcherServlet - Completed 200 OK
+2025-07-10 14:09:17 DEBUG o.s.web.servlet.DispatcherServlet - GET "/api/service-api/admin/inactive-employees", parameters={}
+2025-07-10 14:09:17 DEBUG o.s.w.s.m.m.a.RequestMappingHandlerMapping - Mapped to com.nt.user_service_lms.controller.AdminController#getAllInactiveEmployees()
+2025-07-10 14:09:17 INFO  c.n.u.controller.AdminController - Fetching all inactive employees
+2025-07-10 14:09:17 INFO  c.n.u.s.serviceImpl.AdminServiceImpl - Fetching all  inactive users
+2025-07-10 14:09:17 INFO  c.n.u.s.serviceImpl.AdminServiceImpl - Successfully fetched 0 inactive users
+2025-07-10 14:09:17 INFO  c.n.u.controller.AdminController - Fetched 0 inactive employees
+2025-07-10 14:09:17 DEBUG o.s.w.s.m.m.a.HttpEntityMethodProcessor - Using 'application/json', given [application/json, text/plain, */*] and supported [application/json, application/*+json]
+2025-07-10 14:09:17 DEBUG o.s.w.s.m.m.a.HttpEntityMethodProcessor - Writing [StandardResponseOutDTO{status='SUCCESS', message='User fetched Successfully', data=[]}]
+2025-07-10 14:09:17 DEBUG o.s.web.servlet.DispatcherServlet - Completed 204 NO_CONTENT
+2025-07-10 14:09:18 DEBUG o.s.web.servlet.DispatcherServlet - GET "/api/service-api/enrollment/statistics", parameters={}
+2025-07-10 14:09:18 DEBUG o.s.w.s.m.m.a.RequestMappingHandlerMapping - Mapped to com.nt.user_service_lms.controller.EnrollmentController#getEnrollmentStatistics()
+2025-07-10 14:09:18 DEBUG o.s.web.servlet.DispatcherServlet - GET "/api/service-api/admin/active-employees", parameters={}
+2025-07-10 14:09:18 DEBUG o.s.web.servlet.DispatcherServlet - GET "/api/service-api/enrollment/user-enrollments", parameters={}
+2025-07-10 14:09:18 DEBUG o.s.w.s.m.m.a.RequestMappingHandlerMapping - Mapped to com.nt.user_service_lms.controller.AdminController#getAllEmployees()
+2025-07-10 14:09:18 DEBUG o.s.w.s.m.m.a.RequestMappingHandlerMapping - Mapped to com.nt.user_service_lms.controller.EnrollmentController#getUserEnrollments()
+2025-07-10 14:09:18 INFO  c.n.u.controller.AdminController - Fetching all employees
+2025-07-10 14:09:18 INFO  c.n.u.s.serviceImpl.AdminServiceImpl - Fetching all users
+2025-07-10 14:09:18 DEBUG o.s.w.s.m.m.a.HttpEntityMethodProcessor - Using 'application/json', given [application/json, text/plain, */*] and supported [application/json, application/*+json]
+2025-07-10 14:09:18 DEBUG o.s.w.s.m.m.a.HttpEntityMethodProcessor - Writing [StandardResponseOutDTO{status='SUCCESS', message='Fetched Enrollment Statistics', data=EnrollmentDas (truncated)...]
+2025-07-10 14:09:18 DEBUG o.s.web.servlet.DispatcherServlet - Completed 200 OK
+2025-07-10 14:09:18 INFO  c.n.u.s.serviceImpl.AdminServiceImpl - Successfully fetched 12 users
+2025-07-10 14:09:18 INFO  c.n.u.controller.AdminController - Fetched 12 employees
+2025-07-10 14:09:18 DEBUG o.s.w.s.m.m.a.HttpEntityMethodProcessor - Using 'application/json', given [application/json, text/plain, */*] and supported [application/json, application/*+json]
+2025-07-10 14:09:18 DEBUG o.s.w.s.m.m.a.HttpEntityMethodProcessor - Writing [StandardResponseOutDTO{status='SUCCESS', message='User fetched Successfully', data=[UserOutDTO(userI (truncated)...]
+2025-07-10 14:09:18 DEBUG o.s.web.servlet.DispatcherServlet - Completed 200 OK
+2025-07-10 14:09:21 DEBUG o.s.w.s.m.m.a.HttpEntityMethodProcessor - Using 'application/json', given [application/json, text/plain, */*] and supported [application/json, application/*+json]
+2025-07-10 14:09:21 DEBUG o.s.w.s.m.m.a.HttpEntityMethodProcessor - Writing [StandardResponseOutDTO{status='SUCCESS', message='User Enrollment Fetched', data=[UserEnrollmentsOut (truncated)...]
+2025-07-10 14:09:21 DEBUG o.s.web.servlet.DispatcherServlet - Completed 200 OK
+2025-07-10 14:09:21 DEBUG o.s.web.servlet.DispatcherServlet - GET "/api/service-api/enrollment/user-enrollments", parameters={}
+2025-07-10 14:09:21 DEBUG o.s.w.s.m.m.a.RequestMappingHandlerMapping - Mapped to com.nt.user_service_lms.controller.EnrollmentController#getUserEnrollments()
+2025-07-10 14:09:23 DEBUG o.s.w.s.m.m.a.HttpEntityMethodProcessor - Using 'application/json', given [application/json, text/plain, */*] and supported [application/json, application/*+json]
+2025-07-10 14:09:23 DEBUG o.s.w.s.m.m.a.HttpEntityMethodProcessor - Writing [StandardResponseOutDTO{status='SUCCESS', message='User Enrollment Fetched', data=[UserEnrollmentsOut (truncated)...]
+2025-07-10 14:09:23 DEBUG o.s.web.servlet.DispatcherServlet - Completed 200 OK
+2025-07-10 14:09:36 DEBUG o.s.web.servlet.DispatcherServlet - GET "/api/service-api/group/count", parameters={}
+2025-07-10 14:09:36 DEBUG o.s.w.s.m.m.a.RequestMappingHandlerMapping - Mapped to com.nt.user_service_lms.controller.GroupController#getGroupCount()
+2025-07-10 14:09:36 INFO  c.n.u.controller.GroupController - Received request to get total Group count.
+2025-07-10 14:09:36 DEBUG o.s.web.servlet.DispatcherServlet - GET "/api/service-api/admin/count", parameters={}
+2025-07-10 14:09:36 DEBUG o.s.web.servlet.DispatcherServlet - GET "/api/service-api/admin/users/recent", parameters={}
+2025-07-10 14:09:36 DEBUG o.s.web.servlet.DispatcherServlet - GET "/api/service-api/enrollment/statistics", parameters={}
+2025-07-10 14:09:36 DEBUG o.s.w.s.m.m.a.RequestMappingHandlerMapping - Mapped to com.nt.user_service_lms.controller.AdminController#getRecentUsers()
+2025-07-10 14:09:36 DEBUG o.s.w.s.m.m.a.RequestMappingHandlerMapping - Mapped to com.nt.user_service_lms.controller.AdminController#getTotalUserCount()
+2025-07-10 14:09:36 DEBUG o.s.w.s.m.m.a.RequestMappingHandlerMapping - Mapped to com.nt.user_service_lms.controller.EnrollmentController#getEnrollmentStatistics()
+2025-07-10 14:09:36 INFO  c.n.u.controller.AdminController - Fetching total user count
+2025-07-10 14:09:36 INFO  c.n.u.controller.GroupController - Total Group count retrieved: 7
+2025-07-10 14:09:36 DEBUG o.s.w.s.m.m.a.HttpEntityMethodProcessor - Using 'application/json', given [application/json, text/plain, */*] and supported [application/json, application/*+json]
+2025-07-10 14:09:36 DEBUG o.s.w.s.m.m.a.HttpEntityMethodProcessor - Writing [StandardResponseOutDTO{status='success', message='Group count retrieved successfully.', data=7}]
+2025-07-10 14:09:36 DEBUG o.s.web.servlet.DispatcherServlet - Completed 200 OK
+2025-07-10 14:09:36 DEBUG o.s.w.s.m.m.a.HttpEntityMethodProcessor - Using 'application/json', given [application/json, text/plain, */*] and supported [application/json, application/*+json]
+2025-07-10 14:09:36 DEBUG o.s.w.s.m.m.a.HttpEntityMethodProcessor - Writing [StandardResponseOutDTO{status='SUCCESS', message='Fetched Recent Users', data=[UsersDetailsViewDTO(f (truncated)...]
+2025-07-10 14:09:36 INFO  c.n.u.controller.AdminController - Total user count retrieved: 12
+2025-07-10 14:09:36 DEBUG o.s.w.s.m.m.a.HttpEntityMethodProcessor - Using 'application/json', given [application/json, text/plain, */*] and supported [application/json, application/*+json]
+2025-07-10 14:09:36 DEBUG o.s.w.s.m.m.a.HttpEntityMethodProcessor - Writing [StandardResponseOutDTO{status='SUCCESS', message='Fetched User Count', data=12}]
+2025-07-10 14:09:36 DEBUG o.s.web.servlet.DispatcherServlet - Completed 200 OK
+2025-07-10 14:09:36 DEBUG o.s.web.servlet.DispatcherServlet - Completed 200 OK
+2025-07-10 14:09:36 DEBUG o.s.w.s.m.m.a.HttpEntityMethodProcessor - Using 'application/json', given [application/json, text/plain, */*] and supported [application/json, application/*+json]
+2025-07-10 14:09:36 DEBUG o.s.w.s.m.m.a.HttpEntityMethodProcessor - Writing [StandardResponseOutDTO{status='SUCCESS', message='Fetched Enrollment Statistics', data=EnrollmentDas (truncated)...]
+2025-07-10 14:09:36 DEBUG o.s.web.servlet.DispatcherServlet - Completed 200 OK
+2025-07-10 14:09:39 DEBUG o.s.web.servlet.DispatcherServlet - GET "/api/service-api/admin/active-employees", parameters={}
+2025-07-10 14:09:39 DEBUG o.s.w.s.m.m.a.RequestMappingHandlerMapping - Mapped to com.nt.user_service_lms.controller.AdminController#getAllEmployees()
+2025-07-10 14:09:39 INFO  c.n.u.controller.AdminController - Fetching all employees
+2025-07-10 14:09:39 INFO  c.n.u.s.serviceImpl.AdminServiceImpl - Fetching all users
+2025-07-10 14:09:39 INFO  c.n.u.s.serviceImpl.AdminServiceImpl - Successfully fetched 12 users
+2025-07-10 14:09:39 INFO  c.n.u.controller.AdminController - Fetched 12 employees
+2025-07-10 14:09:39 DEBUG o.s.w.s.m.m.a.HttpEntityMethodProcessor - Using 'application/json', given [application/json, text/plain, */*] and supported [application/json, application/*+json]
+2025-07-10 14:09:39 DEBUG o.s.w.s.m.m.a.HttpEntityMethodProcessor - Writing [StandardResponseOutDTO{status='SUCCESS', message='User fetched Successfully', data=[UserOutDTO(userI (truncated)...]
+2025-07-10 14:09:39 DEBUG o.s.web.servlet.DispatcherServlet - Completed 200 OK
+2025-07-10 14:09:39 DEBUG o.s.web.servlet.DispatcherServlet - GET "/api/service-api/admin/inactive-employees", parameters={}
+2025-07-10 14:09:39 DEBUG o.s.w.s.m.m.a.RequestMappingHandlerMapping - Mapped to com.nt.user_service_lms.controller.AdminController#getAllInactiveEmployees()
+2025-07-10 14:09:39 INFO  c.n.u.controller.AdminController - Fetching all inactive employees
+2025-07-10 14:09:39 INFO  c.n.u.s.serviceImpl.AdminServiceImpl - Fetching all  inactive users
+2025-07-10 14:09:39 INFO  c.n.u.s.serviceImpl.AdminServiceImpl - Successfully fetched 0 inactive users
+2025-07-10 14:09:39 INFO  c.n.u.controller.AdminController - Fetched 0 inactive employees
+2025-07-10 14:09:39 DEBUG o.s.w.s.m.m.a.HttpEntityMethodProcessor - Using 'application/json', given [application/json, text/plain, */*] and supported [application/json, application/*+json]
+2025-07-10 14:09:39 DEBUG o.s.w.s.m.m.a.HttpEntityMethodProcessor - Writing [StandardResponseOutDTO{status='SUCCESS', message='User fetched Successfully', data=[]}]
+2025-07-10 14:09:39 DEBUG o.s.web.servlet.DispatcherServlet - Completed 204 NO_CONTENT
+2025-07-10 14:10:47 DEBUG o.s.web.servlet.DispatcherServlet - GET "/api/service-api/group/count", parameters={}
+2025-07-10 14:10:47 DEBUG o.s.w.s.m.m.a.RequestMappingHandlerMapping - Mapped to com.nt.user_service_lms.controller.GroupController#getGroupCount()
+2025-07-10 14:10:47 INFO  c.n.u.controller.GroupController - Received request to get total Group count.
+2025-07-10 14:10:47 DEBUG o.s.web.servlet.DispatcherServlet - GET "/api/service-api/enrollment/statistics", parameters={}
+2025-07-10 14:10:47 DEBUG o.s.web.servlet.DispatcherServlet - GET "/api/service-api/admin/users/recent", parameters={}
+2025-07-10 14:10:47 DEBUG o.s.w.s.m.m.a.RequestMappingHandlerMapping - Mapped to com.nt.user_service_lms.controller.EnrollmentController#getEnrollmentStatistics()
+2025-07-10 14:10:47 DEBUG o.s.w.s.m.m.a.RequestMappingHandlerMapping - Mapped to com.nt.user_service_lms.controller.AdminController#getRecentUsers()
+2025-07-10 14:10:47 DEBUG o.s.web.servlet.DispatcherServlet - GET "/api/service-api/admin/count", parameters={}
+2025-07-10 14:10:47 DEBUG o.s.w.s.m.m.a.RequestMappingHandlerMapping - Mapped to com.nt.user_service_lms.controller.AdminController#getTotalUserCount()
+2025-07-10 14:10:47 INFO  c.n.u.controller.AdminController - Fetching total user count
+2025-07-10 14:10:47 INFO  c.n.u.controller.GroupController - Total Group count retrieved: 7
+2025-07-10 14:10:47 DEBUG o.s.w.s.m.m.a.HttpEntityMethodProcessor - Using 'application/json', given [application/json, text/plain, */*] and supported [application/json, application/*+json]
+2025-07-10 14:10:47 DEBUG o.s.w.s.m.m.a.HttpEntityMethodProcessor - Writing [StandardResponseOutDTO{status='success', message='Group count retrieved successfully.', data=7}]
+2025-07-10 14:10:47 DEBUG o.s.w.s.m.m.a.HttpEntityMethodProcessor - Using 'application/json', given [application/json, text/plain, */*] and supported [application/json, application/*+json]
+2025-07-10 14:10:47 DEBUG o.s.w.s.m.m.a.HttpEntityMethodProcessor - Writing [StandardResponseOutDTO{status='SUCCESS', message='Fetched Recent Users', data=[UsersDetailsViewDTO(f (truncated)...]
+2025-07-10 14:10:47 DEBUG o.s.web.servlet.DispatcherServlet - Completed 200 OK
+2025-07-10 14:10:47 DEBUG o.s.web.servlet.DispatcherServlet - Completed 200 OK
+2025-07-10 14:10:47 INFO  c.n.u.controller.AdminController - Total user count retrieved: 12
+2025-07-10 14:10:47 DEBUG o.s.w.s.m.m.a.HttpEntityMethodProcessor - Using 'application/json', given [application/json, text/plain, */*] and supported [application/json, application/*+json]
+2025-07-10 14:10:47 DEBUG o.s.w.s.m.m.a.HttpEntityMethodProcessor - Writing [StandardResponseOutDTO{status='SUCCESS', message='Fetched User Count', data=12}]
+2025-07-10 14:10:47 DEBUG o.s.web.servlet.DispatcherServlet - Completed 200 OK
+2025-07-10 14:10:47 DEBUG o.s.w.s.m.m.a.HttpEntityMethodProcessor - Using 'application/json', given [application/json, text/plain, */*] and supported [application/json, application/*+json]
+2025-07-10 14:10:47 DEBUG o.s.w.s.m.m.a.HttpEntityMethodProcessor - Writing [StandardResponseOutDTO{status='SUCCESS', message='Fetched Enrollment Statistics', data=EnrollmentDas (truncated)...]
+2025-07-10 14:10:47 DEBUG o.s.web.servlet.DispatcherServlet - Completed 200 OK
+2025-07-10 14:10:53 DEBUG o.s.web.servlet.DispatcherServlet - GET "/api/service-api/group/groups", parameters={}
+2025-07-10 14:10:53 DEBUG o.s.web.servlet.DispatcherServlet - GET "/api/service-api/admin/active-employees", parameters={}
+2025-07-10 14:10:53 DEBUG o.s.w.s.m.m.a.RequestMappingHandlerMapping - Mapped to com.nt.user_service_lms.controller.GroupController#getGroups()
+2025-07-10 14:10:53 DEBUG o.s.w.s.m.m.a.RequestMappingHandlerMapping - Mapped to com.nt.user_service_lms.controller.AdminController#getAllEmployees()
+2025-07-10 14:10:53 INFO  c.n.u.controller.AdminController - Fetching all employees
+2025-07-10 14:10:53 INFO  c.n.u.s.serviceImpl.AdminServiceImpl - Fetching all users
+2025-07-10 14:10:53 INFO  c.n.u.controller.GroupController - Fetching groups for user: admin1@nucleusteq.com
+2025-07-10 14:10:53 INFO  c.n.u.controller.GroupController - Found 7 groups for user: admin1@nucleusteq.com
+2025-07-10 14:10:53 DEBUG o.s.w.s.m.m.a.HttpEntityMethodProcessor - Using 'application/json', given [application/json, text/plain, */*] and supported [application/json, application/*+json]
+2025-07-10 14:10:53 DEBUG o.s.w.s.m.m.a.HttpEntityMethodProcessor - Writing [StandardResponseOutDTO{status='SUCCESS', message='Group fetched Successfully', data=[GroupOutDTO(gro (truncated)...]
+2025-07-10 14:10:53 DEBUG o.s.web.servlet.DispatcherServlet - Completed 200 OK
+2025-07-10 14:10:53 INFO  c.n.u.s.serviceImpl.AdminServiceImpl - Successfully fetched 12 users
+2025-07-10 14:10:53 INFO  c.n.u.controller.AdminController - Fetched 12 employees
+2025-07-10 14:10:53 DEBUG o.s.w.s.m.m.a.HttpEntityMethodProcessor - Using 'application/json', given [application/json, text/plain, */*] and supported [application/json, application/*+json]
+2025-07-10 14:10:53 DEBUG o.s.w.s.m.m.a.HttpEntityMethodProcessor - Writing [StandardResponseOutDTO{status='SUCCESS', message='User fetched Successfully', data=[UserOutDTO(userI (truncated)...]
+2025-07-10 14:10:53 DEBUG o.s.web.servlet.DispatcherServlet - Completed 200 OK
+2025-07-10 14:10:54 DEBUG o.s.web.servlet.DispatcherServlet - GET "/api/service-api/admin/active-employees", parameters={}
+2025-07-10 14:10:54 DEBUG o.s.w.s.m.m.a.RequestMappingHandlerMapping - Mapped to com.nt.user_service_lms.controller.AdminController#getAllEmployees()
+2025-07-10 14:10:54 INFO  c.n.u.controller.AdminController - Fetching all employees
+2025-07-10 14:10:54 INFO  c.n.u.s.serviceImpl.AdminServiceImpl - Fetching all users
+2025-07-10 14:10:55 INFO  c.n.u.s.serviceImpl.AdminServiceImpl - Successfully fetched 12 users
+2025-07-10 14:10:55 INFO  c.n.u.controller.AdminController - Fetched 12 employees
+2025-07-10 14:10:55 DEBUG o.s.w.s.m.m.a.HttpEntityMethodProcessor - Using 'application/json', given [application/json, text/plain, */*] and supported [application/json, application/*+json]
+2025-07-10 14:10:55 DEBUG o.s.w.s.m.m.a.HttpEntityMethodProcessor - Writing [StandardResponseOutDTO{status='SUCCESS', message='User fetched Successfully', data=[UserOutDTO(userI (truncated)...]
+2025-07-10 14:10:55 DEBUG o.s.web.servlet.DispatcherServlet - Completed 200 OK
+2025-07-10 14:10:55 DEBUG o.s.web.servlet.DispatcherServlet - GET "/api/service-api/admin/inactive-employees", parameters={}
+2025-07-10 14:10:55 DEBUG o.s.w.s.m.m.a.RequestMappingHandlerMapping - Mapped to com.nt.user_service_lms.controller.AdminController#getAllInactiveEmployees()
+2025-07-10 14:10:55 INFO  c.n.u.controller.AdminController - Fetching all inactive employees
+2025-07-10 14:10:55 INFO  c.n.u.s.serviceImpl.AdminServiceImpl - Fetching all  inactive users
+2025-07-10 14:10:55 INFO  c.n.u.s.serviceImpl.AdminServiceImpl - Successfully fetched 0 inactive users
+2025-07-10 14:10:55 INFO  c.n.u.controller.AdminController - Fetched 0 inactive employees
+2025-07-10 14:10:55 DEBUG o.s.w.s.m.m.a.HttpEntityMethodProcessor - Using 'application/json', given [application/json, text/plain, */*] and supported [application/json, application/*+json]
+2025-07-10 14:10:55 DEBUG o.s.w.s.m.m.a.HttpEntityMethodProcessor - Writing [StandardResponseOutDTO{status='SUCCESS', message='User fetched Successfully', data=[]}]
+2025-07-10 14:10:55 DEBUG o.s.web.servlet.DispatcherServlet - Completed 204 NO_CONTENT
+2025-07-10 14:10:56 DEBUG o.s.web.servlet.DispatcherServlet - GET "/api/service-api/enrollment/statistics", parameters={}
+2025-07-10 14:10:56 DEBUG o.s.w.s.m.m.a.RequestMappingHandlerMapping - Mapped to com.nt.user_service_lms.controller.EnrollmentController#getEnrollmentStatistics()
+2025-07-10 14:10:56 DEBUG o.s.web.servlet.DispatcherServlet - GET "/api/service-api/admin/active-employees", parameters={}
+2025-07-10 14:10:56 DEBUG o.s.w.s.m.m.a.RequestMappingHandlerMapping - Mapped to com.nt.user_service_lms.controller.AdminController#getAllEmployees()
+2025-07-10 14:10:56 INFO  c.n.u.controller.AdminController - Fetching all employees
+2025-07-10 14:10:56 INFO  c.n.u.s.serviceImpl.AdminServiceImpl - Fetching all users
+2025-07-10 14:10:56 DEBUG o.s.w.s.m.m.a.HttpEntityMethodProcessor - Using 'application/json', given [application/json, text/plain, */*] and supported [application/json, application/*+json]
+2025-07-10 14:10:56 DEBUG o.s.w.s.m.m.a.HttpEntityMethodProcessor - Writing [StandardResponseOutDTO{status='SUCCESS', message='Fetched Enrollment Statistics', data=EnrollmentDas (truncated)...]
+2025-07-10 14:10:56 DEBUG o.s.web.servlet.DispatcherServlet - Completed 200 OK
+2025-07-10 14:10:56 DEBUG o.s.web.servlet.DispatcherServlet - GET "/api/service-api/enrollment/user-enrollments", parameters={}
+2025-07-10 14:10:56 DEBUG o.s.w.s.m.m.a.RequestMappingHandlerMapping - Mapped to com.nt.user_service_lms.controller.EnrollmentController#getUserEnrollments()
+2025-07-10 14:10:56 INFO  c.n.u.s.serviceImpl.AdminServiceImpl - Successfully fetched 12 users
+2025-07-10 14:10:56 INFO  c.n.u.controller.AdminController - Fetched 12 employees
+2025-07-10 14:10:56 DEBUG o.s.w.s.m.m.a.HttpEntityMethodProcessor - Using 'application/json', given [application/json, text/plain, */*] and supported [application/json, application/*+json]
+2025-07-10 14:10:56 DEBUG o.s.w.s.m.m.a.HttpEntityMethodProcessor - Writing [StandardResponseOutDTO{status='SUCCESS', message='User fetched Successfully', data=[UserOutDTO(userI (truncated)...]
+2025-07-10 14:10:56 DEBUG o.s.web.servlet.DispatcherServlet - Completed 200 OK
+2025-07-10 14:10:58 DEBUG o.s.w.s.m.m.a.HttpEntityMethodProcessor - Using 'application/json', given [application/json, text/plain, */*] and supported [application/json, application/*+json]
+2025-07-10 14:10:58 DEBUG o.s.w.s.m.m.a.HttpEntityMethodProcessor - Writing [StandardResponseOutDTO{status='SUCCESS', message='User Enrollment Fetched', data=[UserEnrollmentsOut (truncated)...]
+2025-07-10 14:10:58 DEBUG o.s.web.servlet.DispatcherServlet - Completed 200 OK
+2025-07-10 14:10:58 DEBUG o.s.web.servlet.DispatcherServlet - GET "/api/service-api/enrollment/user-enrollments", parameters={}
+2025-07-10 14:10:58 DEBUG o.s.w.s.m.m.a.RequestMappingHandlerMapping - Mapped to com.nt.user_service_lms.controller.EnrollmentController#getUserEnrollments()
+2025-07-10 14:10:59 DEBUG o.s.w.s.m.m.a.HttpEntityMethodProcessor - Using 'application/json', given [application/json, text/plain, */*] and supported [application/json, application/*+json]
+2025-07-10 14:10:59 DEBUG o.s.w.s.m.m.a.HttpEntityMethodProcessor - Writing [StandardResponseOutDTO{status='SUCCESS', message='User Enrollment Fetched', data=[UserEnrollmentsOut (truncated)...]
+2025-07-10 14:10:59 DEBUG o.s.web.servlet.DispatcherServlet - Completed 200 OK
