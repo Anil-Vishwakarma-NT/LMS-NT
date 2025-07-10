@@ -7,9 +7,9 @@ spring:
 
   # DataSource Configuration
   datasource:
-    url: jdbc:postgresql://localhost:5432/lms_db
+    url: jdbc:postgresql://localhost:5432/lms
     username: postgres
-    password: root
+    password: anil@123
     driver-class-name: org.postgresql.Driver
 
   # JPA / Hibernate Configuration
@@ -94,12 +94,12 @@ management:
 
 # JWT Configuration
 jwt:
-  secret: my_secret_key_my_secret_key_my_secret_key_for_production_use_stronger_key_256_bits_long
+  secret: bXlfc2VjcmV0X2tleV9teV9zZWNyZXRfa2V5X3Byb2R1Y3Rpb25fdXNlX3N0cm9uZ2VyX2tleV8yNTZfYml0c19sb25n
   issuer: https://auth.nucleusteq.com
 
   # Access token configuration (short-lived for client-to-service)
   access-token:
-    expiration: 900000 # 15 minutes in milliseconds
+    expiration: 300000  # 5 minutes in milliseconds
 
   # Refresh token configuration (long-lived for token refresh)
   refresh-token:
