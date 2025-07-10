@@ -239,7 +239,7 @@ CREATE TABLE quiz_question (
 
 -- Create user_progress table
 CREATE TABLE user_progress (
-    progress_id SERIAL PRIMARY KEY,
+    progress_id BIGSERIAL PRIMARY KEY,
     user_id BIGINT NOT NULL,
     content_id BIGINT NOT NULL,
     course_id BIGINT NOT NULL,
