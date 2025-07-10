@@ -35,13 +35,13 @@ public class User {
     /**
      * The username of the user, which must be unique.
      */
-    @Column(name = "username",nullable = false, unique = true)
+    @Column(name = "username", nullable = false, unique = true)
     private String userName;
 
     /**
      * The first name of the user.
      */
-    @Column(name = "firstname",nullable = false)
+    @Column(name = "firstname", nullable = false)
     private String firstName;
 
     /**
@@ -89,16 +89,11 @@ public class User {
     @Column(name = "updated_at")
     private Date updatedAt;
 
-
     /**
-     * The status for the user
+     * The status for the user.
      */
-    @Column(name ="is_active" , nullable =false ,columnDefinition = "Boolean Default True")
-    private boolean active=true;
-
-//    @Column(name = "is_loggedIn" , nullable=false,columnDefinition = "Boolean default false")
-//    private boolean is_loggedIn = false;
-
+    @Column(name = "is_active", nullable = false, columnDefinition = "Boolean Default True")
+    private boolean active = true;
 
     /**
      * Default constructor. Sets the managerId to ADMIN_ID.

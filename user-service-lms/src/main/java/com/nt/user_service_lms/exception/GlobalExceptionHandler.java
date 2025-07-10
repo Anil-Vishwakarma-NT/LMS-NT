@@ -43,7 +43,7 @@ public final class GlobalExceptionHandler {
     /**
      * Handles UnauthorizedAccessException.
      *
-     * @param ex      the exception
+     * @param ex  the exception
      * @param request the HTTP request
      * @return standardized error response
      */
@@ -55,6 +55,13 @@ public final class GlobalExceptionHandler {
         return new ErrorResponse(LocalDateTime.now(), HttpStatus.UNAUTHORIZED.value(), ex.getMessage());
     }
 
+    /**
+     * Handles Unauthorized Exception errors.
+     *
+     * @param ex      the exception
+     * @param request the HTTP request
+     * @return standardized error response
+     */
     @ExceptionHandler(ResourceNotValidException.class)
     @ResponseBody
     @ResponseStatus(HttpStatus.BAD_REQUEST)
@@ -63,6 +70,13 @@ public final class GlobalExceptionHandler {
         return new ErrorResponse(LocalDateTime.now(), HttpStatus.BAD_REQUEST.value(), ex.getMessage());
     }
 
+    /**
+     * Handles ResourceAlreadyExistsException.
+     *
+     * @param ex      the exception
+     * @param request the HTTP request
+     * @return standardized error response
+     */
     @ExceptionHandler(ResourceAlreadyExistsException.class)
     @ResponseBody
     @ResponseStatus(HttpStatus.CONFLICT)

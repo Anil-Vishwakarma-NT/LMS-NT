@@ -87,12 +87,20 @@ public final class UserConstants {
      */
     public static final String INVALID_USER_ROLE = "User Role is not valid";
 
+    /**
+     * Message indicating that the user details have been updated.
+     */
     public static final String USER_UPDATED_SUCCESSFULLY = "User details updated successfully";
 
     /**
      * The ID of the administrator user.
      */
     private static final Long ADMIN_ID = 1L;
+
+    /**
+     * Message indicating that the request is invalid.
+     */
+    public static final String INVALID_REQUEST = "Invalid request , can not proceed.";
 
     /**
      * to access admin id.
@@ -109,6 +117,4 @@ public final class UserConstants {
     private UserConstants() {
         throw new UnsupportedOperationException("Utility class cannot be instantiated.");
     }
-
-    public static String INVALID_REQUEST = "Invalid request , can not proceed.";
 }
