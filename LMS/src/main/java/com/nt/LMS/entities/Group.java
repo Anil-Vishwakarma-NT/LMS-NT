@@ -33,7 +33,7 @@ public class Group {
     /**
      * The name of the group.
      */
-    @Column(nullable = false)
+    @Column(nullable = false ,unique = true)
     private String groupName;
 
     /**

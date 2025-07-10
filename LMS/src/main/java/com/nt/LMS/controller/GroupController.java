@@ -189,13 +189,13 @@ public final class GroupController {
     }
 
     @GetMapping("/count")
-    public ResponseEntity<MessageOutDto> getGroupCount() {
+    public ResponseEntity<StandardResponseOutDTO<Long>> getGroupCount() {
         log.info("Received request to get total Group count.");
         long count = groupService.countGroups();
         log.info("Total Group count retrieved: {}", count);
-        MessageOutDto message =new MessageOutDto();
-        message.setMessage(""+count);
-        return ResponseEntity.ok(message);
+        StandardResponseOutDTO<Long> response = new StandardResponseOutDTO();
+                response.success(count,"Group count retrieved");
+        return new ResponseEntity<>(response,HttpStatus.OK);
     }
 
     @GetMapping("/recent")
@@ -207,7 +207,26 @@ public final class GroupController {
     @PostMapping("/user-courses")
     public ResponseEntity<StandardResponseOutDTO<List<CourseInfoOutDTO>>> getUserCoursesInGroups(@RequestBody GroupInDTO groupInDTO){
         StandardResponseOutDTO<List<CourseInfoOutDTO>> response = groupService.getUserCourses(groupInDTO.getGroupId(), groupInDTO.getUserId());
+        if(response.getData().isEmpty()){
+            return new ResponseEntity<>(response,HttpStatus.NO_CONTENT);
+        }
         return new ResponseEntity<>(response,HttpStatus.OK);
     }
+
+
+    @GetMapping("/user-groups")
+    public ResponseEntity<StandardResponseOutDTO<List<UserGroupOutDTO>>>getUserGroupDetails(){
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+
+        if (!(authentication.getPrincipal() instanceof ServicePrincipal principal)) {
+            throw new UnauthorizedAccessException("Authentication failed");
+        }
+
+        String username = principal.getUserEmail();
+        StandardResponseOutDTO<List<UserGroupOutDTO>> response = groupService.getUserGroupDetail(username);
+        return new ResponseEntity<>(response , HttpStatus.OK);
+    }
+
+
 
 }

@@ -34,13 +34,7 @@ public class UserCourseEnrollmentController {
         return ResponseEntity.ok(standardResponseOutDTO);
     }
 
-    @GetMapping("/{userId}/statistics")
-    public ResponseEntity<StandardResponseOutDTO<Map<String,Long>>> getUserEnrollments(@PathVariable Long userId){
-        System.out.println(userId + "USERID *****");
-        Map<String , Long> stats = userService.userStatistics(userId);
-        StandardResponseOutDTO<Map<String,Long>> standardResponseOutDTO = StandardResponseOutDTO.success(stats, "Fetched Users Enrolled");
-        return ResponseEntity.ok(standardResponseOutDTO);
-    }
+
 
 
 }

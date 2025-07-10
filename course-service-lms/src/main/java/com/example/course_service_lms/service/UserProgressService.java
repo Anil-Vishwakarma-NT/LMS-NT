@@ -13,4 +13,6 @@ public interface UserProgressService {
 
     Double getContentProgress(int userId, int courseId, int contentId);
 
+
+
 }

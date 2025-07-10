@@ -2,10 +2,7 @@ package com.nt.LMS.controller;
 
 
 import com.nt.LMS.config.ServicePrincipal;
-import com.nt.LMS.dto.outDTO.CourseDeadlinesDTO;
-import com.nt.LMS.dto.outDTO.CourseInfoOutDTO;
-import com.nt.LMS.dto.outDTO.StandardResponseOutDTO;
-import com.nt.LMS.dto.outDTO.UserOutDTO;
+import com.nt.LMS.dto.outDTO.*;
 import com.nt.LMS.exception.UnauthorizedAccessException;
 import com.nt.LMS.service.UserService;
 import lombok.extern.slf4j.Slf4j;
@@ -19,6 +16,7 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
 @Slf4j
@@ -106,4 +104,24 @@ public class UserController {
         return new  ResponseEntity<>(deadlines,HttpStatus.OK);
     }
 
+
+    @GetMapping("/userCourses")
+    public ResponseEntity<StandardResponseOutDTO<List<UserCourseEnrollDetails>>> getEnrolledCoursesByUserId() {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+
+        if (!(authentication.getPrincipal() instanceof ServicePrincipal principal)) {
+            throw new UnauthorizedAccessException("Authentication failed");
+        }
+
+        String userEmail = principal.getUserEmail();
+        List<UserCourseEnrollDetails> enrolledCourses = userService.getUserEnrolledCourses(userEmail);
+        return ResponseEntity.ok(StandardResponseOutDTO.success(enrolledCourses, "Fetched enrolled courses successfully"));
+    }
+
+    @GetMapping("/{userId}/statistics")
+    public ResponseEntity<StandardResponseOutDTO<Map<String,Long>>> getUserEnrollments(@PathVariable Long userId){
+        Map<String , Long> stats = userService.userStatistics(userId);
+        StandardResponseOutDTO<Map<String,Long>> standardResponseOutDTO = StandardResponseOutDTO.success(stats, "Fetched Users Enrolled");
+        return ResponseEntity.ok(standardResponseOutDTO);
+    }
 }

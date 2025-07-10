@@ -83,4 +83,7 @@ public interface GroupService {
     StandardResponseOutDTO<List<GroupCourseOutDTO>> getCourseDetail(long groupId);
     public StandardResponseOutDTO<List<GroupUserOutDTO>> getUserDetail(long groupId);
 
+    public StandardResponseOutDTO<List<UserGroupOutDTO>> getUserGroupDetail(String email);
+
+
 }

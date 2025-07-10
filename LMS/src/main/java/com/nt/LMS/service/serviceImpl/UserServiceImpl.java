@@ -4,6 +4,7 @@ import com.nt.LMS.dto.UsersDetailsViewDTO;
 import com.nt.LMS.dto.outDTO.CourseDeadlinesDTO;
 import com.nt.LMS.dto.outDTO.CourseInfoOutDTO;
 import com.nt.LMS.dto.outDTO.StandardResponseOutDTO;
+import com.nt.LMS.dto.outDTO.UserCourseEnrollDetails;
 import com.nt.LMS.entities.Enrollment;
 import com.nt.LMS.entities.Role;
 import com.nt.LMS.entities.User;
@@ -24,6 +25,7 @@ import java.time.LocalDate;
 import java.util.*;
 import java.util.stream.Collectors;
 
+import static com.nt.LMS.constants.UserConstants.DEADLINE_DAYS_LIMIT;
 import static com.nt.LMS.constants.UserConstants.USER_NOT_FOUND;
 
 
@@ -60,6 +62,7 @@ public final class UserServiceImpl implements UserService {  // Made the class f
 
     @Autowired
     private CourseMicroserviceClient courseMicroserviceClient;
+
     /**
      * Loads the user details based on the provided email.
      * It retrieves the user and their associated role, and then constructs a UserDetails object
@@ -87,8 +90,6 @@ public final class UserServiceImpl implements UserService {  // Made the class f
     }
 
 
-
-
     @Override
     public long countActiveUsers() {
         return userRepository.findAll()
@@ -113,26 +114,25 @@ public final class UserServiceImpl implements UserService {  // Made the class f
     }
 
 
-
     @Override
-    public Map<String , Long> userStatistics(long userId){
-        Map<String , Long> stats = new HashMap<>();
-         Long enrols = enrollmentRepository.getUserTotalEnrollments(userId);
-       stats.put("enrollments" , enrols);
-       long userGroup = userGroupRepository.getAllUserGroups(userId);
-       stats.put("groups",userGroup);
+    public Map<String, Long> userStatistics(long userId) {
+        Map<String, Long> stats = new HashMap<>();
+        Long enrols = enrollmentRepository.getUserTotalEnrollments(userId);
+        stats.put("enrollments", enrols);
+        long userGroup = userGroupRepository.getAllUserGroups(userId);
+        stats.put("groups", userGroup);
 
-       return stats;
+        return stats;
     }
 
     @Override
-    public StandardResponseOutDTO<List<CourseDeadlinesDTO>> deadlineCourses(String email){
+    public StandardResponseOutDTO<List<CourseDeadlinesDTO>> deadlineCourses(String email) {
         try {
             Optional<User> user = userRepository.findByEmailIgnoreCase(email);
             if (user.isPresent()) {
                 List<Enrollment> enrols = enrollmentRepository.findByUserId(user.get().getUserId());
                 LocalDate today = LocalDate.now();
-                LocalDate later = today.plusDays(5);
+                LocalDate later = today.plusDays(DEADLINE_DAYS_LIMIT);
 
                 List<Enrollment> filteredEnrols = enrols.stream()
                         .filter(enrol ->
@@ -153,7 +153,7 @@ public final class UserServiceImpl implements UserService {  // Made the class f
                     courses.add(deadlinecourse);
                 }
 
-                return StandardResponseOutDTO.success(courses , null);
+                return StandardResponseOutDTO.success(courses, null);
 
             } else {
                 throw new ResourceNotFoundException(USER_NOT_FOUND);
@@ -163,13 +163,44 @@ public final class UserServiceImpl implements UserService {  // Made the class f
         }
     }
 
+    @Override
+    public List<UserCourseEnrollDetails> getUserEnrolledCourses(String userEmail) {
+        Optional<User> user = userRepository.findByEmailIgnoreCase(userEmail);
+        if (user.isPresent()) {
+            List<Enrollment> enrollments = enrollmentRepository.findByUserIdAndIsActiveTrue(user.get().getUserId());
 
+            Map<Long, Enrollment> earliestCourseEnrollments = new HashMap<>();
 
+            for (Enrollment e : enrollments) {
+                Long courseId = e.getCourseId();
+                if (courseId == null) continue;
 
+                if (!earliestCourseEnrollments.containsKey(courseId) ||
+                        e.getAssignedAt().isBefore(earliestCourseEnrollments.get(courseId).getAssignedAt())) {
+                    earliestCourseEnrollments.put(courseId, e);
+                }
+            }
 
+            return earliestCourseEnrollments.values().stream()
+                    .map(e -> {
+                        UserCourseEnrollDetails dto = new UserCourseEnrollDetails();
+                        dto.setCourseId(e.getCourseId());
+                        dto.setAssignedById(e.getAssignedBy()); // assuming it's Long
+                        dto.setEnrollmentDate(e.getAssignedAt());
+                        dto.setDeadline(e.getDeadline());
+                        return dto;
+                    })
+                    .collect(Collectors.toList());
+        } else {
+            throw new ResourceNotFoundException(USER_NOT_FOUND);
 
+        }
 
+    }
 }
+
+
+
 
 
 
