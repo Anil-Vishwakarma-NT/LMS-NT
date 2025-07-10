@@ -1,6 +1,7 @@
 package com.nt.user_service_lms.controller;
 
-import com.nt.user_service_lms.dto.*;
+import com.nt.user_service_lms.dto.RegisterDto;
+import com.nt.user_service_lms.dto.UsersDetailsViewDTO;
 import com.nt.user_service_lms.dto.inDTO.UserInDTO;
 import com.nt.user_service_lms.dto.outDTO.MessageOutDto;
 import com.nt.user_service_lms.dto.outDTO.StandardResponseOutDTO;
@@ -14,13 +15,21 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PatchMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
 
 /**
- * Controller for Admin functionalities such as registering users,
- * deleting users, listing employees, assigning roles, etc.
+ * REST controller for administrative operations in the LMS user service.
+ * Provides endpoints for user management, role assignment, and employee operations.
+ * All endpoints require admin role authorization.
  */
 @Slf4j
 @RestController
@@ -29,28 +38,29 @@ import java.util.List;
 public final class AdminController {
 
     /**
-     * Service for user operations.
+     * Service for user-related operations.
      */
     @Autowired
     private UserServiceImpl userService;
 
     /**
-     * Service for admin operations.
+     * Service for admin-specific operations.
      */
     @Autowired
     private AdminServiceImpl adminService;
 
     /**
-     * Service for group operations.
+     * Service for group-related operations.
      */
     @Autowired
     private GroupServiceImpl groupService;
 
     /**
-     * Registers new user.
+     * Registers a new user in the system.
+     * Creates a new user account with the provided registration details.
      *
-     * @param registerDto the user registration information
-     * @return success message
+     * @param registerDto the user registration information including email, password, and personal details
+     * @return ResponseEntity containing the success response with HTTP 201 status
      */
     @PostMapping("/register")
     public ResponseEntity<StandardResponseOutDTO> register(@Valid @RequestBody final RegisterDto registerDto) {
@@ -62,13 +72,13 @@ public final class AdminController {
     }
 
     /**
-     * Deletes a user by ID.
+     * Deletes a user by their unique identifier.
+     * Removes the user from the system permanently.
      *
-     * @param userId the ID of the user to delete
-     * @return success message
+     * @param userId the unique identifier of the user to delete
+     * @return ResponseEntity containing the success message with HTTP 200 status
      */
     @DeleteMapping("/remove-user/{userId}")
-//    @PreAuthorize("hasRole('admin')")
     public ResponseEntity<StandardResponseOutDTO<MessageOutDto>> deleteEmployee(@PathVariable final long userId) {
         log.info("Received request to delete user with ID: {}", userId);
 
@@ -78,9 +88,11 @@ public final class AdminController {
     }
 
     /**
-     * Gets all employees.
+     * Retrieves all active employees in the system.
+     * Returns a list of all users who are currently active.
      *
-     * @return list of all employees
+     * @return ResponseEntity containing the list of active employees with HTTP 200 status,
+     *         or HTTP 204 if no active employees exist
      */
     @GetMapping("/active-employees")
     @PreAuthorize("hasAuthority('admin')")
@@ -95,12 +107,13 @@ public final class AdminController {
     }
 
     /**
-     * Gets all inactive employees.
+     * Retrieves all inactive employees in the system.
+     * Returns a list of all users who are currently inactive or disabled.
      *
-     * @return list of all employees
+     * @return ResponseEntity containing the list of inactive employees with HTTP 200 status,
+     *         or HTTP 204 if no inactive employees exist
      */
     @GetMapping("/inactive-employees")
-//    @PreAuthorize("hasAuthority('admin')")
     public ResponseEntity<StandardResponseOutDTO<List<UserOutDTO>>> getAllInactiveEmployees() {
         log.info("Fetching all inactive employees");
         StandardResponseOutDTO<List<UserOutDTO>> response = adminService.getAllInactiveUsers();
@@ -112,13 +125,14 @@ public final class AdminController {
     }
 
     /**
-     * Gets employees under a manager.
+     * Retrieves all employees under a specific manager.
+     * Returns a list of employees who report to the specified manager.
      *
-     * @param userId manager's user ID
-     * @return list of employees
+     * @param userId the unique identifier of the manager
+     * @return ResponseEntity containing the list of employees under the manager with HTTP 200 status,
+     *         or HTTP 204 if no employees are found under the manager
      */
     @GetMapping("/manager-employee/{userId}")
-//    @PreAuthorize("hasAuthority('admin')")
     public ResponseEntity<StandardResponseOutDTO<List<UserOutDTO>>> getManagerEmployee(@PathVariable final long userId) {
         log.info("Fetching employees for manager with ID: {}", userId);
         StandardResponseOutDTO<List<UserOutDTO>> response = adminService.getManagerEmployee(userId);
@@ -130,46 +144,64 @@ public final class AdminController {
     }
 
     /**
-     * Changes a user's role.
+     * Changes a user's role in the system.
+     * Updates the role assignment for the specified user.
      *
-     * @param userDto user ID and new role
-     * @return success message
+     * @param userDto contains the user ID and new role information
+     * @return ResponseEntity containing the success message with HTTP 200 status
      */
     @PostMapping("/change-role")
-//    @PreAuthorize("hasAuthority('admin')")
     public ResponseEntity<StandardResponseOutDTO<MessageOutDto>> changeRole(@RequestBody @Valid final UserInDTO userDto) {
         log.info("Received request to change role for user with ID: {}", userDto.getUserId());
-        StandardResponseOutDTO standardResponseOutDTO = adminService.changeUserRole(userDto.getUserId(),userDto.getRole());
-        return new ResponseEntity<>(standardResponseOutDTO,HttpStatus.OK);
+        StandardResponseOutDTO standardResponseOutDTO = adminService.changeUserRole(userDto.getUserId(), userDto.getRole());
+        return new ResponseEntity<>(standardResponseOutDTO, HttpStatus.OK);
     }
 
+    /**
+     * Updates user details for a specific user.
+     * Modifies the user's information based on the provided data.
+     *
+     * @param userId the unique identifier of the user to update
+     * @param userInDTO contains the updated user information
+     * @return ResponseEntity containing the success message with HTTP 200 status
+     */
     @PatchMapping("/update-user/{userId}")
     @PreAuthorize("hasAuthority('admin')")
-    public ResponseEntity<MessageOutDto> updateUser(@PathVariable final long userId , @RequestBody final UserInDTO userInDTO){
-
+    public ResponseEntity<MessageOutDto> updateUser(@PathVariable final long userId, @RequestBody final UserInDTO userInDTO) {
         log.info("Received request to update user details");
         return new ResponseEntity<>(
-                adminService.updateUserDetails(userInDTO,userId),
+                adminService.updateUserDetails(userInDTO, userId),
                 HttpStatus.OK
         );
     }
 
-
-
-//    @PreAuthorize("permitAll()")
+    /**
+     * Retrieves the total count of active users in the system.
+     * Returns the number of users who are currently active.
+     *
+     * @return ResponseEntity containing the total user count with HTTP 200 status
+     */
     @GetMapping("/count")
     public ResponseEntity<StandardResponseOutDTO<Long>> getTotalUserCount() {
         log.info("Fetching total user count");
         long count = userService.countActiveUsers();
         log.info("Total user count retrieved: {}", count);
-        StandardResponseOutDTO<Long> standardResponseOutDTO = StandardResponseOutDTO.success(count, "Fetched User Count");
+        StandardResponseOutDTO<Long> standardResponseOutDTO = StandardResponseOutDTO
+                .success(count, "Fetched User Count");
         return ResponseEntity.ok(standardResponseOutDTO);
     }
 
+    /**
+     * Retrieves recently registered users in the system.
+     * Returns a list of users who have recently joined the system.
+     *
+     * @return ResponseEntity containing the list of recent users with HTTP 200 status
+     */
     @GetMapping("/users/recent")
     public ResponseEntity<StandardResponseOutDTO<List<UsersDetailsViewDTO>>> getRecentUsers() {
         List<UsersDetailsViewDTO> usersDetailsViewDTOS = userService.getRecentUserDetails();
-        StandardResponseOutDTO<List<UsersDetailsViewDTO>> standardResponseOutDTO = StandardResponseOutDTO.success(usersDetailsViewDTOS, "Fetched Recent Users");
+        StandardResponseOutDTO<List<UsersDetailsViewDTO>> standardResponseOutDTO = StandardResponseOutDTO
+                .success(usersDetailsViewDTOS, "Fetched Recent Users");
         return ResponseEntity.ok(standardResponseOutDTO);
     }
 
