@@ -1,7 +1,9 @@
 package com.nt.course_service_lms.controller;
 
+import com.nt.course_service_lms.config.ServicePrincipal;
 import com.nt.course_service_lms.dto.outDTO.CourseProgressWithMetaDTO;
 import com.nt.course_service_lms.dto.outDTO.UserProgressOutDTO;
+import com.nt.course_service_lms.exception.ResourceNotFoundException;
 import com.nt.course_service_lms.service.UserProgressService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.Authentication;

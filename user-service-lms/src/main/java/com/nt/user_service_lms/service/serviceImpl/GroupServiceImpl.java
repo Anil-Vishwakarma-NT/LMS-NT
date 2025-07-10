@@ -433,6 +433,29 @@ public class GroupServiceImpl implements GroupService {
         return StandardResponseOutDTO.success( new ArrayList<>(mp.values()),"Successfully fetched course details.");
     }
 
+
+    @Override
+    public StandardResponseOutDTO<List<GroupCourseOutDTO>> getCourseEmpDetail(long groupId) {
+
+        List<Enrollment> enrols = enrollmentRepository.findByGroupId(groupId);
+
+        Map<Long , GroupCourseOutDTO > mp = new HashMap<>();
+
+        for (Enrollment en : enrols) {
+            if (en.getIsActive()) {
+                String courseName = courseMicroserviceClient.getCourseNameById(en.getCourseId()).getBody();
+                GroupCourseOutDTO gc = mp.getOrDefault(en.getCourseId(), new GroupCourseOutDTO());
+                gc.setCourseName(courseName);
+                gc.setCourseId(en.getCourseId());
+                mp.put(en.getCourseId(), gc);
+            }
+        }
+
+
+
+        return StandardResponseOutDTO.success( new ArrayList<>(mp.values()),"Successfully fetched course details.");
+    }
+
     @Override
     public StandardResponseOutDTO<List<GroupUserOutDTO>> getUserDetail(long groupId) {
 
@@ -477,6 +500,26 @@ public class GroupServiceImpl implements GroupService {
     }
 
     @Override
+    public StandardResponseOutDTO<List<GroupUserOutDTO>> getUserDetailEmp(long groupId) {
+        List<UserGroup> usrgrp = userGroupRepository.findAllByGroupId(groupId);
+
+        Map<Long , GroupUserOutDTO > mp = new HashMap<>();
+
+        for(UserGroup user : usrgrp){
+            if(!mp.containsKey(user.getUserId()) && user.is_active()){
+                Optional<User> usr = userRepository.findById(user.getUserId());
+                GroupUserOutDTO uc = new GroupUserOutDTO();
+                uc.setFirstName(usr.get().getFirstName());
+                uc.setLastName(usr.get().getLastName());
+                uc.setUserId(usr.get().getUserId());
+                mp.put(user.getUserId(),uc);
+
+            }
+        }
+        return StandardResponseOutDTO.success( new ArrayList<>(mp.values()),"Successfully fetched course details.");
+    }
+
+    @Override
     public StandardResponseOutDTO<List<UserGroupOutDTO>> getUserGroupDetail(String email) {
 
         User user = userRepository.findByEmailIgnoreCase(email)
@@ -487,7 +530,7 @@ public class GroupServiceImpl implements GroupService {
         Map<Long , UserGroupOutDTO > mp = new HashMap<>();
 
         for (Enrollment en : enrols) {
-            if (en.getIsActive()) {
+            if (en.getIsActive() && en.getGroupId()!=null) {
                 Optional<Group> group = groupRepository.findByGroupId(en.getGroupId());
                 if (group.isPresent()) {
                     String groupName = group.get().getGroupName();
@@ -497,8 +540,6 @@ public class GroupServiceImpl implements GroupService {
                     double progress = ((gc.getProgress() * gc.getEnrols()) + userprogress) / totalenrols;
                     gc.setGroupName(groupName);
                     gc.setGroupId(group.get().getGroupId());
-                    gc.setEnrols(totalenrols);
-                    gc.setProgress(progress);
                     mp.put(en.getCourseId(), gc);
                 }
                 else{

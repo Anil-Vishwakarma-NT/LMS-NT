@@ -138,10 +138,33 @@ public class GroupController {
         return new ResponseEntity<>(response, HttpStatus.OK);
     }
 
+    @GetMapping("emp/group-emps/{groupId}")
+    public ResponseEntity<StandardResponseOutDTO<List<GroupUserOutDTO>>> getUsersInGroupForEmp(@PathVariable final long groupId) {
+        log.info("Fetching users in group with ID: {}", groupId);
+        StandardResponseOutDTO<List<GroupUserOutDTO>> response = groupService.getUserDetailEmp(groupId);
+
+        if (response.getData().isEmpty()) {
+            log.warn("No users found in group with ID: {}", groupId);
+            return new ResponseEntity<>(response, HttpStatus.NO_CONTENT);
+        }
+
+        log.info("Users found in group with ID: {}: {}", groupId, response.getData().size());
+        return new ResponseEntity<>(response, HttpStatus.OK);
+    }
+
     @GetMapping("/group-courses/{groupId}")
     public ResponseEntity<StandardResponseOutDTO<List<GroupCourseOutDTO>>> getCourseDetails(@PathVariable final long groupId){     // pass group id in dto
         log.info("Attempting to get course details of groupId : {}",groupId);
         StandardResponseOutDTO<List<GroupCourseOutDTO>> response = groupService.getCourseDetail(groupId);
+
+        return new ResponseEntity<>(response,HttpStatus.OK);
+    }
+
+
+    @GetMapping("emp/group-courses/{groupId}")
+    public ResponseEntity<StandardResponseOutDTO<List<GroupCourseOutDTO>>> getCourseEmpDetails(@PathVariable final long groupId){     // pass group id in dto
+        log.info("Attempting to get course details of groupId : {}",groupId);
+        StandardResponseOutDTO<List<GroupCourseOutDTO>> response = groupService.getCourseEmpDetail(groupId);
 
         return new ResponseEntity<>(response,HttpStatus.OK);
     }
