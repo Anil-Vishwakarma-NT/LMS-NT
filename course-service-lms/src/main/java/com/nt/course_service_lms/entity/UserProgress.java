@@ -22,25 +22,25 @@ public class UserProgress {
      */
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private int progressId;
+    private Long progressId;
 
     /**
      * ID of the user associated with this progress record.
      */
     @Column(nullable = false)
-    private int userId;
+    private Long userId;
 
     /**
      * ID of the content (e.g., PDF or video) being tracked.
      */
     @Column(nullable = false)
-    private int contentId;
+    private Long contentId;
 
     /**
      * ID of the course to which the content belongs.
      */
     @Column(nullable = false)
-    private int courseId; // Added course ID to match the database table
+    private Long courseId; // Added course ID to match the database table
 
     /**
      * Type of content, such as 'pdf' or 'video'.
@@ -95,7 +95,7 @@ public class UserProgress {
     /**
      * Parameterized constructor to initialize all fields.
      */
-    public UserProgress(int progressId, int userId, int contentId, int courseId, String contentType, double lastPosition, double contentCompletionPercentage, double courseCompletionPercentage, boolean courseCompleted, LocalDateTime lastUpdated, LocalDateTime firstCompletedAt) {
+    public UserProgress(Long progressId, Long userId, Long contentId, Long courseId, String contentType, double lastPosition, double contentCompletionPercentage, double courseCompletionPercentage, boolean courseCompleted, LocalDateTime lastUpdated, LocalDateTime firstCompletedAt) {
         this.progressId = progressId;
         this.userId = userId;
         this.contentId = contentId;

@@ -12,43 +12,67 @@ import java.util.List;
 import java.util.Optional;
 
 /**
- * Repository for Group entity interactions.
+ * Repository interface for performing CRUD operations and custom queries
+ * on {@link com.nt.user_service_lms.entities.Group} entities.
  */
 @Repository
 public interface GroupRepository extends JpaRepository<Group, Long> {
 
     /**
-     * Finds a group by its ID.
+     * Finds a group by its unique identifier.
      *
-     * @param groupId The ID of the group to search for.
-     * @return An Optional containing the found Group, or empty if not found.
+     * @param groupId the unique identifier of the group
+     * @return an {@link Optional} containing the found group, or empty if not found
      */
     Optional<Group> findById(long groupId);
 
     /**
      * Finds all groups created by a specific creator.
      *
-     * @param creatorId The ID of the creator to filter groups by.
-     * @return A list of groups created by the given creator.
+     * @param creatorId the unique identifier of the creator
+     * @return a list of groups created by the given creator
      */
     List<Group> findByCreatorId(long creatorId);
+
+    /**
+     * Checks if a group exists by its unique identifier.
+     *
+     * @param groupId the unique identifier of the group
+     * @return {@code true} if the group exists, {@code false} otherwise
+     */
     boolean existsById(long groupId);
 
     /**
-     * Finds the 5 most recent groups ordered by group ID in descending order.
+     * Finds the five most recently created groups, ordered by group ID in descending order.
      *
-     * @return a list of the 5 most recently created groups
+     * @return a list of the five most recently created groups
      */
     List<Group> findTop5ByOrderByGroupIdDesc();
 
+    /**
+     * Finds the group IDs that exist in the database from a given list of group IDs.
+     *
+     * @param groupIds the list of group IDs to check
+     * @return a list of existing group IDs
+     */
     @Query("SELECT g.groupId FROM Group g WHERE g.groupId IN :groupIds")
     List<Long> findExistingIds(@Param("groupIds") List<Long> groupIds);
 
+    /**
+     * Soft deletes a group by setting its {@code isActive} flag to {@code false}.
+     *
+     * @param groupId the unique identifier of the group to soft delete
+     */
     @Modifying
     @Transactional
     @Query("UPDATE Group ug SET ug.isActive = false WHERE ug.groupId = :groupId")
-    void softDeleteByGroupId(Long groupId);
+    void softDeleteByGroupId(@Param("groupId") Long groupId);
 
+    /**
+     * Finds all groups that are currently active.
+     *
+     * @return a list of active groups
+     */
     List<Group> findByIsActiveTrue();
 
 }

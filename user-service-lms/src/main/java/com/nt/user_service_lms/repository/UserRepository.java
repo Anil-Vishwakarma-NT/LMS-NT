@@ -44,7 +44,19 @@ public interface UserRepository extends JpaRepository<User, Long> {
      * @return A list of users managed by the specified manager.
      */
     List<User> findByManagerId(long managerId);
+    /**
+     * Checks if a user exists by their ID.
+     *
+     * @param id The ID of the user.
+     * @return true if a user with the given ID exists, false otherwise.
+     */
     boolean existsById(long id);
+    /**
+     * Fetches details of the 5 most recently created active users (excluding the user with ID 1).
+     * The details include full name, email, role, manager's name, and creation date.
+     *
+     * @return A list of object arrays containing user details.
+     */
     @Query(value = """
     SELECT
         CONCAT(u.firstname, ' ', u.lastname) AS fullName,
@@ -61,10 +73,12 @@ public interface UserRepository extends JpaRepository<User, Long> {
     """, nativeQuery = true)
     List<Object[]> fetchRecentUserDetails();
 
+    /**
+     * Finds existing user IDs from the provided list.
+     *
+     * @param userIds List of user IDs to check.
+     * @return List of user IDs that exist in the database.
+     */
     @Query("SELECT u.userId FROM User u WHERE u.userId IN :userIds")
     List<Long> findExistingIds(@Param("userIds") List<Long> userIds);
-
-
-
-
 }

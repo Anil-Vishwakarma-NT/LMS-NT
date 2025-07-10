@@ -26,9 +26,4 @@ public class GroupOutDTO {
      * The name of the user who created the group.
      */
     private String creatorName;
-
-
-
-
-
 }
