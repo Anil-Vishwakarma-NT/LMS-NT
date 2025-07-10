@@ -1,13 +1,29 @@
 package com.nt.user_service_lms.service.serviceImpl;
 
 import com.nt.user_service_lms.dto.inDTO.EnrollmentRequestInDTO;
-import com.nt.user_service_lms.dto.outDTO.*;
-import com.nt.user_service_lms.entities.*;
+import com.nt.user_service_lms.dto.outDTO.BundleInfoOutDTO;
+import com.nt.user_service_lms.dto.outDTO.CourseInfoOutDTO;
+import com.nt.user_service_lms.dto.outDTO.CourseProgressWithMetaDTO;
+import com.nt.user_service_lms.dto.outDTO.EnrolledBundlesOutDTO;
+import com.nt.user_service_lms.dto.outDTO.EnrolledCoursesOutDTO;
+import com.nt.user_service_lms.dto.outDTO.EnrolledUserOutDTO;
+import com.nt.user_service_lms.dto.outDTO.EnrollmentDashBoardStatsOutDTO;
+import com.nt.user_service_lms.dto.outDTO.EnrollmentOutDTO;
+import com.nt.user_service_lms.dto.outDTO.StandardResponseOutDTO;
+import com.nt.user_service_lms.dto.outDTO.UserBundleEnrollmentOutDTO;
+import com.nt.user_service_lms.dto.outDTO.UserCourseEnrollDetails;
+import com.nt.user_service_lms.dto.outDTO.UserCourseEnrollmentOutDTO;
+import com.nt.user_service_lms.dto.outDTO.UserEnrollmentsOutDTO;
+import com.nt.user_service_lms.entities.Enrollment;
+import com.nt.user_service_lms.entities.User;
 import com.nt.user_service_lms.exception.ResourceAlreadyExistsException;
 import com.nt.user_service_lms.exception.ResourceNotFoundException;
 import com.nt.user_service_lms.exception.ResourceNotValidException;
 import com.nt.user_service_lms.feignClient.CourseMicroserviceClient;
-import com.nt.user_service_lms.repository.*;
+import com.nt.user_service_lms.repository.EnrollmentRepository;
+import com.nt.user_service_lms.repository.GroupRepository;
+import com.nt.user_service_lms.repository.UserGroupRepository;
+import com.nt.user_service_lms.repository.UserRepository;
 import com.nt.user_service_lms.service.EnrollmentService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -17,7 +33,12 @@ import org.springframework.transaction.annotation.Transactional;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.time.LocalDateTime;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Objects;
+import java.util.Set;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
@@ -25,25 +46,50 @@ import java.util.stream.Collectors;
 @Transactional
 public class EnrollmentServiceImpl implements EnrollmentService {
 
+    /**
+     * Repository for managing Enrollment entities.
+     */
     @Autowired
     private EnrollmentRepository enrollmentRepository;
 
+    /**
+     * Repository for managing User entities.
+     */
     @Autowired
     private UserRepository userRepository;
 
+    /**
+     * Repository for managing Group entities.
+     */
     @Autowired
     private GroupRepository groupRepository;
 
+    /**
+     * Feign client for communicating with the Course microservice.
+     */
     @Autowired
     private CourseMicroserviceClient courseMicroserviceClient;
-
+    /**
+     * Repository for managing User-Group relationships.
+     */
     @Autowired
     private UserGroupRepository userGroupRepository;
 
-    // Updated constants
+    /**
+     * Enrollment source constant for individual enrollments.
+     */
     private static final String ENROLLMENT_SOURCE_INDIVIDUAL = "INDIVIDUAL";
+    /**
+     * Enrollment source constant for group enrollments.
+     */
     private static final String ENROLLMENT_SOURCE_GROUP = "GROUP";
+    /**
+     * Enrollment source constant for bundle enrollments.
+     */
     private static final String ENROLLMENT_SOURCE_BUNDLE = "BUNDLE";
+    /**
+     * Enrollment source constant for group-bundle enrollments.
+     */
     private static final String ENROLLMENT_SOURCE_GROUP_BUNDLE = "GROUP_BUNDLE";
 
     @Override
