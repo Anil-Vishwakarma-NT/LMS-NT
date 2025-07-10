@@ -67,11 +67,13 @@ public class ServiceAuthenticationFilter extends OncePerRequestFilter {
             String serviceToken = request.getHeader(HEADER_X_SERVICE_TOKEN);
             String clientId = null;
 
+            System.out.println(serviceToken);
+
             if (serviceToken != null) {
                 try {
                     clientId = jwtUtil.extractClientId(serviceToken); // may return null
                 } catch (Exception e) {
-                    logger.warn("Failed to extract subject from token: {}", e.getMessage());
+                    logger.warn("Failed to extract clientId from token: {}", e.getMessage());
                     handleUnauthorized(response,"failed to fetch the clientId from the token, jwt token is expired");
                     return;
                 }

@@ -59,6 +59,7 @@ public class ServiceAuthenticationFilter extends OncePerRequestFilter {
         try {
             String serviceToken = request.getHeader(HEADER_X_SERVICE_TOKEN);
             String clientId = null;
+            System.out.println(serviceToken);
             if (serviceToken != null) {
                 try {
                     clientId = jwtUtil.extractClientId(serviceToken); // may return null

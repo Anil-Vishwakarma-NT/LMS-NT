@@ -9,10 +9,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
 import java.security.Key;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 import static com.nt.user_service_lms.constants.TokenConverterConstant.*;
 
@@ -21,14 +18,11 @@ public class ServiceTokenConverter {
 
     private static final Logger logger = LoggerFactory.getLogger(ServiceTokenConverter.class);
 
-    @Value("${jwt.secret:my_secret_key_my_secret_key_my_secret_key}")
+    @Value("${jwt.secret}")
     private String SECRET;
 
-    @Value("${jwt.issuer:https://auth.nucleusteq.com}")
+    @Value("${jwt.issuer}")
     private String issuer;
-
-    @Value("${jwt.expiration:3600000}")
-    private Long expiration;
 
     @Value("${spring.application.name}")
     private String expectedAudience;
@@ -37,7 +31,7 @@ public class ServiceTokenConverter {
     private JwtUtil jwtUtil;
 
     private Key getSigningKey() {
-        byte[] keyBytes = SECRET.getBytes();
+        byte[] keyBytes = Base64.getDecoder().decode(SECRET);
         return Keys.hmacShaKeyFor(keyBytes);
     }
 
@@ -51,6 +45,7 @@ public class ServiceTokenConverter {
             String scope = jwtUtil.extractScope(originalToken);
             String originalTokenType = jwtUtil.extractTokenType(originalToken);
             String originalClientId = jwtUtil.extractClientId(originalToken);
+            Date originalExpiration = jwtUtil.extractExpiration(originalToken);
 
             Map<String, Object> claims = new HashMap<>();
             claims.put(TOKEN_TYPE, SERVICE);
@@ -74,7 +69,7 @@ public class ServiceTokenConverter {
                     .setAudience(targetService)
                     .setIssuer(issuer)
                     .setIssuedAt(new Date())
-                    .setExpiration(new Date(System.currentTimeMillis() + expiration))
+                    .setExpiration(originalExpiration)
                     .signWith(getSigningKey())
                     .compact();
 

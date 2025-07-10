@@ -1,0 +1,73 @@
+server:
+  port: 8091
+
+spring:
+  application:
+    name: api-gateway-auth-service
+  datasource:
+    url: jdbc:postgresql://<dev-rds-endpoint>:5432/lms
+    username: dev_user
+    password: dev_password
+    driver-class-name: org.postgresql.Driver
+  jpa:
+    database-platform: org.hibernate.dialect.PostgreSQLDialect
+    hibernate:
+      ddl-auto: validate
+  cloud:
+    gateway:
+      routes:
+        - id: user-service-client-api
+          uri: http://user-service-lms:8081
+          predicates:
+            - Path=/lms/user/api/client-api/**
+          filters:
+            - RewritePath=/lms/user/api/client-api/(?<segment>.*), /api/service-api/${segment}
+            - AddRequestHeader=X-Gateway-Service, user-service
+
+        - id: course-service-client-api
+          uri: http://course-service-lms:8080
+          predicates:
+            - Path=/lms/course/api/client-api/**
+          filters:
+            - RewritePath=/lms/course/api/client-api/(?<segment>.*), /api/service-api/${segment}
+            - AddRequestHeader=X-Gateway-Service, course-service
+
+        - id: course-service-static-files
+          uri: http://course-service-lms:8080
+          predicates:
+            - Path=/lms/course/static/**
+          filters:
+            - StripPrefix=3
+      httpclient:
+        connect-timeout: 10000
+        response-timeout: 60s
+
+jwt:
+  secret: ${JWT_SECRET}
+  issuer: https://auth.nucleusteq.com
+  access-token:
+    expiration: 300000
+  refresh-token:
+    expiration: 604800000
+  service-token:
+    expiration: 3600000
+
+gateway:
+  security:
+    enabled: true
+  secret:
+    value: ${GATEWAY_SECRET}
+
+logging:
+  level:
+    root: INFO
+    org.springframework.cloud.gateway: INFO
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info,metrics
+  endpoint:
+    health:
+      show-details: always
