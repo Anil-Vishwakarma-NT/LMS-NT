@@ -111,4 +111,6 @@ public final class UserConstants {
     }
 
     public static String INVALID_REQUEST = "Invalid request , can not proceed.";
+
+    public static Integer DEADLINE_DAYS_LIMIT   = 5;
 }

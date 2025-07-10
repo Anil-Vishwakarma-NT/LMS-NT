@@ -4,6 +4,8 @@ import com.nt.course_service_lms.dto.outDTO.CourseProgressWithMetaDTO;
 import com.nt.course_service_lms.dto.outDTO.UserProgressOutDTO;
 import com.nt.course_service_lms.service.UserProgressService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 
 
@@ -21,21 +23,23 @@ public class UserProgressController {
     }
 
     @GetMapping("/meta")
-    public CourseProgressWithMetaDTO getCourseProgressWithMetaWithId(@RequestParam int userId, @RequestParam int courseId) {
+    public CourseProgressWithMetaDTO getCourseProgressWithMeta(@RequestParam int userId, @RequestParam int courseId) {
         return userProgressService.getCourseProgressWithMeta(userId, courseId);
     }
 
+    @GetMapping("/meta-courseId")
+    public CourseProgressWithMetaDTO getCourseProgressWithMetaCourseId( @RequestParam int courseId) {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
 
+        if (!(authentication.getPrincipal() instanceof ServicePrincipal principal)) {
+            throw new ResourceNotFoundException("Authentication failed");
+        }
+        System.out.println("USER" + principal);
 
-//    @GetMapping("/meta-id")
-//    public CourseProgressWithMetaDTO getCourseProgressWithMeta( @RequestParam int courseId) {
-//        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-//        if (!(authentication.getPrincipal() instanceof ServicePrincipal principal)) {
-//            throw new ResourceNotFoundException("Authentication failed");
-//        }
-//        String userId = principal.getUserId();
-//        return userProgressService.getCourseProgressWithMeta(Integer.parseInt(userId), courseId);
-//    }
+          String userId = principal.getUserId();
+        System.out.println("USERID" + userId);
+        return userProgressService.getCourseProgressWithMeta(Integer.parseInt(userId), courseId);
+    }
 
     @GetMapping("/last-position")
     public Integer getLastPosition(@RequestParam int userId, @RequestParam int courseId, @RequestParam int contentId) {

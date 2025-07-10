@@ -32,7 +32,7 @@ public interface EnrollmentRepository extends JpaRepository<Enrollment, Long> {
     @Query("UPDATE Enrollment ug SET ug.isActive = false WHERE ug.groupId = :groupId")
     void softDeleteByGroupId(Long groupId);
 
-@Query("SELECT Count(DISTINCT ug.courseId) FROM Enrollment ug WHERE ug.userId = :userId")
+@Query("SELECT Count(DISTINCT ug.courseId) FROM Enrollment ug WHERE ug.userId = :userId AND ug.isActive = TRUE")
 Long getUserTotalEnrollments(Long userId);
 
 

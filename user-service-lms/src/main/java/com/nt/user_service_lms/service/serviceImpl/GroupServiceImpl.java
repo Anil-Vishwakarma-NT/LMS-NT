@@ -193,7 +193,7 @@ public class GroupServiceImpl implements GroupService {
             }
 
             MessageOutDto messageOutDto =  new MessageOutDto(USER_ADDED_TO_GROUP);
-            return StandardResponseOutDTO.success(messageOutDto,null);
+            return StandardResponseOutDTO.success(messageOutDto,USER_ADDED_TO_GROUP);
         } catch (Exception e) {
             log.error("Error adding user ID: to group ID: {}", groupInDTO.getGroupId(), e);
             throw new RuntimeException(GROUP_FAILURE, e);
@@ -475,4 +475,40 @@ public class GroupServiceImpl implements GroupService {
         }
         return StandardResponseOutDTO.success( new ArrayList<>(mp.values()),"Successfully fetched course details.");
     }
+
+    @Override
+    public StandardResponseOutDTO<List<UserGroupOutDTO>> getUserGroupDetail(String email) {
+
+        User user = userRepository.findByEmailIgnoreCase(email)
+                .orElseThrow(() -> new ResourceNotFoundException(USER_NOT_FOUND));
+
+        List<Enrollment> enrols = enrollmentRepository.findByUserId(user.getUserId());
+
+        Map<Long , UserGroupOutDTO > mp = new HashMap<>();
+
+        for (Enrollment en : enrols) {
+            if (en.getIsActive()) {
+                Optional<Group> group = groupRepository.findByGroupId(en.getGroupId());
+                if (group.isPresent()) {
+                    String groupName = group.get().getGroupName();
+                    UserGroupOutDTO gc = mp.getOrDefault(en.getGroupId(), new UserGroupOutDTO());
+                    long totalenrols = gc.getEnrols() + 1;
+                    double userprogress = courseMicroserviceClient.getCourseProgressWithMeta(en.getUserId().intValue(), en.getCourseId().intValue()).getCourseCompletionPercentage();
+                    double progress = ((gc.getProgress() * gc.getEnrols()) + userprogress) / totalenrols;
+                    gc.setGroupName(groupName);
+                    gc.setGroupId(group.get().getGroupId());
+                    gc.setEnrols(totalenrols);
+                    gc.setProgress(progress);
+                    mp.put(en.getCourseId(), gc);
+                }
+                else{
+                    throw new ResourceNotFoundException(GROUP_NOT_FOUND);
+                }
+            }
+        }
+        return StandardResponseOutDTO.success( new ArrayList<>(mp.values()),"Successfully fetched course details.");
+    }
+
+
+
 }

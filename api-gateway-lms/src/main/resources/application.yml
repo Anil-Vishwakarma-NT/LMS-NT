@@ -128,6 +128,7 @@ gateway:
     enabled: true
   secret:
     value: your-super-secret-gateway-key-change-this-in-production
+
 # RSA Key
 private:
   key: |

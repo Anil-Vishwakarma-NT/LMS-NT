@@ -21,7 +21,7 @@ public class GroupInDTO {
      * Must contain only alphabets.
      */
     @Pattern(
-            regexp = "^[a-zA-Z]+$",
+            regexp = "^[a-zA-Z0-9 _-]+$",
             message = "Group name must contain only alphabets."
     )
     private String groupName;

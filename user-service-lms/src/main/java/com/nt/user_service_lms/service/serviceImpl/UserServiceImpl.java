@@ -26,6 +26,7 @@ import java.util.*;
 import java.util.stream.Collectors;
 
 import static com.nt.user_service_lms.constants.UserConstants.USER_NOT_FOUND;
+import static com.nt.user_service_lms.constants.UserConstants.DEADLINE_DAYS_LIMIT;
 
 
 /**
@@ -61,6 +62,7 @@ public final class UserServiceImpl implements UserService {  // Made the class f
 
     @Autowired
     private CourseMicroserviceClient courseMicroserviceClient;
+
     /**
      * Loads the user details based on the provided email.
      * It retrieves the user and their associated role, and then constructs a UserDetails object
@@ -88,8 +90,6 @@ public final class UserServiceImpl implements UserService {  // Made the class f
     }
 
 
-
-
     @Override
     public long countActiveUsers() {
         return userRepository.findAll()
@@ -114,26 +114,25 @@ public final class UserServiceImpl implements UserService {  // Made the class f
     }
 
 
-
     @Override
-    public Map<String , Long> userStatistics(long userId){
-        Map<String , Long> stats = new HashMap<>();
-         Long enrols = enrollmentRepository.getUserTotalEnrollments(userId);
-       stats.put("enrollments" , enrols);
-       long userGroup = userGroupRepository.getAllUserGroups(userId);
-       stats.put("groups",userGroup);
+    public Map<String, Long> userStatistics(long userId) {
+        Map<String, Long> stats = new HashMap<>();
+        Long enrols = enrollmentRepository.getUserTotalEnrollments(userId);
+        stats.put("enrollments", enrols);
+        long userGroup = userGroupRepository.getAllUserGroups(userId);
+        stats.put("groups", userGroup);
 
-       return stats;
+        return stats;
     }
 
     @Override
-    public StandardResponseOutDTO<List<CourseDeadlinesDTO>> deadlineCourses(String email){
+    public StandardResponseOutDTO<List<CourseDeadlinesDTO>> deadlineCourses(String email) {
         try {
             Optional<User> user = userRepository.findByEmailIgnoreCase(email);
             if (user.isPresent()) {
                 List<Enrollment> enrols = enrollmentRepository.findByUserId(user.get().getUserId());
                 LocalDate today = LocalDate.now();
-                LocalDate later = today.plusDays(5);
+                LocalDate later = today.plusDays(DEADLINE_DAYS_LIMIT);
 
                 List<Enrollment> filteredEnrols = enrols.stream()
                         .filter(enrol ->
@@ -154,7 +153,7 @@ public final class UserServiceImpl implements UserService {  // Made the class f
                     courses.add(deadlinecourse);
                 }
 
-                return StandardResponseOutDTO.success(courses , null);
+                return StandardResponseOutDTO.success(courses, null);
 
             } else {
                 throw new ResourceNotFoundException(USER_NOT_FOUND);
@@ -191,11 +190,6 @@ public final class UserServiceImpl implements UserService {  // Made the class f
                 })
                 .collect(Collectors.toList());
     }
-
-
-
-
-
 }
 
 
