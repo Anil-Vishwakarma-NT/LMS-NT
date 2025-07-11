@@ -1,84 +1,84 @@
 package com.nt.course_service_lms.converterTest;
 
-import com.nt.course_service_lms.dto.outDTO.CourseBundleOutDTO;
-import com.nt.course_service_lms.dto.inDTO.CourseBundleInDTO;
-import com.nt.course_service_lms.entity.CourseBundle;
 import com.nt.course_service_lms.converters.CourseBundleConvertor;
+import com.nt.course_service_lms.dto.inDTO.CourseBundleInDTO;
+import com.nt.course_service_lms.dto.outDTO.CourseBundleOutDTO;
+import com.nt.course_service_lms.entity.CourseBundle;
 import org.junit.jupiter.api.Test;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.assertj.core.api.Assertions.*;
 
 class CourseBundleConvertorTest {
 
     @Test
-    void testConvertDTOToEntity() {
-        // Prepare input DTO
-        CourseBundleOutDTO dto = new CourseBundleOutDTO();
-        dto.setCourseBundleId(1L);
-        dto.setBundleId(101L);
-        dto.setCourseId(201L);
+    void testConvertDTOToEntity_withValidOutDTO() {
+        CourseBundleOutDTO outDTO = new CourseBundleOutDTO();
+        outDTO.setCourseBundleId(1L);
+        outDTO.setBundleId(2L);
+        outDTO.setCourseId(3L);
 
-        // Call method
-        CourseBundle result = CourseBundleConvertor.convertDTOToEntity(dto);
+        CourseBundle entity = CourseBundleConvertor.convertDTOToEntity(outDTO);
 
-        // Verify result
-        assertNotNull(result);
-        assertEquals(1L, result.getCourseBundleId());
-        assertEquals(101L, result.getBundleId());
-        assertEquals(201L, result.getCourseId());
+        assertThat(entity).isNotNull();
+        assertThat(entity.getCourseBundleId()).isEqualTo(1L);
+        assertThat(entity.getBundleId()).isEqualTo(2L);
+        assertThat(entity.getCourseId()).isEqualTo(3L);
     }
 
     @Test
-    void testConvertDTOToEntityForPost() {
-        // Prepare input PostDTO
-        CourseBundleInDTO postDTO = new CourseBundleInDTO();
-        postDTO.setCourseBundleId(2L);
-        postDTO.setBundleId(102L);
-        postDTO.setCourseId(202L);
+    void testConvertDTOToEntityPost_withValidInDTO() {
+        CourseBundleInDTO inDTO = new CourseBundleInDTO();
+        inDTO.setCourseBundleId(10L);
+        inDTO.setBundleId(20L);
+        inDTO.setCourseId(30L);
+        inDTO.setActive(true);
 
-        // Call method
-        CourseBundle result = CourseBundleConvertor.convertDTOToEntityPost(postDTO);
+        CourseBundle entity = CourseBundleConvertor.convertDTOToEntityPost(inDTO);
 
-        // Verify result
-        assertNotNull(result, "Converted entity should not be null");
-        assertEquals(2L, result.getCourseBundleId(), "CourseBundleId should match");
-        assertEquals(102L, result.getBundleId(), "BundleId should match");
-        assertEquals(202L, result.getCourseId(), "CourseId should match");
+        assertThat(entity).isNotNull();
+        assertThat(entity.getCourseBundleId()).isEqualTo(10L);
+        assertThat(entity.getBundleId()).isEqualTo(20L);
+        assertThat(entity.getCourseId()).isEqualTo(30L);
+        assertThat(entity.isActive()).isTrue();
     }
 
     @Test
-    void testConvertEntityToDTO() {
-        // Prepare input entity
+    void testConvertEntityToDTO_withValidEntity() {
         CourseBundle entity = new CourseBundle();
-        entity.setCourseBundleId(1L);
-        entity.setBundleId(101L);
-        entity.setCourseId(201L);
+        entity.setCourseBundleId(11L);
+        entity.setBundleId(22L);
+        entity.setCourseId(33L);
 
-        // Call method
-        CourseBundleOutDTO result = CourseBundleConvertor.convertEntityToDTO(entity);
+        CourseBundleOutDTO dto = CourseBundleConvertor.convertEntityToDTO(entity);
 
-        // Verify result
-        assertNotNull(result);
-        assertEquals(1L, result.getCourseBundleId());
-        assertEquals(101L, result.getBundleId());
-        assertEquals(201L, result.getCourseId());
+        assertThat(dto).isNotNull();
+        assertThat(dto.getCourseBundleId()).isEqualTo(11L);
+        assertThat(dto.getBundleId()).isEqualTo(22L);
+        assertThat(dto.getCourseId()).isEqualTo(33L);
     }
 
     @Test
-    void testConvertEntityToDTOPost() {
-        // Prepare input entity
-        CourseBundle courseBundle = new CourseBundle();
-        courseBundle.setCourseBundleId(3L);
-        courseBundle.setBundleId(103L);
-        courseBundle.setCourseId(203L);
+    void testConvertEntityToDTOPost_withValidEntity() {
+        CourseBundle entity = new CourseBundle();
+        entity.setCourseBundleId(99L);
+        entity.setBundleId(77L);
+        entity.setCourseId(55L);
 
-        // Call method
-        CourseBundleInDTO result = CourseBundleConvertor.convertEntityToDTOPost(courseBundle);
+        CourseBundleInDTO dto = CourseBundleConvertor.convertEntityToDTOPost(entity);
 
-        // Verify result
-        assertNotNull(result, "Converted DTO should not be null");
-        assertEquals(3L, result.getCourseBundleId(), "CourseBundleId should match");
-        assertEquals(103L, result.getBundleId(), "BundleId should match");
-        assertEquals(203L, result.getCourseId(), "CourseId should match");
-        }
+        assertThat(dto).isNotNull();
+        assertThat(dto.getCourseBundleId()).isEqualTo(99L);
+        assertThat(dto.getBundleId()).isEqualTo(77L);
+        assertThat(dto.getCourseId()).isEqualTo(55L);
     }
+
+    @Test
+    void testPrivateConstructor_shouldThrowException() {
+        assertThatThrownBy(() -> {
+            var constructor = CourseBundleConvertor.class.getDeclaredConstructor();
+            constructor.setAccessible(true);
+            constructor.newInstance();
+        }).isInstanceOf(UnsupportedOperationException.class)
+                .hasMessage("This is a utility class and cannot be instantiated");
+    }
+}

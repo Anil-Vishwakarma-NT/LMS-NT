@@ -45,4 +45,14 @@ public class UpdateCourseContentInDTO {
     @NotNull(message = "Is Active field is required")
     private boolean isActive;
 
+    public UpdateCourseContentInDTO() {
+    }
+
+    public UpdateCourseContentInDTO(long courseId, String title, String description, String resourceLink, boolean isActive) {
+        this.courseId = courseId;
+        this.title = title;
+        this.description = description;
+        this.resourceLink = resourceLink;
+        this.isActive = isActive;
+    }
 }

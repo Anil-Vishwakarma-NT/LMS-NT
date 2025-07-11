@@ -158,7 +158,7 @@ public class GroupServiceImpl implements GroupService {
                 }
                 Optional<UserGroup> usergroup = userGroupRepository.findByUserIdAndGroupId(id,groupInDTO.getGroupId());
                 if(usergroup.isPresent()){
-                    usergroup.get().set_active(true);
+                    usergroup.get().setActive(true);
                     userGroupRepository.save(usergroup.get());
                 }
                 else {
@@ -418,7 +418,7 @@ public class GroupServiceImpl implements GroupService {
                 String courseName = courseMicroserviceClient.getCourseNameById(en.getCourseId()).getBody();
                 GroupCourseOutDTO gc = mp.getOrDefault(en.getCourseId(), new GroupCourseOutDTO());
                 long totalenrols = gc.getEnrols() + 1;
-                double userprogress = courseMicroserviceClient.getCourseProgressWithMeta(en.getUserId().intValue(), en.getCourseId().intValue()).getCourseCompletionPercentage();
+                double userprogress = courseMicroserviceClient.getCourseProgressWithMeta(en.getUserId(), en.getCourseId()).getCourseCompletionPercentage();
                 double progress = ((gc.getProgress() * gc.getEnrols()) + userprogress) / totalenrols;
                 gc.setCourseName(courseName);
                 gc.setCourseId(en.getCourseId());
@@ -469,7 +469,7 @@ public class GroupServiceImpl implements GroupService {
                 Optional<User> usr = userRepository.findById(en.getUserId());
                 GroupUserOutDTO uc = mp.getOrDefault(en.getUserId(), new GroupUserOutDTO());
                 long totalenrols = uc.getEnrols() + 1;
-                double userprogress = courseMicroserviceClient.getCourseProgressWithMeta(en.getUserId().intValue(), en.getCourseId().intValue()).getCourseCompletionPercentage();
+                double userprogress = courseMicroserviceClient.getCourseProgressWithMeta(en.getUserId(), en.getCourseId()).getCourseCompletionPercentage();
                 double progress = ((uc.getProgress() * uc.getEnrols()) + userprogress) / totalenrols;
                 uc.setFirstName(usr.get().getFirstName());
                 uc.setLastName(usr.get().getLastName());
@@ -481,7 +481,7 @@ public class GroupServiceImpl implements GroupService {
         }
 
         for(UserGroup user : usrgrp){
-            if(!mp.containsKey(user.getUserId()) && user.is_active()){
+            if(!mp.containsKey(user.getUserId()) && user.isActive()){
                 Optional<User> usr = userRepository.findById(user.getUserId());
                 GroupUserOutDTO uc = new GroupUserOutDTO();
                 long totalenrols = 0;

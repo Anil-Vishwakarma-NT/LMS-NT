@@ -1,40 +1,41 @@
 package com.nt.user_service_lms.dto.outDTO;
 
-import java.util.Objects;
-
 /**
- * A generic standard response wrapper for API responses.
- * <p>
- * This DTO provides a consistent structure for API responses, including a status
- * (e.g., "SUCCESS", "ERROR"), a message, and the response payload.
+ * Generic standard response wrapper for API responses.
  *
  * @param <T> the type of the data contained in the response
  */
 public class StandardResponseOutDTO<T> {
 
-    /** The status of the response (e.g., "SUCCESS", "ERROR"). */
+    /**
+     * The status of the response (e.g., "SUCCESS", "ERROR").
+     */
     private String status;
 
-    /** A human-readable message describing the result of the operation. */
+    /**
+     * A human-readable message describing the result of the operation.
+     */
     private String message;
 
-    /** The actual data payload of the response. */
+    /**
+     * The actual data payload of the response.
+     */
     private T data;
 
     /**
-     * Default no-arg constructor.
+     * Default no-argument constructor.
      */
     public StandardResponseOutDTO() {
     }
 
     /**
-     * Constructs a new {@code StandardResponseOutDTO} with the given status, message, and data.
+     * Constructs a new StandardResponseOutDTO with the given status, message, and data.
      *
      * @param status  the response status
      * @param message the response message
      * @param data    the response payload
      */
-    public StandardResponseOutDTO(String status, String message, T data) {
+    public StandardResponseOutDTO(final String status, final String message, final T data) {
         this.status = status;
         this.message = message;
         this.data = data;
@@ -46,9 +47,9 @@ public class StandardResponseOutDTO<T> {
      * @param data    the response payload
      * @param message the success message
      * @param <T>     the type of the payload
-     * @return a {@code StandardResponseOutDTO} with "SUCCESS" status
+     * @return a StandardResponseOutDTO with "SUCCESS" status
      */
-    public static <T> StandardResponseOutDTO<T> success(T data, String message) {
+    public static <T> StandardResponseOutDTO<T> success(final T data, final String message) {
         return new StandardResponseOutDTO<>("SUCCESS", message, data);
     }
 
@@ -57,9 +58,9 @@ public class StandardResponseOutDTO<T> {
      *
      * @param message the error message
      * @param <T>     the type of the payload (null in this case)
-     * @return a {@code StandardResponseOutDTO} with "ERROR" status
+     * @return a StandardResponseOutDTO with "ERROR" status
      */
-    public static <T> StandardResponseOutDTO<T> error(String message) {
+    public static <T> StandardResponseOutDTO<T> error(final String message) {
         return new StandardResponseOutDTO<>("ERROR", message, null);
     }
 
@@ -77,7 +78,7 @@ public class StandardResponseOutDTO<T> {
      *
      * @param status the status to set
      */
-    public void setStatus(String status) {
+    public void setStatus(final String status) {
         this.status = status;
     }
 
@@ -95,7 +96,7 @@ public class StandardResponseOutDTO<T> {
      *
      * @param message the message to set
      */
-    public void setMessage(String message) {
+    public void setMessage(final String message) {
         this.message = message;
     }
 
@@ -113,24 +114,28 @@ public class StandardResponseOutDTO<T> {
      *
      * @param data the data to set
      */
-    public void setData(T data) {
+    public void setData(final T data) {
         this.data = data;
     }
 
     /**
-     * Indicates whether some other object is "equal to" this one.
+     * Indicates whether some other object is equal to this one.
      *
      * @param o the reference object with which to compare
-     * @return {@code true} if this object is the same as the object argument; {@code false} otherwise
+     * @return true if this object is the same as the object argument; false otherwise
      */
     @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
+    public boolean equals(final Object o) {
+        if (this == o) {
+            return true;
+        }
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
         StandardResponseOutDTO<?> that = (StandardResponseOutDTO<?>) o;
-        return Objects.equals(status, that.status) &&
-                Objects.equals(message, that.message) &&
-                Objects.equals(data, that.data);
+        return java.util.Objects.equals(status, that.status)
+                && java.util.Objects.equals(message, that.message)
+                && java.util.Objects.equals(data, that.data);
     }
 
     /**
@@ -140,20 +145,20 @@ public class StandardResponseOutDTO<T> {
      */
     @Override
     public int hashCode() {
-        return Objects.hash(status, message, data);
+        return java.util.Objects.hash(status, message, data);
     }
 
     /**
-     * Returns a string representation of the {@code StandardResponseOutDTO}.
+     * Returns a string representation of the StandardResponseOutDTO.
      *
      * @return a string describing the response
      */
     @Override
     public String toString() {
-        return "StandardResponseOutDTO{" +
-                "status='" + status + '\'' +
-                ", message='" + message + '\'' +
-                ", data=" + data +
-                '}';
+        return "StandardResponseOutDTO{"
+                + "status='" + status + '\''
+                + ", message='" + message + '\''
+                + ", data=" + data
+                + '}';
     }
 }

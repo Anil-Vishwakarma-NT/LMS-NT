@@ -25,7 +25,7 @@ public class UserProgressController {
     }
 
     @GetMapping("/meta")
-    public CourseProgressWithMetaDTO getCourseProgressWithMeta(@RequestParam int userId, @RequestParam int courseId) {
+    public CourseProgressWithMetaDTO getCourseProgressWithMetaWithId(@RequestParam Long userId, @RequestParam Long courseId) {
         return userProgressService.getCourseProgressWithMeta(userId, courseId);
     }
 
@@ -44,12 +44,12 @@ public class UserProgressController {
     }
 
     @GetMapping("/last-position")
-    public Integer getLastPosition(@RequestParam int userId, @RequestParam int courseId, @RequestParam int contentId) {
+    public Integer getLastPosition(@RequestParam Long userId, @RequestParam Long courseId, @RequestParam Long contentId) {
         return userProgressService.getLastPosition(userId, courseId, contentId);
     }
 
     @GetMapping("/content")
-    public Double getContentProgress(@RequestParam int userId, @RequestParam int courseId, @RequestParam int contentId) {
+    public Double getContentProgress(@RequestParam Long userId, @RequestParam Long courseId, @RequestParam Long contentId) {
         return userProgressService.getContentProgress(userId, courseId, contentId);
     }
 

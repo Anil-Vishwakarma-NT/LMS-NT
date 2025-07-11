@@ -39,9 +39,11 @@ public class UserGroup {
     @Column(nullable = false)
     private Long groupId;
 
-
-    @Column
-    private boolean is_active = true;
+    /**
+     * A flag for soft deletion.
+     */
+    @Column(name = "is_active")
+    private boolean isActive = true;
 
     /**
      * Constructor to create a new UserGroup association.

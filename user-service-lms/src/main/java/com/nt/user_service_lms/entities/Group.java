@@ -40,10 +40,16 @@ public class Group {
     /**
      * The ID of the user who created the group.
      */
-    @Column(name ="creator_id", nullable = false)
+    @Column(name = "creator_id", nullable = false)
     private long creatorId;
 
-
+    /**
+     * Soft delete flag indicating if the group is active.
+     * True means the group is active and visible.
+     * False means the group is soft-deleted/archived.
+     * Defaults to true for new groups.
+     * Cannot be null.
+     */
     @Column(name = "is_active")
     private boolean isActive = true;
 
