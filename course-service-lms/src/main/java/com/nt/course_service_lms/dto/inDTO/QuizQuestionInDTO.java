@@ -3,6 +3,7 @@ package com.nt.course_service_lms.dto.inDTO;
 import jakarta.validation.constraints.*;
 import lombok.Data;
 import java.math.BigDecimal;
+import java.util.Objects;
 
 /**
  * Data Transfer Object for incoming quiz question data.
@@ -43,5 +44,29 @@ public class QuizQuestionInDTO {
     @NotNull(message = "Required field must be specified")
     private Boolean required = true;
 
+    public QuizQuestionInDTO() {
+    }
 
+    public QuizQuestionInDTO(Long quizId, String questionText, String questionType, String options, String correctAnswer, BigDecimal points, String explanation, Boolean required) {
+        this.quizId = quizId;
+        this.questionText = questionText;
+        this.questionType = questionType;
+        this.options = options;
+        this.correctAnswer = correctAnswer;
+        this.points = points;
+        this.explanation = explanation;
+        this.required = required;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (o == null || getClass() != o.getClass()) return false;
+        QuizQuestionInDTO that = (QuizQuestionInDTO) o;
+        return Objects.equals(quizId, that.quizId) && Objects.equals(questionText, that.questionText) && Objects.equals(questionType, that.questionType) && Objects.equals(options, that.options) && Objects.equals(correctAnswer, that.correctAnswer) && Objects.equals(points, that.points) && Objects.equals(explanation, that.explanation) && Objects.equals(required, that.required);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(quizId, questionText, questionType, options, correctAnswer, points, explanation, required);
+    }
 }

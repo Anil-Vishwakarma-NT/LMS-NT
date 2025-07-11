@@ -14,10 +14,10 @@ class UserProgressTest {
         LocalDateTime now = LocalDateTime.now();
 
         UserProgress progress = new UserProgress();
-        progress.setProgressId(1);
-        progress.setUserId(101);
-        progress.setContentId(201);
-        progress.setCourseId(301);
+        progress.setProgressId(1L);
+        progress.setUserId(101L);
+        progress.setContentId(201L);
+        progress.setCourseId(301L);
         progress.setContentType("pdf");
         progress.setLastPosition(12.5);
         progress.setContentCompletionPercentage(85.5);
@@ -26,10 +26,10 @@ class UserProgressTest {
         progress.setLastUpdated(now);
         progress.setFirstCompletedAt(now);
 
-        assertThat(progress.getProgressId()).isEqualTo(1);
-        assertThat(progress.getUserId()).isEqualTo(101);
-        assertThat(progress.getContentId()).isEqualTo(201);
-        assertThat(progress.getCourseId()).isEqualTo(301);
+        assertThat(progress.getProgressId()).isEqualTo(1L);
+        assertThat(progress.getUserId()).isEqualTo(101L);
+        assertThat(progress.getContentId()).isEqualTo(201L);
+        assertThat(progress.getCourseId()).isEqualTo(301L);
         assertThat(progress.getContentType()).isEqualTo("pdf");
         assertThat(progress.getLastPosition()).isEqualTo(12.5);
         assertThat(progress.getContentCompletionPercentage()).isEqualTo(85.5);
@@ -44,15 +44,15 @@ class UserProgressTest {
         LocalDateTime now = LocalDateTime.now();
 
         UserProgress progress = new UserProgress(
-                2, 202, 302, 402, "video",
+                2L, 202L, 302L, 402L, "video",
                 45.0, 90.0, 100.0,
                 true, now, now
         );
 
-        assertThat(progress.getProgressId()).isEqualTo(2);
-        assertThat(progress.getUserId()).isEqualTo(202);
-        assertThat(progress.getContentId()).isEqualTo(302);
-        assertThat(progress.getCourseId()).isEqualTo(402);
+        assertThat(progress.getProgressId()).isEqualTo(2L);
+        assertThat(progress.getUserId()).isEqualTo(202L);
+        assertThat(progress.getContentId()).isEqualTo(302L);
+        assertThat(progress.getCourseId()).isEqualTo(402L);
         assertThat(progress.getContentType()).isEqualTo("video");
         assertThat(progress.getLastPosition()).isEqualTo(45.0);
         assertThat(progress.getContentCompletionPercentage()).isEqualTo(90.0);
@@ -66,10 +66,10 @@ class UserProgressTest {
     void testEqualsAndHashCode_SameValues() {
         LocalDateTime now = LocalDateTime.now();
 
-        UserProgress p1 = new UserProgress(1, 10, 20, 30, "pdf",
+        UserProgress p1 = new UserProgress(1L, 10L, 20L, 30L, "pdf",
                 5.0, 10.0, 15.0, true, now, now);
 
-        UserProgress p2 = new UserProgress(1, 10, 20, 30, "pdf",
+        UserProgress p2 = new UserProgress(1L, 10L, 20L, 30L, "pdf",
                 5.0, 10.0, 15.0, true, now, now);
 
         assertThat(p1).isEqualTo(p2);
@@ -80,10 +80,10 @@ class UserProgressTest {
     void testEqualsAndHashCode_DifferentValues() {
         LocalDateTime now = LocalDateTime.now();
 
-        UserProgress p1 = new UserProgress(1, 10, 20, 30, "pdf",
+        UserProgress p1 = new UserProgress(1L, 10L, 20L, 30L, "pdf",
                 5.0, 10.0, 15.0, true, now, now);
 
-        UserProgress p2 = new UserProgress(2, 11, 21, 31, "video",
+        UserProgress p2 = new UserProgress(2L, 11L, 21L, 31L, "video",
                 6.0, 11.0, 16.0, false, now, null);
 
         assertThat(p1).isNotEqualTo(p2);
@@ -107,8 +107,8 @@ class UserProgressTest {
     void testEqualsAfterMutation() {
         LocalDateTime now = LocalDateTime.now();
 
-        UserProgress p1 = new UserProgress(1, 10, 20, 30, "pdf", 5.0, 10.0, 15.0, false, now, null);
-        UserProgress p2 = new UserProgress(1, 10, 20, 30, "pdf", 5.0, 10.0, 15.0, false, now, null);
+        UserProgress p1 = new UserProgress(1L, 10L, 20L, 30L, "pdf", 5.0, 10.0, 15.0, false, now, null);
+        UserProgress p2 = new UserProgress(1L, 10L, 20L, 30L, "pdf", 5.0, 10.0, 15.0, false, now, null);
 
         assertThat(p1).isEqualTo(p2);
 
@@ -122,10 +122,10 @@ class UserProgressTest {
         LocalDateTime now = LocalDateTime.now();
 
         UserProgress progress = UserProgress.builder()
-                .progressId(100)
-                .userId(200)
-                .contentId(300)
-                .courseId(400)
+                .progressId(100L)
+                .userId(200L)
+                .contentId(300L)
+                .courseId(400L)
                 .contentType("video")
                 .lastPosition(123.4)
                 .contentCompletionPercentage(70.0)
@@ -135,10 +135,10 @@ class UserProgressTest {
                 .firstCompletedAt(now)
                 .build();
 
-        assertThat(progress.getProgressId()).isEqualTo(100);
-        assertThat(progress.getUserId()).isEqualTo(200);
-        assertThat(progress.getContentId()).isEqualTo(300);
-        assertThat(progress.getCourseId()).isEqualTo(400);
+        assertThat(progress.getProgressId()).isEqualTo(100L);
+        assertThat(progress.getUserId()).isEqualTo(200L);
+        assertThat(progress.getContentId()).isEqualTo(300L);
+        assertThat(progress.getCourseId()).isEqualTo(400L);
         assertThat(progress.getContentType()).isEqualTo("video");
         assertThat(progress.getLastPosition()).isEqualTo(123.4);
         assertThat(progress.getContentCompletionPercentage()).isEqualTo(70.0);

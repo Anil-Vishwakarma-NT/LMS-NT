@@ -4,6 +4,8 @@ import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Positive;
 import lombok.Data;
 
+import java.util.Objects;
+
 /**
  * DTO for creating a new quiz attempt
  */
@@ -17,4 +19,24 @@ public class QuizAttemptCreateInDTO {
     @NotNull(message = "User ID is required")
     @Positive(message = "User ID must be positive")
     private Long userId;
+
+    public QuizAttemptCreateInDTO() {
+    }
+
+    public QuizAttemptCreateInDTO(Long quizId, Long userId) {
+        this.quizId = quizId;
+        this.userId = userId;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (o == null || getClass() != o.getClass()) return false;
+        QuizAttemptCreateInDTO that = (QuizAttemptCreateInDTO) o;
+        return Objects.equals(quizId, that.quizId) && Objects.equals(userId, that.userId);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(quizId, userId);
+    }
 }
