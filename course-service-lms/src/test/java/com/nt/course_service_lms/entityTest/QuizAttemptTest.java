@@ -1,6 +1,6 @@
-package com.example.course_service_lms.entityTest;
+package com.nt.course_service_lms.entityTest;
 
-import com.example.course_service_lms.entity.QuizAttempt;
+import com.nt.course_service_lms.entity.QuizAttempt;
 import org.junit.jupiter.api.Test;
 
 import java.time.LocalDateTime;

@@ -12,20 +12,43 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
+/**
+ * Security configuration class for defining HTTP security, authorization rules,
+ * and custom authentication/authorization filters.
+ *
+ * <p>This configuration:
+ * <ul>
+ *     <li>Disables CSRF protection for stateless sessions</li>
+ *     <li>Defines endpoint access rules based on roles and authorities</li>
+ *     <li>Sets session policy to stateless</li>
+ *     <li>Registers a custom authentication filter</li>
+ *     <li>Handles authentication and access denied exceptions with custom responses</li>
+ * </ul>
+ */
 @Configuration
 @EnableWebSecurity
 public class SecurityConfig {
 
+    /**
+     * Custom authentication filter for verifying service-based tokens or authentication.
+     */
     @Autowired
     private ServiceAuthenticationFilter serviceAuthenticationFilter;
 
+    /**
+     * Configures the HTTP security, including endpoint access rules, session management,
+     * filters, and exception handling.
+     *
+     * @param http the {@link HttpSecurity} to modify
+     * @return the configured {@link SecurityFilterChain}
+     * @throws Exception if an error occurs while configuring the security filter chain
+     */
     @Bean
-    public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
+    public SecurityFilterChain filterChain(final HttpSecurity http) throws Exception {
         http
                 .csrf(csrf -> csrf.disable())
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(authz -> authz
-                        // user endpoints - require authentication
                         .requestMatchers("/api/auth/**").permitAll()
                         .requestMatchers("/api/service-api/enrollment/**").permitAll()
                         .requestMatchers("/api/service-api/admin/**").hasRole("ADMIN")
@@ -33,7 +56,6 @@ public class SecurityConfig {
                         .requestMatchers("/manager/**").hasAnyAuthority("manager", "admin")
                         .requestMatchers("/group/all-groups").permitAll()
                         .requestMatchers("/group/**").permitAll()
-                        // Any other request requires authentication
                         .anyRequest().authenticated()
                 )
                 .addFilterBefore(serviceAuthenticationFilter, UsernamePasswordAuthenticationFilter.class)
@@ -57,9 +79,13 @@ public class SecurityConfig {
         return http.build();
     }
 
+    /**
+     * Bean definition for {@link PasswordEncoder} using BCrypt hashing algorithm.
+     *
+     * @return a BCrypt-based password encoder
+     */
     @Bean
     public PasswordEncoder passwordEncoder() {
         return new BCryptPasswordEncoder();
     }
-
 }

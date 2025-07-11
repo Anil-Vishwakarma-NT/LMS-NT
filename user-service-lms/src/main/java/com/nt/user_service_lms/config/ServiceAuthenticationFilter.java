@@ -19,71 +19,114 @@ import java.io.IOException;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import static com.nt.user_service_lms.constants.SecurityConstant.*;
+import static com.nt.user_service_lms.constants.SecurityConstant.BEARER_PREFIX;
+import static com.nt.user_service_lms.constants.SecurityConstant.ERROR_FORBIDDEN;
+import static com.nt.user_service_lms.constants.SecurityConstant.ERROR_UNAUTHORIZED;
+import static com.nt.user_service_lms.constants.SecurityConstant.HEADER_X_GATEWAY_NONCE;
+import static com.nt.user_service_lms.constants.SecurityConstant.HEADER_X_GATEWAY_TIMESTAMP;
+import static com.nt.user_service_lms.constants.SecurityConstant.HEADER_X_ORIGINAL_TOKEN_TYPE;
+import static com.nt.user_service_lms.constants.SecurityConstant.HEADER_X_SERVICE_TOKEN;
+import static com.nt.user_service_lms.constants.SecurityConstant.MAX_REQUEST_TIME_DIFF_MS;
+import static com.nt.user_service_lms.constants.SecurityConstant.TOKEN_TYPE_SERVICE;
 
+/**
+ * Filter to authenticate internal service-to-service communication using JWT tokens
+ * and gateway/direct secret headers. Validates requests from API Gateway and
+ * direct service calls based on headers and configuration.
+ */
 @Component
 public class ServiceAuthenticationFilter extends OncePerRequestFilter {
 
+    /**
+     * Logger for logging filter activities.
+     */
     private final Logger logger = LoggerFactory.getLogger(ServiceAuthenticationFilter.class);
 
+    /**
+     * Utility for working with JWT tokens, including validation and claims extraction.
+     */
     @Autowired
     private JwtUtil jwtUtil;
 
+    /**
+     * Flag to enable or disable gateway validation. Defaults to true.
+     */
     @Value("${gateway.validation.enabled:true}")
     private boolean gatewayValidationEnabled;
 
+    /**
+     * Header name for the gateway secret.
+     */
     @Value("${gateway.secret.header:X-Gateway-Secret}")
     private String gatewaySecretHeader;
 
+    /**
+     * Expected secret value for gateway validation.
+     */
     @Value("${gateway.secret.value:your-super-secret-gateway-key}")
     private String gatewaySecretValue;
 
+    /**
+     * Header name for the gateway request signature.
+     */
     @Value("${gateway.signature.header:X-Gateway-Signature}")
     private String gatewaySignatureHeader;
 
+    /**
+     * The expected audience claim (application name) for JWT validation.
+     */
     @Value("${spring.application.name}")
     private String expectedAudience;
 
+    /**
+     * Header name for direct service call secret.
+     */
     @Value("${direct.secret.header:X-Direct-Secret}")
     private String directSecretHeader;
 
+    /**
+     * Expected secret value for direct access.
+     */
     @Value("${direct.secret.value:your-direct-secret}")
     private String directSecretValue;
 
-
+    /**
+     * Performs filtering on every request, checking JWT tokens and headers to
+     * determine authentication and validity for gateway or direct service calls.
+     *
+     * @param request     incoming HTTP request
+     * @param response    HTTP response
+     * @param filterChain chain of filters to continue processing
+     * @throws ServletException in case of filter error
+     * @throws IOException      in case of I/O error
+     */
     @Override
-    protected void doFilterInternal(HttpServletRequest request,
-                                    HttpServletResponse response,
-                                    FilterChain filterChain) throws ServletException, IOException {
+    protected void doFilterInternal(final HttpServletRequest request,
+                                    final HttpServletResponse response,
+                                    final FilterChain filterChain) throws ServletException, IOException {
 
         try {
             String serviceToken = request.getHeader(HEADER_X_SERVICE_TOKEN);
             String clientId = null;
-            System.out.println(serviceToken);
             if (serviceToken != null) {
                 try {
-                    clientId = jwtUtil.extractClientId(serviceToken); // may return null
+                    clientId = jwtUtil.extractClientId(serviceToken);
                 } catch (Exception e) {
                     logger.warn("Failed to extract subject from token: {}", e.getMessage());
-                    handleUnauthorized(response,"failed to fetch the clientId from the token, jwt token is expired");
+                    handleUnauthorized(response, "failed to fetch the clientId from the token, jwt token is expired");
                     return;
                 }
             }
 
-            boolean isGatewayRequest = true;
-            if ("NA".equals(clientId)) {
-                isGatewayRequest = false;
-            }
+            boolean isGatewayRequest = !"NA".equals(clientId);
 
             logger.debug("Token subject: {}, isGatewayRequest: {}", clientId, isGatewayRequest);
 
             if (isGatewayRequest) {
-                // Gateway requests are always allowed, but validated
                 if (!handleGatewayRequest(request, response)) {
                     return;
                 }
             } else {
-                // Direct requests — allowed only when gatewayValidationEnabled is false
                 if (!gatewayValidationEnabled) {
                     if (!handleDirectRequest(request, response)) {
                         return;
@@ -102,27 +145,32 @@ public class ServiceAuthenticationFilter extends OncePerRequestFilter {
         }
     }
 
-    private boolean handleGatewayRequest(HttpServletRequest request, HttpServletResponse response)
+    /**
+     * Handles service-to-service authentication for requests routed via API Gateway.
+     *
+     * @param request  HTTP request
+     * @param response HTTP response
+     * @return true if valid and authenticated, false otherwise
+     * @throws IOException in case of I/O error
+     */
+    private boolean handleGatewayRequest(final HttpServletRequest request, final HttpServletResponse response)
             throws IOException {
 
         logger.debug("Processing Gateway Request");
 
-        // For gateway requests, validate gateway headers if gatewayValidationEnabled is true
         if (!validateGatewayRequest(request)) {
             handleForbidden(response, "Gateway request header validation failed.");
             return false;
         }
 
-        // For gateway requests, check both X-Service-Token and Authorization header
         String serviceToken = request.getHeader(HEADER_X_SERVICE_TOKEN);
         String originalTokenType = request.getHeader(HEADER_X_ORIGINAL_TOKEN_TYPE);
 
-        // If no X-Service-Token, check Authorization header for service token
         if (serviceToken == null) {
             String authHeader = request.getHeader(HttpHeaders.AUTHORIZATION);
             if (authHeader != null && authHeader.startsWith(BEARER_PREFIX)) {
                 serviceToken = authHeader.substring(BEARER_PREFIX.length());
-                originalTokenType = TOKEN_TYPE_SERVICE; // Default for gateway requests
+                originalTokenType = TOKEN_TYPE_SERVICE;
             }
         }
 
@@ -138,30 +186,42 @@ public class ServiceAuthenticationFilter extends OncePerRequestFilter {
         }
     }
 
-    private boolean validateGatewayRequest(HttpServletRequest request) {
+    /**
+     * Validates headers in a gateway request.
+     *
+     * @param request HTTP request
+     * @return true if valid, false otherwise
+     */
+    private boolean validateGatewayRequest(final HttpServletRequest request) {
         String gatewaySecret = request.getHeader(gatewaySecretHeader);
         String signature = request.getHeader(gatewaySignatureHeader);
         String timestamp = request.getHeader(HEADER_X_GATEWAY_TIMESTAMP);
         String nonce = request.getHeader(HEADER_X_GATEWAY_NONCE);
 
-        if (!validateSecret(gatewaySecret, gatewaySecretValue)) {
-            logger.warn("Gateway secret validation failed");
-            return false;
-        }
-
-        if (!validateSignature(signature, timestamp, nonce)) {
-            logger.warn("Gateway signature validation failed");
-            return false;
-        }
-
-        return true;
+        return validateSecret(gatewaySecret, gatewaySecretValue)
+                && validateSignature(signature, timestamp, nonce);
     }
 
-    private boolean validateSecret(String secretHeader, String secretValue) {
+    /**
+     * Validates a header-based secret.
+     *
+     * @param secretHeader the incoming secret
+     * @param secretValue  the expected secret
+     * @return true if they match, false otherwise
+     */
+    private boolean validateSecret(final String secretHeader, final String secretValue) {
         return secretValue.equals(secretHeader);
     }
 
-    private boolean validateSignature(String signature, String timestamp, String nonce) {
+    /**
+     * Validates the request signature using timestamp and nonce.
+     *
+     * @param signature the provided signature
+     * @param timestamp the request timestamp
+     * @param nonce     a unique request identifier
+     * @return true if valid, false otherwise
+     */
+    private boolean validateSignature(final String signature, final String timestamp, final String nonce) {
         if (signature == null || timestamp == null || nonce == null) {
             return false;
         }
@@ -178,19 +238,34 @@ public class ServiceAuthenticationFilter extends OncePerRequestFilter {
 
             String expectedSignature = generateSignature(timestamp, nonce, gatewaySecretValue);
             return signature.equals(expectedSignature);
-
         } catch (Exception e) {
             logger.warn("Gateway signature validation error: {}", e.getMessage());
             return false;
         }
     }
 
-    private String generateSignature(String timestamp, String nonce, String secret) {
+    /**
+     * Generates a signature string from components.
+     *
+     * @param timestamp timestamp string
+     * @param nonce     nonce string
+     * @param secret    shared secret
+     * @return hash-based signature string
+     */
+    private String generateSignature(final String timestamp, final String nonce, final String secret) {
         String data = timestamp + ":" + nonce + ":" + secret;
         return Integer.toString(data.hashCode());
     }
 
-    private boolean handleDirectRequest(HttpServletRequest request, HttpServletResponse response)
+    /**
+     * Handles validation and authentication for direct (non-gateway) service requests.
+     *
+     * @param request  HTTP request
+     * @param response HTTP response
+     * @return true if authenticated, false otherwise
+     * @throws IOException in case of error writing response
+     */
+    private boolean handleDirectRequest(final HttpServletRequest request, final HttpServletResponse response)
             throws IOException {
 
         logger.debug("Processing Direct Request");
@@ -206,7 +281,6 @@ public class ServiceAuthenticationFilter extends OncePerRequestFilter {
             return false;
         }
 
-        // For direct requests, service token should be in Authorization header
         String authHeader = request.getHeader(HttpHeaders.AUTHORIZATION);
         if (authHeader != null && authHeader.startsWith(BEARER_PREFIX)) {
             String serviceToken = authHeader.substring(BEARER_PREFIX.length());
@@ -214,7 +288,6 @@ public class ServiceAuthenticationFilter extends OncePerRequestFilter {
                 if (jwtUtil.validateServiceToken(serviceToken, expectedAudience)) {
                     ServiceTokenContext.setCurrentToken(serviceToken);
                     ServiceTokenContext.setOriginalTokenType(TOKEN_TYPE_SERVICE);
-
                     setServiceAuthentication(serviceToken, TOKEN_TYPE_SERVICE);
                     logger.debug("Direct service token stored in context and authentication set");
                     return true;
@@ -233,7 +306,13 @@ public class ServiceAuthenticationFilter extends OncePerRequestFilter {
         }
     }
 
-    private void setServiceAuthentication(String token, String originalTokenType) {
+    /**
+     * Sets the authentication object in the Spring SecurityContext based on token data.
+     *
+     * @param token             the JWT service token
+     * @param originalTokenType the original token type (e.g., SERVICE)
+     */
+    private void setServiceAuthentication(final String token, final String originalTokenType) {
         List<String> roles = jwtUtil.extractRoles(token);
         String userId = jwtUtil.extractUserId(token);
         String userEmail = jwtUtil.extractUserEmail(token);
@@ -268,13 +347,27 @@ public class ServiceAuthenticationFilter extends OncePerRequestFilter {
                 userEmail, principal.getServiceId(), authorities);
     }
 
-    private void handleUnauthorized(HttpServletResponse response, String message) throws IOException {
+    /**
+     * Sends an unauthorized (401) response with a JSON error message.
+     *
+     * @param response HTTP response
+     * @param message  the error message to send
+     * @throws IOException in case of write failure
+     */
+    private void handleUnauthorized(final HttpServletResponse response, final String message) throws IOException {
         response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
         response.setContentType("application/json");
         response.getWriter().write(String.format(ERROR_UNAUTHORIZED, message));
     }
 
-    private void handleForbidden(HttpServletResponse response, String message) throws IOException {
+    /**
+     * Sends a forbidden (403) response with a JSON error message.
+     *
+     * @param response HTTP response
+     * @param message  the error message to send
+     * @throws IOException in case of write failure
+     */
+    private void handleForbidden(final HttpServletResponse response, final String message) throws IOException {
         response.setStatus(HttpServletResponse.SC_FORBIDDEN);
         response.setContentType("application/json");
         response.getWriter().write(String.format(ERROR_FORBIDDEN, message));

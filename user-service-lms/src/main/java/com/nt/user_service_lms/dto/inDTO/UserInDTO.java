@@ -6,7 +6,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 /**
- * Data Transfer Object (DTO) for user input, including user ID and role.
+ * DTO representing user input data including user details and role.
  */
 @AllArgsConstructor
 @NoArgsConstructor
@@ -14,23 +14,37 @@ import lombok.NoArgsConstructor;
 public class UserInDTO {
 
     /**
-     * The ID of the user.
-     * Must match the pattern of digits.
+     * Unique identifier of the user.
+     * Must consist of digits.
      */
     @Pattern(
-            regexp = "^[0-9]",
+            regexp = "^[0-9]+$",
             message = "Invalid Id"
     )
     private long userId;
 
+    /**
+     * Email address of the user.
+     */
     private String email;
-    private String firstName;
-    private String lastName;
-    private String userName;
-
 
     /**
-     * The role of the user.
+     * First name of the user.
+     */
+    private String firstName;
+
+    /**
+     * Last name of the user.
+     */
+    private String lastName;
+
+    /**
+     * Username of the user.
+     */
+    private String userName;
+
+    /**
+     * Role assigned to the user.
      * Must contain only alphabets.
      */
     @Pattern(
@@ -38,12 +52,4 @@ public class UserInDTO {
             message = "Role name must contain only alphabets."
     )
     private String role;
-
-
-//    private String userName;
-//    private String firstName;
-//    private String lastName;
-//    private String email;
-
-
 }

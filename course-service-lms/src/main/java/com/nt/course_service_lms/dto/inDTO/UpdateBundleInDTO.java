@@ -1,7 +1,9 @@
 package com.nt.course_service_lms.dto.inDTO;
 
 import jakarta.validation.constraints.*;
+import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 import static com.nt.course_service_lms.constants.BundleConstants.*;
 import static com.nt.course_service_lms.constants.BundleConstants.BUNDLE_NAME_INVALID;
@@ -19,4 +21,11 @@ public class UpdateBundleInDTO {
     @NotNull(message = "Is Active field is required")
     private boolean isActive;
 
+    public UpdateBundleInDTO() {
+    }
+
+    public UpdateBundleInDTO(String bundleName, boolean isActive) {
+        this.bundleName = bundleName;
+        this.isActive = isActive;
+    }
 }

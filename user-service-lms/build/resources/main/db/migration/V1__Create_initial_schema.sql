@@ -239,10 +239,10 @@ CREATE TABLE quiz_question (
 
 -- Create user_progress table
 CREATE TABLE user_progress (
-    progress_id SERIAL PRIMARY KEY,
-    user_id INTEGER NOT NULL,
-    content_id INTEGER NOT NULL,
-    course_id INTEGER NOT NULL,
+    progress_id BIGSERIAL PRIMARY KEY,
+    user_id BIGINT NOT NULL,
+    content_id BIGINT NOT NULL,
+    course_id BIGINT NOT NULL,
     content_type VARCHAR(255) NOT NULL,
     last_position DOUBLE PRECISION NOT NULL DEFAULT 0.0,
     content_completion_percentage DOUBLE PRECISION NOT NULL DEFAULT 0.0,

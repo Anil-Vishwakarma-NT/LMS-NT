@@ -11,20 +11,58 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import java.util.List;
 import java.util.Map;
 
+/**
+ * Service interface for user-related operations in the LMS.
+ */
 public interface UserService extends UserDetailsService {
 
-    @Override
+    /**
+     * Loads the user details by email.
+     *
+     * @param email the email of the user
+     * @return the user details
+     * @throws UsernameNotFoundException if the user is not found
+     */
     UserDetails loadUserByUsername(String email) throws UsernameNotFoundException;
-    public long countActiveUsers();
+
+    /**
+     * Counts the number of active users.
+     *
+     * @return the count of active users
+     */
+    long countActiveUsers();
+
+    /**
+     * Retrieves the most recent user details.
+     *
+     * @return a list of recent user details
+     */
     List<UsersDetailsViewDTO> getRecentUserDetails();
 
-    public Map<String , Long> userStatistics(long userId);
+    /**
+     * Provides user statistics for a given user ID.
+     *
+     * @param userId the user ID
+     * @return a map containing user statistics
+     */
+    Map<String, Long> userStatistics(long userId);
 
+    /**
+     * Retrieves the course deadlines for a user by email.
+     *
+     * @param email the email of the user
+     * @return a standard response containing a list of course deadlines
+     */
     StandardResponseOutDTO<List<CourseDeadlinesDTO>> deadlineCourses(String email);
 
-    public List<UserCourseEnrollDetails> getUserEnrolledCourses(Long userId);
+    /**
+     * Gets the list of courses a user is enrolled in.
+     *
+     * @param userId the user ID
+     * @return a list of user course enrollment details
+     */
+    List<UserCourseEnrollDetails> getUserEnrolledCourses(Long userId);
 }
-
 
 
 

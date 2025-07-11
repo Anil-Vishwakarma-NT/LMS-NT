@@ -7,10 +7,10 @@ public interface UserProgressService {
 
     void updateProgress(UserProgressOutDTO progressDTO);
 
-    CourseProgressWithMetaDTO getCourseProgressWithMeta(int userId, int courseId);
+    CourseProgressWithMetaDTO getCourseProgressWithMeta(Long userId, Long courseId);
 
-    Integer getLastPosition(int userId, int courseId, int contentId);
+    Integer getLastPosition(Long userId, Long courseId, Long contentId);
 
-    Double getContentProgress(int userId, int courseId, int contentId);
+    Double getContentProgress(Long userId, Long courseId, Long contentId);
 
 }

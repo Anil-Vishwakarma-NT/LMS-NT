@@ -19,7 +19,6 @@ repositories {
 }
 ext {
 	set('springCloudVersion', "2025.0.0")
-	awsSdkVersion = '2.25.20'
 }
 dependencies {
 	implementation 'org.springframework.boot:spring-boot-starter-actuator'
@@ -38,9 +37,9 @@ dependencies {
 	compileOnly 'org.projectlombok:lombok'
 	annotationProcessor 'org.projectlombok:lombok'
 
-	// aws
-	implementation "software.amazon.awssdk:secretsmanager:$awsSdkVersion"
-	implementation "software.amazon.awssdk:regions:$awsSdkVersion"
+	//aws
+	implementation 'software.amazon.awssdk:secretsmanager:2.25.20'
+	implementation 'software.amazon.awssdk:regions:2.25.20'
 	implementation 'com.fasterxml.jackson.core:jackson-databind:2.17.0'
 
 	testImplementation 'org.springframework.boot:spring-boot-starter-test'
