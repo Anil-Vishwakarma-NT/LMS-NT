@@ -93,7 +93,7 @@ public class EnrollmentServiceImpl implements EnrollmentService {
     private static final String ENROLLMENT_SOURCE_GROUP_BUNDLE = "GROUP_BUNDLE";
 
     @Override
-    public List<EnrollmentOutDTO> enroll(EnrollmentRequestInDTO requestDTO) {
+    public List<EnrollmentOutDTO> enroll(final EnrollmentRequestInDTO requestDTO) {
         // Validate request
         validateEnrollmentRequest(requestDTO);
 
@@ -1348,7 +1348,7 @@ public class EnrollmentServiceImpl implements EnrollmentService {
         return dto;
     }
 
-    private void validateEnrollmentRequest(EnrollmentRequestInDTO requestDTO) {
+    private void validateEnrollmentRequest(final EnrollmentRequestInDTO requestDTO) {
         if (!requestDTO.isValid()) {
             throw new ResourceNotValidException("Invalid enrollment request. Must provide either users or groups (not both) and either courses or bundles (not both).");
         }

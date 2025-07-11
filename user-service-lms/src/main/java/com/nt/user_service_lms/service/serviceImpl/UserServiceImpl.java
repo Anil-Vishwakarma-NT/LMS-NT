@@ -39,7 +39,7 @@ import static com.nt.user_service_lms.constants.UserConstants.USER_NOT_FOUND;
  */
 @Slf4j
 @Service
-public final class UserServiceImpl implements UserService {
+public class UserServiceImpl implements UserService {
 
     /**
      * Repository for accessing user data.

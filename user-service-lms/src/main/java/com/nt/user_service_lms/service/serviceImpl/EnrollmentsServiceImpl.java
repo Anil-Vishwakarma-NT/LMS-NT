@@ -43,16 +43,16 @@ public class EnrollmentsServiceImpl implements EnrollmentsService {
 
         for (Enrollment en : enrols){
             String courseName = courseMicroserviceClient.getCourseNameById(en.getCourseId()).getBody();
-            GroupCourseOutDTO gc = mp.getOrDefault(en.getCourseId(),new GroupCourseOutDTO());
-            long totalenrols = gc.getEnrols()+1;
+            GroupCourseOutDTO gc = mp.getOrDefault(en.getCourseId(), new GroupCourseOutDTO());
+            long totalenrols = gc.getEnrols() + 1;
 //            double userprogress = courseMicroserviceClient.getCourseProgress( en.getUserId().intValue() ,en.getCourseId());
-            double progress = ((gc.getProgress()*gc.getEnrols())+ 0)/totalenrols;
+            double progress = ((gc.getProgress() * gc.getEnrols()) + 0) / totalenrols;
             gc.setCourseName(courseName);
             gc.setCourseId(en.getCourseId());
             gc.setEnrols(totalenrols);
             gc.setProgress(progress);
 
-            mp.put(en.getCourseId(),gc);
+            mp.put(en.getCourseId(), gc);
         }
 
 
