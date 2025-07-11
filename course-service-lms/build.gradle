@@ -34,7 +34,9 @@ dependencies {
 
 	// Spring Security (for token validation, role-based access, etc.)
 	implementation 'org.springframework.boot:spring-boot-starter-security'
-
+	implementation 'org.apache.poi:poi:5.2.3'
+	implementation 'org.apache.poi:poi-ooxml:5.2.3'
+	implementation 'com.opencsv:opencsv:5.7.1'
 
 	compileOnly 'org.projectlombok:lombok'
 	runtimeOnly 'org.postgresql:postgresql'

@@ -118,6 +118,17 @@ public class StandardResponseOutDTO<T> {
     }
 
     /**
+     * Creates a failure response wrapper with the given error message.
+     *
+     * @param message the failure message
+     * @param <T>     the type of the payload (null in this case)
+     * @return a {@code StandardResponseOutDTO} with "FAILURE" status
+     */
+    public static <T> StandardResponseOutDTO<T> failure(String message) {
+        return new StandardResponseOutDTO<>("FAILURE", message, null);
+    }
+
+    /**
      * Indicates whether some other object is "equal to" this one.
      *
      * @param o the reference object with which to compare
