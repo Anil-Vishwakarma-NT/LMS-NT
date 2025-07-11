@@ -365,9 +365,6 @@ public class GroupController {
     @PostMapping("/user-courses")
     public ResponseEntity<StandardResponseOutDTO<List<CourseInfoOutDTO>>> getUserCoursesInGroups(@RequestBody GroupInDTO groupInDTO){
         StandardResponseOutDTO<List<CourseInfoOutDTO>> response = groupService.getUserCourses(groupInDTO.getGroupId(), groupInDTO.getUserId());
-        if(response.getData().isEmpty()){
-            return new ResponseEntity<>(response,HttpStatus.NO_CONTENT);
-        }
         return new ResponseEntity<>(response,HttpStatus.OK);
     }
 

@@ -31,7 +31,7 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 
 import static com.nt.user_service_lms.constants.UserConstants.USER_NOT_FOUND;
-import static com.nt.user_service_lms.constants.UserConstants.DEADLINE_DAYS_LIMIT;
+import static com.nt.user_service_lms.constants.CommonConstants.NUMBER_FIVE;
 
 
 /**
@@ -153,7 +153,7 @@ public final class UserServiceImpl implements UserService {
             if (user.isPresent()) {
                 List<Enrollment> enrols = enrollmentRepository.findByUserId(user.get().getUserId());
                 LocalDate today = LocalDate.now();
-                LocalDate later = today.plusDays(CommonConstants.NUMBER_FIVE);
+                LocalDate later = today.plusDays(NUMBER_FIVE);
                 List<Enrollment> filteredEnrols = enrols.stream()
                         .filter(enrol ->
                                 enrol.getDeadline() != null

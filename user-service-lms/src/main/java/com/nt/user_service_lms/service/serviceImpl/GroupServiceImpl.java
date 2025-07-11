@@ -25,6 +25,8 @@ import org.springframework.stereotype.Service;
 import java.util.*;
 import java.util.stream.Collectors;
 
+import static com.nt.user_service_lms.constants.CommonConstants.GROUP_ENROL;
+import static com.nt.user_service_lms.constants.CommonConstants.STATUS_ACTIVE;
 import static com.nt.user_service_lms.constants.GroupConstants.GROUP_CREATED;
 import static com.nt.user_service_lms.constants.GroupConstants.GROUP_DELETED;
 import static com.nt.user_service_lms.constants.GroupConstants.GROUP_FAILURE;
@@ -182,8 +184,8 @@ public class GroupServiceImpl implements GroupService {
                             enrol.setAssignedBy(user.getUserId());
                             enrol.setAssignedAt(groupInDTO.getAssignedAt());
                             enrol.setDeadline(groupInDTO.getDeadline());
-                            enrol.setStatus("active");
-                            enrol.setEnrollmentSource("GROUP");
+                            enrol.setStatus(STATUS_ACTIVE);
+                            enrol.setEnrollmentSource(GROUP_ENROL);
                             enrol.setCreatedAt(groupInDTO.getAssignedAt());
                             enrol.setUpdatedAt(groupInDTO.getAssignedAt());
                             enrollmentRepository.save(enrol);
@@ -248,16 +250,21 @@ public class GroupServiceImpl implements GroupService {
     @Override
     public StandardResponseOutDTO<List<CourseInfoOutDTO>> getUserCourses(final long groupId, final long userId ){
         try{
+            log.info("courses fetching for group");
+            List<Enrollment> groupcourses = enrollmentRepository.findByGroupId(groupId);
+            Set<Long> enrolledGroupCourseIds = groupcourses.stream()
+                    .map(Enrollment::getCourseId)
+                    .collect(Collectors.toSet());
+
+            if(enrolledGroupCourseIds.isEmpty()){
+                return StandardResponseOutDTO.success(List.of() ,"No Course Allocated to the group" );
+            }
+
             List<Enrollment> enrols = enrollmentRepository.findByGroupIdAndUserId(groupId,userId);
             System.out.println("Enrols has values  " + enrols.isEmpty() + " " + groupId + "  " + userId);
             log.info("enrols fetched");
             List<CourseInfoOutDTO> courses = courseMicroserviceClient.getCourseInfo().getBody().getData();
-            List<Enrollment> groupcourses = enrollmentRepository.findByGroupId(groupId);
-            log.info("courses fetched");
             Set<Long> enrolledCourseIds = enrols.stream()
-                    .map(Enrollment::getCourseId)
-                    .collect(Collectors.toSet());
-            Set<Long> enrolledGroupCourseIds = groupcourses.stream()
                     .map(Enrollment::getCourseId)
                     .collect(Collectors.toSet());
             log.info("enrolled courses  fetched");
@@ -265,6 +272,9 @@ public class GroupServiceImpl implements GroupService {
                     .filter(course -> !enrolledCourseIds.contains(course.getCourseId()) && enrolledGroupCourseIds.contains(course.getCourseId()))
                     .collect(Collectors.toList());
 
+            if(notEnrolledCourses.isEmpty()){
+                return StandardResponseOutDTO.success(notEnrolledCourses , "User is already enrolled in all the courses assigned to the group");
+            }
             return  StandardResponseOutDTO.success(notEnrolledCourses , null);
 
         }catch (Exception e) {
@@ -506,7 +516,7 @@ public class GroupServiceImpl implements GroupService {
         Map<Long , GroupUserOutDTO > mp = new HashMap<>();
 
         for(UserGroup user : usrgrp){
-            if(!mp.containsKey(user.getUserId()) && user.is_active()){
+            if(!mp.containsKey(user.getUserId()) && user.isActive()){
                 Optional<User> usr = userRepository.findById(user.getUserId());
                 GroupUserOutDTO uc = new GroupUserOutDTO();
                 uc.setFirstName(usr.get().getFirstName());
@@ -536,7 +546,7 @@ public class GroupServiceImpl implements GroupService {
                     String groupName = group.get().getGroupName();
                     UserGroupOutDTO gc = mp.getOrDefault(en.getGroupId(), new UserGroupOutDTO());
                     long totalenrols = gc.getEnrols() + 1;
-                    double userprogress = courseMicroserviceClient.getCourseProgressWithMeta(en.getUserId().intValue(), en.getCourseId().intValue()).getCourseCompletionPercentage();
+                    double userprogress = courseMicroserviceClient.getCourseProgressWithMeta(en.getUserId().longValue(), en.getCourseId().longValue()).getCourseCompletionPercentage();
                     double progress = ((gc.getProgress() * gc.getEnrols()) + userprogress) / totalenrols;
                     gc.setGroupName(groupName);
                     gc.setGroupId(group.get().getGroupId());

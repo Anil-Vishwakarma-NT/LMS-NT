@@ -118,7 +118,5 @@ public final class UserConstants {
         throw new UnsupportedOperationException("Utility class cannot be instantiated.");
     }
 
-    public static String INVALID_REQUEST = "Invalid request , can not proceed.";
 
-    public static Integer DEADLINE_DAYS_LIMIT   = 5;
 }

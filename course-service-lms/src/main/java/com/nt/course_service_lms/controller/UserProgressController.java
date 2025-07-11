@@ -40,7 +40,7 @@ public class UserProgressController {
 
           String userId = principal.getUserId();
         System.out.println("USERID" + userId);
-        return userProgressService.getCourseProgressWithMeta(Integer.parseInt(userId), courseId);
+        return userProgressService.getCourseProgressWithMeta(Long.parseLong(userId), (long)courseId);
     }
 
     @GetMapping("/last-position")
