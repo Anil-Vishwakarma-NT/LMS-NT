@@ -40,12 +40,24 @@ public class Bundle {
     @Column(name = "bundle_name")
     private String bundleName;
 
+    /**
+     * Bundle Is Active or not.
+     * <p>Shows if a bundle is active or not.</p>
+     */
     @Column(name = "is_active")
     private boolean isActive;
 
+    /**
+     * Bundle created at this time.
+     * <p>Timestamp when the bundle is created</p>
+     */
     @Column(name = "created_at")
     private LocalDateTime createdAt;
 
+    /**
+     * Bundle updated at this time.
+     * <p>Used to label or describe the bundle.</p>
+     */
     @Column(name = "updated_at")
     private LocalDateTime updatedAt;
 

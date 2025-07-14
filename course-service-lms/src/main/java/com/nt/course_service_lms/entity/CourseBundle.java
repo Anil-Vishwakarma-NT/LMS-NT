@@ -45,6 +45,9 @@ public class CourseBundle {
     @Column(name = "course_id")
     private long courseId;
 
+    /**
+     * Flag indicating whether the course bundle is currently active and visible to learners.
+     */
     @Column(name = "is_active")
     private boolean isActive;
 
