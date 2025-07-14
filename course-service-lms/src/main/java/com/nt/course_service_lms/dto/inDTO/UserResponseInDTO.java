@@ -6,6 +6,7 @@ import lombok.Data;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
+import java.util.Objects;
 
 /**
  * Input DTO for UserResponse operations.
@@ -91,4 +92,16 @@ public class UserResponseInDTO {
         this.userAnswer = userAnswer;
         this.answeredAt = answeredAt;
     }
+    @Override
+    public boolean equals(Object o) {
+        if (o == null || getClass() != o.getClass()) return false;
+        UserResponseInDTO that = (UserResponseInDTO) o;
+        return Objects.equals(userId, that.userId) && Objects.equals(quizId, that.quizId) && Objects.equals(questionId, that.questionId) && Objects.equals(attempt, that.attempt) && Objects.equals(userAnswer, that.userAnswer) && Objects.equals(answeredAt, that.answeredAt);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(userId, quizId, questionId, attempt, userAnswer, answeredAt);
+    }
+
 }

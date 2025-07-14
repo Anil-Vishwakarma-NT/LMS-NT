@@ -3,6 +3,7 @@ package com.nt.course_service_lms.dto.inDTO;
 import jakarta.validation.constraints.*;
 import lombok.Data;
 import java.math.BigDecimal;
+import java.util.Objects;
 
 /**
  * Data Transfer Object for updating an existing quiz question.
@@ -58,4 +59,28 @@ public class QuizQuestionUpdateInDTO {
     @NotNull(message = "Position is required")
     @Positive(message = "Position must be positive")
     private Integer position;
+
+    public QuizQuestionUpdateInDTO() {
+    }
+
+    public QuizQuestionUpdateInDTO(String questionText, String questionType, BigDecimal points, String explanation, Boolean required, Integer position) {
+        this.questionText = questionText;
+        this.questionType = questionType;
+        this.points = points;
+        this.explanation = explanation;
+        this.required = required;
+        this.position = position;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (o == null || getClass() != o.getClass()) return false;
+        QuizQuestionUpdateInDTO that = (QuizQuestionUpdateInDTO) o;
+        return Objects.equals(questionText, that.questionText) && Objects.equals(questionType, that.questionType) && Objects.equals(points, that.points) && Objects.equals(explanation, that.explanation) && Objects.equals(required, that.required) && Objects.equals(position, that.position);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(questionText, questionType, points, explanation, required, position);
+    }
 }
