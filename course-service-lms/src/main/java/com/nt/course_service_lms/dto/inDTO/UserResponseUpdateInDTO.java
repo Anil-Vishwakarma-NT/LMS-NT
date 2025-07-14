@@ -7,6 +7,7 @@ import lombok.AllArgsConstructor;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
+import java.util.Objects;
 
 /**
  * DTO for updating user response to quiz questions.
@@ -31,4 +32,26 @@ public class UserResponseUpdateInDTO {
     private BigDecimal pointsEarned;
 
     private LocalDateTime answeredAt;
+
+    public UserResponseUpdateInDTO() {
+    }
+
+    public UserResponseUpdateInDTO(String userAnswer, Boolean isCorrect, BigDecimal pointsEarned, LocalDateTime answeredAt) {
+        this.userAnswer = userAnswer;
+        this.isCorrect = isCorrect;
+        this.pointsEarned = pointsEarned;
+        this.answeredAt = answeredAt;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (o == null || getClass() != o.getClass()) return false;
+        UserResponseUpdateInDTO that = (UserResponseUpdateInDTO) o;
+        return Objects.equals(userAnswer, that.userAnswer) && Objects.equals(isCorrect, that.isCorrect) && Objects.equals(pointsEarned, that.pointsEarned) && Objects.equals(answeredAt, that.answeredAt);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(userAnswer, isCorrect, pointsEarned, answeredAt);
+    }
 }

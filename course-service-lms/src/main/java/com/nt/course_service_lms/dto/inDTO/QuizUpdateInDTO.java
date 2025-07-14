@@ -3,6 +3,7 @@ package com.nt.course_service_lms.dto.inDTO;
 import jakarta.validation.constraints.*;
 import lombok.Data;
 import java.math.BigDecimal;
+import java.util.Objects;
 
 /**
  * DTO for updating an existing quiz.
@@ -33,4 +34,30 @@ public class QuizUpdateInDTO {
     private Boolean showResults;
 
     private Boolean isActive;
+
+    public QuizUpdateInDTO() {
+    }
+
+    public QuizUpdateInDTO(String title, String description, Integer timeLimit, Integer attemptsAllowed, BigDecimal passingScore, Boolean randomizeQuestions, Boolean showResults, Boolean isActive) {
+        this.title = title;
+        this.description = description;
+        this.timeLimit = timeLimit;
+        this.attemptsAllowed = attemptsAllowed;
+        this.passingScore = passingScore;
+        this.randomizeQuestions = randomizeQuestions;
+        this.showResults = showResults;
+        this.isActive = isActive;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (o == null || getClass() != o.getClass()) return false;
+        QuizUpdateInDTO that = (QuizUpdateInDTO) o;
+        return Objects.equals(title, that.title) && Objects.equals(description, that.description) && Objects.equals(timeLimit, that.timeLimit) && Objects.equals(attemptsAllowed, that.attemptsAllowed) && Objects.equals(passingScore, that.passingScore) && Objects.equals(randomizeQuestions, that.randomizeQuestions) && Objects.equals(showResults, that.showResults) && Objects.equals(isActive, that.isActive);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(title, description, timeLimit, attemptsAllowed, passingScore, randomizeQuestions, showResults, isActive);
+    }
 }

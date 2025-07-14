@@ -38,30 +38,28 @@ public class CourseBundleOutDTO {
      * ID of the bundle this course belongs to.
      * <p>Must be a positive non-null value.</p>
      */
-    @NotNull(message = BUNDLE_ID_NOT_NULL)
-    @Positive(message = BUNDLE_ID_POSITIVE)
+
     private Long bundleId;
 
     /**
      * Human-readable name of the bundle.
      * <p>Used for UI representation or search filtering.</p>
      */
-    @NotNull
+
     private String bundleName;
 
     /**
      * ID of the course that is part of the bundle.
      * <p>Must be a positive non-null value.</p>
      */
-    @NotNull(message = COURSE_ID_NOT_NULL)
-    @Positive(message = COURSE_ID_POSITIVE)
+
     private Long courseId;
 
     /**
      * Human-readable name of the course.
      * <p>Used for display or reference purposes.</p>
      */
-    @NotNull(message = "Course name is required")
+
     private String courseName;
 
     /**

@@ -4,6 +4,7 @@ import jakarta.validation.constraints.*;
 import lombok.Data;
 
 import java.math.BigDecimal;
+import java.util.Objects;
 
 @Data
 public class UpdateQuizQuestionInDTO {
@@ -38,4 +39,30 @@ public class UpdateQuizQuestionInDTO {
     @NotNull(message = "Position is required")
     @Positive(message = "Position must be positive")
     private Integer position;
+
+    public UpdateQuizQuestionInDTO() {
+    }
+
+    public UpdateQuizQuestionInDTO(String questionText, String questionType, String options, String correctAnswer, BigDecimal points, String explanation, Boolean required, Integer position) {
+        this.questionText = questionText;
+        this.questionType = questionType;
+        this.options = options;
+        this.correctAnswer = correctAnswer;
+        this.points = points;
+        this.explanation = explanation;
+        this.required = required;
+        this.position = position;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (o == null || getClass() != o.getClass()) return false;
+        UpdateQuizQuestionInDTO that = (UpdateQuizQuestionInDTO) o;
+        return Objects.equals(questionText, that.questionText) && Objects.equals(questionType, that.questionType) && Objects.equals(options, that.options) && Objects.equals(correctAnswer, that.correctAnswer) && Objects.equals(points, that.points) && Objects.equals(explanation, that.explanation) && Objects.equals(required, that.required) && Objects.equals(position, that.position);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(questionText, questionType, options, correctAnswer, points, explanation, required, position);
+    }
 }
