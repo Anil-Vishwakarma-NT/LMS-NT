@@ -44,26 +44,6 @@ public class QuizQuestionOutDTO {
     }
 
     // Default constructor
-    public QuizQuestionOutDTO() {}
-
-    /**
-     * Creates a QuizQuestionOutDTO without correct answer information.
-     * Useful for student-facing responses where answers should be hidden.
-     */
-    public static QuizQuestionOutDTO withoutCorrectAnswer(QuizQuestionOutDTO original) {
-        QuizQuestionOutDTO dto = new QuizQuestionOutDTO();
-        dto.questionId = original.questionId;
-        dto.quizId = original.quizId;
-        dto.questionText = original.questionText;
-        dto.questionType = original.questionType;
-        dto.options = original.options;
-        dto.correctAnswer = null; // Hide correct answer
-        dto.points = original.points;
-        dto.explanation = null; // Hide explanation
-        dto.required = original.required;
-        dto.position = original.position;
-        dto.createdAt = original.createdAt;
-        dto.updatedAt = original.updatedAt;
-        return dto;
+    public QuizQuestionOutDTO() {
     }
 }

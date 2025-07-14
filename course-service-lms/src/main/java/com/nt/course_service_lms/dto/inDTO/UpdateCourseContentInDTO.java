@@ -3,6 +3,8 @@ package com.nt.course_service_lms.dto.inDTO;
 import jakarta.validation.constraints.*;
 import lombok.Data;
 
+import java.util.Objects;
+
 import static com.nt.course_service_lms.constants.CourseContentConstants.*;
 
 @Data
@@ -54,5 +56,17 @@ public class UpdateCourseContentInDTO {
         this.description = description;
         this.resourceLink = resourceLink;
         this.isActive = isActive;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (o == null || getClass() != o.getClass()) return false;
+        UpdateCourseContentInDTO that = (UpdateCourseContentInDTO) o;
+        return courseId == that.courseId && isActive == that.isActive && Objects.equals(title, that.title) && Objects.equals(description, that.description) && Objects.equals(resourceLink, that.resourceLink);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(courseId, title, description, resourceLink, isActive);
     }
 }
