@@ -2,13 +2,7 @@ package com.nt.user_service_lms.controller;
 
 import com.nt.user_service_lms.config.ServicePrincipal;
 import com.nt.user_service_lms.dto.inDTO.GroupInDTO;
-import com.nt.user_service_lms.dto.outDTO.CourseInfoOutDTO;
-import com.nt.user_service_lms.dto.outDTO.GroupCourseOutDTO;
-import com.nt.user_service_lms.dto.outDTO.GroupOutDTO;
-import com.nt.user_service_lms.dto.outDTO.GroupSummaryOutDTO;
-import com.nt.user_service_lms.dto.outDTO.GroupUserOutDTO;
-import com.nt.user_service_lms.dto.outDTO.MessageOutDto;
-import com.nt.user_service_lms.dto.outDTO.StandardResponseOutDTO;
+import com.nt.user_service_lms.dto.outDTO.*;
 import com.nt.user_service_lms.exception.UnauthorizedAccessException;
 import com.nt.user_service_lms.repository.UserRepository;
 import com.nt.user_service_lms.service.EnrollmentsService;
@@ -201,6 +195,20 @@ public class GroupController {
         return new ResponseEntity<>(response, HttpStatus.OK);
     }
 
+    @GetMapping("emp/group-emps/{groupId}")
+    public ResponseEntity<StandardResponseOutDTO<List<GroupUserOutDTO>>> getUsersInGroupForEmp(@PathVariable final long groupId) {
+        log.info("Fetching users in group with ID: {}", groupId);
+        StandardResponseOutDTO<List<GroupUserOutDTO>> response = groupService.getUserDetailEmp(groupId);
+
+        if (response.getData().isEmpty()) {
+            log.warn("No users found in group with ID: {}", groupId);
+            return new ResponseEntity<>(response, HttpStatus.NO_CONTENT);
+        }
+
+        log.info("Users found in group with ID: {}: {}", groupId, response.getData().size());
+        return new ResponseEntity<>(response, HttpStatus.OK);
+    }
+
     /**
      * Retrieves course details associated with a specific group.
      *
@@ -216,7 +224,16 @@ public class GroupController {
         log.info("Attempting to get course details of groupId : {}", groupId);
         StandardResponseOutDTO<List<GroupCourseOutDTO>> response = groupService.getCourseDetail(groupId);
 
-        return new ResponseEntity<>(response, HttpStatus.OK);
+        return new ResponseEntity<>(response,HttpStatus.OK);
+    }
+
+
+    @GetMapping("emp/group-courses/{groupId}")
+    public ResponseEntity<StandardResponseOutDTO<List<GroupCourseOutDTO>>> getCourseEmpDetails(@PathVariable final long groupId){     // pass group id in dto
+        log.info("Attempting to get course details of groupId : {}",groupId);
+        StandardResponseOutDTO<List<GroupCourseOutDTO>> response = groupService.getCourseEmpDetail(groupId);
+
+        return new ResponseEntity<>(response,HttpStatus.OK);
     }
 
     /**
@@ -346,10 +363,23 @@ public class GroupController {
      *         and HTTP status OK (200)
      */
     @PostMapping("/user-courses")
-    public ResponseEntity<StandardResponseOutDTO<List<CourseInfoOutDTO>>> getUserCoursesInGroups(
-            @RequestBody final GroupInDTO groupInDTO) {
-        StandardResponseOutDTO<List<CourseInfoOutDTO>> response = groupService
-                .getUserCourses(groupInDTO.getGroupId(), groupInDTO.getUserId());
-        return new ResponseEntity<>(response, HttpStatus.OK);
+    public ResponseEntity<StandardResponseOutDTO<List<CourseInfoOutDTO>>> getUserCoursesInGroups(@RequestBody GroupInDTO groupInDTO){
+        StandardResponseOutDTO<List<CourseInfoOutDTO>> response = groupService.getUserCourses(groupInDTO.getGroupId(), groupInDTO.getUserId());
+        return new ResponseEntity<>(response,HttpStatus.OK);
     }
+
+
+    @GetMapping("/user-groups")
+    public ResponseEntity<StandardResponseOutDTO<List<UserGroupOutDTO>>>getUserGroupDetails(){
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+
+        if (!(authentication.getPrincipal() instanceof ServicePrincipal principal)) {
+            throw new UnauthorizedAccessException("Authentication failed");
+        }
+
+        String username = principal.getUserEmail();
+        StandardResponseOutDTO<List<UserGroupOutDTO>> response = groupService.getUserGroupDetail(username);
+        return new ResponseEntity<>(response , HttpStatus.OK);
+    }
+
 }

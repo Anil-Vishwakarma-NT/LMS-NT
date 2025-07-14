@@ -23,6 +23,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
 /**
@@ -164,5 +165,13 @@ public class UserController {
         List<UserCourseEnrollDetails> enrolledCourses = userService.getUserEnrolledCourses(Long.parseLong(userId));
         return ResponseEntity.ok(StandardResponseOutDTO.success(enrolledCourses, "Fetched enrolled courses successfully"));
     }
+
+    @GetMapping("/{userId}/statistics")
+    public ResponseEntity<StandardResponseOutDTO<Map<String,Long>>> getUserEnrollments(@PathVariable Long userId){
+        Map<String , Long> stats = userService.userStatistics(userId);
+        StandardResponseOutDTO<Map<String,Long>> standardResponseOutDTO = StandardResponseOutDTO.success(stats, "Fetched Users Enrolled");
+        return ResponseEntity.ok(standardResponseOutDTO);
+    }
+
 
 }
