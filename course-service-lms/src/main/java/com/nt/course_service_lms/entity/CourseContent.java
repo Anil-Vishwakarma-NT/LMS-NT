@@ -80,41 +80,26 @@ public class CourseContent {
      * @param description     the content description
      * @param resourceLink    the optional resource link
      */
-    public CourseContent(final long courseContentId, final long courseId, final String title,
-                         final String description, final String resourceLink) {
+    public CourseContent(long courseContentId, long courseId, String title, String description, String resourceLink, boolean isActive, LocalDateTime createdAt, LocalDateTime updatedAt) {
         this.courseContentId = courseContentId;
         this.courseId = courseId;
         this.title = title;
         this.description = description;
         this.resourceLink = resourceLink;
+        this.isActive = isActive;
+        this.createdAt = createdAt;
+        this.updatedAt = updatedAt;
     }
 
-    /**
-     * Compares this object with another for equality based on all fields.
-     *
-     * @param o the object to compare
-     * @return {@code true} if both instances are equal, {@code false} otherwise
-     */
     @Override
-    public boolean equals(final Object o) {
-        if (o == null || getClass() != o.getClass()) {
-            return false;
-        }
+    public boolean equals(Object o) {
+        if (o == null || getClass() != o.getClass()) return false;
         CourseContent that = (CourseContent) o;
-        return courseContentId == that.courseContentId
-                && courseId == that.courseId
-                && Objects.equals(title, that.title)
-                && Objects.equals(description, that.description)
-                && Objects.equals(resourceLink, that.resourceLink);
+        return courseContentId == that.courseContentId && courseId == that.courseId && isActive == that.isActive && Objects.equals(title, that.title) && Objects.equals(description, that.description) && Objects.equals(resourceLink, that.resourceLink) && Objects.equals(createdAt, that.createdAt) && Objects.equals(updatedAt, that.updatedAt);
     }
 
-    /**
-     * Generates a hash code based on all fields of the entity.
-     *
-     * @return the hash code
-     */
     @Override
     public int hashCode() {
-        return Objects.hash(courseContentId, courseId, title, description, resourceLink);
+        return Objects.hash(courseContentId, courseId, title, description, resourceLink, isActive, createdAt, updatedAt);
     }
 }
