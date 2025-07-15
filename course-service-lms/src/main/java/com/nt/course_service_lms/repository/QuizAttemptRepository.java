@@ -18,6 +18,7 @@ public interface QuizAttemptRepository extends JpaRepository<QuizAttempt, Long> 
 
     /**
      * Find quiz attempts by user ID.
+     *
      * @param userId the ID of the user
      * @return a list of quiz attempts ordered by creation date in descending order
      */
@@ -25,6 +26,7 @@ public interface QuizAttemptRepository extends JpaRepository<QuizAttempt, Long> 
 
     /**
      * Find quiz attempts by quiz ID.
+     *
      * @param quizId the ID of the quiz
      * @return a list of quiz attempts ordered by creation date in descending order
      */
@@ -32,6 +34,7 @@ public interface QuizAttemptRepository extends JpaRepository<QuizAttempt, Long> 
 
     /**
      * Find quiz attempts by user and quiz.
+     *
      * @param userId the ID of the user
      * @param quizId the ID of the quiz
      * @return a list of quiz attempts ordered by attempt number in descending order
@@ -40,6 +43,7 @@ public interface QuizAttemptRepository extends JpaRepository<QuizAttempt, Long> 
 
     /**
      * Find quiz attempts by status.
+     *
      * @param status the status of the quiz attempt (e.g., "IN_PROGRESS", "COMPLETED", etc.)
      * @return a list of quiz attempts with the specified status, ordered by creation date in descending order
      */
@@ -47,6 +51,7 @@ public interface QuizAttemptRepository extends JpaRepository<QuizAttempt, Long> 
 
     /**
      * Find latest attempt by user and quiz.
+     *
      * @param userId the ID of the user
      * @param quizId the ID of the quiz
      * @return an Optional containing the latest QuizAttempt for the user and quiz, or empty if not found
@@ -56,6 +61,7 @@ public interface QuizAttemptRepository extends JpaRepository<QuizAttempt, Long> 
 
     /**
      * Count attempts by user and quiz.
+     *
      * @param userId the ID of the user
      * @param quizId the ID of the quiz
      * @return the count of quiz attempts for the specified user and quiz
@@ -64,6 +70,7 @@ public interface QuizAttemptRepository extends JpaRepository<QuizAttempt, Long> 
 
     /**
      * Find attempts by user and quiz with specific status.
+     *
      * @param userId the ID of the user
      * @param quizId the ID of the quiz
      * @param status the status of the quiz attempt (e.g., "IN_PROGRESS", "COMPLETED", etc.)
@@ -73,6 +80,7 @@ public interface QuizAttemptRepository extends JpaRepository<QuizAttempt, Long> 
 
     /**
      * Check if user has any active attempts for a quiz.
+     *
      * @param userId the ID of the user
      * @param quizId the ID of the quiz
      * @return true if there is at least one active attempt, false otherwise
@@ -83,6 +91,7 @@ public interface QuizAttemptRepository extends JpaRepository<QuizAttempt, Long> 
 
     /**
      * Find the latest attempt for a user and quiz.
+     *
      * @param userId the ID of the user
      * @param quizId the ID of the quiz
      * @return the latest QuizAttempt for the user and quiz
@@ -91,6 +100,7 @@ public interface QuizAttemptRepository extends JpaRepository<QuizAttempt, Long> 
 
     /**
      * Find the single active attempt for a user and quiz.
+     *
      * @param userId the ID of the user
      * @param quizId the ID of the quiz
      * @return an Optional containing the active QuizAttempt if found, or empty if not

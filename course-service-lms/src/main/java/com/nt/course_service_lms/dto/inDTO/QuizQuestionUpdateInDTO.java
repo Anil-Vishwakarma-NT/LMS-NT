@@ -69,7 +69,9 @@ public class QuizQuestionUpdateInDTO {
 
     @Override
     public boolean equals(Object o) {
-        if (o == null || getClass() != o.getClass()) return false;
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
         QuizQuestionUpdateInDTO that = (QuizQuestionUpdateInDTO) o;
         return Objects.equals(questionText, that.questionText) && Objects.equals(questionType, that.questionType) && Objects.equals(points, that.points) && Objects.equals(explanation, that.explanation) && Objects.equals(required, that.required) && Objects.equals(position, that.position);
     }

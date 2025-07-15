@@ -19,11 +19,34 @@ import org.springframework.web.server.ServerWebExchange;
 import org.springframework.web.server.WebFilter;
 import org.springframework.web.server.WebFilterChain;
 import reactor.core.publisher.Mono;
+
 import java.security.SecureRandom;
 import java.util.Base64;
 import java.util.List;
 import java.util.stream.Collectors;
-import static com.nt.lms.api_gateway_lms.constant.SecurityConstant.*;
+
+import static com.nt.lms.api_gateway_lms.constant.SecurityConstant.ACCESS_TOKEN_TYPE;
+import static com.nt.lms.api_gateway_lms.constant.SecurityConstant.BEARER_PREFIX;
+import static com.nt.lms.api_gateway_lms.constant.SecurityConstant.COURSE_SERVICE;
+import static com.nt.lms.api_gateway_lms.constant.SecurityConstant.GATEWAY_NONCE_HEADER;
+import static com.nt.lms.api_gateway_lms.constant.SecurityConstant.GATEWAY_SECRET_HEADER;
+import static com.nt.lms.api_gateway_lms.constant.SecurityConstant.GATEWAY_SIGNATURE_HEADER;
+import static com.nt.lms.api_gateway_lms.constant.SecurityConstant.GATEWAY_SOURCE_HEADER;
+import static com.nt.lms.api_gateway_lms.constant.SecurityConstant.GATEWAY_SOURCE_VALUE;
+import static com.nt.lms.api_gateway_lms.constant.SecurityConstant.GATEWAY_TIMESTAMP_HEADER;
+import static com.nt.lms.api_gateway_lms.constant.SecurityConstant.INVALID_ACCESS_TOKEN_MSG;
+import static com.nt.lms.api_gateway_lms.constant.SecurityConstant.INVALID_SERVICE_TOKEN_MSG;
+import static com.nt.lms.api_gateway_lms.constant.SecurityConstant.INVALID_TOKEN_MSG;
+import static com.nt.lms.api_gateway_lms.constant.SecurityConstant.INVALID_TOKEN_TYPE_MSG;
+import static com.nt.lms.api_gateway_lms.constant.SecurityConstant.ORIGINAL_TOKEN_TYPE_HEADER;
+import static com.nt.lms.api_gateway_lms.constant.SecurityConstant.SERVICE_TOKEN_HEADER;
+import static com.nt.lms.api_gateway_lms.constant.SecurityConstant.SERVICE_TOKEN_PROCESSING_ERROR_MSG;
+import static com.nt.lms.api_gateway_lms.constant.SecurityConstant.SERVICE_TOKEN_TYPE;
+import static com.nt.lms.api_gateway_lms.constant.SecurityConstant.TOKEN_EXPIRED_MSG;
+import static com.nt.lms.api_gateway_lms.constant.SecurityConstant.TOKEN_PROCESSING_ERROR_MSG;
+import static com.nt.lms.api_gateway_lms.constant.SecurityConstant.UNKNOWN_SERVICE;
+import static com.nt.lms.api_gateway_lms.constant.SecurityConstant.USER_NOT_FOUND_MSG;
+import static com.nt.lms.api_gateway_lms.constant.SecurityConstant.USER_SERVICE;
 
 @Component
 @RequiredArgsConstructor
@@ -187,8 +210,12 @@ public class JwtAuthFilter implements WebFilter {
 
     private String extractTargetService(ServerHttpRequest request) {
         String path = request.getPath().value();
-        if (path.startsWith("/lms/user/")) return USER_SERVICE;
-        if (path.startsWith("/lms/course/")) return COURSE_SERVICE;
+        if (path.startsWith("/lms/user/")) {
+            return USER_SERVICE;
+        }
+        if (path.startsWith("/lms/course/")) {
+            return COURSE_SERVICE;
+        }
         return UNKNOWN_SERVICE;
     }
 

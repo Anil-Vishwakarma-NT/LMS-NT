@@ -1,6 +1,7 @@
 package com.nt.course_service_lms.dto.outDTO;
 
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
@@ -10,8 +11,9 @@ import java.time.LocalDateTime;
  * DTO representing bundle summary with course count information.
  */
 @Data
-@AllArgsConstructor
 @NoArgsConstructor
+@AllArgsConstructor
+@Builder
 public class BundleSummaryOutDTO {
     private Long bundleId;
     private String bundleName;

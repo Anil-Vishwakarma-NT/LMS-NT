@@ -6,9 +6,9 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 @SpringBootApplication
 public class ApiGatewayLmsApplication {
 
-	public static void main(String[] args) {
-		SpringApplication.run(ApiGatewayLmsApplication.class, args);
-		System.out.println("API Gateway running ..........................");
-	}
+    public static void main(String[] args) {
+        SpringApplication.run(ApiGatewayLmsApplication.class, args);
+        System.out.println("API Gateway running ..........................");
+    }
 
 }

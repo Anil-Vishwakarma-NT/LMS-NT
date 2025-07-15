@@ -1,6 +1,13 @@
 package com.nt.user_service_lms.service.serviceImpl;
 
-import org.apache.poi.ss.usermodel.*;
+import org.apache.poi.ss.usermodel.Cell;
+import org.apache.poi.ss.usermodel.CellStyle;
+import org.apache.poi.ss.usermodel.DataFormat;
+import org.apache.poi.ss.usermodel.Font;
+import org.apache.poi.ss.usermodel.HorizontalAlignment;
+import org.apache.poi.ss.usermodel.Row;
+import org.apache.poi.ss.usermodel.Sheet;
+import org.apache.poi.ss.usermodel.Workbook;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.springframework.stereotype.Service;
 
@@ -72,7 +79,9 @@ public class UserExcelReportBuilder {
     }
 
     private int addTable(Sheet sheet, int rowNum, String title, List<Map<String, Object>> rows, CellStyle headerStyle, CellStyle titleStyle, CellStyle percentageStyle, CellStyle numberStyle) {
-        if (rows == null || rows.isEmpty()) return rowNum;
+        if (rows == null || rows.isEmpty()) {
+            return rowNum;
+        }
 
         Row titleRow = sheet.createRow(rowNum++);
         Cell titleCell = titleRow.createCell(0);
@@ -114,8 +123,12 @@ public class UserExcelReportBuilder {
         userHeaderRow.getCell(1).setCellStyle(headerStyle);
 
         for (Map.Entry<String, Object> entry : data.entrySet()) {
-            if (!entry.getKey().startsWith("User: ")) continue;
-            if (!(entry.getValue() instanceof List)) continue;
+            if (!entry.getKey().startsWith("User: ")) {
+                continue;
+            }
+            if (!(entry.getValue() instanceof List)) {
+                continue;
+            }
 
             List<?> list = (List<?>) entry.getValue();
             if (!list.isEmpty() && list.get(0) instanceof Map) {
@@ -144,8 +157,12 @@ public class UserExcelReportBuilder {
         globalHeaderRow.getCell(1).setCellStyle(headerStyle);
 
         for (Map.Entry<String, Object> entry : data.entrySet()) {
-            if (!entry.getKey().startsWith("Global: ")) continue;
-            if (!(entry.getValue() instanceof List)) continue;
+            if (!entry.getKey().startsWith("Global: ")) {
+                continue;
+            }
+            if (!(entry.getValue() instanceof List)) {
+                continue;
+            }
 
             List<?> list = (List<?>) entry.getValue();
             if (!list.isEmpty() && list.get(0) instanceof Map) {

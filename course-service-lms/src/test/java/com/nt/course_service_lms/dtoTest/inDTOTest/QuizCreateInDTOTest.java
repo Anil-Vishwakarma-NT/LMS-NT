@@ -57,7 +57,7 @@ class QuizCreateInDTOTest {
 
     @Test
     void whenTitleBlankOrLong_thenViolation() {
-        var dto = new QuizCreateInDTO("bundle", 1L, "", "", null, 1, null, false, false, true,1);
+        var dto = new QuizCreateInDTO("bundle", 1L, "", "", null, 1, null, false, false, true, 1);
         Set<ConstraintViolation<QuizCreateInDTO>> v1 = validator.validate(dto);
         assertTrue(hasViolation(v1, "title"));
 
@@ -70,14 +70,14 @@ class QuizCreateInDTOTest {
     @Test
     void whenDescriptionTooLong_thenViolation() {
         String longDesc = new String(new char[1001]).replace('\0', 'D');
-        var dto = new QuizCreateInDTO("bundle",1L,"T", longDesc, null, 1, null, false, false, true,1);
+        var dto = new QuizCreateInDTO("bundle", 1L, "T", longDesc, null, 1, null, false, false, true, 1);
         Set<ConstraintViolation<QuizCreateInDTO>> v = validator.validate(dto);
         assertTrue(hasViolation(v, "description"));
     }
 
     @Test
     void whenTimeLimitInvalid_thenViolation() {
-        var dto = new QuizCreateInDTO("course",1L,"T","", 0,1,null,false,false,true,1);
+        var dto = new QuizCreateInDTO("course", 1L, "T", "", 0, 1, null, false, false, true, 1);
         assertTrue(hasViolation(validator.validate(dto), "timeLimit"));
 
         dto.setTimeLimit(601);
@@ -86,7 +86,7 @@ class QuizCreateInDTOTest {
 
     @Test
     void whenAttemptsAllowedInvalid_thenViolation() {
-        var dto = new QuizCreateInDTO("course",1L,"T","",10,0,null,false,false,true,1);
+        var dto = new QuizCreateInDTO("course", 1L, "T", "", 10, 0, null, false, false, true, 1);
         assertTrue(hasViolation(validator.validate(dto), "attemptsAllowed"));
 
         dto.setAttemptsAllowed(11);
@@ -95,7 +95,7 @@ class QuizCreateInDTOTest {
 
     @Test
     void whenPassingScoreInvalid_thenViolation() {
-        var dto = new QuizCreateInDTO("course",1L,"T","",10,1, BigDecimal.valueOf(-0.01),false,false,true,1);
+        var dto = new QuizCreateInDTO("course", 1L, "T", "", 10, 1, BigDecimal.valueOf(-0.01), false, false, true, 1);
         assertTrue(hasViolation(validator.validate(dto), "passingScore"));
 
         dto.setPassingScore(BigDecimal.valueOf(10000));
@@ -104,7 +104,7 @@ class QuizCreateInDTOTest {
 
     @Test
     void whenIsActiveOrCreatedByInvalid_thenViolation() {
-        var dto = new QuizCreateInDTO("course",1L,"Title","",10,1,null,false,false,null,0);
+        var dto = new QuizCreateInDTO("course", 1L, "Title", "", 10, 1, null, false, false, null, 0);
         Set<ConstraintViolation<QuizCreateInDTO>> v = validator.validate(dto);
         assertTrue(hasViolation(v, "isActive"));
         assertTrue(hasViolation(v, "createdBy"));
@@ -140,23 +140,25 @@ class QuizCreateInDTOTest {
 
     @Test
     void testEqualsAndHashCode() {
-        QuizCreateInDTO a = new QuizCreateInDTO("course",1L,"Q","D",10,1,BigDecimal.ONE,false,false,true,1);
-        QuizCreateInDTO b = new QuizCreateInDTO("course",1L,"Q","D",10,1,BigDecimal.ONE,false,false,true,1);
+        QuizCreateInDTO a = new QuizCreateInDTO("course", 1L, "Q", "D", 10, 1, BigDecimal.ONE, false, false, true, 1);
+        QuizCreateInDTO b = new QuizCreateInDTO("course", 1L, "Q", "D", 10, 1, BigDecimal.ONE, false, false, true, 1);
         assertEquals(a, b);
         assertEquals(a.hashCode(), b.hashCode());
 
-        QuizCreateInDTO c = new QuizCreateInDTO("bundle",2L,"X","Y",20,2,BigDecimal.TEN,true,true,false,2);
+        QuizCreateInDTO c = new QuizCreateInDTO("bundle", 2L, "X", "Y", 20, 2, BigDecimal.TEN, true, true, false, 2);
         assertNotEquals(a, c);
     }
 
     @Test
     void testEqualsWithNullAndOtherClass() {
-        QuizCreateInDTO dto = new QuizCreateInDTO("course",1L,"Q","D",10,1,BigDecimal.ONE,false,false,true,1);
+        QuizCreateInDTO dto = new QuizCreateInDTO("course", 1L, "Q", "D", 10, 1, BigDecimal.ONE, false, false, true, 1);
         assertNotEquals(dto, null);
         assertNotEquals(dto, "string");
     }
 
-    /** Utility to simplify violation-checking */
+    /**
+     * Utility to simplify violation-checking
+     */
     private boolean hasViolation(Set<ConstraintViolation<QuizCreateInDTO>> set, String property) {
         return set.stream().anyMatch(v -> v.getPropertyPath().toString().equals(property));
     }

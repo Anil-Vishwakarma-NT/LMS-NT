@@ -11,6 +11,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
+
 import java.security.Key;
 import java.util.Base64;
 import java.util.Date;
@@ -35,14 +36,20 @@ import static com.nt.course_service_lms.constants.SecurityConstant.TOKEN_TYPE_SE
 @Component
 public class JwtUtil {
 
-    /** Logger instance for this class. */
+    /**
+     * Logger instance for this class.
+     */
     private static final Logger LOGGER = LoggerFactory.getLogger(JwtUtil.class);
 
-    /** JWT secret key for token signing and verification. */
+    /**
+     * JWT secret key for token signing and verification.
+     */
     @Value("${jwt.secret}")
     private String secret;
 
-    /** JWT issuer identifier. */
+    /**
+     * JWT issuer identifier.
+     */
     @Value("${jwt.issuer}")
     private String issuer;
 
@@ -169,8 +176,8 @@ public class JwtUtil {
     /**
      * Generic method to extract a specific claim from the JWT token.
      *
-     * @param <T> the type of the claim value
-     * @param token JWT token string
+     * @param <T>            the type of the claim value
+     * @param token          JWT token string
      * @param claimsResolver function to extract the desired claim
      * @return the extracted claim value
      */
@@ -212,7 +219,7 @@ public class JwtUtil {
     /**
      * Validates a service token by checking its type, audience, roles, and expiration.
      *
-     * @param token JWT token string
+     * @param token            JWT token string
      * @param expectedAudience expected audience value (can be null)
      * @return true if the service token is valid, false otherwise
      */
@@ -266,7 +273,7 @@ public class JwtUtil {
     /**
      * Checks if the token has the required scope or internal permissions.
      *
-     * @param token JWT token string
+     * @param token         JWT token string
      * @param requiredScope the scope to check for
      * @return true if the token has the required scope or internal permissions, false otherwise
      */
@@ -289,7 +296,7 @@ public class JwtUtil {
     /**
      * Checks if the token contains the required user role.
      *
-     * @param token JWT token string
+     * @param token        JWT token string
      * @param requiredRole the role to check for
      * @return true if the token contains the required user role, false otherwise
      */

@@ -53,7 +53,7 @@ public class BundleServiceImpl implements BundleService {
      * @param bundleInDTO the DTO containing the bundle details
      * @return the created {@link BundleOutDTO}
      * @throws ResourceAlreadyExistsException if a bundle with the same name already exists
-     * @throws RuntimeException if there is a general error during bundle creation
+     * @throws RuntimeException               if there is a general error during bundle creation
      */
     @Override
     public BundleOutDTO createBundle(final BundleInDTO bundleInDTO) {
@@ -144,12 +144,12 @@ public class BundleServiceImpl implements BundleService {
      * Validates that the new bundle name is unique (excluding the same bundle) before updating.
      * </p>
      *
-     * @param bundleId  the ID of the bundle to update
+     * @param bundleId          the ID of the bundle to update
      * @param updateBundleInDTO the DTO containing the updated bundle data
      * @return success message
-     * @throws ResourceNotFoundException if the bundle with the specified ID does not exist
+     * @throws ResourceNotFoundException      if the bundle with the specified ID does not exist
      * @throws ResourceAlreadyExistsException if the new bundle name already exists for a different bundle
-     * @throws RuntimeException if there is a general error during the update
+     * @throws RuntimeException               if there is a general error during the update
      */
     @Override
     public BundleOutDTO updateBundle(final Long bundleId, final UpdateBundleInDTO updateBundleInDTO) {
@@ -192,7 +192,7 @@ public class BundleServiceImpl implements BundleService {
      *
      * @param id the ID of the bundle to delete
      * @throws ResourceNotFoundException if the bundle with the specified ID does not exist
-     * @throws RuntimeException if there is a general error during the deletion
+     * @throws RuntimeException          if there is a general error during the deletion
      */
     @Override
     public void deleteBundle(final Long id) {
@@ -256,7 +256,7 @@ public class BundleServiceImpl implements BundleService {
      * @param bundleId the ID of the bundle
      * @return the bundle name
      * @throws ResourceNotFoundException if the bundle is not found
-     * @throws RuntimeException if there is a general error
+     * @throws RuntimeException          if there is a general error
      */
     @Override
     public String getBundleNameById(Long bundleId) {
@@ -282,7 +282,7 @@ public class BundleServiceImpl implements BundleService {
 
     @Override
     public List<Long> findExistingIds(List<Long> bundleIds) {
-        try{
+        try {
             List<Long> existingCourseIds = bundleRepository.findExistingIds(bundleIds);
             if (existingCourseIds.isEmpty()) {
                 throw new ResourceNotFoundException("No Bundle IDs found");

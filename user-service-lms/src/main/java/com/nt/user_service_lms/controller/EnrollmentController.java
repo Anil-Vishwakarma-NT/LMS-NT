@@ -60,7 +60,6 @@ public class EnrollmentController {
      *
      * @param enrollmentRequestInDTO the enrollment request data containing user and course/bundle information
      * @return ResponseEntity containing a standardized response with the list of created enrollments
-     *
      * @since 1.0
      */
     @PostMapping("/enroll")
@@ -95,7 +94,6 @@ public class EnrollmentController {
      * administrative dashboard displays.</p>
      *
      * @return ResponseEntity containing standardized response with enrollment statistics
-     *
      * @since 1.0
      */
     @GetMapping("/statistics")
@@ -128,7 +126,6 @@ public class EnrollmentController {
      *
      * @param userId the unique identifier of the user whose enrollments are to be retrieved
      * @return ResponseEntity containing standardized response with user's enrollment data
-     *
      * @since 1.0
      */
     @GetMapping("/user-enrollments/{id}")
@@ -162,7 +159,6 @@ public class EnrollmentController {
      * bundle enrollments.</p>
      *
      * @return ResponseEntity containing standardized response with all users' enrollment data
-     *
      * @since 1.0
      */
     @GetMapping("/user-enrollments")
@@ -195,7 +191,6 @@ public class EnrollmentController {
      * and enrollment dates.</p>
      *
      * @return ResponseEntity containing standardized response with individual course enrollment data
-     *
      * @since 1.0
      */
     @GetMapping("/user-course-enrollments")
@@ -230,7 +225,6 @@ public class EnrollmentController {
      * progress tracking, and completion status.</p>
      *
      * @return ResponseEntity containing standardized response with individual bundle enrollment data
-     *
      * @since 1.0
      */
     @GetMapping("/user-bundle-enrollments")
@@ -265,7 +259,6 @@ public class EnrollmentController {
      *
      * @param userId the unique identifier of the user whose enrolled courses are to be retrieved
      * @return ResponseEntity containing standardized response with detailed course enrollment information
-     *
      * @since 1.0
      */
     @GetMapping("/userCourses/{userId}")

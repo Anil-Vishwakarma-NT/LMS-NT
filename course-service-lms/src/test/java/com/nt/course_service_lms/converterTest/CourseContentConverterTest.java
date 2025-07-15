@@ -174,6 +174,7 @@ class CourseContentConverterTest {
 
         assertThrows(UnsupportedOperationException.class, constructor::newInstance);
     }
+
     @Test
     void testUpdateCourseContentInDTONoArgsConstructor() {
         UpdateCourseContentInDTO dto = new UpdateCourseContentInDTO();

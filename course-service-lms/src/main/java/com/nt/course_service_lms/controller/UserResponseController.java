@@ -95,7 +95,7 @@ public class UserResponseController {
      * Updates an existing user response with new information.
      * Only allows modification of user's selected answer and related fields.
      *
-     * @param responseId The unique identifier of the user response to update
+     * @param responseId              The unique identifier of the user response to update
      * @param userResponseUpdateInDTO DTO containing the updated user response data
      * @return ResponseEntity containing the updated user response with HTTP 200 status
      */
@@ -170,7 +170,7 @@ public class UserResponseController {
      * Retrieves user responses for a specific user with pagination support.
      * Provides paginated access to all quiz responses submitted by the specified user.
      *
-     * @param userId The unique identifier of the user whose responses to retrieve
+     * @param userId   The unique identifier of the user whose responses to retrieve
      * @param pageable Pagination and sorting parameters
      * @return ResponseEntity containing a paginated list of user responses
      */
@@ -208,7 +208,7 @@ public class UserResponseController {
      * Retrieves user responses for a specific quiz with pagination support.
      * Provides paginated access to all responses submitted for the specified quiz.
      *
-     * @param quizId The unique identifier of the quiz whose responses to retrieve
+     * @param quizId   The unique identifier of the quiz whose responses to retrieve
      * @param pageable Pagination and sorting parameters
      * @return ResponseEntity containing a paginated list of user responses for the quiz
      */
@@ -248,8 +248,8 @@ public class UserResponseController {
      * Retrieves user responses for a specific user, quiz, and attempt combination.
      * Returns responses submitted by the specified user for a particular quiz attempt.
      *
-     * @param userId The unique identifier of the user
-     * @param quizId The unique identifier of the quiz
+     * @param userId  The unique identifier of the user
+     * @param quizId  The unique identifier of the quiz
      * @param attempt The attempt number for the quiz (1-based indexing)
      * @return ResponseEntity containing a list of user responses for the specific attempt
      */
@@ -273,8 +273,8 @@ public class UserResponseController {
      * Calculates and retrieves the total score achieved by a user in a specific quiz attempt.
      * Aggregates scores from all questions answered in the specified attempt.
      *
-     * @param userId The unique identifier of the user
-     * @param quizId The unique identifier of the quiz
+     * @param userId  The unique identifier of the user
+     * @param quizId  The unique identifier of the quiz
      * @param attempt The attempt number for the quiz (1-based indexing)
      * @return ResponseEntity containing the total score as a BigDecimal value
      */
@@ -295,8 +295,8 @@ public class UserResponseController {
      * Counts the number of correct answers provided by a user in a specific quiz attempt.
      * Evaluates all responses for the specified attempt and returns the count of correct answers.
      *
-     * @param userId The unique identifier of the user
-     * @param quizId The unique identifier of the quiz
+     * @param userId  The unique identifier of the user
+     * @param quizId  The unique identifier of the quiz
      * @param attempt The attempt number for the quiz (1-based indexing)
      * @return ResponseEntity containing the count of correct answers as a Long value
      */

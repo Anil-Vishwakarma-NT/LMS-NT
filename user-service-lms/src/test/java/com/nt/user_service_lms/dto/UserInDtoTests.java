@@ -4,7 +4,10 @@ import com.nt.user_service_lms.dto.inDTO.UserInDTO;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+
 public class UserInDtoTests {
     private UserInDTO userInDTO;
 

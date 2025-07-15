@@ -145,7 +145,7 @@ public class CourseContentController {
     /**
      * Updates a course content entry.
      *
-     * @param id ID of the course content to update
+     * @param id                       ID of the course content to update
      * @param updateCourseContentInDTO DTO containing updated course content information
      * @return ResponseEntity containing the updated CourseContent DTO
      */

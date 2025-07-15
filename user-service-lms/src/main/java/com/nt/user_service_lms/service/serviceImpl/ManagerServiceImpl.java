@@ -48,7 +48,7 @@ public class ManagerServiceImpl implements ManagerService {
      *
      * @param username the manager's email address
      * @return a {@link StandardResponseOutDTO} containing a list of {@link UserOutDTO}
-     *         objects that represent the employees
+     * objects that represent the employees
      * @throws ResourceNotFoundException if no manager is found for the supplied username
      * @throws RuntimeException          if an unexpected error occurs while processing the request
      */

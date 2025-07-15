@@ -29,9 +29,9 @@ public class PasswordController {
     // Verify password
     @PostMapping("/verify")
     public ResponseEntity<DecryptResponse> verify(@RequestBody DecryptRequest request) {
-        boolean matched =  passwordEncoder.matches(request.getPlainPassword(), request.getEncryptedPassword());
+        boolean matched = passwordEncoder.matches(request.getPlainPassword(), request.getEncryptedPassword());
         DecryptResponse decryptResponse = new DecryptResponse(matched);
-        return new ResponseEntity<>(decryptResponse,HttpStatus.OK);
+        return new ResponseEntity<>(decryptResponse, HttpStatus.OK);
 
     }
 }

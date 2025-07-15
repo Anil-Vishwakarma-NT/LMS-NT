@@ -411,7 +411,7 @@ public class QuizQuestionServiceImpl implements QuizQuestionService {
             validateQuizExists(quizId);
 
             List<QuizQuestion> questions = quizQuestionRepository.findByQuizIdOrderByPosition(quizId);
-            if(questions.isEmpty()) {
+            if (questions.isEmpty()) {
                 throw new ResourceNotFoundException("No Questions Found");
             }
             return questions.stream()
@@ -550,7 +550,7 @@ public class QuizQuestionServiceImpl implements QuizQuestionService {
                     question.setPosition(question.getPosition() + 1);
                     question.setUpdatedAt(LocalDateTime.now());
                     quizQuestionRepository.save(question);
-                    log.debug("Shifted question ID {} from position {} to {}",question.getQuestionId(), question.getPosition() - 1, question.getPosition());
+                    log.debug("Shifted question ID {} from position {} to {}", question.getQuestionId(), question.getPosition() - 1, question.getPosition());
                 }
             }
         } else {
@@ -562,7 +562,7 @@ public class QuizQuestionServiceImpl implements QuizQuestionService {
                     question.setPosition(question.getPosition() - 1);
                     question.setUpdatedAt(LocalDateTime.now());
                     quizQuestionRepository.save(question);
-                    log.debug("Shifted question ID {} from position {} to {}",question.getQuestionId(), question.getPosition() + 1, question.getPosition());
+                    log.debug("Shifted question ID {} from position {} to {}", question.getQuestionId(), question.getPosition() + 1, question.getPosition());
                 }
             }
         }

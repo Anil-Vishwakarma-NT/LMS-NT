@@ -41,7 +41,7 @@ public interface BundleService {
     /**
      * Updates the details of an existing bundle.
      *
-     * @param bundleId the ID of the bundle to update
+     * @param bundleId          the ID of the bundle to update
      * @param updateBundleInDTO the updated bundle data
      * @return success message
      */

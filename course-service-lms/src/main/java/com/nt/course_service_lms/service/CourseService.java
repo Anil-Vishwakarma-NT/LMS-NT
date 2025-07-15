@@ -66,7 +66,7 @@ public interface CourseService {
     /**
      * Updates an existing course with new information.
      *
-     * @param courseId the unique identifier of the course to update
+     * @param courseId          the unique identifier of the course to update
      * @param updateCourseInDTO the data transfer object containing updated course information
      * @return the updated course as a {@link CourseOutDTO}
      * @throws IllegalArgumentException if courseId is null or updateCourseInDTO is invalid

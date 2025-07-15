@@ -38,7 +38,7 @@ public class BundleConverter {
     /**
      * Updates existing Bundle entity with UpdateBundleDTO data.
      *
-     * @param existingBundle the bundle to update
+     * @param existingBundle    the bundle to update
      * @param updateBundleInDTO the update data
      * @return updated Bundle entity
      */

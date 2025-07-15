@@ -33,7 +33,7 @@ import java.util.List;
 
 /**
  * REST Controller for handling group-related operations in the service API.
- *
+ * <p>
  * This controller provides endpoints for managing groups, including creating, updating,
  * deleting groups, managing group membership, and retrieving group information.
  * All endpoints are secured and require proper authentication.
@@ -70,14 +70,14 @@ public class GroupController {
 
     /**
      * Creates a new group with the specified details.
-     *
+     * <p>
      * This endpoint allows authenticated users to create a new group by providing
      * the group name and list of employees to be added to the group.
      *
      * @param groupInDTO the Data Transfer Object containing group creation details
      *                   including group name and employees list
      * @return ResponseEntity containing a StandardResponseOutDTO with success message
-     *         and HTTP status CREATED (201)
+     * and HTTP status CREATED (201)
      * @throws UnauthorizedAccessException if authentication fails or user is not authorized
      */
     @PostMapping("/create-group")
@@ -97,13 +97,13 @@ public class GroupController {
 
     /**
      * Deletes a group by its unique identifier.
-     *
+     * <p>
      * This endpoint permanently removes a group from the system.
      * All associated data and relationships will be cleaned up.
      *
      * @param groupId the unique identifier of the group to be deleted
      * @return ResponseEntity containing a StandardResponseOutDTO with success message
-     *         and HTTP status OK (200)
+     * and HTTP status OK (200)
      */
     @DeleteMapping("/remove/{groupId}")
     public ResponseEntity<StandardResponseOutDTO<MessageOutDto>> deleteGroup(@PathVariable final long groupId) {
@@ -114,14 +114,14 @@ public class GroupController {
 
     /**
      * Updates an existing group's information.
-     *
+     * <p>
      * This endpoint allows modification of group details such as group name.
      * Only the group owner or authorized users can update group information.
      *
      * @param groupInDTO the Data Transfer Object containing updated group information
      *                   including group ID and new group name
      * @return ResponseEntity containing a StandardResponseOutDTO with success message
-     *         and HTTP status OK (200)
+     * and HTTP status OK (200)
      */
     @PutMapping("/update-group")
     public ResponseEntity<StandardResponseOutDTO<MessageOutDto>> updateGroup(@RequestBody final GroupInDTO groupInDTO) {
@@ -133,14 +133,14 @@ public class GroupController {
 
     /**
      * Adds a user to an existing group.
-     *
+     * <p>
      * This endpoint allows authorized users to add new members to a group.
      * The requesting user must have appropriate permissions to modify group membership.
      *
      * @param groupInDTO the Data Transfer Object containing user and group identifiers
      *                   for the membership addition operation
      * @return ResponseEntity containing a StandardResponseOutDTO with success message
-     *         and HTTP status OK (200)
+     * and HTTP status OK (200)
      * @throws UnauthorizedAccessException if authentication fails or user lacks permissions
      */
     @PostMapping("/add-user")
@@ -159,14 +159,14 @@ public class GroupController {
 
     /**
      * Removes a user from a group.
-     *
+     * <p>
      * This endpoint allows authorized users to remove members from a group.
      * The user will lose access to group-specific resources and permissions.
      *
      * @param groupdto the Data Transfer Object containing user and group identifiers
      *                 for the membership removal operation
      * @return ResponseEntity containing a StandardResponseOutDTO with success message
-     *         and HTTP status OK (200)
+     * and HTTP status OK (200)
      */
     @DeleteMapping("/remove-user")
     public ResponseEntity<StandardResponseOutDTO<MessageOutDto>> removeUserFromGroup(
@@ -179,13 +179,13 @@ public class GroupController {
 
     /**
      * Retrieves the list of users in a specific group.
-     *
+     * <p>
      * This endpoint returns detailed information about all users who are members
      * of the specified group, including their roles and permissions within the group.
      *
      * @param groupId the unique identifier of the group whose members are to be retrieved
      * @return ResponseEntity containing a StandardResponseOutDTO with list of GroupUserOutDTO
-     *         and HTTP status OK (200) if users found, or NO_CONTENT (204) if no users found
+     * and HTTP status OK (200) if users found, or NO_CONTENT (204) if no users found
      */
     @GetMapping("/group-emps/{groupId}")
     public ResponseEntity<StandardResponseOutDTO<List<GroupUserOutDTO>>> getUsersInGroup(@PathVariable final long groupId) {
@@ -203,13 +203,13 @@ public class GroupController {
 
     /**
      * Retrieves course details associated with a specific group.
-     *
+     * <p>
      * This endpoint returns information about all courses that are assigned to
      * or accessible by members of the specified group.
      *
      * @param groupId the unique identifier of the group whose course details are to be retrieved
      * @return ResponseEntity containing a StandardResponseOutDTO with list of GroupCourseOutDTO
-     *         and HTTP status OK (200)
+     * and HTTP status OK (200)
      */
     @GetMapping("/group-courses/{groupId}")
     public ResponseEntity<StandardResponseOutDTO<List<GroupCourseOutDTO>>> getCourseDetails(@PathVariable final long groupId) {
@@ -221,12 +221,12 @@ public class GroupController {
 
     /**
      * Retrieves all groups associated with the currently authenticated user.
-     *
+     * <p>
      * This endpoint returns a list of groups that the authenticated user has access to,
      * either as a member or as an administrator.
      *
      * @return ResponseEntity containing a StandardResponseOutDTO with list of GroupOutDTO
-     *         and HTTP status OK (200) if groups found, or NO_CONTENT (204) if no groups found
+     * and HTTP status OK (200) if groups found, or NO_CONTENT (204) if no groups found
      * @throws UnauthorizedAccessException if authentication fails
      */
     @GetMapping("/groups")
@@ -252,12 +252,12 @@ public class GroupController {
 
     /**
      * Retrieves all groups in the system.
-     *
+     * <p>
      * This endpoint returns a comprehensive list of all groups, regardless of
      * the current user's membership status. Typically used for administrative purposes.
      *
      * @return ResponseEntity containing a StandardResponseOutDTO with list of GroupOutDTO
-     *         and HTTP status OK (200) if groups found, or NO_CONTENT (204) if no groups found
+     * and HTTP status OK (200) if groups found, or NO_CONTENT (204) if no groups found
      */
     @GetMapping("/Allgroups")
     public ResponseEntity<StandardResponseOutDTO<List<GroupOutDTO>>> getAllGroups() {
@@ -275,12 +275,12 @@ public class GroupController {
 
     /**
      * Retrieves all active groups in the system.
-     *
+     * <p>
      * This endpoint returns a list of groups that are currently active and operational.
      * Inactive or archived groups are excluded from the results.
      *
      * @return ResponseEntity containing a StandardResponseOutDTO with list of GroupOutDTO
-     *         and HTTP status OK (200) if active groups found, or NO_CONTENT (204) if no active groups found
+     * and HTTP status OK (200) if active groups found, or NO_CONTENT (204) if no active groups found
      */
     @GetMapping("/all-active-groups")
     public ResponseEntity<StandardResponseOutDTO<List<GroupOutDTO>>> getAllActiveGroups() {
@@ -298,12 +298,12 @@ public class GroupController {
 
     /**
      * Retrieves the total count of groups in the system.
-     *
+     * <p>
      * This endpoint returns a numerical count of all groups, which can be useful
      * for dashboard displays, pagination calculations, or administrative reporting.
      *
      * @return ResponseEntity containing a StandardResponseOutDTO with Long value representing
-     *         the total group count and HTTP status OK (200)
+     * the total group count and HTTP status OK (200)
      */
     @GetMapping("/count")
     public ResponseEntity<StandardResponseOutDTO<Long>> getGroupCount() {
@@ -321,12 +321,12 @@ public class GroupController {
 
     /**
      * Retrieves a summary of recently created or modified groups.
-     *
+     * <p>
      * This endpoint returns a list of groups that have been recently created or updated,
      * typically used for dashboard displays or activity feeds.
      *
      * @return ResponseEntity containing a StandardResponseOutDTO with list of GroupSummaryOutDTO
-     *         and HTTP status OK (200)
+     * and HTTP status OK (200)
      */
     @GetMapping("/recent")
     public ResponseEntity<StandardResponseOutDTO<List<GroupSummaryOutDTO>>> getRecentGroups() {
@@ -336,14 +336,14 @@ public class GroupController {
 
     /**
      * Retrieves courses associated with a specific user within a group context.
-     *
+     * <p>
      * This endpoint returns detailed information about courses that are accessible to
      * a specific user within the context of a particular group.
      *
      * @param groupInDTO the Data Transfer Object containing group ID and user ID
      *                   for the course retrieval operation
      * @return ResponseEntity containing a StandardResponseOutDTO with list of CourseInfoOutDTO
-     *         and HTTP status OK (200)
+     * and HTTP status OK (200)
      */
     @PostMapping("/user-courses")
     public ResponseEntity<StandardResponseOutDTO<List<CourseInfoOutDTO>>> getUserCoursesInGroups(

@@ -103,7 +103,7 @@ public class CourseController {
     /**
      * Updates an existing course with new information.
      *
-     * @param id the unique identifier of the course to update
+     * @param id                the unique identifier of the course to update
      * @param updateCourseInDTO the data transfer object containing updated course information
      * @return ResponseEntity containing the updated course wrapped in a standard response format
      */

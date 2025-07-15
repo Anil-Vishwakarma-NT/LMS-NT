@@ -83,8 +83,12 @@ public class CourseInDTO {
      */
     @Override
     public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
+        if (this == o) {
+            return true;
+        }
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
         CourseInDTO courseInDTO = (CourseInDTO) o;
         return Active == courseInDTO.Active && Objects.equals(title, courseInDTO.title) && Objects.equals(ownerId, courseInDTO.ownerId) && Objects.equals(description, courseInDTO.description) && Objects.equals(courseLevel, courseInDTO.courseLevel);
     }

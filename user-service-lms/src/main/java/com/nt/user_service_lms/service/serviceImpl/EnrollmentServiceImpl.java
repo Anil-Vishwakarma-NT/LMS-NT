@@ -95,6 +95,7 @@ public class EnrollmentServiceImpl implements EnrollmentService {
 
     /**
      * Handles all types of enrollment scenarios including user and group enrollments to courses and bundles.
+     *
      * @param requestDTO the enrollment request containing all necessary information
      * @return list of created enrollments.
      */
@@ -135,6 +136,7 @@ public class EnrollmentServiceImpl implements EnrollmentService {
 
     /**
      * Retrieves enrollment statistics for the dashboard.
+     *
      * @return EnrollmentDashBoardStatsOutDTO containing various enrollment metrics.
      */
     @Override
@@ -342,6 +344,7 @@ public class EnrollmentServiceImpl implements EnrollmentService {
 
     /**
      * Retrieves all enrollments for a specific user by their ID.
+     *
      * @param userId the ID of the user
      * @return
      */
@@ -472,9 +475,9 @@ public class EnrollmentServiceImpl implements EnrollmentService {
                     // Calculate bundle progress
                     float bundleProgress = bundleCourses.isEmpty() ? 0.0f
                             : (float) bundleCourses.stream()
-                                    .mapToDouble(EnrolledCoursesOutDTO::getProgress)
-                                    .average()
-                                    .orElse(0.0);
+                            .mapToDouble(EnrolledCoursesOutDTO::getProgress)
+                            .average()
+                            .orElse(0.0);
                     bundleDTO.setProgress(bundleProgress);
 
                     return bundleDTO;
@@ -550,9 +553,9 @@ public class EnrollmentServiceImpl implements EnrollmentService {
 
         return allProgresses.isEmpty() ? 0.0f
                 : (float) allProgresses.stream()
-                        .mapToDouble(Float::doubleValue)
-                        .average()
-                        .orElse(0.0);
+                .mapToDouble(Float::doubleValue)
+                .average()
+                .orElse(0.0);
     }
 
     private int calculateUpcomingDeadlines(final List<Enrollment> enrollments) {
@@ -740,9 +743,9 @@ public class EnrollmentServiceImpl implements EnrollmentService {
                     // Calculate bundle progress
                     float bundleProgress = bundleCourses.isEmpty() ? 0.0f
                             : (float) bundleCourses.stream()
-                                    .mapToDouble(EnrolledCoursesOutDTO::getProgress)
-                                    .average()
-                                    .orElse(0.0);
+                            .mapToDouble(EnrolledCoursesOutDTO::getProgress)
+                            .average()
+                            .orElse(0.0);
                     bundleDTO.setProgress(bundleProgress);
 
                     return bundleDTO;
@@ -860,6 +863,7 @@ public class EnrollmentServiceImpl implements EnrollmentService {
     /**
      * Fetches course IDs for each bundle ID and returns a map of bundle ID to list of course IDs.
      * This method optimizes the fetching of course IDs by handling exceptions gracefully.
+     *
      * @param bundleIds List of bundle IDs to fetch course IDs for.
      * @return Map of bundle ID to list of course IDs.
      */
@@ -878,6 +882,7 @@ public class EnrollmentServiceImpl implements EnrollmentService {
 
         return bundleCourseMappings;
     }
+
     /**
      * Fetches individual course enrollments and returns a list of UserCourseEnrollmentOutDTO.
      * This method optimizes the fetching of course names, user information, and course progress
@@ -1107,9 +1112,9 @@ public class EnrollmentServiceImpl implements EnrollmentService {
                         // Calculate overall average completion for the bundle
                         float averageCompletion = allProgressValues.isEmpty() ? 0.0f
                                 : (float) allProgressValues.stream()
-                                        .mapToDouble(Double::doubleValue)
-                                        .average()
-                                        .orElse(0.0);
+                                .mapToDouble(Double::doubleValue)
+                                .average()
+                                .orElse(0.0);
 
                         bundleDTO.setAverageCompletion(averageCompletion);
 
@@ -1123,6 +1128,7 @@ public class EnrollmentServiceImpl implements EnrollmentService {
     }
 
 // Helper methods for batch processing
+
     /**
      * Fetches course information in batch for the given list of course IDs.
      * Returns a map of courseId to CourseInfoOutDTO.
@@ -1403,12 +1409,12 @@ public class EnrollmentServiceImpl implements EnrollmentService {
     /**
      * Creates a new Enrollment entity based on the provided request data.
      *
-     * @param userId              the ID of the user being enrolled
-     * @param groupId             the ID of the group (if applicable)
-     * @param courseId            the ID of the course (if applicable)
-     * @param bundleId            the ID of the bundle (if applicable)
-     * @param enrollmentSource    the source of enrollment (e.g., INDIVIDUAL, GROUP, BUNDLE)
-     * @param requestDTO          the enrollment request data transfer object
+     * @param userId           the ID of the user being enrolled
+     * @param groupId          the ID of the group (if applicable)
+     * @param courseId         the ID of the course (if applicable)
+     * @param bundleId         the ID of the bundle (if applicable)
+     * @param enrollmentSource the source of enrollment (e.g., INDIVIDUAL, GROUP, BUNDLE)
+     * @param requestDTO       the enrollment request data transfer object
      * @return the created Enrollment entity
      */
     private Enrollment createEnrollment(final Long userId, final Long groupId, final Long courseId, final Long bundleId,

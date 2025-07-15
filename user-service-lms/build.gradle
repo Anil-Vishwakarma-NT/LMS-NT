@@ -1,101 +1,101 @@
 plugins {
-	id 'java'
-	id 'org.springframework.boot' version '3.4.4'
-	id 'io.spring.dependency-management' version '1.1.7'
-	id 'jacoco'
-	id 'checkstyle'
-	id 'pmd'
+    id 'java'
+    id 'org.springframework.boot' version '3.4.4'
+    id 'io.spring.dependency-management' version '1.1.7'
+    id 'jacoco'
+    id 'checkstyle'
+    id 'pmd'
 }
 jacoco {
-	toolVersion = "0.8.11"
+    toolVersion = "0.8.11"
 }
 group = 'com.nt'
 version = '0.0.1-SNAPSHOT'
 
 java {
-	toolchain {
-		languageVersion = JavaLanguageVersion.of(17)
-	}
+    toolchain {
+        languageVersion = JavaLanguageVersion.of(17)
+    }
 }
 
 checkstyle {
-	toolVersion = '10.3' // or whatever version you prefer
-	configFile = file("config/checkstyle/checkstyle.xml")
-	configDirectory.set(file("config/checkstyle"))
-	ignoreFailures = false // Set to true if you don't want build to fail on violations
-	showViolations = true
+    toolVersion = '10.3' // or whatever version you prefer
+    configFile = file("config/checkstyle/checkstyle.xml")
+    configDirectory.set(file("config/checkstyle"))
+    ignoreFailures = false // Set to true if you don't want build to fail on violations
+    showViolations = true
 }
 
 pmd {
-	toolVersion = "6.55.0" // or latest version
-	ignoreFailures = false
-	consoleOutput = true
-	ruleSets = [] // disables built-in rulesets
-	ruleSetFiles = files("config/pmd/ruleset.xml") // custom rules
+    toolVersion = "6.55.0" // or latest version
+    ignoreFailures = false
+    consoleOutput = true
+    ruleSets = [] // disables built-in rulesets
+    ruleSetFiles = files("config/pmd/ruleset.xml") // custom rules
 }
 
 repositories {
-	mavenCentral()
+    mavenCentral()
 }
 
 dependencies {
-	implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
-	implementation 'org.springframework.boot:spring-boot-starter-web'
-	implementation 'org.springframework.boot:spring-boot-starter-security'
+    implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
+    implementation 'org.springframework.boot:spring-boot-starter-web'
+    implementation 'org.springframework.boot:spring-boot-starter-security'
 
-	implementation 'io.jsonwebtoken:jjwt-api:0.11.5'
-	runtimeOnly 'io.jsonwebtoken:jjwt-impl:0.11.5'
-	runtimeOnly 'io.jsonwebtoken:jjwt-jackson:0.11.5'
+    implementation 'io.jsonwebtoken:jjwt-api:0.11.5'
+    runtimeOnly 'io.jsonwebtoken:jjwt-impl:0.11.5'
+    runtimeOnly 'io.jsonwebtoken:jjwt-jackson:0.11.5'
 
-	runtimeOnly 'org.postgresql:postgresql'
-	testImplementation 'org.springframework.boot:spring-boot-starter-test'
-	testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
-	compileOnly 'org.projectlombok:lombok:1.18.22'
-	annotationProcessor 'org.projectlombok:lombok:1.18.22'
+    runtimeOnly 'org.postgresql:postgresql'
+    testImplementation 'org.springframework.boot:spring-boot-starter-test'
+    testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
+    compileOnly 'org.projectlombok:lombok:1.18.22'
+    annotationProcessor 'org.projectlombok:lombok:1.18.22'
 
-	implementation 'org.projectlombok:lombok'
-	annotationProcessor 'org.projectlombok:lombok'
+    implementation 'org.projectlombok:lombok'
+    annotationProcessor 'org.projectlombok:lombok'
 
-	implementation 'org.springframework.boot:spring-boot-starter-validation'
-	implementation("org.springframework.cloud:spring-cloud-starter-openfeign:4.2.1")
-	implementation 'com.itextpdf:itextpdf:5.5.13.3'
-	implementation 'com.itextpdf:kernel:7.2.5'
-	implementation 'com.itextpdf:layout:7.2.5'
-	implementation 'com.itextpdf:io:7.2.5'
-	implementation 'org.apache.poi:poi:5.2.3'
-	implementation 'org.apache.poi:poi-ooxml:5.2.3'
+    implementation 'org.springframework.boot:spring-boot-starter-validation'
+    implementation("org.springframework.cloud:spring-cloud-starter-openfeign:4.2.1")
+    implementation 'com.itextpdf:itextpdf:5.5.13.3'
+    implementation 'com.itextpdf:kernel:7.2.5'
+    implementation 'com.itextpdf:layout:7.2.5'
+    implementation 'com.itextpdf:io:7.2.5'
+    implementation 'org.apache.poi:poi:5.2.3'
+    implementation 'org.apache.poi:poi-ooxml:5.2.3'
 
-	implementation 'org.flywaydb:flyway-core'
-	implementation 'org.flywaydb:flyway-database-postgresql'
+    implementation 'org.flywaydb:flyway-core'
+    implementation 'org.flywaydb:flyway-database-postgresql'
 
-	testImplementation 'org.junit.jupiter:junit-jupiter:5.10.0'
-	testImplementation 'org.mockito:mockito-core:5.6.0'
-	testImplementation 'org.mockito:mockito-junit-jupiter:5.6.0'
+    testImplementation 'org.junit.jupiter:junit-jupiter:5.10.0'
+    testImplementation 'org.mockito:mockito-core:5.6.0'
+    testImplementation 'org.mockito:mockito-junit-jupiter:5.6.0'
 
 //	runtimeOnly 'ch.qos.logback:logback-classic:1.4.14'
 
 }
 
 test {
-	useJUnitPlatform()
-	finalizedBy jacocoTestReport // report is always generated after tests run
+    useJUnitPlatform()
+    finalizedBy jacocoTestReport // report is always generated after tests run
 }
 jacocoTestReport {
-	dependsOn test // tests are required to run before generating the report
-	reports {
-		xml.required = true
-		html.required = true
-		csv.required = false
-	}
+    dependsOn test // tests are required to run before generating the report
+    reports {
+        xml.required = true
+        html.required = true
+        csv.required = false
+    }
 }
-	tasks.named('test') {
-		useJUnitPlatform()
-	}
+tasks.named('test') {
+    useJUnitPlatform()
+}
 tasks.named("pmdTest").configure {
-	enabled = false
+    enabled = false
 }
 
 tasks.named("checkstyleTest").configure {
-	enabled = false
+    enabled = false
 }
 

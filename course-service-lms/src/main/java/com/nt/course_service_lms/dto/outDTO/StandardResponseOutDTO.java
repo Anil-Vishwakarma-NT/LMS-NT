@@ -12,13 +12,19 @@ import java.util.Objects;
  */
 public class StandardResponseOutDTO<T> {
 
-    /** The status of the response (e.g., "SUCCESS", "ERROR"). */
+    /**
+     * The status of the response (e.g., "SUCCESS", "ERROR").
+     */
     private String status;
 
-    /** A human-readable message describing the result of the operation. */
+    /**
+     * A human-readable message describing the result of the operation.
+     */
     private String message;
 
-    /** The actual data payload of the response. */
+    /**
+     * The actual data payload of the response.
+     */
     private T data;
 
     /**
@@ -136,8 +142,12 @@ public class StandardResponseOutDTO<T> {
      */
     @Override
     public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
+        if (this == o) {
+            return true;
+        }
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
         StandardResponseOutDTO<?> that = (StandardResponseOutDTO<?>) o;
         return Objects.equals(status, that.status) &&
                 Objects.equals(message, that.message) &&

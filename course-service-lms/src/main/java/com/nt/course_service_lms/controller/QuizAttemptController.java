@@ -60,7 +60,7 @@ public class QuizAttemptController {
      * Updates an existing quiz attempt.
      *
      * @param quizAttemptId the ID of the quiz attempt to update
-     * @param dto the quiz attempt update data transfer object
+     * @param dto           the quiz attempt update data transfer object
      * @return ResponseEntity containing the updated quiz attempt data
      */
     @PutMapping("/{quizAttemptId}")
@@ -198,7 +198,7 @@ public class QuizAttemptController {
      * Marks a quiz attempt as completed.
      *
      * @param quizAttemptId the ID of the quiz attempt to complete
-     * @param scoreDetails optional score details for the completed attempt
+     * @param scoreDetails  optional score details for the completed attempt
      * @return ResponseEntity containing the completed quiz attempt data
      */
     @PatchMapping("/{quizAttemptId}/complete")

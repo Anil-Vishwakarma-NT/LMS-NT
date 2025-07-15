@@ -38,7 +38,7 @@ public class UserCourseEnrollmentController {
      *
      * @param userId the unique identifier of the user whose statistics are to be retrieved
      * @return ResponseEntity containing StandardResponseOutDTO with a Map of statistics
-     *         where keys are statistic names (String) and values are counts (Long)
+     * where keys are statistic names (String) and values are counts (Long)
      */
     @GetMapping("/{userId}/statistics")
     public ResponseEntity<StandardResponseOutDTO<Map<String, Long>>> getUserEnrollments(@PathVariable final Long userId) {

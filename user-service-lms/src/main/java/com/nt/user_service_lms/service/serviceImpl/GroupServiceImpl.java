@@ -41,9 +41,9 @@ import static com.nt.user_service_lms.constants.GroupConstants.GROUP_DELETED;
 import static com.nt.user_service_lms.constants.GroupConstants.GROUP_FAILURE;
 import static com.nt.user_service_lms.constants.GroupConstants.GROUP_NOT_FOUND;
 import static com.nt.user_service_lms.constants.GroupConstants.USER_ADDED_TO_GROUP;
-import static com.nt.user_service_lms.constants.UserConstants.USER_NOT_FOUND;
 import static com.nt.user_service_lms.constants.GroupConstants.USER_NOT_FOUND_IN_GROUP;
 import static com.nt.user_service_lms.constants.GroupConstants.USER_REMOVED_SUCCESSFULLY;
+import static com.nt.user_service_lms.constants.UserConstants.USER_NOT_FOUND;
 
 /**
  * Service implementation for managing user groups in the Learning Management System.
@@ -52,6 +52,7 @@ import static com.nt.user_service_lms.constants.GroupConstants.USER_REMOVED_SUCC
  * - Adding and removing users from groups
  * - Managing group-course enrollments
  * - Retrieving group information and statistics
+ *
  * @version 1.0
  * @since 2024
  */
@@ -105,12 +106,12 @@ public class GroupServiceImpl implements GroupService {
      * Creates a new group with the specified name and creator.
      * Optionally adds initial employees to the group if provided.
      *
-     * @param groupName the name of the group to be created
-     * @param username the email of the user creating the group
+     * @param groupName  the name of the group to be created
+     * @param username   the email of the user creating the group
      * @param employeeId list of employee IDs to add to the group initially
      * @return StandardResponseOutDTO containing success message and group creation status
      * @throws UnauthorizedAccessException if the user creating the group is not found
-     * @throws RuntimeException if any error occurs during group creation
+     * @throws RuntimeException            if any error occurs during group creation
      */
     @Override
     public StandardResponseOutDTO<MessageOutDto> createGroup(
@@ -148,7 +149,7 @@ public class GroupServiceImpl implements GroupService {
      * @param groupId the unique identifier of the group to be deleted
      * @return StandardResponseOutDTO containing success message
      * @throws ResourceNotFoundException if the group with the specified ID is not found
-     * @throws RuntimeException if any error occurs during group deletion
+     * @throws RuntimeException          if any error occurs during group deletion
      */
     @Override
     @Transactional
@@ -176,11 +177,11 @@ public class GroupServiceImpl implements GroupService {
      * If users are already in the group, reactivates their membership.
      *
      * @param groupInDTO contains group ID, employee IDs, and course IDs
-     * @param username the email of the user performing the operation
+     * @param username   the email of the user performing the operation
      * @return StandardResponseOutDTO containing success message
      * @throws UnauthorizedAccessException if the requesting user is not found
-     * @throws ResourceNotFoundException if the group or any user is not found
-     * @throws RuntimeException if any error occurs during the operation
+     * @throws ResourceNotFoundException   if the group or any user is not found
+     * @throws RuntimeException            if any error occurs during the operation
      */
     @Override
     public StandardResponseOutDTO<MessageOutDto> addUserToGroup(final GroupInDTO groupInDTO, final String username) {
@@ -246,11 +247,11 @@ public class GroupServiceImpl implements GroupService {
     /**
      * Updates the name of an existing group.
      *
-     * @param groupId the unique identifier of the group to be updated
+     * @param groupId   the unique identifier of the group to be updated
      * @param groupName the new name for the group
      * @return StandardResponseOutDTO containing success message
      * @throws ResourceNotFoundException if the group with the specified ID is not found
-     * @throws RuntimeException if any error occurs during the update operation
+     * @throws RuntimeException          if any error occurs during the update operation
      */
     @Override
     public StandardResponseOutDTO<MessageOutDto> updateGroup(final long groupId, final String groupName) {
@@ -274,11 +275,11 @@ public class GroupServiceImpl implements GroupService {
      * Removes a user from a group by performing soft deletion.
      * Also removes all associated enrollments for that user in the group.
      *
-     * @param userId the unique identifier of the user to be removed
+     * @param userId  the unique identifier of the user to be removed
      * @param groupId the unique identifier of the group
      * @return StandardResponseOutDTO containing success message
      * @throws ResourceNotFoundException if the user is not found in the group
-     * @throws RuntimeException if any error occurs during the removal operation
+     * @throws RuntimeException          if any error occurs during the removal operation
      */
     @Override
     public StandardResponseOutDTO<MessageOutDto> removeUserFromGroup(final long userId, final long groupId) {
@@ -302,7 +303,7 @@ public class GroupServiceImpl implements GroupService {
      * Returns courses that are assigned to the group but not yet enrolled by the user.
      *
      * @param groupId the unique identifier of the group
-     * @param userId the unique identifier of the user
+     * @param userId  the unique identifier of the user
      * @return StandardResponseOutDTO containing list of available courses
      * @throws RuntimeException if any error occurs during course retrieval
      */
@@ -347,7 +348,7 @@ public class GroupServiceImpl implements GroupService {
      * @param email the email address of the user
      * @return StandardResponseOutDTO containing list of groups accessible to the user
      * @throws ResourceNotFoundException if the user is not found
-     * @throws RuntimeException if any error occurs during group retrieval
+     * @throws RuntimeException          if any error occurs during group retrieval
      */
     @Override
     public StandardResponseOutDTO<List<GroupOutDTO>> getGroups(final String email) {
@@ -387,7 +388,7 @@ public class GroupServiceImpl implements GroupService {
      *
      * @return StandardResponseOutDTO containing list of all groups
      * @throws ResourceNotFoundException if any group creator is not found
-     * @throws RuntimeException if any error occurs during group retrieval
+     * @throws RuntimeException          if any error occurs during group retrieval
      */
     @Override
     public StandardResponseOutDTO<List<GroupOutDTO>> getAllGroups() {

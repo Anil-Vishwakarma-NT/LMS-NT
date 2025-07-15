@@ -1,13 +1,16 @@
 package com.nt.course_service_lms.dto.inDTO;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
-import jakarta.validation.constraints.*;
+import com.nt.course_service_lms.constants.CommonConstants;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Positive;
+import jakarta.validation.constraints.Size;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.Objects;
 
@@ -64,7 +67,7 @@ public class UserResponseInDTO {
      * Cannot be null or empty.
      */
     @NotBlank(message = "User answer is required")
-    @Size(max = 10000, message = "User answer cannot exceed 10000 characters")
+    @Size(max = CommonConstants.NUMBER_TWO_HUNDRED, message = "User answer cannot exceed 200 characters")
     private String userAnswer;
 
     /**
@@ -74,13 +77,31 @@ public class UserResponseInDTO {
     @JsonFormat(pattern = "yyyy-MM-dd'T'HH:mm:ss")
     private LocalDateTime answeredAt;
 
+    /**
+     * Indicates whether this object is equal to another object.
+     *
+     * @param o the other object to compare with
+     * @return {@code true} if the objects are equal; {@code false} otherwise
+     */
     @Override
-    public boolean equals(Object o) {
-        if (o == null || getClass() != o.getClass()) return false;
+    public boolean equals(final Object o) {
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
         UserResponseInDTO that = (UserResponseInDTO) o;
-        return Objects.equals(userId, that.userId) && Objects.equals(quizId, that.quizId) && Objects.equals(questionId, that.questionId) && Objects.equals(attempt, that.attempt) && Objects.equals(userAnswer, that.userAnswer) && Objects.equals(answeredAt, that.answeredAt);
+        return Objects.equals(userId, that.userId)
+                && Objects.equals(quizId, that.quizId)
+                && Objects.equals(questionId, that.questionId)
+                && Objects.equals(attempt, that.attempt)
+                && Objects.equals(userAnswer, that.userAnswer)
+                && Objects.equals(answeredAt, that.answeredAt);
     }
 
+    /**
+     * Computes the hash code for this object based on its fields.
+     *
+     * @return the computed hash code
+     */
     @Override
     public int hashCode() {
         return Objects.hash(userId, quizId, questionId, attempt, userAnswer, answeredAt);

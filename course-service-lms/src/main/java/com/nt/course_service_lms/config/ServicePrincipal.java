@@ -8,19 +8,29 @@ import java.security.Principal;
  */
 public final class ServicePrincipal implements Principal {
 
-    /** The unique identifier for the service. */
+    /**
+     * The unique identifier for the service.
+     */
     private final String serviceId;
 
-    /** The unique identifier for the user. */
+    /**
+     * The unique identifier for the user.
+     */
     private final String userId;
 
-    /** The email address of the user. */
+    /**
+     * The email address of the user.
+     */
     private final String userEmail;
 
-    /** The full name of the user. */
+    /**
+     * The full name of the user.
+     */
     private final String userFullName;
 
-    /** The original token type used for authentication. */
+    /**
+     * The original token type used for authentication.
+     */
     private final String originalTokenType;
 
     /**
@@ -96,19 +106,29 @@ public final class ServicePrincipal implements Principal {
      * Builder class for constructing ServicePrincipal instances using the builder pattern.
      */
     public static class Builder {
-        /** The service identifier. */
+        /**
+         * The service identifier.
+         */
         private String builderServiceId;
 
-        /** The user identifier. */
+        /**
+         * The user identifier.
+         */
         private String builderUserId;
 
-        /** The user's email address. */
+        /**
+         * The user's email address.
+         */
         private String builderUserEmail;
 
-        /** The user's full name. */
+        /**
+         * The user's full name.
+         */
         private String builderUserFullName;
 
-        /** The original token type. */
+        /**
+         * The original token type.
+         */
         private String builderOriginalTokenType;
 
         /**

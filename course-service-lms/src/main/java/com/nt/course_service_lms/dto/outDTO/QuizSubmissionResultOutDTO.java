@@ -1,5 +1,6 @@
 package com.nt.course_service_lms.dto.outDTO;
 
+import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.AllArgsConstructor;
@@ -14,6 +15,7 @@ import java.util.List;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
+@Builder
 public class QuizSubmissionResultOutDTO {
 
     private QuizAttemptOutDTO quizAttempt;

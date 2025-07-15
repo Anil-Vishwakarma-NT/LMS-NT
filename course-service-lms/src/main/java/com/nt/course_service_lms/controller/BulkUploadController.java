@@ -25,8 +25,8 @@ public class BulkUploadController {
     /**
      * Bulk upload quiz questions from file
      *
-     * @param quizId Quiz ID
-     * @param file File containing questions
+     * @param quizId     Quiz ID
+     * @param file       File containing questions
      * @param skipErrors Whether to skip errors and continue processing
      * @return ResponseEntity containing upload results
      */

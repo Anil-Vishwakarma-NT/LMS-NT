@@ -52,7 +52,7 @@ public interface CourseBundleService {
     /**
      * Updates an existing course-bundle association with new data.
      *
-     * @param courseBundleId the unique identifier of the course-bundle record to update
+     * @param courseBundleId          the unique identifier of the course-bundle record to update
      * @param updateCourseBundleInDTO the data transfer object containing the updated information
      * @return a {@link String} message indicating the result of the update operation
      */
@@ -75,6 +75,7 @@ public interface CourseBundleService {
 
     /**
      * Retrieves summary information for recently created or modified bundles.
+     *
      * @return a {@link List} of {@link BundleSummaryOutDTO} containing summary details
      */
     List<BundleSummaryOutDTO> getRecentBundleSummaries();

@@ -29,7 +29,9 @@ public class UpdateBundleInDTO {
 
     @Override
     public boolean equals(Object o) {
-        if (o == null || getClass() != o.getClass()) return false;
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
         UpdateBundleInDTO that = (UpdateBundleInDTO) o;
         return isActive == that.isActive && Objects.equals(bundleName, that.bundleName);
     }

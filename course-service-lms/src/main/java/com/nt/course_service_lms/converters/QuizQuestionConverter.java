@@ -38,7 +38,13 @@ public class QuizQuestionConverter {
         return questionOutDTO;
     }
 
-    public static QuizQuestion convertToEntity(QuizQuestionInDTO dto) {
+    /**
+     * Converts a QuizQuestionInDTO to a QuizQuestion entity.
+     *
+     * @param dto The QuizQuestionInDTO to convert.
+     * @return A QuizQuestion entity populated with the DTO data.
+     */
+    public static QuizQuestion convertToEntity(final QuizQuestionInDTO dto) {
         QuizQuestion question = new QuizQuestion();
         question.setQuizId(dto.getQuizId());
         question.setQuestionText(dto.getQuestionText());
@@ -52,9 +58,13 @@ public class QuizQuestionConverter {
         return question;
     }
 
-
-
-    public static QuizQuestionOutDTO convertToOutDTO(QuizQuestion question) {
+    /**
+     * Converts a QuizQuestion entity to a QuizQuestionOutDTO.
+     *
+     * @param question The QuizQuestion entity to convert.
+     * @return A QuizQuestionOutDTO containing the entity data.
+     */
+    public static QuizQuestionOutDTO convertToOutDTO(final QuizQuestion question) {
         return new QuizQuestionOutDTO(
                 question.getQuestionId(),
                 question.getQuizId(),

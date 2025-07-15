@@ -38,7 +38,7 @@ public class UserProgressController {
     /**
      * Retrieves course progress with metadata for a specific user and course.
      *
-     * @param userId the unique identifier of the user
+     * @param userId   the unique identifier of the user
      * @param courseId the unique identifier of the course
      * @return CourseProgressWithMetaDTO containing course progress and metadata
      */
@@ -52,8 +52,8 @@ public class UserProgressController {
     /**
      * Retrieves the last position of a user in specific content within a course.
      *
-     * @param userId the unique identifier of the user
-     * @param courseId the unique identifier of the course
+     * @param userId    the unique identifier of the user
+     * @param courseId  the unique identifier of the course
      * @param contentId the unique identifier of the content
      * @return Integer representing the last position in the content
      */
@@ -69,8 +69,8 @@ public class UserProgressController {
     /**
      * Retrieves the progress percentage for specific content within a course for a user.
      *
-     * @param userId the unique identifier of the user
-     * @param courseId the unique identifier of the course
+     * @param userId    the unique identifier of the user
+     * @param courseId  the unique identifier of the course
      * @param contentId the unique identifier of the content
      * @return Double representing the progress percentage (0.0 to 1.0)
      */

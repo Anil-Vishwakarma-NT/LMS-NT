@@ -12,11 +12,13 @@ import com.nt.course_service_lms.service.serviceImpl.BundleServiceImpl;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.*;
+
 import java.time.LocalDateTime;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
+
 import static com.nt.course_service_lms.constants.BundleConstants.*;
 import static org.assertj.core.api.Assertions.*;
 import static org.mockito.Mockito.*;
@@ -62,7 +64,8 @@ class BundleServiceImplTest {
         var saved = makeBundle(1L, "New");
         when(repo.save(entity)).thenReturn(saved);
         var out = new BundleOutDTO();
-        out.setBundleId(1L); out.setBundleName("New");
+        out.setBundleId(1L);
+        out.setBundleName("New");
         when(converter.toOutDTO(saved)).thenReturn(out);
 
         var result = service.createBundle(dto);
@@ -141,7 +144,8 @@ class BundleServiceImplTest {
         when(repo.existsByBundleName("Same")).thenReturn(true);
         var update = new UpdateBundleInDTO("Same", false);
         when(converter.updateEntity(b, update)).thenReturn(b);
-        var out = new BundleOutDTO(); out.setBundleId(2L);
+        var out = new BundleOutDTO();
+        out.setBundleId(2L);
         when(repo.save(b)).thenReturn(b);
         when(converter.toOutDTO(b)).thenReturn(out);
 
@@ -269,15 +273,15 @@ class BundleServiceImplTest {
 
     @Test
     void findExistingIds_success() {
-        when(repo.findExistingIds(Arrays.asList(1L,2L,3L))).thenReturn(Arrays.asList(1L,3L));
-        var out = service.findExistingIds(Arrays.asList(1L,2L,3L));
-        assertThat(out).containsExactly(1L,3L);
+        when(repo.findExistingIds(Arrays.asList(1L, 2L, 3L))).thenReturn(Arrays.asList(1L, 3L));
+        var out = service.findExistingIds(Arrays.asList(1L, 2L, 3L));
+        assertThat(out).containsExactly(1L, 3L);
     }
 
     @Test
     void findExistingIds_noneFound() {
         when(repo.findExistingIds(any())).thenReturn(Collections.emptyList());
-        assertThatThrownBy(() -> service.findExistingIds(Arrays.asList(7L,8L)))
+        assertThatThrownBy(() -> service.findExistingIds(Arrays.asList(7L, 8L)))
                 .isInstanceOf(ResourceNotFoundException.class)
                 .hasMessage("No Bundle IDs found");
     }

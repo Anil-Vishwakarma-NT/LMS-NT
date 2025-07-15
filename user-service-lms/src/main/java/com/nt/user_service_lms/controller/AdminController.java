@@ -6,9 +6,9 @@ import com.nt.user_service_lms.dto.inDTO.UserInDTO;
 import com.nt.user_service_lms.dto.outDTO.MessageOutDto;
 import com.nt.user_service_lms.dto.outDTO.StandardResponseOutDTO;
 import com.nt.user_service_lms.dto.outDTO.UserOutDTO;
+import com.nt.user_service_lms.service.serviceImpl.AdminServiceImpl;
 import com.nt.user_service_lms.service.serviceImpl.GroupServiceImpl;
 import com.nt.user_service_lms.service.serviceImpl.UserServiceImpl;
-import com.nt.user_service_lms.service.serviceImpl.AdminServiceImpl;
 import jakarta.validation.Valid;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -92,7 +92,7 @@ public class AdminController {
      * Returns a list of all users who are currently active.
      *
      * @return ResponseEntity containing the list of active employees with HTTP 200 status,
-     *         or HTTP 204 if no active employees exist
+     * or HTTP 204 if no active employees exist
      */
     @GetMapping("/active-employees")
     @PreAuthorize("hasAuthority('admin')")
@@ -111,7 +111,7 @@ public class AdminController {
      * Returns a list of all users who are currently inactive or disabled.
      *
      * @return ResponseEntity containing the list of inactive employees with HTTP 200 status,
-     *         or HTTP 204 if no inactive employees exist
+     * or HTTP 204 if no inactive employees exist
      */
     @GetMapping("/inactive-employees")
     public ResponseEntity<StandardResponseOutDTO<List<UserOutDTO>>> getAllInactiveEmployees() {
@@ -130,7 +130,7 @@ public class AdminController {
      *
      * @param userId the unique identifier of the manager
      * @return ResponseEntity containing the list of employees under the manager with HTTP 200 status,
-     *         or HTTP 204 if no employees are found under the manager
+     * or HTTP 204 if no employees are found under the manager
      */
     @GetMapping("/manager-employee/{userId}")
     public ResponseEntity<StandardResponseOutDTO<List<UserOutDTO>>> getManagerEmployee(@PathVariable final long userId) {
@@ -161,7 +161,7 @@ public class AdminController {
      * Updates user details for a specific user.
      * Modifies the user's information based on the provided data.
      *
-     * @param userId the unique identifier of the user to update
+     * @param userId    the unique identifier of the user to update
      * @param userInDTO contains the updated user information
      * @return ResponseEntity containing the success message with HTTP 200 status
      */

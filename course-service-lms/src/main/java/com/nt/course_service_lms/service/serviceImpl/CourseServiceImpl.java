@@ -125,10 +125,10 @@ public class CourseServiceImpl implements CourseService {
 
     @Override
     public List<Long> findExistingIds(List<Long> courseIds) {
-        try{
+        try {
             List<Long> existingCourseIds = courseRepository.findExistingIds(courseIds);
             if (existingCourseIds.isEmpty()) {
-               throw new ResourceNotFoundException("No Course IDs found");
+                throw new ResourceNotFoundException("No Course IDs found");
             }
             return existingCourseIds;
         } catch (ResourceNotFoundException e) {

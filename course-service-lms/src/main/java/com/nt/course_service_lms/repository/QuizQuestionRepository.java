@@ -28,7 +28,7 @@ public interface QuizQuestionRepository extends JpaRepository<QuizQuestion, Long
     /**
      * Find a question by quiz ID and position.
      *
-     * @param quizId the quiz ID
+     * @param quizId   the quiz ID
      * @param position the question position
      * @return optional question
      */
@@ -45,9 +45,9 @@ public interface QuizQuestionRepository extends JpaRepository<QuizQuestion, Long
     /**
      * Find questions by quiz ID and position range.
      *
-     * @param quizId the quiz ID
+     * @param quizId        the quiz ID
      * @param startPosition start position (inclusive)
-     * @param endPosition end position (inclusive)
+     * @param endPosition   end position (inclusive)
      * @return list of questions in the position range
      */
     @Query("SELECT q FROM QuizQuestion q WHERE q.quizId = :quizId"
@@ -59,7 +59,7 @@ public interface QuizQuestionRepository extends JpaRepository<QuizQuestion, Long
     /**
      * Find questions by quiz ID with position greater than specified position.
      *
-     * @param quizId the quiz ID
+     * @param quizId   the quiz ID
      * @param position the position threshold
      * @return list of questions with position greater than specified
      */
@@ -68,7 +68,7 @@ public interface QuizQuestionRepository extends JpaRepository<QuizQuestion, Long
     /**
      * Find questions by quiz ID with position greater than or equal to specified position.
      *
-     * @param quizId the quiz ID
+     * @param quizId   the quiz ID
      * @param position the position threshold
      * @return list of questions with position greater than or equal to specified
      */

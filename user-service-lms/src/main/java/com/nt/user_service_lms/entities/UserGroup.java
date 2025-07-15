@@ -1,14 +1,14 @@
 package com.nt.user_service_lms.entities;
 
+import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
-import jakarta.persistence.Table;
-import jakarta.persistence.Id;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
-import jakarta.persistence.Column;
+import jakarta.persistence.Id;
+import jakarta.persistence.Table;
+import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import lombok.AllArgsConstructor;
 
 /**
  * Entity representing the relationship between a user and a group.
@@ -48,7 +48,7 @@ public class UserGroup {
     /**
      * Constructor to create a new UserGroup association.
      *
-     * @param userId the ID of the user. Must not be null.
+     * @param userId  the ID of the user. Must not be null.
      * @param groupId the ID of the group. Must not be null.
      */
     public UserGroup(final Long userId, final Long groupId) {

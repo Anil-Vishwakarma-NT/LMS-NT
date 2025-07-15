@@ -87,8 +87,8 @@ public class QuizSubmissionController {
      * This is a flexible endpoint that can process both manual and automatic submissions
      * based on the submission type parameter.
      *
-     * @param quizAttemptId The unique identifier of the quiz attempt being submitted
-     * @param submissionDTO The data transfer object containing user responses and submission details
+     * @param quizAttemptId  The unique identifier of the quiz attempt being submitted
+     * @param submissionDTO  The data transfer object containing user responses and submission details
      * @param submissionType The type of submission (defaults to "MANUAL" if not specified)
      * @return ResponseEntity containing the quiz submission result wrapped in a standard response format
      * @throws jakarta.validation.ConstraintViolationException if the submission data is invalid

@@ -12,6 +12,7 @@ import java.util.List;
  * Data Transfer Object for group input operations.
  * Represents the input data for creating, updating, or managing groups
  * within the learning management system.
+ *
  * @version 1.0
  * @since 1.0
  */

@@ -43,7 +43,7 @@ public final class GlobalExceptionHandler {
     /**
      * Handles UnauthorizedAccessException.
      *
-     * @param ex  the exception
+     * @param ex      the exception
      * @param request the HTTP request
      * @return standardized error response
      */

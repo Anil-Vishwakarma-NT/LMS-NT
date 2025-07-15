@@ -1,6 +1,12 @@
 package com.nt.course_service_lms.entity;
 
-import jakarta.persistence.*;
+import com.nt.course_service_lms.constants.CommonConstants;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.Table;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -68,7 +74,7 @@ public class QuizAttempt {
     /**
      * Status of the quiz attempt (e.g., IN_PROGRESS, COMPLETED).
      */
-    @Column(name = "status", nullable = false, length = 20)
+    @Column(name = "status", nullable = false, length = CommonConstants.NUMBER_TWENTY)
     private String status;
 
     /**
@@ -90,19 +96,23 @@ public class QuizAttempt {
      * @return true if objects are equal, false otherwise
      */
     @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (!(o instanceof QuizAttempt that)) return false;
-        return Objects.equals(quizAttemptId, that.quizAttemptId) &&
-                Objects.equals(attempt, that.attempt) &&
-                Objects.equals(quizId, that.quizId) &&
-                Objects.equals(userId, that.userId) &&
-                Objects.equals(startedAt, that.startedAt) &&
-                Objects.equals(finishedAt, that.finishedAt) &&
-                Objects.equals(scoreDetails, that.scoreDetails) &&
-                Objects.equals(status, that.status) &&
-                Objects.equals(createdAt, that.createdAt) &&
-                Objects.equals(updatedAt, that.updatedAt);
+    public boolean equals(final Object o) {
+        if (this == o) {
+            return true;
+        }
+        if (!(o instanceof QuizAttempt that)) {
+            return false;
+        }
+        return Objects.equals(quizAttemptId, that.quizAttemptId)
+                && Objects.equals(attempt, that.attempt)
+                && Objects.equals(quizId, that.quizId)
+                && Objects.equals(userId, that.userId)
+                && Objects.equals(startedAt, that.startedAt)
+                && Objects.equals(finishedAt, that.finishedAt)
+                && Objects.equals(scoreDetails, that.scoreDetails)
+                && Objects.equals(status, that.status)
+                && Objects.equals(createdAt, that.createdAt)
+                && Objects.equals(updatedAt, that.updatedAt);
     }
 
     /**

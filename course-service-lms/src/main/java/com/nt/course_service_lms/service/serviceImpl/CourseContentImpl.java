@@ -41,7 +41,7 @@ public class CourseContentImpl implements CourseContentService {
      * Constructor-based dependency injection for better testability and immutability.
      *
      * @param courseContentRepository repository for course content operations
-     * @param courseRepository repository for course operations
+     * @param courseRepository        repository for course operations
      */
     @Autowired
     public CourseContentImpl(CourseContentRepository courseContentRepository,
@@ -56,7 +56,7 @@ public class CourseContentImpl implements CourseContentService {
      * @param courseContentInDTO the DTO containing course content data
      * @return the created CourseContentOutDTO
      * @throws ResourceAlreadyExistsException if a course content with the same title already exists for the course
-     * @throws ResourceNotFoundException if the course does not exist
+     * @throws ResourceNotFoundException      if the course does not exist
      */
     @Override
     public CourseContentOutDTO createCourseContent(final CourseContentInDTO courseContentInDTO) {
@@ -172,10 +172,10 @@ public class CourseContentImpl implements CourseContentService {
     /**
      * Updates an existing course content by ID and returns the updated content as DTO.
      *
-     * @param courseContentId ID of the course content to update
+     * @param courseContentId          ID of the course content to update
      * @param updateCourseContentInDTO the updated data
      * @return updated CourseContentOutDTO
-     * @throws ResourceNotFoundException if course content or course is not found
+     * @throws ResourceNotFoundException      if course content or course is not found
      * @throws ResourceAlreadyExistsException if updated title and course combination already exists
      */
     @Override

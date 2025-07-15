@@ -16,10 +16,14 @@ import java.util.List;
 import java.util.Optional;
 
 import static com.nt.user_service_lms.constants.UserConstants.USER_NOT_FOUND;
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyLong;
-import static org.mockito.Mockito.*;
+import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 public class ManagerServiceTest {
 
@@ -43,9 +47,9 @@ public class ManagerServiceTest {
     void getEmployees_ShouldReturnEmployeeList_WhenManagerAndEmployeesExist() {
         // Arrange
         String managerEmail = "manager@example.com";
-        User manager = new User(1L, "Alice", "Alice", "Smith", managerEmail, "alice123", 0L, 2L, null, null,true);
+        User manager = new User(1L, "Alice", "Alice", "Smith", managerEmail, "alice123", 0L, 2L, null, null, true);
 
-        User employee = new User(2L, "Bob", "Bob", "Jones", "bob@example.com", "bobjones", 1L, 3L, null, null,true);
+        User employee = new User(2L, "Bob", "Bob", "Jones", "bob@example.com", "bobjones", 1L, 3L, null, null, true);
         UserOutDTO userOutDTO = new UserOutDTO(); // You can populate as needed
 
         when(userRepository.findByEmail(managerEmail)).thenReturn(Optional.of(manager));
@@ -67,7 +71,7 @@ public class ManagerServiceTest {
     void getEmployees_ShouldReturnEmptyList_WhenNoEmployeesFound() {
         // Arrange
         String managerEmail = "manager@example.com";
-        User manager = new User(1L, "Alice", "Alice", "Smith", managerEmail, "alice123", 0L, 2L, null, null,true);
+        User manager = new User(1L, "Alice", "Alice", "Smith", managerEmail, "alice123", 0L, 2L, null, null, true);
 
         when(userRepository.findByEmail(managerEmail)).thenReturn(Optional.of(manager));
         when(userRepository.findByManagerId(manager.getUserId())).thenReturn(Collections.emptyList());

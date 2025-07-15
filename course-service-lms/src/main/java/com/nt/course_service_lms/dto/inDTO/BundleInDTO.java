@@ -62,8 +62,12 @@ public class BundleInDTO {
 
     @Override
     public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
+        if (this == o) {
+            return true;
+        }
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
         BundleInDTO bundleInDTO = (BundleInDTO) o;
         return isActive == bundleInDTO.isActive && Objects.equals(bundleName, bundleInDTO.bundleName);
     }

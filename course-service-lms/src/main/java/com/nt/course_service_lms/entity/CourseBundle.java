@@ -1,4 +1,5 @@
 package com.nt.course_service_lms.entity;
+
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -57,9 +58,15 @@ public class CourseBundle {
     @Column(name = "is_active")
     private boolean isActive;
 
+    /**
+     * Timestamp indicating when the course-bundle mapping was created.
+     */
     @Column(name = "created_at")
     private LocalDateTime createdAt;
 
+    /**
+     * Timestamp indicating when the course-bundle mapping was last updated.
+     */
     @Column(name = "updated_at")
     private LocalDateTime updatedAt;
 

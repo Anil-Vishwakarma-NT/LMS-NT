@@ -59,7 +59,9 @@ public class QuizCreateInDTO {
 
     @Override
     public boolean equals(Object o) {
-        if (o == null || getClass() != o.getClass()) return false;
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
         QuizCreateInDTO that = (QuizCreateInDTO) o;
         return Objects.equals(parentType, that.parentType) && Objects.equals(parentId, that.parentId) && Objects.equals(title, that.title) && Objects.equals(description, that.description) && Objects.equals(timeLimit, that.timeLimit) && Objects.equals(attemptsAllowed, that.attemptsAllowed) && Objects.equals(passingScore, that.passingScore) && Objects.equals(randomizeQuestions, that.randomizeQuestions) && Objects.equals(showResults, that.showResults) && Objects.equals(isActive, that.isActive) && Objects.equals(createdBy, that.createdBy);
     }

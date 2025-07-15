@@ -13,7 +13,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import reactor.core.publisher.Mono;
 
-import static com.nt.lms.api_gateway_lms.constant.SecurityConstant.*;
+import static com.nt.lms.api_gateway_lms.constant.SecurityConstant.BEARER_PREFIX;
 
 @RestController
 @RequestMapping("/lms/api/token-api")
