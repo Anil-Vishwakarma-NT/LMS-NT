@@ -5,7 +5,10 @@ import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Pattern;
 import jakarta.validation.constraints.Size;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 import java.util.Objects;
 
@@ -36,6 +39,9 @@ import static com.nt.course_service_lms.constants.CourseContentConstants.TITLE_S
  * </ul>
  */
 @Data
+@NoArgsConstructor
+@AllArgsConstructor
+@Builder
 public class CourseContentInDTO {
 
     /**
@@ -75,18 +81,6 @@ public class CourseContentInDTO {
 
     @NotNull(message = "Is Active field is required")
     private boolean isActive;
-
-
-    public CourseContentInDTO(long courseId, String title, String description, String resourceLink, boolean isActive) {
-        this.courseId = courseId;
-        this.title = title;
-        this.description = description;
-        this.resourceLink = resourceLink;
-        this.isActive = isActive;
-    }
-
-    public CourseContentInDTO() {
-    }
 
     @Override
     public boolean equals(Object o) {

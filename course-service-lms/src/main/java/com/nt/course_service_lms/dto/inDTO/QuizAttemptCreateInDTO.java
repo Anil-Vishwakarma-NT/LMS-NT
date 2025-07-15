@@ -2,7 +2,10 @@ package com.nt.course_service_lms.dto.inDTO;
 
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Positive;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 import java.util.Objects;
 
@@ -10,6 +13,9 @@ import java.util.Objects;
  * DTO for creating a new quiz attempt
  */
 @Data
+@NoArgsConstructor
+@AllArgsConstructor
+@Builder
 public class QuizAttemptCreateInDTO {
 
     @NotNull(message = "Quiz ID is required")
@@ -19,14 +25,6 @@ public class QuizAttemptCreateInDTO {
     @NotNull(message = "User ID is required")
     @Positive(message = "User ID must be positive")
     private Long userId;
-
-    public QuizAttemptCreateInDTO() {
-    }
-
-    public QuizAttemptCreateInDTO(Long quizId, Long userId) {
-        this.quizId = quizId;
-        this.userId = userId;
-    }
 
     @Override
     public boolean equals(Object o) {

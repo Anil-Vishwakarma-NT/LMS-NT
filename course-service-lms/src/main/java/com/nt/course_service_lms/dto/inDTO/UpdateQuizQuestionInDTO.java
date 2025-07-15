@@ -1,12 +1,18 @@
 package com.nt.course_service_lms.dto.inDTO;
 
 import jakarta.validation.constraints.*;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 import java.math.BigDecimal;
 import java.util.Objects;
 
 @Data
+@NoArgsConstructor
+@AllArgsConstructor
+@Builder
 public class UpdateQuizQuestionInDTO {
     @NotBlank(message = "Question text is required")
     @Size(max = 5000, message = "Question text cannot exceed 5000 characters")
@@ -39,20 +45,6 @@ public class UpdateQuizQuestionInDTO {
     @NotNull(message = "Position is required")
     @Positive(message = "Position must be positive")
     private Integer position;
-
-    public UpdateQuizQuestionInDTO() {
-    }
-
-    public UpdateQuizQuestionInDTO(String questionText, String questionType, String options, String correctAnswer, BigDecimal points, String explanation, Boolean required, Integer position) {
-        this.questionText = questionText;
-        this.questionType = questionType;
-        this.options = options;
-        this.correctAnswer = correctAnswer;
-        this.points = points;
-        this.explanation = explanation;
-        this.required = required;
-        this.position = position;
-    }
 
     @Override
     public boolean equals(Object o) {

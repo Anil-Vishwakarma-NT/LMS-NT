@@ -2,7 +2,10 @@ package com.nt.course_service_lms.dto.inDTO;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import jakarta.validation.constraints.*;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
@@ -18,6 +21,9 @@ import java.util.Objects;
  * </p>
  */
 @Data
+@NoArgsConstructor
+@AllArgsConstructor
+@Builder
 public class UserResponseInDTO {
 
     /**
@@ -68,30 +74,6 @@ public class UserResponseInDTO {
     @JsonFormat(pattern = "yyyy-MM-dd'T'HH:mm:ss")
     private LocalDateTime answeredAt;
 
-    /**
-     * Default constructor for JSON deserialization.
-     */
-    public UserResponseInDTO() {}
-
-    /**
-     * Constructor with all fields for programmatic creation.
-     *
-     * @param userId        the ID of the user
-     * @param quizId        the ID of the quiz
-     * @param questionId    the ID of the question
-     * @param attempt       the attempt number
-     * @param userAnswer    the user's answer in JSON format
-     * @param answeredAt    timestamp when answered
-     */
-    public UserResponseInDTO(Long userId, Long quizId, Long questionId, Long attempt,
-                             String userAnswer, LocalDateTime answeredAt) {
-        this.userId = userId;
-        this.quizId = quizId;
-        this.questionId = questionId;
-        this.attempt = attempt;
-        this.userAnswer = userAnswer;
-        this.answeredAt = answeredAt;
-    }
     @Override
     public boolean equals(Object o) {
         if (o == null || getClass() != o.getClass()) return false;
