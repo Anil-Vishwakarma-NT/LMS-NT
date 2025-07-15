@@ -6,7 +6,10 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 import java.time.LocalDateTime;
 import java.util.Objects;
@@ -21,6 +24,9 @@ import java.util.Objects;
 @Entity
 @Table(name = "course")
 @Data
+@NoArgsConstructor
+@AllArgsConstructor
+@Builder
 public class Course {
 
     /**
@@ -72,43 +78,6 @@ public class Course {
      */
     @Column(name = "updated_at")
     private LocalDateTime updatedAt;
-
-    /**
-     * Constructs a fully‑initialized {@code Course} instance.
-     *
-     * @param courseId   unique identifier of the course
-     * @param ownerId    identifier of the owner/instructor
-     * @param title      course title
-     * @param description course description
-     * @param level      course difficulty level
-     * @param isActive     active flag
-     * @param createdAt  creation timestamp
-     * @param updatedAt  last‑updated timestamp
-     */
-    public Course(final long courseId,
-                  final long ownerId,
-                  final String title,
-                  final String description,
-                  final String level,
-                  final boolean isActive,
-                  final LocalDateTime createdAt,
-                  final LocalDateTime updatedAt) {
-        this.courseId = courseId;
-        this.ownerId = ownerId;
-        this.title = title;
-        this.description = description;
-        this.level = level;
-        this.isActive = isActive;
-        this.createdAt = createdAt;
-        this.updatedAt = updatedAt;
-    }
-
-    /**
-     * Default no‑argument constructor required by JPA.
-     */
-    public Course() {
-        // no‑args constructor
-    }
 
     /**
      * Determines equality based on all persistent fields.

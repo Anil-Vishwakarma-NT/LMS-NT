@@ -5,7 +5,10 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 import java.time.LocalDateTime;
 import java.util.Objects;
@@ -20,6 +23,9 @@ import java.util.Objects;
 @Entity
 @Table(name = "course_bundle")
 @Data
+@NoArgsConstructor
+@AllArgsConstructor
+@Builder
 public class CourseBundle {
 
     /**
@@ -56,25 +62,6 @@ public class CourseBundle {
 
     @Column(name = "updated_at")
     private LocalDateTime updatedAt;
-
-    /**
-     * Default no-argument constructor required by JPA.
-     */
-    public CourseBundle() {
-    }
-
-    /**
-     * All-args constructor for creating a course-bundle mapping manually.
-     *
-     * @param courseBundleId the mapping ID
-     * @param bundleId       the associated bundle ID
-     * @param courseId       the associated course ID
-     */
-    public CourseBundle(final long courseBundleId, final long bundleId, final long courseId) {
-        this.courseBundleId = courseBundleId;
-        this.bundleId = bundleId;
-        this.courseId = courseId;
-    }
 
     /**
      * Checks equality based on all fields of the course-bundle mapping.

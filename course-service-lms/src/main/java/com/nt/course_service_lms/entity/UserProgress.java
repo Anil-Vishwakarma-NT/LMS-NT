@@ -12,8 +12,9 @@ import java.util.Objects;
  */
 @Entity
 @Table(name = "user_progress")
-@Getter
-@Setter
+@Data
+@NoArgsConstructor
+@AllArgsConstructor
 @Builder
 public class UserProgress {
 
@@ -85,29 +86,6 @@ public class UserProgress {
      */
     @Column(name = "first_completed_at")
     private LocalDateTime firstCompletedAt;
-
-    /**
-     * Default constructor.
-     */
-    public UserProgress() {
-    }
-
-    /**
-     * Parameterized constructor to initialize all fields.
-     */
-    public UserProgress(Long progressId, Long userId, Long contentId, Long courseId, String contentType, double lastPosition, double contentCompletionPercentage, double courseCompletionPercentage, boolean courseCompleted, LocalDateTime lastUpdated, LocalDateTime firstCompletedAt) {
-        this.progressId = progressId;
-        this.userId = userId;
-        this.contentId = contentId;
-        this.courseId = courseId;
-        this.contentType = contentType;
-        this.lastPosition = lastPosition;
-        this.contentCompletionPercentage = contentCompletionPercentage;
-        this.courseCompletionPercentage = courseCompletionPercentage;
-        this.courseCompleted = courseCompleted;
-        this.lastUpdated = lastUpdated;
-        this.firstCompletedAt = firstCompletedAt;
-    }
 
     /**
      * Checks equality based on all fields.

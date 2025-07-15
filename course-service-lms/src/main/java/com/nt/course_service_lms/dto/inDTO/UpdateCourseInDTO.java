@@ -13,7 +13,6 @@ import static com.nt.course_service_lms.constants.BundleConstants.INT_VALUE_3;
 import static com.nt.course_service_lms.constants.CourseConstants.*;
 
 @Data
-@NoArgsConstructor
 public class UpdateCourseInDTO {
 
     /**

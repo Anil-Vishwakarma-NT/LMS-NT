@@ -6,7 +6,11 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
+import lombok.NoArgsConstructor;
+
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.Objects;
@@ -22,6 +26,9 @@ import java.util.Objects;
 @Entity
 @Table(name = "quiz")
 @Data
+@NoArgsConstructor
+@AllArgsConstructor
+@Builder
 public class Quiz {
 
     /**
@@ -125,55 +132,6 @@ public class Quiz {
      */
     @Column(name = "updated_at", nullable = false)
     private LocalDateTime updatedAt = LocalDateTime.now();
-
-    /**
-     * All-args constructor used for manually creating a Quiz instance.
-     * This constructor allows creating a Quiz with all properties specified.
-     *
-     * @param quizId             the unique identifier for the quiz
-     * @param parentType         the type of the parent entity (e.g., "course", "bundle")
-     * @param parentId           the identifier for the parent entity this quiz belongs to
-     * @param title              the title of the quiz
-     * @param description        the detailed description of the quiz purpose and content
-     * @param timeLimit          the time limit for completing the quiz in minutes (null for no limit)
-     * @param attemptsAllowed    the number of attempts allowed for this quiz
-     * @param passingScore       the minimum score required to pass the quiz (percentage 0.00 to 100.00)
-     * @param randomizeQuestions flag indicating whether questions should be randomized
-     * @param showResults        flag indicating whether results should be shown to users
-     * @param isActive           flag indicating whether the quiz is active
-     * @param createdBy          the identifier for the user who created this quiz
-     * @param createdAt          the timestamp when the quiz was created
-     * @param updatedAt          the timestamp when the quiz was last updated
-     */
-    public Quiz(final Long quizId, final String parentType, final Long parentId, final String title,
-                final String description, final Integer timeLimit, final Integer attemptsAllowed,
-                final BigDecimal passingScore, final Boolean randomizeQuestions, final Boolean showResults,
-                final Boolean isActive, final Integer createdBy, final LocalDateTime createdAt,
-                final LocalDateTime updatedAt) {
-        this.quizId = quizId;
-        this.parentType = parentType;
-        this.parentId = parentId;
-        this.title = title;
-        this.description = description;
-        this.timeLimit = timeLimit;
-        this.attemptsAllowed = attemptsAllowed;
-        this.passingScore = passingScore;
-        this.randomizeQuestions = randomizeQuestions;
-        this.showResults = showResults;
-        this.isActive = isActive;
-        this.createdBy = createdBy;
-        this.createdAt = createdAt;
-        this.updatedAt = updatedAt;
-    }
-
-    /**
-     * Default no-argument constructor required by JPA.
-     * This constructor is necessary for JPA entity instantiation
-     * and framework operations.
-     */
-    public Quiz() {
-        // No-args constructor for JPA
-    }
 
     /**
      * Compares this Quiz with another object for equality.

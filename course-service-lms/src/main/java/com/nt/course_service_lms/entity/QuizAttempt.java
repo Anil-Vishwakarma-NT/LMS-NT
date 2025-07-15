@@ -1,7 +1,10 @@
 package com.nt.course_service_lms.entity;
 
 import jakarta.persistence.*;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 import java.time.LocalDateTime;
 import java.util.Objects;
@@ -13,6 +16,9 @@ import java.util.Objects;
 @Entity
 @Table(name = "quiz_attempt")
 @Data
+@NoArgsConstructor
+@AllArgsConstructor
+@Builder
 public class QuizAttempt {
 
     /**
@@ -76,40 +82,6 @@ public class QuizAttempt {
      */
     @Column(name = "updated_at", nullable = false)
     private LocalDateTime updatedAt;
-
-    /**
-     * Default constructor.
-     */
-    public QuizAttempt() {}
-
-    /**
-     * Parameterized constructor to initialize all fields.
-     *
-     * @param quizAttemptId ID of the quiz attempt
-     * @param attempt Attempt number
-     * @param quizId ID of the quiz
-     * @param userId ID of the user
-     * @param startedAt Start timestamp
-     * @param finishedAt Finish timestamp
-     * @param scoreDetails Score details in string format
-     * @param status Status of the attempt
-     * @param createdAt Creation timestamp
-     * @param updatedAt Last updated timestamp
-     */
-    public QuizAttempt(Long quizAttemptId, Long attempt, Long quizId, Long userId,
-                       LocalDateTime startedAt, LocalDateTime finishedAt, String scoreDetails,
-                       String status, LocalDateTime createdAt, LocalDateTime updatedAt) {
-        this.quizAttemptId = quizAttemptId;
-        this.attempt = attempt;
-        this.quizId = quizId;
-        this.userId = userId;
-        this.startedAt = startedAt;
-        this.finishedAt = finishedAt;
-        this.scoreDetails = scoreDetails;
-        this.status = status;
-        this.createdAt = createdAt;
-        this.updatedAt = updatedAt;
-    }
 
     /**
      * Equality check based on all fields.

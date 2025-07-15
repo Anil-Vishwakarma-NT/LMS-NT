@@ -1,7 +1,10 @@
 package com.nt.course_service_lms.entity;
 
 import jakarta.persistence.*;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
@@ -14,6 +17,9 @@ import java.util.Objects;
 @Entity
 @Table(name = "user_response")
 @Data
+@NoArgsConstructor
+@AllArgsConstructor
+@Builder
 public class UserResponse {
 
     /**
@@ -71,38 +77,6 @@ public class UserResponse {
      */
     @Column(name = "answered_at", nullable = false)
     private LocalDateTime answeredAt;
-
-    /**
-     * Default constructor.
-     */
-    public UserResponse() {}
-
-    /**
-     * Parameterized constructor to initialize all fields.
-     *
-     * @param responseId Unique identifier for the response
-     * @param userId ID of the user
-     * @param quizId ID of the quiz
-     * @param questionId ID of the question
-     * @param attempt Attempt number
-     * @param userAnswer Answer provided by the user
-     * @param isCorrect Whether the answer is correct
-     * @param pointsEarned Points earned for this response
-     * @param answeredAt Time when the answer was submitted
-     */
-    public UserResponse(Long responseId, Long userId, Long quizId, Long questionId,
-                        Long attempt, String userAnswer, Boolean isCorrect, BigDecimal pointsEarned,
-                        LocalDateTime answeredAt) {
-        this.responseId = responseId;
-        this.userId = userId;
-        this.quizId = quizId;
-        this.questionId = questionId;
-        this.attempt = attempt;
-        this.userAnswer = userAnswer;
-        this.isCorrect = isCorrect;
-        this.pointsEarned = pointsEarned;
-        this.answeredAt = answeredAt;
-    }
 
     /**
      * Equality check based on all fields.

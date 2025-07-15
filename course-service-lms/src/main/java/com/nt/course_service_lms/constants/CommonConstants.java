@@ -18,17 +18,17 @@ public final class CommonConstants {
     /**
      * Number 5 constant.
      */
-    public static final Integer NUMBER_FIVE = 5;
+    public static final int NUMBER_FIVE = 5;
     /**
      * Number 16 constant.
      */
-    public static final Integer NUMBER_SIXTEEN = 16;
+    public static final int NUMBER_SIXTEEN = 16;
     /**
      * Number 30 constant.
      */
-    public static final Integer NUMBER_THIRTY = 30;
+    public static final int NUMBER_THIRTY = 30;
     /**
      * Number 20 constant.
      */
-    public static final Integer NUMBER_TWENTY = 20;
+    public static final int NUMBER_TWENTY = 20;
 }

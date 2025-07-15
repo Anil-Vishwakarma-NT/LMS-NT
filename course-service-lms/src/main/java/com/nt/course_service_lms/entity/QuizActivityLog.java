@@ -7,7 +7,10 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 import java.time.LocalDateTime;
 import java.util.Objects;
@@ -27,6 +30,9 @@ import java.util.Objects;
 @Entity
 @Table(name = "quiz_activity_log")
 @Data
+@NoArgsConstructor
+@AllArgsConstructor
+@Builder
 public class QuizActivityLog {
 
     /**
@@ -80,37 +86,6 @@ public class QuizActivityLog {
      */
     @Column(name = "updated_at", nullable = false)
     private LocalDateTime updatedAt = LocalDateTime.now();
-
-    /**
-     * Default constructor for JPA entity instantiation.
-     * Creates a new QuizActivityLog with default timestamp values.
-     */
-    public QuizActivityLog() {
-        // Default constructor required by JPA
-    }
-
-    /**
-     * Parameterized constructor for creating a QuizActivityLog with all field values.
-     *
-     * @param logId the unique identifier for this log entry
-     * @param userId the unique identifier of the user performing the action
-     * @param quizId the unique identifier of the quiz being interacted with
-     * @param attempt the attempt number for this quiz interaction
-     * @param actionType the type of action being performed (e.g., "START", "SUBMIT")
-     * @param createdAt the timestamp when this log entry was created
-     * @param updatedAt the timestamp when this log entry was last updated
-     */
-    public QuizActivityLog(final Integer logId, final Integer userId, final Integer quizId,
-                           final Integer attempt, final String actionType,
-                           final LocalDateTime createdAt, final LocalDateTime updatedAt) {
-        this.logId = logId;
-        this.userId = userId;
-        this.quizId = quizId;
-        this.attempt = attempt;
-        this.actionType = actionType;
-        this.createdAt = createdAt;
-        this.updatedAt = updatedAt;
-    }
 
     /**
      * Compares this QuizActivityLog with another object for equality.
