@@ -96,7 +96,7 @@ public class QuizAttemptController {
      */
     @GetMapping
     public ResponseEntity<Page<QuizAttemptOutDTO>> getAllQuizAttempts(
-            @PageableDefault(size = CommonConstants.NUMBER_TWENTY, sort = "createdAt") final Pageable pageable) {
+            @PageableDefault(size = 20, sort = "createdAt") final Pageable pageable) {
         log.info("REST request to get all QuizAttempts with pagination");
 
         final Page<QuizAttemptOutDTO> quizAttempts = quizAttemptService.getAllQuizAttempts(pageable);

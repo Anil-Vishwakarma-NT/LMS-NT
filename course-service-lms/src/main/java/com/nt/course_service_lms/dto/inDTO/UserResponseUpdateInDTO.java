@@ -14,8 +14,6 @@ import java.util.Objects;
  * Contains validation annotations for data integrity.
  */
 @Data
-@NoArgsConstructor
-@AllArgsConstructor
 public class UserResponseUpdateInDTO {
 
     @NotBlank(message = "User answer cannot be blank")
