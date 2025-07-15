@@ -18,6 +18,7 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.time.LocalDateTime;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
@@ -77,7 +78,7 @@ class CourseContentImplTest {
     // GET ALL
     @Test
     void getAllCourseContents_success() {
-        when(contentRepo.findAll()).thenReturn(List.of(entity));
+        when(contentRepo.findAll()).thenReturn(Arrays.asList(entity));
         List<CourseContentOutDTO> result = service.getAllCourseContents();
         assertEquals(1, result.size());
     }
@@ -155,7 +156,7 @@ class CourseContentImplTest {
     @Test
     void getAllCourseContentByCourseId_success() {
         when(courseRepo.existsById(1L)).thenReturn(true);
-        when(contentRepo.findByCourseId(1L)).thenReturn(List.of(entity));
+        when(contentRepo.findByCourseId(1L)).thenReturn(Arrays.asList(entity));
 
         List<CourseContentOutDTO> result = service.getAllCourseContentByCourseId(1L);
         assertEquals(1, result.size());

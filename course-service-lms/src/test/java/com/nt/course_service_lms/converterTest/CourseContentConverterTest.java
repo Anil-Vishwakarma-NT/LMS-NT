@@ -19,7 +19,12 @@ class CourseContentConverterTest {
 
     @Test
     void testCourseContentInDtoToEntity_withValidInput() {
-        CourseContentInDTO dto = new CourseContentInDTO(1L, "Java Basics", "Intro", "http://link", true);
+        CourseContentInDTO dto = new CourseContentInDTO();
+        dto.setCourseId(1L);
+        dto.setTitle("Java Basics");
+        dto.setDescription("Intro");
+        dto.setResourceLink("http://link");
+        dto.setActive(true);
 
         CourseContent entity = CourseContentConverters.courseContentInDtoToEntity(dto);
 
@@ -112,7 +117,12 @@ class CourseContentConverterTest {
         existing.setResourceLink("old-link");
         existing.setActive(false);
 
-        UpdateCourseContentInDTO updateDTO = new UpdateCourseContentInDTO(5L, "New", "New Desc", "new-link", true);
+        UpdateCourseContentInDTO updateDTO = new UpdateCourseContentInDTO();
+        updateDTO.setCourseId(5L);
+        updateDTO.setTitle("New");
+        updateDTO.setDescription("New Desc");
+        updateDTO.setResourceLink("new-link");
+        updateDTO.setActive(true);
 
         CourseContentConverters.updateEntityFromDto(existing, updateDTO);
 
@@ -125,7 +135,13 @@ class CourseContentConverterTest {
 
     @Test
     void testUpdateEntityFromDto_withNullEntity() {
-        UpdateCourseContentInDTO updateDTO = new UpdateCourseContentInDTO(1L, "T", "D", "link", true);
+        UpdateCourseContentInDTO updateDTO = new UpdateCourseContentInDTO();
+        updateDTO.setCourseId(1L);
+        updateDTO.setTitle("T");
+        updateDTO.setDescription("D");
+        updateDTO.setResourceLink("link");
+        updateDTO.setActive(true);
+
         CourseContentConverters.updateEntityFromDto(null, updateDTO); // no exception expected
     }
 
@@ -139,7 +155,12 @@ class CourseContentConverterTest {
 
     @Test
     void testUpdateDtoToEntity_withValidInput() {
-        UpdateCourseContentInDTO updateDTO = new UpdateCourseContentInDTO(11L, "Updated", "Upd Desc", "upd-link", true);
+        UpdateCourseContentInDTO updateDTO = new UpdateCourseContentInDTO();
+        updateDTO.setCourseId(11L);
+        updateDTO.setTitle("Updated");
+        updateDTO.setDescription("Upd Desc");
+        updateDTO.setResourceLink("upd-link");
+        updateDTO.setActive(true);
 
         CourseContent entity = CourseContentConverters.updateDtoToEntity(updateDTO);
 
@@ -158,7 +179,12 @@ class CourseContentConverterTest {
 
     @Test
     void testCourseContentDtoToCourseContent_deprecatedMethodDelegation() {
-        CourseContentInDTO dto = new CourseContentInDTO(3L, "Dep", "Desc", "link", true);
+        CourseContentInDTO dto = new CourseContentInDTO();
+        dto.setCourseId(3L);
+        dto.setTitle("Dep");
+        dto.setDescription("Desc");
+        dto.setResourceLink("link");
+        dto.setActive(true);
 
         CourseContent entity = CourseContentConverters.courseContentDtoToCourseContent(dto);
 
@@ -174,6 +200,7 @@ class CourseContentConverterTest {
 
         assertThrows(UnsupportedOperationException.class, constructor::newInstance);
     }
+
     @Test
     void testUpdateCourseContentInDTONoArgsConstructor() {
         UpdateCourseContentInDTO dto = new UpdateCourseContentInDTO();
