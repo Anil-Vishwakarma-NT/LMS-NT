@@ -4,7 +4,10 @@ import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 import java.util.Objects;
 
@@ -33,6 +36,9 @@ import static com.nt.course_service_lms.constants.CourseConstants.TITLE_MIN_LENG
  * </ul>
  */
 @Data
+@NoArgsConstructor
+@AllArgsConstructor
+@Builder
 public class CourseInDTO {
 
     /**
@@ -68,28 +74,6 @@ public class CourseInDTO {
 
     @NotNull(message = "Is Active field is required")
     private boolean Active;
-
-    /**
-     * All-args constructor for initializing all fields.
-     *
-     * @param title        Title of the course
-     * @param ownerId      ID of the course owner
-     * @param description  Description of the course
-     * @param courseLevel  Level of the course (e.g., BEGINNER)
-     */
-    public CourseInDTO(String title, Long ownerId, String description, String courseLevel, boolean Active) {
-        this.title = title;
-        this.ownerId = ownerId;
-        this.description = description;
-        this.courseLevel = courseLevel;
-        this.Active = Active;
-    }
-
-    /**
-     * No-args constructor required by serialization frameworks.
-     */
-    public CourseInDTO() {
-    }
 
     /**
      * Custom equality logic comparing all relevant fields.

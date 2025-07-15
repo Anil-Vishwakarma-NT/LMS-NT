@@ -1,6 +1,12 @@
 package com.nt.course_service_lms.entity;
 
-import jakarta.persistence.*;
+import com.nt.course_service_lms.constants.CommonConstants;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.Table;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -69,7 +75,7 @@ public class UserResponse {
     /**
      * Points earned by the user for this response.
      */
-    @Column(name = "points_earned", nullable = false, precision = 5, scale = 2)
+    @Column(name = "points_earned", nullable = false, precision = CommonConstants.NUMBER_FIVE, scale = 2)
     private BigDecimal pointsEarned;
 
     /**
@@ -85,18 +91,22 @@ public class UserResponse {
      * @return true if equal, false otherwise
      */
     @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (!(o instanceof UserResponse that)) return false;
-        return Objects.equals(responseId, that.responseId) &&
-                Objects.equals(userId, that.userId) &&
-                Objects.equals(quizId, that.quizId) &&
-                Objects.equals(questionId, that.questionId) &&
-                Objects.equals(attempt, that.attempt) &&
-                Objects.equals(userAnswer, that.userAnswer) &&
-                Objects.equals(isCorrect, that.isCorrect) &&
-                Objects.equals(pointsEarned, that.pointsEarned) &&
-                Objects.equals(answeredAt, that.answeredAt);
+    public boolean equals(final Object o) {
+        if (this == o) {
+            return true;
+        }
+        if (!(o instanceof UserResponse that)) {
+            return false;
+        }
+        return Objects.equals(responseId, that.responseId)
+                && Objects.equals(userId, that.userId)
+                && Objects.equals(quizId, that.quizId)
+                && Objects.equals(questionId, that.questionId)
+                && Objects.equals(attempt, that.attempt)
+                && Objects.equals(userAnswer, that.userAnswer)
+                && Objects.equals(isCorrect, that.isCorrect)
+                && Objects.equals(pointsEarned, that.pointsEarned)
+                && Objects.equals(answeredAt, that.answeredAt);
     }
 
     /**

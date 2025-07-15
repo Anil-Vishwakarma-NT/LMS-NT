@@ -1,7 +1,11 @@
 package com.nt.course_service_lms.dto.inDTO;
 
 import jakarta.validation.constraints.*;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
+import lombok.NoArgsConstructor;
+
 import java.math.BigDecimal;
 import java.util.Objects;
 
@@ -10,6 +14,9 @@ import java.util.Objects;
  * Used for creating and updating quiz questions.
  */
 @Data
+@NoArgsConstructor
+@AllArgsConstructor
+@Builder
 public class QuizQuestionInDTO {
 
     @NotNull(message = "Quiz ID is required")
@@ -43,20 +50,6 @@ public class QuizQuestionInDTO {
 
     @NotNull(message = "Required field must be specified")
     private Boolean required = true;
-
-    public QuizQuestionInDTO() {
-    }
-
-    public QuizQuestionInDTO(Long quizId, String questionText, String questionType, String options, String correctAnswer, BigDecimal points, String explanation, Boolean required) {
-        this.quizId = quizId;
-        this.questionText = questionText;
-        this.questionType = questionType;
-        this.options = options;
-        this.correctAnswer = correctAnswer;
-        this.points = points;
-        this.explanation = explanation;
-        this.required = required;
-    }
 
     @Override
     public boolean equals(Object o) {

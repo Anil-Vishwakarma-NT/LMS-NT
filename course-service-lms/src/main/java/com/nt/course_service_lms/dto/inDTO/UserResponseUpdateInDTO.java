@@ -1,6 +1,7 @@
 package com.nt.course_service_lms.dto.inDTO;
 
 import jakarta.validation.constraints.*;
+import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.AllArgsConstructor;
@@ -14,6 +15,9 @@ import java.util.Objects;
  * Contains validation annotations for data integrity.
  */
 @Data
+@NoArgsConstructor
+@AllArgsConstructor
+@Builder
 public class UserResponseUpdateInDTO {
 
     @NotBlank(message = "User answer cannot be blank")
@@ -30,16 +34,6 @@ public class UserResponseUpdateInDTO {
     private BigDecimal pointsEarned;
 
     private LocalDateTime answeredAt;
-
-    public UserResponseUpdateInDTO() {
-    }
-
-    public UserResponseUpdateInDTO(String userAnswer, Boolean isCorrect, BigDecimal pointsEarned, LocalDateTime answeredAt) {
-        this.userAnswer = userAnswer;
-        this.isCorrect = isCorrect;
-        this.pointsEarned = pointsEarned;
-        this.answeredAt = answeredAt;
-    }
 
     @Override
     public boolean equals(Object o) {

@@ -1,7 +1,11 @@
 package com.nt.course_service_lms.dto.inDTO;
 
 import jakarta.validation.constraints.*;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
+import lombok.NoArgsConstructor;
+
 import java.math.BigDecimal;
 import java.util.Objects;
 
@@ -9,6 +13,9 @@ import java.util.Objects;
  * DTO for updating an existing quiz.
  */
 @Data
+@NoArgsConstructor
+@AllArgsConstructor
+@Builder
 public class QuizUpdateInDTO {
 
     @Size(max = 255, message = "Title must not exceed 255 characters")
@@ -34,20 +41,6 @@ public class QuizUpdateInDTO {
     private Boolean showResults;
 
     private Boolean isActive;
-
-    public QuizUpdateInDTO() {
-    }
-
-    public QuizUpdateInDTO(String title, String description, Integer timeLimit, Integer attemptsAllowed, BigDecimal passingScore, Boolean randomizeQuestions, Boolean showResults, Boolean isActive) {
-        this.title = title;
-        this.description = description;
-        this.timeLimit = timeLimit;
-        this.attemptsAllowed = attemptsAllowed;
-        this.passingScore = passingScore;
-        this.randomizeQuestions = randomizeQuestions;
-        this.showResults = showResults;
-        this.isActive = isActive;
-    }
 
     @Override
     public boolean equals(Object o) {

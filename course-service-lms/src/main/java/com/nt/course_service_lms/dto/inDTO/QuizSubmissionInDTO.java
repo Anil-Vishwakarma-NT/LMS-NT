@@ -1,8 +1,11 @@
 package com.nt.course_service_lms.dto.inDTO;
 
+import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
 
 import jakarta.validation.Valid;
+import lombok.NoArgsConstructor;
 
 import java.util.List;
 import java.util.Objects;
@@ -11,6 +14,9 @@ import java.util.Objects;
  * DTO for quiz submission input containing user responses
  */
 @Data
+@NoArgsConstructor
+@AllArgsConstructor
+@Builder
 public class QuizSubmissionInDTO {
 
     @Valid
@@ -19,15 +25,6 @@ public class QuizSubmissionInDTO {
     // Optional metadata
     private String notes;
     private Long timeSpent; // total time spent on quiz in seconds
-
-    public QuizSubmissionInDTO() {
-    }
-
-    public QuizSubmissionInDTO(List<UserResponseInDTO> userResponses, String notes, Long timeSpent) {
-        this.userResponses = userResponses;
-        this.notes = notes;
-        this.timeSpent = timeSpent;
-    }
 
     @Override
     public boolean equals(Object o) {
