@@ -50,7 +50,8 @@ public interface QuizQuestionRepository extends JpaRepository<QuizQuestion, Long
      * @param endPosition end position (inclusive)
      * @return list of questions in the position range
      */
-    @Query("SELECT q FROM QuizQuestion q WHERE q.quizId = :quizId AND q.position BETWEEN :startPosition AND :endPosition ORDER BY q.position")
+    @Query("SELECT q FROM QuizQuestion q WHERE q.quizId = :quizId"
+            + " AND q.position BETWEEN :startPosition AND :endPosition ORDER BY q.position")
     List<QuizQuestion> findByQuizIdAndPositionBetween(@Param("quizId") Long quizId,
                                                       @Param("startPosition") Integer startPosition,
                                                       @Param("endPosition") Integer endPosition);
@@ -73,5 +74,11 @@ public interface QuizQuestionRepository extends JpaRepository<QuizQuestion, Long
      */
     List<QuizQuestion> findByQuizIdAndPositionGreaterThanEqual(Long quizId, Integer position);
 
+    /**
+     * Find all questions for a specific quiz.
+     *
+     * @param quizId the quiz ID
+     * @return list of all questions for the quiz
+     */
     List<QuizQuestion> findByQuizId(Long quizId);
 }

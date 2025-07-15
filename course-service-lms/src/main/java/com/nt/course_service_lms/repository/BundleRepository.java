@@ -43,8 +43,11 @@ public interface BundleRepository extends JpaRepository<Bundle, Long> {
      */
     List<Bundle> findTop5ByOrderByCreatedAtDesc();
 
+    /**
+     * Finds all bundles that are currently active.
+     * @param bundleIds the list of bundle IDs to check
+     * @return a list of active bundles
+     */
     @Query("SELECT b.bundleId FROM Bundle b WHERE b.bundleId IN :bundleIds")
     List<Long> findExistingIds(@Param("bundleIds") List<Long> bundleIds);
-
-
 }

@@ -10,13 +10,23 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
 
 /**
  * REST Controller for managing bundle-related operations in the Course Service of the LMS.
+ * This controller provides endpoints for creating, retrieving, updating, and deleting course bundles.
+ * All operations return standardized response DTOs and proper HTTP status codes.
  * Exception handling is managed by GlobalExceptionHandler.
+ *
  */
 @RestController
 @RequestMapping("/api/service-api/bundles")
@@ -24,16 +34,21 @@ import java.util.List;
 public class BundleController {
 
     /**
-     * Service for handling bundle-related business logic.
+     * Service layer component responsible for handling bundle-related business logic operations.
+     * This service encapsulates all business rules and data access logic for bundle management.
      */
     @Autowired
     private BundleService bundleService;
 
     /**
-     * Creates a new course bundle.
+     * Creates a new course bundle in the system.
+     * Validates the input data and delegates the creation logic to the service layer.
      *
-     * @param bundleInDTO DTO containing the details of the bundle to be created.
-     * @return ResponseEntity containing the StandardResponseOutDTO with created BundleOutDTO.
+     * @param bundleInDTO The data transfer object containing all necessary information
+     *                    to create a new bundle including name, description, and other properties.
+     *                    Must not be null and must pass validation constraints.
+     * @return ResponseEntity containing a StandardResponseOutDTO with the created BundleOutDTO
+     *         and HTTP status 201 (CREATED) on successful creation
      */
     @PostMapping
     public ResponseEntity<StandardResponseOutDTO<BundleOutDTO>> createBundle(@Valid @RequestBody final BundleInDTO bundleInDTO) {
@@ -44,9 +59,11 @@ public class BundleController {
     }
 
     /**
-     * Retrieves all available course bundles.
+     * Retrieves all available course bundles from the system.
+     * Returns a complete list of all bundles with their details.
      *
-     * @return ResponseEntity containing StandardResponseOutDTO with a list of all BundleOutDTO.
+     * @return ResponseEntity containing a StandardResponseOutDTO with a List of BundleOutDTO
+     *         representing all available bundles and HTTP status 200 (OK)
      */
     @GetMapping
     public ResponseEntity<StandardResponseOutDTO<List<BundleOutDTO>>> getAllBundles() {
@@ -56,10 +73,11 @@ public class BundleController {
     }
 
     /**
-     * Retrieves a specific bundle by its ID.
+     * Retrieves a specific bundle by its unique identifier.
      *
-     * @param id The ID of the bundle to retrieve.
-     * @return ResponseEntity containing StandardResponseOutDTO with the BundleOutDTO if found.
+     * @param id The unique identifier of the bundle to retrieve. Must be a valid Long value.
+     * @return ResponseEntity containing a StandardResponseOutDTO with the BundleOutDTO
+     *         if found and HTTP status 200 (OK)
      */
     @GetMapping("/{id}")
     public ResponseEntity<StandardResponseOutDTO<BundleOutDTO>> getBundleById(@PathVariable final Long id) {
@@ -69,25 +87,31 @@ public class BundleController {
     }
 
     /**
-     * Updates an existing bundle with the given ID.
+     * Updates an existing bundle with new information.
+     * Only updates the fields provided in the UpdateBundleInDTO.
      *
-     * @param id The ID of the bundle to be updated.
-     * @param updateBundleInDTO DTO containing updated details of the bundle.
-     * @return ResponseEntity containing StandardResponseOutDTO with update confirmation.
+     * @param id The unique identifier of the bundle to be updated. Must be a valid Long value.
+     * @param updateBundleInDTO The data transfer object containing the updated bundle information.
+     *                          Must not be null and must pass validation constraints.
+     * @return ResponseEntity containing a StandardResponseOutDTO with the updated BundleOutDTO
+     *         and HTTP status 200 (OK) on successful update
      */
     @PutMapping("/{id}")
     public ResponseEntity<StandardResponseOutDTO<BundleOutDTO>> updateBundle(@PathVariable final Long id,
-                                                                             @Valid @RequestBody final UpdateBundleInDTO updateBundleInDTO) {
+                                                                             @Valid @RequestBody final
+                                                                             UpdateBundleInDTO updateBundleInDTO) {
         log.info("Received request to update bundle with ID: {}", id);
         BundleOutDTO bundleOutDTO = bundleService.updateBundle(id, updateBundleInDTO);
         return ResponseEntity.ok(StandardResponseOutDTO.success(bundleOutDTO, "Bundle updated successfully"));
     }
 
     /**
-     * Deletes a bundle by its ID.
+     * Deletes a bundle from the system by its unique identifier.
+     * This operation is irreversible and will remove all associated data.
      *
-     * @param id The ID of the bundle to be deleted.
-     * @return ResponseEntity containing StandardResponseOutDTO with deletion confirmation.
+     * @param id The unique identifier of the bundle to be deleted. Must be a valid Long value.
+     * @return ResponseEntity containing a StandardResponseOutDTO with null data
+     *         and HTTP status 200 (OK) on successful deletion
      */
     @DeleteMapping("/{id}")
     public ResponseEntity<StandardResponseOutDTO<Void>> deleteBundle(@PathVariable final Long id) {
@@ -98,11 +122,13 @@ public class BundleController {
     }
 
     /**
-     * Checks if a bundle with the specified ID exists.
-     * <p>This endpoint is primarily intended for use by the User microservice.</p>
+     * Checks if a bundle with the specified ID exists in the system.
+     * This endpoint is primarily intended for use by other microservices
+     * to validate bundle existence before performing operations.
      *
-     * @param id The ID of the bundle to check.
-     * @return ResponseEntity containing StandardResponseOutDTO with boolean indicating existence.
+     * @param id The unique identifier of the bundle to check for existence. Must be a valid Long value.
+     * @return ResponseEntity containing a StandardResponseOutDTO with a Boolean value
+     *         indicating whether the bundle exists and HTTP status 200 (OK)
      */
     @GetMapping("/{id}/exists")
     public ResponseEntity<StandardResponseOutDTO<Boolean>> checkIfBundleExists(@PathVariable final Long id) {
@@ -113,9 +139,11 @@ public class BundleController {
     }
 
     /**
-     * Gets the total count of bundles.
+     * Retrieves the total count of bundles in the system.
+     * This endpoint provides statistical information about the number of bundles.
      *
-     * @return ResponseEntity containing StandardResponseOutDTO with bundle count.
+     * @return ResponseEntity containing a StandardResponseOutDTO with a Long value
+     *         representing the total bundle count and HTTP status 200 (OK)
      */
     @GetMapping("/count")
     public ResponseEntity<StandardResponseOutDTO<Long>> getBundleCount() {
@@ -126,21 +154,34 @@ public class BundleController {
     }
 
     /**
-     * Gets the name of a bundle by its ID.
+     * Retrieves the name of a bundle by its unique identifier.
+     * This endpoint provides a lightweight way to get only the bundle name
+     * without fetching the complete bundle details.
      *
-     * @param id The ID of the bundle.
-     * @return ResponseEntity containing StandardResponseOutDTO with bundle name.
+     * @param id The unique identifier of the bundle whose name is to be retrieved.
+     *           Must be a valid Long value.
+     * @return ResponseEntity containing a StandardResponseOutDTO with the bundle name
+     *         as a String and HTTP status 200 (OK)
      */
     @GetMapping("/{id}/name")
-    public ResponseEntity<StandardResponseOutDTO<String>> getBundleNameById(@PathVariable("id") Long id) {
+    public ResponseEntity<StandardResponseOutDTO<String>> getBundleNameById(@PathVariable("id") final Long id) {
         log.info("Received request to get bundle name for ID: {}", id);
         String bundleName = bundleService.getBundleNameById(id);
         log.info("Bundle name retrieved: {}", bundleName);
         return ResponseEntity.ok(StandardResponseOutDTO.success(bundleName, "Bundle name retrieved successfully"));
     }
 
+    /**
+     * Filters a list of bundle IDs to return only those that exist in the system.
+     * This endpoint is useful for bulk operations where you need to validate
+     * multiple bundle IDs at once.
+     *
+     * @param bundleIds A list of bundle IDs to check for existence. Must not be null.
+     * @return ResponseEntity containing a List of Long values representing the bundle IDs
+     *         that exist in the system and HTTP status 200 (OK)
+     */
     @PostMapping("/existing-ids")
-    public ResponseEntity<List<Long>> getExistingBundleIds(@RequestBody List<Long> bundleIds) {
+    public ResponseEntity<List<Long>> getExistingBundleIds(@RequestBody final List<Long> bundleIds) {
         List<Long> existingIds = bundleService.findExistingIds(bundleIds);
         return ResponseEntity.ok(existingIds);
     }

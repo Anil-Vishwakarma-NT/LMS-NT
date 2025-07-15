@@ -90,7 +90,8 @@ public interface UserResponseRepository extends JpaRepository<UserResponse, Long
      * @param attempt the attempt number
      * @return total score or null if no responses found
      */
-    @Query("SELECT SUM(ur.pointsEarned) FROM UserResponse ur WHERE ur.userId = :userId AND ur.quizId = :quizId AND ur.attempt = :attempt")
+    @Query("SELECT SUM(ur.pointsEarned) FROM UserResponse ur "
+            + "WHERE ur.userId = :userId AND ur.quizId = :quizId AND ur.attempt = :attempt")
     BigDecimal getTotalScoreByUserIdAndQuizIdAndAttempt(@Param("userId") Long userId,
                                                         @Param("quizId") Long quizId,
                                                         @Param("attempt") Long attempt);
@@ -103,7 +104,8 @@ public interface UserResponseRepository extends JpaRepository<UserResponse, Long
      * @param attempt the attempt number
      * @return count of correct answers
      */
-    @Query("SELECT COUNT(ur) FROM UserResponse ur WHERE ur.userId = :userId AND ur.quizId = :quizId AND ur.attempt = :attempt AND ur.isCorrect = true")
+    @Query("SELECT COUNT(ur) FROM UserResponse ur "
+            + "WHERE ur.userId = :userId AND ur.quizId = :quizId AND ur.attempt = :attempt AND ur.isCorrect = true")
     Long countCorrectAnswersByUserIdAndQuizIdAndAttempt(@Param("userId") Long userId,
                                                         @Param("quizId") Long quizId,
                                                         @Param("attempt") Long attempt);

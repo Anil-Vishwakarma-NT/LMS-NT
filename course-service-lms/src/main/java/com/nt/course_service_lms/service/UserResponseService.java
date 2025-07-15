@@ -10,131 +10,216 @@ import java.math.BigDecimal;
 import java.util.List;
 
 /**
- * Service interface for UserResponse operations.
- * Defines business logic methods for managing user responses to quiz questions.
+ * Service interface for UserResponse operations in the Learning Management System.
+ *
+ * <p>This interface defines the contract for managing user responses to quiz questions,
+ * including CRUD operations, score calculations, and various query methods. It handles
+ * user interactions with quizzes, tracking their responses, attempts, and performance
+ * metrics.</p>
+ *
+ * <p>The service supports multiple quiz attempts per user and provides comprehensive
+ * analytics capabilities including score calculation, correct answer counting, and
+ * attempt tracking.</p>
+ *
+ * <p>Key features include:</p>
+ * <ul>
+ *   <li>Bulk creation and management of user responses</li>
+ *   <li>Score calculation and performance tracking</li>
+ *   <li>Multi-attempt quiz support</li>
+ *   <li>Comprehensive filtering and pagination</li>
+ *   <li>Analytics and reporting capabilities</li>
+ * </ul>
+ *
+ * @author Course Service LMS Team
+ * @version 1.0
+ * @since 1.0
+ * @see UserResponseInDTO
+ * @see UserResponseUpdateInDTO
+ * @see UserResponseOutDTO
  */
 public interface UserResponseService {
 
     /**
-     * Create a new user response
+     * Creates multiple new user responses in a single operation.
      *
-     * @param userResponseInDTOList the user response data
-     * @return created user response DTO
+     * <p>This method allows bulk creation of user responses, typically used when
+     * a user submits answers for multiple questions in a quiz simultaneously.
+     * Each response in the list will be validated and persisted.</p>
+     *
+     * @param userResponseInDTOList the list of user response data transfer objects
+     *                              containing the response information to be created.
+     *                              Must not be null or empty.
+     * @return a list of created user response DTOs with generated IDs and timestamps
+     * @throws IllegalArgumentException if userResponseInDTOList is null or empty
      */
     List<UserResponseOutDTO> createUserResponse(List<UserResponseInDTO> userResponseInDTOList);
 
     /**
-     * Get user response by ID
+     * Retrieves a specific user response by its unique identifier.
      *
-     * @param responseId the response ID
-     * @return user response DTO
+     * @param responseId the unique identifier of the response to retrieve.
+     *                   Must be a positive number.
+     * @return the user response DTO containing the response details
+     * @throws IllegalArgumentException if responseId is null or non-positive
      */
     UserResponseOutDTO getUserResponseById(Long responseId);
 
     /**
-     * Update user response
+     * Updates an existing user response with new information.
      *
-     * @param responseId the response ID
-     * @param userResponseUpdateInDTO the update data
-     * @return updated user response DTO
+     * <p>This method allows modification of user response data, typically used
+     * for corrections or updates to previously submitted answers.</p>
+     *
+     * @param responseId the unique identifier of the response to update.
+     *                   Must be a positive number.
+     * @param userResponseUpdateInDTO the update data containing the new response information.
+     *                                Must not be null.
+     * @return the updated user response DTO with the new information
+     * @throws IllegalArgumentException if responseId is null/non-positive or updateDTO is null
      */
     UserResponseOutDTO updateUserResponse(Long responseId, UserResponseUpdateInDTO userResponseUpdateInDTO);
 
     /**
-     * Delete user response
+     * Permanently deletes a user response from the system.
      *
-     * @param responseId the response ID
+     * <p>This operation cannot be undone. Use with caution as it will permanently
+     * remove the user's response data and may affect score calculations.</p>
+     *
+     * @param responseId the unique identifier of the response to delete.
+     *                   Must be a positive number.
+     * @throws IllegalArgumentException if responseId is null or non-positive
+     * @since 1.0
      */
     void deleteUserResponse(Long responseId);
 
     /**
-     * Get all user responses with pagination
+     * Retrieves all user responses in the system with pagination support.
      *
-     * @param pageable pagination information
-     * @return paginated user responses
+     * <p>This method provides a paginated view of all user responses, useful
+     * for administrative purposes and reporting.</p>
+     *
+     * @param pageable the pagination information including page number, size, and sorting.
+     *                 Must not be null.
+     * @return a paginated collection of user response DTOs
      */
     Page<UserResponseOutDTO> getAllUserResponses(Pageable pageable);
 
     /**
-     * Get user responses by user ID
+     * Retrieves all responses submitted by a specific user.
      *
-     * @param userId the user ID
-     * @return list of user responses
+     * <p>This method returns all quiz responses for a particular user across
+     * all quizzes and attempts, useful for user progress tracking.</p>
+     *
+     * @param userId the unique identifier of the user whose responses to retrieve.
+     *               Must be a positive number.
+     * @return a list of user response DTOs for the specified user
      */
     List<UserResponseOutDTO> getUserResponsesByUserId(Long userId);
 
     /**
-     * Get user responses by quiz ID
+     * Retrieves all user responses for a specific quiz.
      *
-     * @param quizId the quiz ID
-     * @return list of user responses
+     * <p>This method returns all responses submitted for a particular quiz
+     * across all users and attempts, useful for quiz analytics.</p>
+     *
+     * @param quizId the unique identifier of the quiz whose responses to retrieve.
+     *               Must be a positive number.
+     * @return a list of user response DTOs for the specified quiz
      */
     List<UserResponseOutDTO> getUserResponsesByQuizId(Long quizId);
 
     /**
-     * Get user responses by user ID and quiz ID
+     * Retrieves all responses submitted by a specific user for a specific quiz.
      *
-     * @param userId the user ID
-     * @param quizId the quiz ID
-     * @return list of user responses
+     * <p>This method returns responses across all attempts for the given
+     * user-quiz combination, useful for tracking user progress on a specific quiz.</p>
+     *
+     * @param userId the unique identifier of the user. Must be a positive number.
+     * @param quizId the unique identifier of the quiz. Must be a positive number.
+     * @return a list of user response DTOs for the specified user and quiz
      */
     List<UserResponseOutDTO> getUserResponsesByUserIdAndQuizId(Long userId, Long quizId);
 
     /**
-     * Get user responses by user ID, quiz ID, and attempt
+     * Retrieves all responses for a specific user, quiz, and attempt combination.
      *
-     * @param userId the user ID
-     * @param quizId the quiz ID
-     * @param attempt the attempt number
-     * @return list of user responses
+     * <p>This method returns responses for a single quiz attempt, useful for
+     * reviewing specific attempt details and calculating attempt-specific scores.</p>
+     *
+     * @param userId the unique identifier of the user. Must be a positive number.
+     * @param quizId the unique identifier of the quiz. Must be a positive number.
+     * @param attempt the attempt number. Must be a positive number.
+     * @return a list of user response DTOs for the specified user, quiz, and attempt
      */
     List<UserResponseOutDTO> getUserResponsesByUserIdAndQuizIdAndAttempt(Long userId, Long quizId, Long attempt);
 
     /**
-     * Get user responses by user ID with pagination
+     * Retrieves all responses submitted by a specific user with pagination support.
      *
-     * @param userId the user ID
-     * @param pageable pagination information
-     * @return paginated user responses
+     * <p>This is the paginated version of getUserResponsesByUserId, useful when
+     * a user has submitted a large number of responses.</p>
+     *
+     * @param userId the unique identifier of the user whose responses to retrieve.
+     *               Must be a positive number.
+     * @param pageable the pagination information including page number, size, and sorting.
+     *                 Must not be null.
+     * @return a paginated collection of user response DTOs for the specified user
      */
     Page<UserResponseOutDTO> getUserResponsesByUserId(Long userId, Pageable pageable);
 
     /**
-     * Get user responses by quiz ID with pagination
+     * Retrieves all user responses for a specific quiz with pagination support.
      *
-     * @param quizId the quiz ID
-     * @param pageable pagination information
-     * @return paginated user responses
+     * <p>This is the paginated version of getUserResponsesByQuizId, useful when
+     * a quiz has received a large number of responses.</p>
+     *
+     * @param quizId the unique identifier of the quiz whose responses to retrieve.
+     *               Must be a positive number.
+     * @param pageable the pagination information including page number, size, and sorting.
+     *                 Must not be null.
+     * @return a paginated collection of user response DTOs for the specified quiz
      */
     Page<UserResponseOutDTO> getUserResponsesByQuizId(Long quizId, Pageable pageable);
 
     /**
-     * Get total score for a user in a specific quiz attempt
-     * This calculates the sum of all pointsEarned for the attempt
+     * Calculates the total score for a user's specific quiz attempt.
      *
-     * @param userId the user ID
-     * @param quizId the quiz ID
-     * @param attempt the attempt number
-     * @return total score as BigDecimal
+     * <p>This method sums all points earned by the user for a particular quiz attempt.
+     * The score is calculated by aggregating the pointsEarned field from all responses
+     * in the specified attempt.</p>
+     *
+     * @param userId the unique identifier of the user. Must be a positive number.
+     * @param quizId the unique identifier of the quiz. Must be a positive number.
+     * @param attempt the attempt number for which to calculate the score.
+     *                Must be a positive number.
+     * @return the total score as a BigDecimal, or BigDecimal.ZERO if no responses found
      */
     BigDecimal getTotalScore(Long userId, Long quizId, Long attempt);
 
     /**
-     * Count correct answers for a user in a specific quiz attempt
+     * Counts the number of correct answers for a user's specific quiz attempt.
      *
-     * @param userId the user ID
-     * @param quizId the quiz ID
-     * @param attempt the attempt number
-     * @return count of correct answers
+     * <p>This method provides a count of questions answered correctly in a specific
+     * quiz attempt, useful for performance analysis and pass/fail determination.</p>
+     *
+     * @param userId the unique identifier of the user. Must be a positive number.
+     * @param quizId the unique identifier of the quiz. Must be a positive number.
+     * @param attempt the attempt number for which to count correct answers.
+     *                Must be a positive number.
+     * @return the count of correct answers, or 0 if no correct answers found
      */
     Long countCorrectAnswers(Long userId, Long quizId, Long attempt);
 
     /**
-     * Get maximum attempt number for a user in a specific quiz
+     * Retrieves the maximum attempt number for a user's quiz submissions.
      *
-     * @param userId the user ID
-     * @param quizId the quiz ID
-     * @return maximum attempt number
+     * <p>This method finds the highest attempt number recorded for a specific
+     * user-quiz combination, useful for determining how many times a user has
+     * attempted a quiz and for generating the next attempt number.</p>
+     *
+     * @param userId the unique identifier of the user. Must be a positive number.
+     * @param quizId the unique identifier of the quiz. Must be a positive number.
+     * @return the maximum attempt number, or 0 if no attempts found
      */
     Long getMaxAttemptNumber(Long userId, Long quizId);
 }

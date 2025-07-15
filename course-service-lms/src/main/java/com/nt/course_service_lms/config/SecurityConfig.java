@@ -12,20 +12,34 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
+/**
+ * Spring Security configuration class for the LMS Course Service.
+ * Configures security filters, authentication, authorization, and password encoding.
+ */
 @Configuration
 @EnableWebSecurity
 public class SecurityConfig {
 
+    /**
+     * Custom authentication filter for service-to-service authentication.
+     */
     @Autowired
     private ServiceAuthenticationFilter serviceAuthenticationFilter;
 
+    /**
+     * Configures the security filter chain with custom authentication and authorization rules.
+     * Sets up stateless session management, CSRF protection, and custom exception handling.
+     *
+     * @param http the HttpSecurity object to configure
+     * @return the configured SecurityFilterChain
+     * @throws Exception if configuration fails
+     */
     @Bean
-    public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
+    public SecurityFilterChain filterChain(final HttpSecurity http) throws Exception {
         http
                 .csrf(csrf -> csrf.disable())
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(authz -> authz
-                        // user endpoints - require authentication
                         .requestMatchers("/**").permitAll()
                         .anyRequest().authenticated()
                 )
@@ -50,6 +64,12 @@ public class SecurityConfig {
         return http.build();
     }
 
+    /**
+     * Creates a BCrypt password encoder bean for secure password hashing.
+     * Uses the default strength of 10 rounds.
+     *
+     * @return a BCryptPasswordEncoder instance
+     */
     @Bean
     public PasswordEncoder passwordEncoder() {
         return new BCryptPasswordEncoder();

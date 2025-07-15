@@ -34,7 +34,7 @@ import static com.nt.user_service_lms.constants.UserConstants.USER_UPDATED_SUCCE
  */
 @Slf4j
 @Service
-public final class AdminServiceImpl implements AdminService {
+public class AdminServiceImpl implements AdminService {
 
     /**
      * Repository for user operations.

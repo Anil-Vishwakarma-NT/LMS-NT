@@ -56,12 +56,21 @@ public class CourseContent {
     @Column(name = "resource_link")
     private String resourceLink;
 
+    /**
+     * Flag indicating whether the content is currently active and visible to learners.
+     */
     @Column(name = "is_active")
     private boolean isActive;
 
+    /**
+     * Timestamp when the content record was first created.
+     */
     @Column(name = "created_at")
     private LocalDateTime createdAt;
 
+    /**
+     * Timestamp for the last update made to the content record.
+     */
     @Column(name = "updated_at")
     private LocalDateTime updatedAt;
 

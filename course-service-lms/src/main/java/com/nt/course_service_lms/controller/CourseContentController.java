@@ -10,7 +10,14 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
 
@@ -24,6 +31,10 @@ import java.util.List;
 @RequestMapping("/api/service-api/course-content")
 public class CourseContentController {
 
+    /**
+     * Service layer component responsible for handling course content-related business logic.
+     * This service encapsulates all business rules and data access logic for course content management.
+     */
     private final CourseContentService courseContentService;
 
     /**
@@ -32,7 +43,7 @@ public class CourseContentController {
      * @param courseContentService service for handling course-content related business logic
      */
     @Autowired
-    public CourseContentController(CourseContentService courseContentService) {
+    public CourseContentController(final CourseContentService courseContentService) {
         this.courseContentService = courseContentService;
     }
 

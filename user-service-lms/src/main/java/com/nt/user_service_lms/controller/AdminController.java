@@ -35,7 +35,7 @@ import java.util.List;
 @RestController
 @RequestMapping("/api/service-api/admin")
 @PreAuthorize("hasRole('admin')")
-public final class AdminController {
+public class AdminController {
 
     /**
      * Service for user-related operations.
