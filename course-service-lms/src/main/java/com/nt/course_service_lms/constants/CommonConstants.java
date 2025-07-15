@@ -27,4 +27,8 @@ public final class CommonConstants {
      * Number 30 constant.
      */
     public static final Integer NUMBER_THIRTY = 30;
+    /**
+     * Number 20 constant.
+     */
+    public static final Integer NUMBER_TWENTY = 20;
 }

@@ -14,7 +14,11 @@ import com.nt.user_service_lms.service.EnrollmentsService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
 
 
 @Service
@@ -22,7 +26,6 @@ public class EnrollmentsServiceImpl implements EnrollmentsService {
 
     @Autowired
     EnrollmentRepository enrollmentRepository;
-
 
     @Autowired
     private CourseMicroserviceClient courseMicroserviceClient;
@@ -104,10 +107,4 @@ public class EnrollmentsServiceImpl implements EnrollmentsService {
 
         return StandardResponseOutDTO.success( new ArrayList<>(mp.values()),"Successfully fetched course details.");
     }
-//
-//    public StandardResponseOutDTO<List<GroupCourseOutDTO>> getUserAndCourse(long groupId , long userId) {
-//
-//
-//
-//    }
 }
