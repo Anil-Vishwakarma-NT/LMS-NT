@@ -21,6 +21,11 @@ public final class CommonConstants {
     public static final int NUMBER_FIVE = 5;
 
     /**
+     * Constant representing the number five.
+     */
+    public static final int NUMBER_SEVEN = 7;
+
+    /**
      * Constant representing the number eighteen.
      */
     public static final int NUMBER_EIGHTEEN = 18;
@@ -29,6 +34,16 @@ public final class CommonConstants {
      * Constant representing the number fifty.
      */
     public static final int NUMBER_FIFTY = 50;
+
+    /**
+     * Constant representing the number fifty.
+     */
+    public static final int NUMBER_THIRTY = 30;
+
+    /**
+     * Constant representing the number fifty.
+     */
+    public static final int NUMBER_HUNDRED = 100;
 
     /**
      * Constant representing the number one hundred thirty.

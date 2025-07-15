@@ -1,5 +1,6 @@
 package com.nt.user_service_lms.service.serviceImpl;
 
+import com.nt.user_service_lms.constants.CommonConstants;
 import com.nt.user_service_lms.dto.inDTO.EnrollmentRequestInDTO;
 import com.nt.user_service_lms.dto.outDTO.BundleInfoOutDTO;
 import com.nt.user_service_lms.dto.outDTO.CourseInfoOutDTO;
@@ -92,6 +93,11 @@ public class EnrollmentServiceImpl implements EnrollmentService {
      */
     private static final String ENROLLMENT_SOURCE_GROUP_BUNDLE = "GROUP_BUNDLE";
 
+    /**
+     * Handles all types of enrollment scenarios including user and group enrollments to courses and bundles.
+     * @param requestDTO the enrollment request containing all necessary information
+     * @return list of created enrollments.
+     */
     @Override
     public List<EnrollmentOutDTO> enroll(final EnrollmentRequestInDTO requestDTO) {
         // Validate request
@@ -127,6 +133,10 @@ public class EnrollmentServiceImpl implements EnrollmentService {
         }
     }
 
+    /**
+     * Retrieves enrollment statistics for the dashboard.
+     * @return EnrollmentDashBoardStatsOutDTO containing various enrollment metrics.
+     */
     @Override
     public EnrollmentDashBoardStatsOutDTO getEnrollmentStats() {
         try {
@@ -207,13 +217,13 @@ public class EnrollmentServiceImpl implements EnrollmentService {
             BigDecimal groupCompletionRate = calculateCompletionRateForList(groupEnrollmentsList);
 
             List<Enrollment> bundleEnrollmentsList = allEnrollments.stream()
-                    .filter(e -> ENROLLMENT_SOURCE_BUNDLE.equals(e.getEnrollmentSource()) ||
-                            ENROLLMENT_SOURCE_GROUP_BUNDLE.equals(e.getEnrollmentSource()))
+                    .filter(e -> ENROLLMENT_SOURCE_BUNDLE.equals(e.getEnrollmentSource())
+                            || ENROLLMENT_SOURCE_GROUP_BUNDLE.equals(e.getEnrollmentSource()))
                     .collect(Collectors.toList());
             BigDecimal bundleCompletionRate = calculateCompletionRateForList(bundleEnrollmentsList);
 
             // Calculate recent activity (last 30 days)
-            LocalDateTime thirtyDaysAgo = LocalDateTime.now().minusDays(30);
+            LocalDateTime thirtyDaysAgo = LocalDateTime.now().minusDays(CommonConstants.NUMBER_THIRTY);
 
             long recentEnrollments = allEnrollments.stream()
                     .mapToLong(e -> e.getCreatedAt().isAfter(thirtyDaysAgo) ? 1 : 0)
@@ -296,7 +306,7 @@ public class EnrollmentServiceImpl implements EnrollmentService {
             return BigDecimal.ZERO;
         }
         return BigDecimal.valueOf(completed)
-                .multiply(BigDecimal.valueOf(100))
+                .multiply(BigDecimal.valueOf(CommonConstants.NUMBER_HUNDRED))
                 .divide(BigDecimal.valueOf(total), 2, RoundingMode.HALF_UP);
     }
 
@@ -322,7 +332,7 @@ public class EnrollmentServiceImpl implements EnrollmentService {
         Map<String, BigDecimal> distribution = new HashMap<>();
         for (Map.Entry<String, Long> entry : counts.entrySet()) {
             BigDecimal percentage = BigDecimal.valueOf(entry.getValue())
-                    .multiply(BigDecimal.valueOf(100))
+                    .multiply(BigDecimal.valueOf(CommonConstants.NUMBER_HUNDRED))
                     .divide(BigDecimal.valueOf(total), 2, RoundingMode.HALF_UP);
             distribution.put(entry.getKey(), percentage);
         }
@@ -330,6 +340,11 @@ public class EnrollmentServiceImpl implements EnrollmentService {
         return distribution;
     }
 
+    /**
+     * Retrieves all enrollments for a specific user by their ID.
+     * @param userId the ID of the user
+     * @return
+     */
     @Override
     public UserEnrollmentsOutDTO getUserEnrollmentsByUserID(final Long userId) {
         // Check if user exists
@@ -455,8 +470,8 @@ public class EnrollmentServiceImpl implements EnrollmentService {
                     bundleDTO.setEnrolledCoursesList(bundleCourses);
 
                     // Calculate bundle progress
-                    float bundleProgress = bundleCourses.isEmpty() ? 0.0f :
-                            (float) bundleCourses.stream()
+                    float bundleProgress = bundleCourses.isEmpty() ? 0.0f
+                            : (float) bundleCourses.stream()
                                     .mapToDouble(EnrolledCoursesOutDTO::getProgress)
                                     .average()
                                     .orElse(0.0);
@@ -533,8 +548,8 @@ public class EnrollmentServiceImpl implements EnrollmentService {
                 bundle.getEnrolledCoursesList().forEach(course ->
                         allProgresses.add(course.getProgress())));
 
-        return allProgresses.isEmpty() ? 0.0f :
-                (float) allProgresses.stream()
+        return allProgresses.isEmpty() ? 0.0f
+                : (float) allProgresses.stream()
                         .mapToDouble(Float::doubleValue)
                         .average()
                         .orElse(0.0);
@@ -542,7 +557,7 @@ public class EnrollmentServiceImpl implements EnrollmentService {
 
     private int calculateUpcomingDeadlines(final List<Enrollment> enrollments) {
         LocalDateTime now = LocalDateTime.now();
-        LocalDateTime nextWeek = now.plusDays(7);
+        LocalDateTime nextWeek = now.plusDays(CommonConstants.NUMBER_SEVEN);
 
         return (int) enrollments.stream()
                 .filter(e -> e.getDeadline() != null)
@@ -555,6 +570,13 @@ public class EnrollmentServiceImpl implements EnrollmentService {
         return enrollments.stream().anyMatch(Enrollment::getIsActive);
     }
 
+    /**
+     * Retrieves all users' enrollments with optimized batch processing.
+     * This method fetches all active enrollments, groups them by user,
+     * and processes them in batches to minimize database calls.
+     *
+     * @return List of UserEnrollmentsOutDTO containing enrollment details for each user.
+     */
     @Override
     public List<UserEnrollmentsOutDTO> getAllUsersEnrollments() {
         // Get all active enrollments grouped by user
@@ -716,8 +738,8 @@ public class EnrollmentServiceImpl implements EnrollmentService {
                     bundleDTO.setEnrolledCoursesList(bundleCourses);
 
                     // Calculate bundle progress
-                    float bundleProgress = bundleCourses.isEmpty() ? 0.0f :
-                            (float) bundleCourses.stream()
+                    float bundleProgress = bundleCourses.isEmpty() ? 0.0f
+                            : (float) bundleCourses.stream()
                                     .mapToDouble(EnrolledCoursesOutDTO::getProgress)
                                     .average()
                                     .orElse(0.0);
@@ -835,14 +857,20 @@ public class EnrollmentServiceImpl implements EnrollmentService {
         return bundleNamesMap;
     }
 
+    /**
+     * Fetches course IDs for each bundle ID and returns a map of bundle ID to list of course IDs.
+     * This method optimizes the fetching of course IDs by handling exceptions gracefully.
+     * @param bundleIds List of bundle IDs to fetch course IDs for.
+     * @return Map of bundle ID to list of course IDs.
+     */
     private Map<Long, List<Long>> fetchBundleCourseMappings(final List<Long> bundleIds) {
         Map<Long, List<Long>> bundleCourseMappings = new HashMap<>();
 
         for (Long bundleId : bundleIds) {
             try {
                 ResponseEntity<List<Long>> courseIdsResponse = courseMicroserviceClient.findCourseIdsByBundleId(bundleId);
-                bundleCourseMappings.put(bundleId, courseIdsResponse.getBody() != null ?
-                        courseIdsResponse.getBody() : new ArrayList<>());
+                bundleCourseMappings.put(bundleId, courseIdsResponse.getBody() != null
+                        ? courseIdsResponse.getBody() : new ArrayList<>());
             } catch (Exception e) {
                 bundleCourseMappings.put(bundleId, new ArrayList<>());
             }
@@ -850,7 +878,11 @@ public class EnrollmentServiceImpl implements EnrollmentService {
 
         return bundleCourseMappings;
     }
-
+    /**
+     * Fetches individual course enrollments and returns a list of UserCourseEnrollmentOutDTO.
+     * This method optimizes the fetching of course names, user information, and course progress
+     * using batch processing to reduce the number of calls to external services.
+     */
     @Override
     public List<UserCourseEnrollmentOutDTO> getIndividualCourseEnrollments() {
         try {
@@ -950,6 +982,10 @@ public class EnrollmentServiceImpl implements EnrollmentService {
         }
     }
 
+    /**
+     * Fetches bundle information in batch for the given list of bundle IDs.
+     * Returns a map of bundle ID to BundleInfoOutDTO.
+     */
     @Override
     public List<UserBundleEnrollmentOutDTO> getIndividualBundleEnrollments() {
         try {
@@ -1069,8 +1105,8 @@ public class EnrollmentServiceImpl implements EnrollmentService {
                         bundleDTO.setEnrolledUserOutDTOList(enrolledUsers);
 
                         // Calculate overall average completion for the bundle
-                        float averageCompletion = allProgressValues.isEmpty() ? 0.0f :
-                                (float) allProgressValues.stream()
+                        float averageCompletion = allProgressValues.isEmpty() ? 0.0f
+                                : (float) allProgressValues.stream()
                                         .mapToDouble(Double::doubleValue)
                                         .average()
                                         .orElse(0.0);
@@ -1087,7 +1123,13 @@ public class EnrollmentServiceImpl implements EnrollmentService {
     }
 
 // Helper methods for batch processing
-
+    /**
+     * Fetches course information in batch for the given list of course IDs.
+     * Returns a map of courseId to CourseInfoOutDTO.
+     *
+     * @param courseIds list of course IDs to fetch
+     * @return map of courseId to CourseInfoOutDTO
+     */
     private Map<Long, CourseInfoOutDTO> fetchCourseInfoBatch(final List<Long> courseIds) {
         Map<Long, CourseInfoOutDTO> courseInfoMap = new HashMap<>();
 
@@ -1108,6 +1150,13 @@ public class EnrollmentServiceImpl implements EnrollmentService {
         return courseInfoMap;
     }
 
+    /**
+     * Fetches bundle information in batch for the given list of bundle IDs.
+     * Returns a map of bundleId to BundleInfoOutDTO.
+     *
+     * @param bundleIds list of bundle IDs to fetch
+     * @return map of bundleId to BundleInfoOutDTO
+     */
     private Map<Long, BundleInfoOutDTO> fetchBundleInfoBatch(final List<Long> bundleIds) {
         Map<Long, BundleInfoOutDTO> bundleInfoMap = new HashMap<>();
 
@@ -1128,6 +1177,13 @@ public class EnrollmentServiceImpl implements EnrollmentService {
         return bundleInfoMap;
     }
 
+    /**
+     * Fetches user details in batch for the given list of user IDs.
+     * Returns a map of userId to User object.
+     *
+     * @param userIds list of user IDs to fetch
+     * @return map of userId to User object
+     */
     private Map<Long, User> fetchUsersBatch(final List<Long> userIds) {
         if (userIds.isEmpty()) {
             return new HashMap<>();
@@ -1142,6 +1198,12 @@ public class EnrollmentServiceImpl implements EnrollmentService {
         }
     }
 
+    /**
+     * Retrieves the list of courses a user is enrolled in, returning only the earliest enrollment for each course.
+     *
+     * @param userId the ID of the user
+     * @return list of UserCourseEnrollDetails containing course ID, assigned by ID, enrollment date, and deadline
+     */
     @Override
     public List<UserCourseEnrollDetails> getUserEnrolledCourses(final Long userId) {
         List<Enrollment> enrollments = enrollmentRepository.findByUserIdAndIsActiveTrue(userId);
@@ -1150,10 +1212,12 @@ public class EnrollmentServiceImpl implements EnrollmentService {
 
         for (Enrollment e : enrollments) {
             Long courseId = e.getCourseId();
-            if (courseId == null) continue;
+            if (courseId == null) {
+                continue;
+            }
 
-            if (!earliestCourseEnrollments.containsKey(courseId) ||
-                    e.getAssignedAt().isBefore(earliestCourseEnrollments.get(courseId).getAssignedAt())) {
+            if (!earliestCourseEnrollments.containsKey(courseId)
+                    || e.getAssignedAt().isBefore(earliestCourseEnrollments.get(courseId).getAssignedAt())) {
                 earliestCourseEnrollments.put(courseId, e);
             }
         }
@@ -1171,12 +1235,23 @@ public class EnrollmentServiceImpl implements EnrollmentService {
     }
 
     // Add this method to your EnrollmentServiceImpl class
-    private boolean enrollmentExists(final Long userId, final Long groupId, final Long courseId, final Long bundleId, final String enrollmentSource) {
+    private boolean enrollmentExists(
+            final Long userId,
+            final Long groupId,
+            final Long courseId,
+            final Long bundleId,
+            final String enrollmentSource) {
         return enrollmentRepository.existsByUserIdAndGroupIdAndCourseIdAndBundleIdAndEnrollmentSourceAndIsActive(
                 userId, groupId, courseId, bundleId, enrollmentSource, true);
     }
 
-    // Updated enrollUsersToCourses method
+    /**
+     * Enrolls users to courses by creating individual enrollments for each user-course combination.
+     * Ensures no duplicate enrollments exist for the user-course combination with INDIVIDUAL source.
+     *
+     * @param requestDTO the enrollment request containing user and course IDs
+     * @return list of created Enrollment entities
+     */
     private List<Enrollment> enrollUsersToCourses(final EnrollmentRequestInDTO requestDTO) {
         List<Enrollment> enrollments = new ArrayList<>();
 
@@ -1199,7 +1274,13 @@ public class EnrollmentServiceImpl implements EnrollmentService {
         return enrollments;
     }
 
-    // Updated enrollUsersToBundles method
+    /**
+     * Enrolls users to bundles by enrolling each user to all courses in each bundle.
+     * Ensures no duplicate enrollments exist for the user-bundle combination.
+     *
+     * @param requestDTO the enrollment request containing user and bundle IDs
+     * @return list of created Enrollment entities
+     */
     private List<Enrollment> enrollUsersToBundles(final EnrollmentRequestInDTO requestDTO) {
         List<Enrollment> enrollments = new ArrayList<>();
 
@@ -1213,8 +1294,8 @@ public class EnrollmentServiceImpl implements EnrollmentService {
                     for (Long courseId : courseIds) {
                         if (enrollmentExists(userId, null, courseId, bundleId, ENROLLMENT_SOURCE_BUNDLE)) {
                             throw new ResourceAlreadyExistsException(
-                                    "User with ID " + userId + " is already enrolled in bundle with ID " + bundleId +
-                                            " (course " + courseId + " already exists)");
+                                    "User with ID " + userId + " is already enrolled in bundle with ID " + bundleId
+                                            + " (course " + courseId + " already exists)");
                         }
                     }
 
@@ -1233,7 +1314,13 @@ public class EnrollmentServiceImpl implements EnrollmentService {
         return enrollments;
     }
 
-    // Updated enrollGroupsToCourses method
+    /**
+     * Enrolls groups to courses by enrolling all users in each group to each course.
+     * Ensures no duplicate enrollments exist for the group-course combination.
+     *
+     * @param requestDTO the enrollment request containing group and course IDs
+     * @return list of created Enrollment entities
+     */
     private List<Enrollment> enrollGroupsToCourses(final EnrollmentRequestInDTO requestDTO) {
         List<Enrollment> enrollments = new ArrayList<>();
 
@@ -1246,8 +1333,8 @@ public class EnrollmentServiceImpl implements EnrollmentService {
                 for (Long userId : userIds) {
                     if (enrollmentExists(userId, groupId, courseId, null, ENROLLMENT_SOURCE_GROUP)) {
                         throw new ResourceAlreadyExistsException(
-                                "Group with ID " + groupId + " is already enrolled in course with ID " + courseId +
-                                        " (user " + userId + " already enrolled through this group)");
+                                "Group with ID " + groupId + " is already enrolled in course with ID " + courseId
+                                        + " (user " + userId + " already enrolled through this group)");
                     }
                 }
 
@@ -1265,7 +1352,13 @@ public class EnrollmentServiceImpl implements EnrollmentService {
         return enrollments;
     }
 
-    // Updated enrollGroupsToBundles method
+    /**
+     * Enrolls groups to bundles by enrolling all users in each group to all courses in each bundle.
+     * Ensures no duplicate enrollments exist for the group-bundle combination.
+     *
+     * @param requestDTO the enrollment request containing group and bundle IDs
+     * @return list of created Enrollment entities
+     */
     private List<Enrollment> enrollGroupsToBundles(final EnrollmentRequestInDTO requestDTO) {
         List<Enrollment> enrollments = new ArrayList<>();
 
@@ -1283,8 +1376,9 @@ public class EnrollmentServiceImpl implements EnrollmentService {
                         for (Long courseId : courseIds) {
                             if (enrollmentExists(userId, groupId, courseId, bundleId, ENROLLMENT_SOURCE_GROUP_BUNDLE)) {
                                 throw new ResourceAlreadyExistsException(
-                                        "Group with ID " + groupId + " is already enrolled in bundle with ID " + bundleId +
-                                                " (user " + userId + " already enrolled in course " + courseId + " through this group-bundle combination)");
+                                        "Group with ID " + groupId + " is already enrolled in bundle with ID " + bundleId
+                                                + " (user " + userId + " already enrolled in course " + courseId
+                                                + " through this group-bundle combination)");
                             }
                         }
                     }
@@ -1306,6 +1400,17 @@ public class EnrollmentServiceImpl implements EnrollmentService {
         return enrollments;
     }
 
+    /**
+     * Creates a new Enrollment entity based on the provided request data.
+     *
+     * @param userId              the ID of the user being enrolled
+     * @param groupId             the ID of the group (if applicable)
+     * @param courseId            the ID of the course (if applicable)
+     * @param bundleId            the ID of the bundle (if applicable)
+     * @param enrollmentSource    the source of enrollment (e.g., INDIVIDUAL, GROUP, BUNDLE)
+     * @param requestDTO          the enrollment request data transfer object
+     * @return the created Enrollment entity
+     */
     private Enrollment createEnrollment(final Long userId, final Long groupId, final Long courseId, final Long bundleId,
                                         final String enrollmentSource, final EnrollmentRequestInDTO requestDTO) {
         Enrollment enrollment = new Enrollment();
@@ -1325,7 +1430,12 @@ public class EnrollmentServiceImpl implements EnrollmentService {
         return enrollmentRepository.save(enrollment);
     }
 
-    // Updated conversion method (removed parentEnrollmentId and progressPercentage)
+    /**
+     * Converts an Enrollment entity to an EnrollmentOutDTO.
+     *
+     * @param enrollment the enrollment entity to convert
+     * @return the converted EnrollmentOutDTO
+     */
     private EnrollmentOutDTO convertToEnrollmentOutDTO(final Enrollment enrollment) {
         EnrollmentOutDTO dto = new EnrollmentOutDTO();
 
@@ -1348,9 +1458,16 @@ public class EnrollmentServiceImpl implements EnrollmentService {
         return dto;
     }
 
+    /**
+     * Validates the enrollment request to ensure it contains valid data.
+     *
+     * @param requestDTO the enrollment request to validate
+     * @throws ResourceNotValidException if the request is invalid
+     */
     private void validateEnrollmentRequest(final EnrollmentRequestInDTO requestDTO) {
         if (!requestDTO.isValid()) {
-            throw new ResourceNotValidException("Invalid enrollment request. Must provide either users or groups (not both) and either courses or bundles (not both).");
+            throw new ResourceNotValidException("Invalid enrollment request."
+                    + " Must provide either users or groups (not both) and either courses or bundles (not both).");
         }
 
         // Verify assigned by user exists

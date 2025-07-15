@@ -6,7 +6,10 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 import java.time.LocalDateTime;
 import java.util.Objects;
@@ -21,6 +24,9 @@ import java.util.Objects;
 @Entity
 @Table(name = "course_content")
 @Data
+@NoArgsConstructor
+@AllArgsConstructor
+@Builder
 public class CourseContent {
 
     /**
@@ -73,32 +79,6 @@ public class CourseContent {
      */
     @Column(name = "updated_at")
     private LocalDateTime updatedAt;
-
-    /**
-     * Default no-args constructor required by JPA.
-     */
-    public CourseContent() {
-    }
-
-    /**
-     * All-args constructor for manually creating a course content instance.
-     *
-     * @param courseContentId the ID of the course content
-     * @param courseId        the ID of the course
-     * @param title           the title of the content
-     * @param description     the content description
-     * @param resourceLink    the optional resource link
-     */
-    public CourseContent(long courseContentId, long courseId, String title, String description, String resourceLink, boolean isActive, LocalDateTime createdAt, LocalDateTime updatedAt) {
-        this.courseContentId = courseContentId;
-        this.courseId = courseId;
-        this.title = title;
-        this.description = description;
-        this.resourceLink = resourceLink;
-        this.isActive = isActive;
-        this.createdAt = createdAt;
-        this.updatedAt = updatedAt;
-    }
 
     @Override
     public boolean equals(Object o) {

@@ -1,7 +1,10 @@
 package com.nt.course_service_lms.entity;
 
 import jakarta.persistence.*;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
@@ -14,6 +17,9 @@ import java.util.Objects;
 @Entity
 @Table(name = "quiz_question")
 @Data
+@NoArgsConstructor
+@AllArgsConstructor
+@Builder
 public class QuizQuestion {
 
     /**
@@ -89,44 +95,6 @@ public class QuizQuestion {
      */
     @Column(name = "updated_at", nullable = false)
     private LocalDateTime updatedAt;
-
-    /**
-     * Default constructor.
-     */
-    public QuizQuestion() {}
-
-    /**
-     * Parameterized constructor to initialize all fields.
-     *
-     * @param questionId Unique identifier for the question
-     * @param quizId ID of the associated quiz
-     * @param questionText The actual question content
-     * @param questionType Type of the question
-     * @param options Possible options for the question
-     * @param correctAnswer The correct answer(s)
-     * @param points Points awarded for the correct answer
-     * @param explanation Explanation of the answer
-     * @param required Whether the question is mandatory
-     * @param position Position/order of the question in the quiz
-     * @param createdAt Creation timestamp
-     * @param updatedAt Last updated timestamp
-     */
-    public QuizQuestion(Long questionId, Long quizId, String questionText, String questionType,
-                        String options, String correctAnswer, BigDecimal points, String explanation,
-                        Boolean required, Integer position, LocalDateTime createdAt, LocalDateTime updatedAt) {
-        this.questionId = questionId;
-        this.quizId = quizId;
-        this.questionText = questionText;
-        this.questionType = questionType;
-        this.options = options;
-        this.correctAnswer = correctAnswer;
-        this.points = points;
-        this.explanation = explanation;
-        this.required = required;
-        this.position = position;
-        this.createdAt = createdAt;
-        this.updatedAt = updatedAt;
-    }
 
     /**
      * Checks equality based on all fields.
