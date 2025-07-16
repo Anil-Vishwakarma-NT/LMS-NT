@@ -2,7 +2,7 @@ package com.nt.lms.api_gateway_lms.dto;
 
 import org.junit.jupiter.api.Test;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 public class AuthResponseTest {
 
@@ -44,6 +44,7 @@ public class AuthResponseTest {
         assertEquals("type", response.getTokenType());
         assertEquals(123L, response.getExpiresIn());
     }
+
     @Test
     void testAuthResponseBuilder() {
         AuthResponse response = AuthResponse.builder()

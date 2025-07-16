@@ -8,5 +8,5 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 public class ServiceTokenResponse {
-    private String serviceToken ;
+    private String serviceToken;
 }

@@ -104,6 +104,7 @@ public final class UserConstants {
 
     /**
      * to access admin id.
+     *
      * @return long
      */
     public static Long getAdminId() {

@@ -11,6 +11,7 @@ import org.junit.jupiter.api.Test;
 import java.time.LocalDateTime;
 
 import static org.assertj.core.api.Assertions.assertThat;
+
 class BundleConverterTest {
 
     private BundleConverter converter;
@@ -123,6 +124,7 @@ class BundleConverterTest {
         BundleOutDTO outDTO = converter.toOutDTO(null);
         assertThat(outDTO).isNull();
     }
+
     @Test
     void testUpdateBundleInDTONoArgsConstructor() {
         UpdateBundleInDTO dto = new UpdateBundleInDTO();

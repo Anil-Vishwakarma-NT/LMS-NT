@@ -9,7 +9,8 @@ import org.junit.jupiter.api.Test;
 
 import java.util.Set;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 public class AuthRequestTest {
 
@@ -34,6 +35,7 @@ public class AuthRequestTest {
         Set<ConstraintViolation<AuthRequest>> violations = validator.validate(request);
         assertEquals(1, violations.size(), "Expected 1 validation error for blank password");
     }
+
     @Test
     void testBlankEmail() {
         AuthRequest request = new AuthRequest("", "somePassword");

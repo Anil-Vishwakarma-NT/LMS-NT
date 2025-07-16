@@ -18,8 +18,8 @@ import reactor.test.StepVerifier;
 import java.util.Date;
 
 import static com.nt.lms.api_gateway_lms.constant.SecurityConstant.BEARER_PREFIX;
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.mockito.Mockito.*;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 import static org.mockito.MockitoAnnotations.openMocks;
 
 class TokenControllerTest {

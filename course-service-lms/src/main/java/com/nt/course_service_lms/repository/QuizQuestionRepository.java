@@ -28,7 +28,7 @@ public interface QuizQuestionRepository extends JpaRepository<QuizQuestion, Long
     /**
      * Find a question by quiz ID and position.
      *
-     * @param quizId the quiz ID
+     * @param quizId   the quiz ID
      * @param position the question position
      * @return optional question
      */
@@ -45,12 +45,13 @@ public interface QuizQuestionRepository extends JpaRepository<QuizQuestion, Long
     /**
      * Find questions by quiz ID and position range.
      *
-     * @param quizId the quiz ID
+     * @param quizId        the quiz ID
      * @param startPosition start position (inclusive)
-     * @param endPosition end position (inclusive)
+     * @param endPosition   end position (inclusive)
      * @return list of questions in the position range
      */
-    @Query("SELECT q FROM QuizQuestion q WHERE q.quizId = :quizId AND q.position BETWEEN :startPosition AND :endPosition ORDER BY q.position")
+    @Query("SELECT q FROM QuizQuestion q WHERE q.quizId = :quizId"
+            + " AND q.position BETWEEN :startPosition AND :endPosition ORDER BY q.position")
     List<QuizQuestion> findByQuizIdAndPositionBetween(@Param("quizId") Long quizId,
                                                       @Param("startPosition") Integer startPosition,
                                                       @Param("endPosition") Integer endPosition);
@@ -58,7 +59,7 @@ public interface QuizQuestionRepository extends JpaRepository<QuizQuestion, Long
     /**
      * Find questions by quiz ID with position greater than specified position.
      *
-     * @param quizId the quiz ID
+     * @param quizId   the quiz ID
      * @param position the position threshold
      * @return list of questions with position greater than specified
      */
@@ -67,11 +68,17 @@ public interface QuizQuestionRepository extends JpaRepository<QuizQuestion, Long
     /**
      * Find questions by quiz ID with position greater than or equal to specified position.
      *
-     * @param quizId the quiz ID
+     * @param quizId   the quiz ID
      * @param position the position threshold
      * @return list of questions with position greater than or equal to specified
      */
     List<QuizQuestion> findByQuizIdAndPositionGreaterThanEqual(Long quizId, Integer position);
 
+    /**
+     * Find all questions for a specific quiz.
+     *
+     * @param quizId the quiz ID
+     * @return list of all questions for the quiz
+     */
     List<QuizQuestion> findByQuizId(Long quizId);
 }

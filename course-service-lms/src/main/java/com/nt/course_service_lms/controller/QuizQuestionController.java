@@ -10,7 +10,14 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
 
@@ -26,6 +33,11 @@ import java.util.List;
 @Slf4j
 public class QuizQuestionController {
 
+    /**
+     * Service for handling quiz question-related business logic.
+     * This service provides methods for creating, retrieving, updating,
+     * and deleting quiz questions.
+     */
     private final QuizQuestionService quizQuestionService;
 
     /**
@@ -84,7 +96,7 @@ public class QuizQuestionController {
     /**
      * Updates an existing quiz question.
      *
-     * @param questionId The ID of the question to update
+     * @param questionId          The ID of the question to update
      * @param questionUpdateInDTO The DTO containing updated question data
      * @return ResponseEntity containing the updated question and success message
      */

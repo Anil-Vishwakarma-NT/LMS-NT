@@ -1,14 +1,13 @@
 package com.nt.user_service_lms.controller;
 
+import com.nt.user_service_lms.service.serviceImpl.UserExcelReportBuilder;
+import com.nt.user_service_lms.service.serviceImpl.UserPDFReportBuilder;
+import com.nt.user_service_lms.service.serviceImpl.UserReportKPIQueries;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.jdbc.core.JdbcTemplate;
-
-import com.nt.user_service_lms.service.serviceImpl.UserReportKPIQueries;
-import com.nt.user_service_lms.service.serviceImpl.UserPDFReportBuilder;
-import com.nt.user_service_lms.service.serviceImpl.UserExcelReportBuilder;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;

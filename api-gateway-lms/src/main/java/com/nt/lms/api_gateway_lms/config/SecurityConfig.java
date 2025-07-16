@@ -42,10 +42,10 @@ public class SecurityConfig {
                         // for static content pdf or video fetching from course-service-lms
                         .pathMatchers("/lms/course/static/**").permitAll()
                         // Auth endpoints - public access
-                        .pathMatchers("/lms/api/client-api/auth/login", "/lms/api/client-api/auth/refresh","/lms/api/client-api/password/**").permitAll()
+                        .pathMatchers("/lms/api/client-api/auth/login", "/lms/api/client-api/auth/refresh", "/lms/api/client-api/password/**").permitAll()
 
                         // Token introspection - requires authentication
-                        .pathMatchers( "/lms/api/client-api/auth/logout").authenticated()
+                        .pathMatchers("/lms/api/client-api/auth/logout").authenticated()
 
                         // Service endpoints - require authentication
                         .pathMatchers("/api/token-api/**").authenticated()

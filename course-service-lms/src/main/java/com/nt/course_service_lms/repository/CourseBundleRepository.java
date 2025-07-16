@@ -35,9 +35,20 @@ public interface CourseBundleRepository extends JpaRepository<CourseBundle, Long
      */
     List<CourseBundle> findByBundleId(Long bundleId);
 
+    /**
+     * Counts the number of courses associated with a specific bundle.
+     *
+     * @param bundleId the ID of the bundle
+     * @return the count of courses associated with the specified bundle
+     */
     long countByBundleId(Long bundleId);
 
-    // Assuming you have a bundle_course junction table
+    /**
+     * Retrieves a list of course IDs associated with a specific bundle.
+     *
+     * @param bundleId the ID of the bundle
+     * @return a list of course IDs that belong to the specified bundle
+     */
     @Query("SELECT bc.courseId FROM CourseBundle bc WHERE bc.bundleId = :bundleId")
     List<Long> findCourseIdsByBundleId(@Param("bundleId") Long bundleId);
 }

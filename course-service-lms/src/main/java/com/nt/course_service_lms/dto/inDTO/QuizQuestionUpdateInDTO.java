@@ -1,8 +1,13 @@
 package com.nt.course_service_lms.dto.inDTO;
 
 import jakarta.validation.constraints.*;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
+import lombok.NoArgsConstructor;
+
 import java.math.BigDecimal;
+import java.util.Objects;
 
 /**
  * Data Transfer Object for updating an existing quiz question.
@@ -11,6 +16,9 @@ import java.math.BigDecimal;
  * Note that quizId is not included as questions cannot be moved between quizzes.
  */
 @Data
+@NoArgsConstructor
+@AllArgsConstructor
+@Builder
 public class QuizQuestionUpdateInDTO {
 
     /**
@@ -58,4 +66,18 @@ public class QuizQuestionUpdateInDTO {
     @NotNull(message = "Position is required")
     @Positive(message = "Position must be positive")
     private Integer position;
+
+    @Override
+    public boolean equals(Object o) {
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
+        QuizQuestionUpdateInDTO that = (QuizQuestionUpdateInDTO) o;
+        return Objects.equals(questionText, that.questionText) && Objects.equals(questionType, that.questionType) && Objects.equals(points, that.points) && Objects.equals(explanation, that.explanation) && Objects.equals(required, that.required) && Objects.equals(position, that.position);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(questionText, questionType, points, explanation, required, position);
+    }
 }

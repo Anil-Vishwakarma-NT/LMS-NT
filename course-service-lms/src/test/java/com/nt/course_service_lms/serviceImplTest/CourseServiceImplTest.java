@@ -1,4 +1,5 @@
 package com.nt.course_service_lms.serviceImplTest;
+
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
@@ -36,6 +37,7 @@ class CourseServiceImplTest {
         courseInDTO = new CourseInDTO("Java Basics", 1L, "Learn Java", "BEGINNER", "img.jpg");
         course = new Course(1L, 1L, "Java Basics", "Learn Java", "img.jpg", CourseLevel.BEGINNER);
     }
+
     @Test
     void testCreateCourse_Success() {
         when(courseRepository.findByTitleIgnoreCaseAndOwnerId(anyString(), anyLong())).thenReturn(Optional.empty());
@@ -54,6 +56,7 @@ class CourseServiceImplTest {
 
         assertThrows(ResourceAlreadyExistsException.class, () -> courseService.createCourse(courseInDTO));
     }
+
     @Test
     void testGetAllCourses_Success() {
         when(courseRepository.findAll()).thenReturn(Arrays.asList(course));
@@ -70,13 +73,14 @@ class CourseServiceImplTest {
 
         assertThrows(ResourceNotFoundException.class, () -> courseService.getAllCourses());
     }
+
     @Test
     void testGetCourseById_Success() {
         when(courseRepository.findById(1L)).thenReturn(Optional.of(course));
 
         CourseOutDTO result = courseService.getCourseById(1L);
 
-        assertTrue(result !=null);
+        assertTrue(result != null);
         assertEquals("Java Basics", result.get().getTitle());
     }
 
@@ -86,6 +90,7 @@ class CourseServiceImplTest {
 
         assertThrows(ResourceNotFoundException.class, () -> courseService.getCourseById(1L));
     }
+
     @Test
     void testDeleteCourse_Success() {
         when(courseRepository.findById(1L)).thenReturn(Optional.of(course));
@@ -102,6 +107,7 @@ class CourseServiceImplTest {
 
         assertThrows(ResourceNotFoundException.class, () -> courseService.deleteCourse(1L));
     }
+
     @Test
     void testUpdateCourse_Success() {
         when(courseRepository.findById(1L)).thenReturn(Optional.of(course));

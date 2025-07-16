@@ -60,6 +60,4 @@ public interface AdminService {
     StandardResponseOutDTO<List<UserOutDTO>> getManagerEmployee(long userId);
 
 
-
-
 }

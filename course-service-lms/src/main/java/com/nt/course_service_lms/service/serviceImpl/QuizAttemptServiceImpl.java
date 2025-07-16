@@ -90,6 +90,7 @@ public class QuizAttemptServiceImpl implements QuizAttemptService {
         quizAttemptOutDTO.setAttemptsLeft(quiz.getAttemptsAllowed() - quizAttempt.getAttempt());
         return quizAttemptOutDTO;
     }
+
     @Override
     public QuizAttemptOutDTO updateQuizAttempt(Long quizAttemptId, QuizAttemptUpdateInDTO dto) {
         log.info("Updating quiz attempt with ID: {}", quizAttemptId);

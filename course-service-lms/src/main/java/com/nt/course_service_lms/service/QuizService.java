@@ -3,7 +3,6 @@ package com.nt.course_service_lms.service;
 import com.nt.course_service_lms.dto.inDTO.QuizCreateInDTO;
 import com.nt.course_service_lms.dto.inDTO.QuizUpdateInDTO;
 import com.nt.course_service_lms.dto.outDTO.QuizOutDTO;
-import com.nt.course_service_lms.exception.ResourceNotFoundException;
 
 import java.util.List;
 
@@ -36,7 +35,6 @@ public interface QuizService {
      *
      * @param id the ID of the quiz to retrieve
      * @return the {@link QuizOutDTO} if found
-     * @throws ResourceNotFoundException if quiz not found
      */
     QuizOutDTO getQuizById(Long id);
 

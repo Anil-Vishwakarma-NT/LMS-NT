@@ -1,16 +1,16 @@
 package com.nt.user_service_lms.service.serviceImpl;
 
+import com.itextpdf.io.image.ImageData;
+import com.itextpdf.io.image.ImageDataFactory;
 import com.itextpdf.kernel.pdf.PdfDocument;
 import com.itextpdf.kernel.pdf.PdfWriter;
 import com.itextpdf.layout.Document;
 import com.itextpdf.layout.element.Cell;
+import com.itextpdf.layout.element.Image;
 import com.itextpdf.layout.element.Paragraph;
 import com.itextpdf.layout.element.Table;
 import com.itextpdf.layout.properties.TextAlignment;
 import com.itextpdf.layout.properties.UnitValue;
-import com.itextpdf.layout.element.Image;
-import com.itextpdf.io.image.ImageData;
-import com.itextpdf.io.image.ImageDataFactory;
 import org.springframework.stereotype.Service;
 
 import java.io.OutputStream;
@@ -115,11 +115,17 @@ public class UserPDFReportBuilder {
                 continue;
             }
 
-            if (!(value instanceof List)) continue;
+            if (!(value instanceof List)) {
+                continue;
+            }
             List<?> list = (List<?>) value;
-            if (list.isEmpty() || !(list.get(0) instanceof Map)) continue;
+            if (list.isEmpty() || !(list.get(0) instanceof Map)) {
+                continue;
+            }
             Map<?, ?> map = (Map<?, ?>) list.get(0);
-            if (!map.containsKey("value")) continue;
+            if (!map.containsKey("value")) {
+                continue;
+            }
 
             if (key.startsWith("User: ")) {
                 userTable.addCell(new Cell().add(new Paragraph(key)).setTextAlignment(TextAlignment.CENTER));
@@ -145,7 +151,9 @@ public class UserPDFReportBuilder {
     }
 
     private String formatValue(Object value, String columnName) {
-        if (value == null) return "N/A";
+        if (value == null) {
+            return "N/A";
+        }
         if (value instanceof Number) {
             if (columnName.toLowerCase().contains("percentage")) {
                 return decimalFormat.format(((Number) value).doubleValue()) + "%";

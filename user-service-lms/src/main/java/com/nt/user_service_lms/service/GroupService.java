@@ -13,8 +13,8 @@ public interface GroupService {
     /**
      * Creates a new group.
      *
-     * @param groupName the name of the group to be created
-     * @param username the username of the creator
+     * @param groupName  the name of the group to be created
+     * @param username   the username of the creator
      * @param employeeId the list of employee IDs to be added to the group
      * @return a StandardResponseOutDTO containing a MessageOutDto indicating the result
      */
@@ -32,7 +32,7 @@ public interface GroupService {
      * Adds a user to a group.
      *
      * @param groupInDTO the group input data transfer object
-     * @param username the username of the user to be added
+     * @param username   the username of the user to be added
      * @return a StandardResponseOutDTO containing a MessageOutDto indicating the result
      */
     StandardResponseOutDTO<MessageOutDto> addUserToGroup(GroupInDTO groupInDTO, String username);
@@ -40,7 +40,7 @@ public interface GroupService {
     /**
      * Updates the name of a group.
      *
-     * @param groupId the ID of the group to be updated
+     * @param groupId   the ID of the group to be updated
      * @param groupName the new name for the group
      * @return a StandardResponseOutDTO containing a MessageOutDto indicating the result
      */
@@ -49,7 +49,7 @@ public interface GroupService {
     /**
      * Removes a user from a group.
      *
-     * @param userId the ID of the user to be removed
+     * @param userId  the ID of the user to be removed
      * @param groupId the ID of the group to remove the user from
      * @return a StandardResponseOutDTO containing a MessageOutDto indicating the result
      */
@@ -88,7 +88,7 @@ public interface GroupService {
      * Retrieves the courses for a user in a group.
      *
      * @param groupId the ID of the group
-     * @param userId the ID of the user
+     * @param userId  the ID of the user
      * @return a StandardResponseOutDTO containing a list of CourseInfoOutDTO
      */
     StandardResponseOutDTO<List<CourseInfoOutDTO>> getUserCourses(long groupId, long userId);

@@ -61,7 +61,9 @@ public class CoursePDFReportBuilder {
     }
 
     private void addSection(Document document, String title, List<Map<String, Object>> rows) {
-        if (rows == null || rows.isEmpty()) return;
+        if (rows == null || rows.isEmpty()) {
+            return;
+        }
 
         document.add(new Paragraph(title).setBold());
         Map<String, Object> firstRow = rows.get(0);
@@ -96,12 +98,18 @@ public class CoursePDFReportBuilder {
             String key = entry.getKey();
             Object value = entry.getValue();
 
-            if (!(value instanceof List)) continue;
+            if (!(value instanceof List)) {
+                continue;
+            }
             List list = (List) value;
-            if (list.isEmpty() || !(list.get(0) instanceof Map)) continue;
+            if (list.isEmpty() || !(list.get(0) instanceof Map)) {
+                continue;
+            }
 
             Map map = (Map) list.get(0);
-            if (!map.containsKey("value")) continue;
+            if (!map.containsKey("value")) {
+                continue;
+            }
 
             if (key.startsWith("Course:")) {
                 courseTable.addCell(new Cell().add(new Paragraph(key)).setTextAlignment(TextAlignment.CENTER));
@@ -127,7 +135,9 @@ public class CoursePDFReportBuilder {
     }
 
     private String formatValue(Object value, String columnName) {
-        if (value == null) return "N/A";
+        if (value == null) {
+            return "N/A";
+        }
         if (value instanceof Number) {
             if (columnName.toLowerCase().contains("percentage")) {
                 return decimalFormat.format(((Number) value).doubleValue()) + "%";

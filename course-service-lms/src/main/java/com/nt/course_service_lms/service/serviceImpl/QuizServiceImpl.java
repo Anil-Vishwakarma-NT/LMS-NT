@@ -155,7 +155,7 @@ public class QuizServiceImpl implements QuizService {
             Quiz quiz = quizRepository.findById(quizId)
                     .orElseThrow(() -> {
                         log.warn("Quiz with ID {} not found", quizId);
-                        return new ResourceNotFoundException(String.format( NO_QUIZ_WITH_ID, quizId));
+                        return new ResourceNotFoundException(String.format(NO_QUIZ_WITH_ID, quizId));
                     });
 
             log.info("Successfully retrieved quiz: {}", quiz.getTitle());

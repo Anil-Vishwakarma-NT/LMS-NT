@@ -1,6 +1,9 @@
 package com.nt.course_service_lms.serviceImplTest;
 
+import com.nt.course_service_lms.converters.BundleConverter;
 import com.nt.course_service_lms.dto.inDTO.BundleInDTO;
+import com.nt.course_service_lms.dto.inDTO.UpdateBundleInDTO;
+import com.nt.course_service_lms.dto.outDTO.BundleOutDTO;
 import com.nt.course_service_lms.entity.Bundle;
 import com.nt.course_service_lms.exception.ResourceAlreadyExistsException;
 import com.nt.course_service_lms.exception.ResourceNotFoundException;
@@ -9,140 +12,285 @@ import com.nt.course_service_lms.service.serviceImpl.BundleServiceImpl;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.*;
-import java.util.*;
 
-import static org.junit.jupiter.api.Assertions.*;
+import java.time.LocalDateTime;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.List;
+import java.util.Optional;
+
+import static com.nt.course_service_lms.constants.BundleConstants.*;
+import static org.assertj.core.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
 class BundleServiceImplTest {
 
     @InjectMocks
-    private BundleServiceImpl bundleService;
+    private BundleServiceImpl service;
 
     @Mock
-    private BundleRepository bundleRepository;
+    private BundleRepository repo;
+
+    @Mock
+    private BundleConverter converter;
 
     @BeforeEach
-    void setUp() {
+    void init() {
         MockitoAnnotations.openMocks(this);
     }
 
-    // CREATE
-    @Test
-    void testCreateBundle_Success() {
-        BundleInDTO dto = new BundleInDTO("JavaBundle");
-        when(bundleRepository.existsByBundleName(dto.getBundleName())).thenReturn(false);
+    // Utilities
+    private BundleInDTO makeInDTO(String name) {
+        BundleInDTO dto = new BundleInDTO(name, true);
+        return dto;
+    }
 
-        Bundle savedBundle = new Bundle();
-        savedBundle.setBundleId(1L);
-        savedBundle.setBundleName(dto.getBundleName());
-
-        when(bundleRepository.save(any(Bundle.class))).thenReturn(savedBundle);
-
-        Bundle result = bundleService.createBundle(dto);
-
-        assertNotNull(result);
-        assertEquals("JavaBundle", result.getBundleName());
-        verify(bundleRepository, times(1)).save(any(Bundle.class));
+    private Bundle makeBundle(Long id, String name) {
+        Bundle b = new Bundle();
+        b.setBundleId(id);
+        b.setBundleName(name);
+        b.setActive(true);
+        b.setCreatedAt(LocalDateTime.now());
+        b.setUpdatedAt(LocalDateTime.now());
+        return b;
     }
 
     @Test
-    void testCreateBundle_DuplicateName_ThrowsException() {
-        BundleInDTO dto = new BundleInDTO("ExistingBundle");
+    void createBundle_success() {
+        var dto = makeInDTO("New");
+        when(repo.existsByBundleName("New")).thenReturn(false);
+        var entity = makeBundle(null, "New");
+        when(converter.toEntity(dto)).thenReturn(entity);
+        var saved = makeBundle(1L, "New");
+        when(repo.save(entity)).thenReturn(saved);
+        var out = new BundleOutDTO();
+        out.setBundleId(1L);
+        out.setBundleName("New");
+        when(converter.toOutDTO(saved)).thenReturn(out);
 
-        when(bundleRepository.existsByBundleName(dto.getBundleName())).thenReturn(true);
+        var result = service.createBundle(dto);
 
-        assertThrows(ResourceAlreadyExistsException.class, () -> bundleService.createBundle(dto));
-        verify(bundleRepository, never()).save(any());
-    }
-
-    // GET ALL
-    @Test
-    void testGetAllBundles_Success() {
-        List<Bundle> mockList = Arrays.asList(new Bundle(1L, "Java"), new Bundle(2L, "Spring"));
-        when(bundleRepository.findAll()).thenReturn(mockList);
-
-        List<Bundle> result = bundleService.getAllBundles();
-
-        assertEquals(2, result.size());
-        verify(bundleRepository, times(1)).findAll();
-    }
-
-    @Test
-    void testGetAllBundles_EmptyList_ThrowsException() {
-        when(bundleRepository.findAll()).thenReturn(Collections.emptyList());
-        assertThrows(ResourceNotFoundException.class, () -> bundleService.getAllBundles());
-    }
-
-    // GET BY ID
-    @Test
-    void testGetBundleById_Success() {
-        Bundle bundle = new Bundle(1L, "JavaBundle");
-        when(bundleRepository.findById(1L)).thenReturn(Optional.of(bundle));
-
-        Optional<Bundle> result = bundleService.getBundleById(1L);
-
-        assertTrue(result.isPresent());
-        assertEquals("JavaBundle", result.get().getBundleName());
+        assertThat(result).isEqualTo(out);
+        verify(repo).existsByBundleName("New");
+        verify(repo).save(entity);
     }
 
     @Test
-    void testGetBundleById_NotFound_ThrowsException() {
-        when(bundleRepository.findById(1L)).thenReturn(Optional.empty());
+    void createBundle_dupName_throws() {
+        var dto = makeInDTO("Exists");
+        when(repo.existsByBundleName("Exists")).thenReturn(true);
 
-        assertThrows(ResourceNotFoundException.class, () -> bundleService.getBundleById(1L));
-    }
-
-    // UPDATE
-    @Test
-    void testUpdateBundle_Success() {
-        Long bundleId = 1L;
-        BundleInDTO dto = new BundleInDTO("UpdatedName");
-
-        Bundle existing = new Bundle(bundleId, "OldName");
-        when(bundleRepository.findById(bundleId)).thenReturn(Optional.of(existing));
-        when(bundleRepository.existsByBundleName("UpdatedName")).thenReturn(false);
-        when(bundleRepository.save(any(Bundle.class))).thenAnswer(i -> i.getArgument(0));
-
-        BundleInDTO updated = bundleService.updateBundle(bundleId, dto);
-
-        assertEquals("UpdatedName", updated.getBundleName());
+        assertThatThrownBy(() -> service.createBundle(dto))
+                .isInstanceOf(ResourceAlreadyExistsException.class)
+                .hasMessage(String.format(BUNDLE_ALREADY_EXISTS, "Exists"));
     }
 
     @Test
-    void testUpdateBundle_NameAlreadyExists_ThrowsException() {
-        Long bundleId = 1L;
-        BundleInDTO dto = new BundleInDTO("ExistingBundle");
+    void createBundle_generalError_wraps() {
+        var dto = makeInDTO("Any");
+        when(repo.existsByBundleName("Any")).thenReturn(false);
+        when(converter.toEntity(dto)).thenReturn(new Bundle());
+        when(repo.save(any())).thenThrow(new RuntimeException("fail"));
 
-        Bundle existing = new Bundle(bundleId, "DifferentOldName");
-        when(bundleRepository.findById(bundleId)).thenReturn(Optional.of(existing));
-        when(bundleRepository.existsByBundleName("ExistingBundle")).thenReturn(true);
-
-        assertThrows(ResourceAlreadyExistsException.class, () -> bundleService.updateBundle(bundleId, dto));
+        assertThatThrownBy(() -> service.createBundle(dto))
+                .isInstanceOf(RuntimeException.class)
+                .hasMessage(GENERAL_ERROR);
     }
 
     @Test
-    void testUpdateBundle_NotFound_ThrowsException() {
-        when(bundleRepository.findById(anyLong())).thenReturn(Optional.empty());
-        assertThrows(ResourceNotFoundException.class, () -> bundleService.updateBundle(1L, new BundleInDTO("Any")));
-    }
+    void getAllBundles_success() {
+        Bundle b1 = makeBundle(1L, "A"), b2 = makeBundle(2L, "B");
+        when(repo.findAll()).thenReturn(Arrays.asList(b1, b2));
+        when(converter.toOutDTO(b1)).thenReturn(new BundleOutDTO(1L, "A", true, b1.getCreatedAt(), b1.getUpdatedAt()));
+        when(converter.toOutDTO(b2)).thenReturn(new BundleOutDTO(2L, "B", true, b2.getCreatedAt(), b2.getUpdatedAt()));
 
-    // DELETE
-    @Test
-    void testDeleteBundle_Success() {
-        Long id = 1L;
-        Bundle bundle = new Bundle(id, "ToDelete");
-        when(bundleRepository.findById(id)).thenReturn(Optional.of(bundle));
+        List<BundleOutDTO> list = service.getAllBundles();
 
-        bundleService.deleteBundle(id);
-
-        verify(bundleRepository, times(1)).delete(bundle);
+        assertThat(list).hasSize(2)
+                .extracting(BundleOutDTO::getBundleName)
+                .containsExactly("A", "B");
     }
 
     @Test
-    void testDeleteBundle_NotFound_ThrowsException() {
-        when(bundleRepository.findById(1L)).thenReturn(Optional.empty());
+    void getAllBundles_empty_throws() {
+        when(repo.findAll()).thenReturn(Collections.emptyList());
+        assertThatThrownBy(() -> service.getAllBundles())
+                .isInstanceOf(ResourceNotFoundException.class)
+                .hasMessage(NO_BUNDLES_FOUND);
+    }
 
-        assertThrows(ResourceNotFoundException.class, () -> bundleService.deleteBundle(1L));
+    @Test
+    void getBundleById_found() {
+        var b = makeBundle(5L, "X");
+        when(repo.findById(5L)).thenReturn(Optional.of(b));
+        when(converter.toOutDTO(b)).thenReturn(new BundleOutDTO(5L, "X", true, b.getCreatedAt(), b.getUpdatedAt()));
+
+        var got = service.getBundleById(5L);
+        assertThat(got.getBundleName()).isEqualTo("X");
+    }
+
+    @Test
+    void getBundleById_notFound() {
+        when(repo.findById(7L)).thenReturn(Optional.empty());
+        assertThatThrownBy(() -> service.getBundleById(7L))
+                .isInstanceOf(ResourceNotFoundException.class)
+                .hasMessage(String.format(BUNDLE_NOT_FOUND_BY_ID, 7L));
+    }
+
+    @Test
+    void updateBundle_success_sameName() {
+        var b = makeBundle(2L, "Same");
+        when(repo.findById(2L)).thenReturn(Optional.of(b));
+        when(repo.existsByBundleName("Same")).thenReturn(true);
+        var update = new UpdateBundleInDTO("Same", false);
+        when(converter.updateEntity(b, update)).thenReturn(b);
+        var out = new BundleOutDTO();
+        out.setBundleId(2L);
+        when(repo.save(b)).thenReturn(b);
+        when(converter.toOutDTO(b)).thenReturn(out);
+
+        var result = service.updateBundle(2L, update);
+        assertThat(result.getBundleId()).isEqualTo(2L);
+    }
+
+    @Test
+    void updateBundle_success_newName() {
+        var b = makeBundle(3L, "Old");
+        when(repo.findById(3L)).thenReturn(Optional.of(b));
+        when(repo.existsByBundleName("New")).thenReturn(false);
+        var update = new UpdateBundleInDTO("New", false);
+        when(converter.updateEntity(b, update)).thenReturn(b);
+        when(repo.save(b)).thenReturn(b);
+        when(converter.toOutDTO(b)).thenReturn(new BundleOutDTO());
+
+        var result = service.updateBundle(3L, update);
+        assertThat(result).isNotNull();
+    }
+
+    @Test
+    void updateBundle_notFound() {
+        when(repo.findById(9L)).thenReturn(Optional.empty());
+        var upd = new UpdateBundleInDTO("New", true);
+
+        assertThatThrownBy(() -> service.updateBundle(9L, upd))
+                .isInstanceOf(ResourceNotFoundException.class)
+                .hasMessage(String.format(BUNDLE_NOT_FOUND_BY_ID, 9L));
+    }
+
+    @Test
+    void updateBundle_nameExistsOther_throws() {
+        var b = makeBundle(4L, "A");
+        when(repo.findById(4L)).thenReturn(Optional.of(b));
+        when(repo.existsByBundleName("B")).thenReturn(true);
+        var upd = new UpdateBundleInDTO("B", true);
+        assertThatThrownBy(() -> service.updateBundle(4L, upd))
+                .isInstanceOf(ResourceAlreadyExistsException.class);
+    }
+
+    @Test
+    void updateBundle_generalWraps() {
+        var b = makeBundle(6L, "O");
+        when(repo.findById(6L)).thenReturn(Optional.of(b));
+        var upd = new UpdateBundleInDTO("New", true);
+        when(repo.existsByBundleName("New")).thenReturn(false);
+        when(repo.save(b)).thenThrow(new RuntimeException());
+
+        assertThatThrownBy(() -> service.updateBundle(6L, upd))
+                .isInstanceOf(RuntimeException.class)
+                .hasMessage(GENERAL_ERROR);
+    }
+
+    @Test
+    void deleteBundle_success() {
+        var b = makeBundle(8L, "D");
+        when(repo.findById(8L)).thenReturn(Optional.of(b));
+        doNothing().when(repo).delete(b);
+
+        service.deleteBundle(8L);
+        verify(repo).delete(b);
+    }
+
+    @Test
+    void deleteBundle_notFound() {
+        when(repo.findById(10L)).thenReturn(Optional.empty());
+        assertThatThrownBy(() -> service.deleteBundle(10L))
+                .isInstanceOf(ResourceNotFoundException.class)
+                .hasMessage(String.format(BUNDLE_NOT_FOUND_BY_ID, 10L));
+    }
+
+    @Test
+    void existsByBundleId_true() {
+        when(repo.existsById(12L)).thenReturn(true);
+        assertThat(service.existsByBundleId(12L)).isTrue();
+    }
+
+    @Test
+    void existsByBundleId_false_onRepoFalse() {
+        when(repo.existsById(13L)).thenReturn(false);
+        assertThat(service.existsByBundleId(13L)).isFalse();
+    }
+
+    @Test
+    void existsByBundleId_false_onException() {
+        when(repo.existsById(14L)).thenThrow(new RuntimeException());
+        assertThat(service.existsByBundleId(14L)).isFalse();
+    }
+
+    @Test
+    void countBundles_success() {
+        when(repo.count()).thenReturn(5L);
+        assertThat(service.countBundles()).isEqualTo(5);
+    }
+
+    @Test
+    void countBundles_returnZeroOnError() {
+        when(repo.count()).thenThrow(new RuntimeException());
+        assertThat(service.countBundles()).isZero();
+    }
+
+    @Test
+    void getBundleNameById_success() {
+        var b = makeBundle(20L, "NameX");
+        when(repo.findById(20L)).thenReturn(Optional.of(b));
+        assertThat(service.getBundleNameById(20L)).isEqualTo("NameX");
+    }
+
+    @Test
+    void getBundleNameById_notFound() {
+        when(repo.findById(25L)).thenReturn(Optional.empty());
+        assertThatThrownBy(() -> service.getBundleNameById(25L))
+                .isInstanceOf(ResourceNotFoundException.class)
+                .hasMessage(String.format(BUNDLE_NOT_FOUND_BY_ID, 25L));
+    }
+
+    @Test
+    void getBundleNameById_wrapsOther() {
+        when(repo.findById(30L)).thenThrow(new RuntimeException("fail"));
+        assertThatThrownBy(() -> service.getBundleNameById(30L))
+                .isInstanceOf(RuntimeException.class)
+                .hasMessageContaining("Something went wrong while fetching bundle name");
+    }
+
+    @Test
+    void findExistingIds_success() {
+        when(repo.findExistingIds(Arrays.asList(1L, 2L, 3L))).thenReturn(Arrays.asList(1L, 3L));
+        var out = service.findExistingIds(Arrays.asList(1L, 2L, 3L));
+        assertThat(out).containsExactly(1L, 3L);
+    }
+
+    @Test
+    void findExistingIds_noneFound() {
+        when(repo.findExistingIds(any())).thenReturn(Collections.emptyList());
+        assertThatThrownBy(() -> service.findExistingIds(Arrays.asList(7L, 8L)))
+                .isInstanceOf(ResourceNotFoundException.class)
+                .hasMessage("No Bundle IDs found");
+    }
+
+    @Test
+    void findExistingIds_wrapOther() {
+        when(repo.findExistingIds(any())).thenThrow(new RuntimeException());
+        assertThatThrownBy(() -> service.findExistingIds(Arrays.asList(9L)))
+                .isInstanceOf(RuntimeException.class)
+                .hasMessage("SERVER ERROR");
     }
 }

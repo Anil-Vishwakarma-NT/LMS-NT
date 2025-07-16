@@ -9,7 +9,11 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
 import java.security.Key;
-import java.util.*;
+import java.util.Base64;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 import static com.nt.user_service_lms.constants.TokenConverterConstant.CLIENT_ID;
 import static com.nt.user_service_lms.constants.TokenConverterConstant.CONVERSION_CHAIN;
@@ -161,7 +165,7 @@ public class ServiceTokenConverter {
      * This method compares the current token's audience with the target service
      * to determine if conversion is necessary.
      *
-     * @param currentToken the current JWT token to check (must not be null)
+     * @param currentToken  the current JWT token to check (must not be null)
      * @param targetService the target service name to check against (must not be null)
      * @return true if token conversion is needed, false otherwise
      */
@@ -224,7 +228,7 @@ public class ServiceTokenConverter {
      *
      * @param token the JWT token from which to extract metadata (must not be null)
      * @return Map containing conversion metadata with keys: ORIGINAL_TOKEN_TYPE,
-     *         CONVERTED_FROM, CONVERTED_AT, CONVERSION_CHAIN
+     * CONVERTED_FROM, CONVERTED_AT, CONVERSION_CHAIN
      */
     public Map<String, Object> getConversionMetadata(final String token) {
         Map<String, Object> metadata = new HashMap<>();

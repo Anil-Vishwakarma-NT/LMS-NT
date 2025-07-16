@@ -23,9 +23,9 @@ class UserProgressConverterTest {
     void testToDTO_ValidEntity() {
         LocalDateTime now = LocalDateTime.now();
         UserProgress entity = UserProgress.builder()
-                .userId(1)
-                .courseId(10)
-                .contentId(100)
+                .userId(1L)
+                .courseId(10L)
+                .contentId(100L)
                 .contentType("VIDEO")
                 .lastPosition(120)
                 .contentCompletionPercentage(75.5)
@@ -35,7 +35,7 @@ class UserProgressConverterTest {
         UserProgressOutDTO dto = converter.toDTO(entity);
 
         assertNotNull(dto);
-        assertEquals(1, dto.getUserId());
+        assertEquals(1L, dto.getUserId());
         assertEquals(10L, dto.getCourseId());
         assertEquals(100L, dto.getContentId());
         assertEquals("VIDEO", dto.getContentType());
@@ -68,9 +68,9 @@ class UserProgressConverterTest {
     @Test
     void testToEntity_ValidDTO() {
         UserProgressOutDTO dto = UserProgressOutDTO.builder()
-                .userId(2)
-                .courseId(20)
-                .contentId(200)
+                .userId(2L)
+                .courseId(20L)
+                .contentId(200L)
                 .contentType("QUIZ")
                 .lastPosition(45)
                 .contentCompletionPercentage(99.9)
@@ -80,7 +80,7 @@ class UserProgressConverterTest {
         UserProgress entity = converter.toEntity(dto);
 
         assertNotNull(entity);
-        assertEquals(2, entity.getUserId());
+        assertEquals(2L, entity.getUserId());
         assertEquals(20L, entity.getCourseId());
         assertEquals(200L, entity.getContentId());
         assertEquals("QUIZ", entity.getContentType());

@@ -1,14 +1,12 @@
 package com.nt.user_service_lms.controller;
 
-import com.nt.user_service_lms.config.ServicePrincipal;
 import com.nt.user_service_lms.dto.RegisterDto;
 import com.nt.user_service_lms.dto.UsersDetailsViewDTO;
 import com.nt.user_service_lms.dto.inDTO.UserInDTO;
 import com.nt.user_service_lms.dto.outDTO.MessageOutDto;
 import com.nt.user_service_lms.dto.outDTO.StandardResponseOutDTO;
-import com.nt.user_service_lms.dto.outDTO.UserCourseEnrollDetails;
 import com.nt.user_service_lms.dto.outDTO.UserOutDTO;
-import com.nt.user_service_lms.exception.UnauthorizedAccessException;
+import com.nt.user_service_lms.service.serviceImpl.AdminServiceImpl;
 import com.nt.user_service_lms.service.serviceImpl.GroupServiceImpl;
 import com.nt.user_service_lms.service.serviceImpl.UserServiceImpl;
 import com.nt.user_service_lms.service.serviceImpl.AdminServiceImpl;
@@ -18,9 +16,14 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PatchMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
 
@@ -32,7 +35,8 @@ import java.util.List;
 @Slf4j
 @RestController
 @RequestMapping("/api/service-api/admin")
-public final class AdminController {
+@PreAuthorize("hasRole('admin')")
+public class AdminController {
 
     /**
      * Service for user-related operations.
@@ -89,7 +93,7 @@ public final class AdminController {
      * Returns a list of all users who are currently active.
      *
      * @return ResponseEntity containing the list of active employees with HTTP 200 status,
-     *         or HTTP 204 if no active employees exist
+     * or HTTP 204 if no active employees exist
      */
     @GetMapping("/active-employees")
     @PreAuthorize("hasAuthority('admin')")
@@ -108,7 +112,7 @@ public final class AdminController {
      * Returns a list of all users who are currently inactive or disabled.
      *
      * @return ResponseEntity containing the list of inactive employees with HTTP 200 status,
-     *         or HTTP 204 if no inactive employees exist
+     * or HTTP 204 if no inactive employees exist
      */
     @GetMapping("/inactive-employees")
     public ResponseEntity<StandardResponseOutDTO<List<UserOutDTO>>> getAllInactiveEmployees() {
@@ -127,7 +131,7 @@ public final class AdminController {
      *
      * @param userId the unique identifier of the manager
      * @return ResponseEntity containing the list of employees under the manager with HTTP 200 status,
-     *         or HTTP 204 if no employees are found under the manager
+     * or HTTP 204 if no employees are found under the manager
      */
     @GetMapping("/manager-employee/{userId}")
     public ResponseEntity<StandardResponseOutDTO<List<UserOutDTO>>> getManagerEmployee(@PathVariable final long userId) {
@@ -158,11 +162,12 @@ public final class AdminController {
      * Updates user details for a specific user.
      * Modifies the user's information based on the provided data.
      *
-     * @param userId the unique identifier of the user to update
+     * @param userId    the unique identifier of the user to update
      * @param userInDTO contains the updated user information
      * @return ResponseEntity containing the success message with HTTP 200 status
      */
     @PatchMapping("/update-user/{userId}")
+    @PreAuthorize("hasAuthority('admin')")
     public ResponseEntity<MessageOutDto> updateUser(@PathVariable final long userId, @RequestBody final UserInDTO userInDTO) {
         log.info("Received request to update user details");
         return new ResponseEntity<>(

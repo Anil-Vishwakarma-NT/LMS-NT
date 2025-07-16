@@ -2,7 +2,10 @@ package com.nt.course_service_lms.dto.inDTO;
 
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Positive;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 import java.util.Objects;
 
@@ -10,6 +13,9 @@ import static com.nt.course_service_lms.constants.CourseBundleConstants.*;
 import static com.nt.course_service_lms.constants.CourseBundleConstants.COURSE_ID_POSITIVE;
 
 @Data
+@NoArgsConstructor
+@AllArgsConstructor
+@Builder
 public class UpdateCourseBundleInDTO {
 
     /**
@@ -31,22 +37,16 @@ public class UpdateCourseBundleInDTO {
     @NotNull(message = "Is Active field is required")
     private boolean isActive;
 
-
-    public UpdateCourseBundleInDTO(Long bundleId, Long courseId, boolean isActive) {
-        this.bundleId = bundleId;
-        this.courseId = courseId;
-        this.isActive = isActive;
-    }
-
-    public UpdateCourseBundleInDTO() {
-    }
-
     @Override
     public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
+        if (this == o) {
+            return true;
+        }
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
         UpdateCourseBundleInDTO that = (UpdateCourseBundleInDTO) o;
-        return isActive == that.isActive && Objects.equals(bundleId, that.bundleId) && Objects.equals(courseId, that.courseId) ;
+        return isActive == that.isActive && Objects.equals(bundleId, that.bundleId) && Objects.equals(courseId, that.courseId);
     }
 
     @Override

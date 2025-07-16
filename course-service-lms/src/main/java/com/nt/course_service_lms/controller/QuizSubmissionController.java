@@ -6,14 +6,21 @@ import com.nt.course_service_lms.dto.outDTO.StandardResponseOutDTO;
 import com.nt.course_service_lms.service.serviceImpl.QuizSubmissionService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
 
 import jakarta.validation.Valid;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
 
 /**
- * Controller for handling quiz submissions
+ * REST controller for handling quiz submission operations in the Learning Management System.
+ * Provides endpoints for manual quiz submissions, automatic timeout submissions, and generic quiz submissions.
  */
 @RestController
 @RequestMapping("/api/service-api/quiz-submissions")
@@ -21,15 +28,26 @@ import jakarta.validation.Valid;
 @Slf4j
 public class QuizSubmissionController {
 
-    private final QuizSubmissionService quizSubmissionService;
+    /**
+     * Service layer component responsible for handling quiz submission business logic.
+     * Injected via constructor using Lombok's @RequiredArgsConstructor annotation.
+     */
+    @Autowired
+    private QuizSubmissionService quizSubmissionService;
 
     /**
-     * Submit quiz manually by user
+     * Handles manual quiz submission by a user.
+     * This endpoint is used when a user explicitly submits their quiz responses.
+     *
+     * @param quizAttemptId The unique identifier of the quiz attempt being submitted
+     * @param submissionDTO The data transfer object containing user responses and submission details
+     * @return ResponseEntity containing the quiz submission result wrapped in a standard response format
+     * @throws jakarta.validation.ConstraintViolationException if the submission data is invalid
      */
     @PostMapping("/manual/{quizAttemptId}")
     public ResponseEntity<StandardResponseOutDTO<QuizSubmissionResultOutDTO>> submitQuizManually(
-            @PathVariable Long quizAttemptId,
-            @Valid @RequestBody QuizSubmissionInDTO submissionDTO) {
+            @PathVariable final Long quizAttemptId,
+            @Valid @RequestBody final QuizSubmissionInDTO submissionDTO) {
 
         log.info("Manual quiz submission request for attempt: {}", quizAttemptId);
 
@@ -43,12 +61,17 @@ public class QuizSubmissionController {
     }
 
     /**
-     * Submit quiz automatically due to timeout
+     * Handles automatic quiz submission when the quiz timer expires.
+     * This endpoint is triggered when a quiz attempt times out and needs to be auto-submitted.
+     *
+     * @param quizAttemptId The unique identifier of the quiz attempt that timed out
+     * @param submissionDTO The data transfer object containing user responses collected up to the timeout
+     * @return ResponseEntity containing the quiz submission result wrapped in a standard response format
      */
     @PostMapping("/timeout/{quizAttemptId}")
     public ResponseEntity<StandardResponseOutDTO<QuizSubmissionResultOutDTO>> submitQuizOnTimeout(
-            @PathVariable Long quizAttemptId,
-            @RequestBody QuizSubmissionInDTO submissionDTO) {
+            @PathVariable final Long quizAttemptId,
+            @RequestBody final QuizSubmissionInDTO submissionDTO) {
 
         log.info("Auto-timeout quiz submission request for attempt: {}", quizAttemptId);
 
@@ -62,13 +85,21 @@ public class QuizSubmissionController {
     }
 
     /**
-     * Generic submit quiz endpoint
+     * Generic quiz submission endpoint that can handle different submission types.
+     * This is a flexible endpoint that can process both manual and automatic submissions
+     * based on the submission type parameter.
+     *
+     * @param quizAttemptId  The unique identifier of the quiz attempt being submitted
+     * @param submissionDTO  The data transfer object containing user responses and submission details
+     * @param submissionType The type of submission (defaults to "MANUAL" if not specified)
+     * @return ResponseEntity containing the quiz submission result wrapped in a standard response format
+     * @throws jakarta.validation.ConstraintViolationException if the submission data is invalid
      */
     @PostMapping("/{quizAttemptId}")
     public ResponseEntity<StandardResponseOutDTO<QuizSubmissionResultOutDTO>> submitQuiz(
-            @PathVariable Long quizAttemptId,
-            @Valid @RequestBody QuizSubmissionInDTO submissionDTO,
-            @RequestParam(defaultValue = "MANUAL") String submissionType) {
+            @PathVariable final Long quizAttemptId,
+            @Valid @RequestBody final QuizSubmissionInDTO submissionDTO,
+            @RequestParam(defaultValue = "MANUAL") final String submissionType) {
 
         log.info("Quiz submission request for attempt: {}, type: {}", quizAttemptId, submissionType);
 

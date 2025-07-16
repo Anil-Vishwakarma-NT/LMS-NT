@@ -1,7 +1,11 @@
 // JwtUtil.java
 package com.nt.lms.api_gateway_lms.config;
 
-import io.jsonwebtoken.*;
+import io.jsonwebtoken.Claims;
+import io.jsonwebtoken.ExpiredJwtException;
+import io.jsonwebtoken.JwtException;
+import io.jsonwebtoken.Jwts;
+import io.jsonwebtoken.SignatureAlgorithm;
 import io.jsonwebtoken.security.Keys;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
@@ -10,12 +14,40 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Component;
 
 import java.security.Key;
-import java.util.*;
+import java.util.Base64;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
-import static com.nt.lms.api_gateway_lms.constant.SecurityConstant.*;
-import static java.security.KeyRep.Type.SECRET;
+import static com.nt.lms.api_gateway_lms.constant.SecurityConstant.ACCESS_TOKEN_TYPE;
+import static com.nt.lms.api_gateway_lms.constant.SecurityConstant.CLAIM_CLIENT_ID;
+import static com.nt.lms.api_gateway_lms.constant.SecurityConstant.CLAIM_EMAIL;
+import static com.nt.lms.api_gateway_lms.constant.SecurityConstant.CLAIM_FULL_NAME;
+import static com.nt.lms.api_gateway_lms.constant.SecurityConstant.CLAIM_ROLES;
+import static com.nt.lms.api_gateway_lms.constant.SecurityConstant.CLAIM_SCOPE;
+import static com.nt.lms.api_gateway_lms.constant.SecurityConstant.CLAIM_TOKEN_TYPE;
+import static com.nt.lms.api_gateway_lms.constant.SecurityConstant.CLAIM_USER_EMAIL;
+import static com.nt.lms.api_gateway_lms.constant.SecurityConstant.CLAIM_USER_ID;
+import static com.nt.lms.api_gateway_lms.constant.SecurityConstant.CLAIM_USER_ROLES;
+import static com.nt.lms.api_gateway_lms.constant.SecurityConstant.DEFAULT_JWT_ISSUER;
+import static com.nt.lms.api_gateway_lms.constant.SecurityConstant.DEFAULT_JWT_SECRET;
+import static com.nt.lms.api_gateway_lms.constant.SecurityConstant.DEFAULT_SCOPE;
+import static com.nt.lms.api_gateway_lms.constant.SecurityConstant.GATEWAY_SOURCE_VALUE;
+import static com.nt.lms.api_gateway_lms.constant.SecurityConstant.INTERNAL_SCOPE;
+import static com.nt.lms.api_gateway_lms.constant.SecurityConstant.INVALID_ACCESS_TOKEN_MSG;
+import static com.nt.lms.api_gateway_lms.constant.SecurityConstant.INVALID_SERVICE_TOKEN_MSG;
+import static com.nt.lms.api_gateway_lms.constant.SecurityConstant.INVALID_TOKEN_MSG;
+import static com.nt.lms.api_gateway_lms.constant.SecurityConstant.INVALID_TOKEN_TYPE_MSG;
+import static com.nt.lms.api_gateway_lms.constant.SecurityConstant.REFRESH_TOKEN_TYPE;
+import static com.nt.lms.api_gateway_lms.constant.SecurityConstant.REFRESH_WINDOW;
+import static com.nt.lms.api_gateway_lms.constant.SecurityConstant.ROLE_SERVICE;
+import static com.nt.lms.api_gateway_lms.constant.SecurityConstant.SERVICE_TOKEN_PROCESSING_ERROR_MSG;
+import static com.nt.lms.api_gateway_lms.constant.SecurityConstant.SERVICE_TOKEN_TYPE;
+import static com.nt.lms.api_gateway_lms.constant.SecurityConstant.TOKEN_EXPIRED_MSG;
+import static com.nt.lms.api_gateway_lms.constant.SecurityConstant.TOKEN_PROCESSING_ERROR_MSG;
 
 @Component
 @Slf4j

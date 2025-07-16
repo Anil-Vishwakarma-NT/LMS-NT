@@ -44,8 +44,8 @@ public class QuizSubmissionService {
     /**
      * Submits a quiz attempt with user responses
      *
-     * @param quizAttemptId the quiz attempt ID
-     * @param userResponses list of user responses (can be partial)
+     * @param quizAttemptId  the quiz attempt ID
+     * @param userResponses  list of user responses (can be partial)
      * @param submissionType "MANUAL" or "AUTO_TIMEOUT"
      * @return QuizSubmissionResultOutDTO containing attempt details and responses
      */
@@ -428,19 +428,44 @@ public class QuizSubmissionService {
         private BigDecimal percentageScore;
 
         // Getters and setters
-        public BigDecimal getTotalScore() { return totalScore; }
-        public void setTotalScore(BigDecimal totalScore) { this.totalScore = totalScore; }
+        public BigDecimal getTotalScore() {
+            return totalScore;
+        }
 
-        public BigDecimal getMaxPossibleScore() { return maxPossibleScore; }
-        public void setMaxPossibleScore(BigDecimal maxPossibleScore) { this.maxPossibleScore = maxPossibleScore; }
+        public void setTotalScore(BigDecimal totalScore) {
+            this.totalScore = totalScore;
+        }
 
-        public Long getCorrectAnswers() { return correctAnswers; }
-        public void setCorrectAnswers(Long correctAnswers) { this.correctAnswers = correctAnswers; }
+        public BigDecimal getMaxPossibleScore() {
+            return maxPossibleScore;
+        }
 
-        public Long getTotalQuestions() { return totalQuestions; }
-        public void setTotalQuestions(Long totalQuestions) { this.totalQuestions = totalQuestions; }
+        public void setMaxPossibleScore(BigDecimal maxPossibleScore) {
+            this.maxPossibleScore = maxPossibleScore;
+        }
 
-        public BigDecimal getPercentageScore() { return percentageScore; }
-        public void setPercentageScore(BigDecimal percentageScore) { this.percentageScore = percentageScore; }
+        public Long getCorrectAnswers() {
+            return correctAnswers;
+        }
+
+        public void setCorrectAnswers(Long correctAnswers) {
+            this.correctAnswers = correctAnswers;
+        }
+
+        public Long getTotalQuestions() {
+            return totalQuestions;
+        }
+
+        public void setTotalQuestions(Long totalQuestions) {
+            this.totalQuestions = totalQuestions;
+        }
+
+        public BigDecimal getPercentageScore() {
+            return percentageScore;
+        }
+
+        public void setPercentageScore(BigDecimal percentageScore) {
+            this.percentageScore = percentageScore;
+        }
     }
 }

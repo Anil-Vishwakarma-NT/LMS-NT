@@ -6,27 +6,31 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 import java.time.LocalDateTime;
 import java.util.Objects;
 
 /**
- * Entity representing a course in the Learning Management System (LMS).
+ * Represents a course entity in the Learning Management System (LMS).
  *
- * <p>This entity holds the details of a course including metadata such as title,
- * description, level, and the owner who created the course.</p>
- *
- * <p>This class maps to the {@code course} table in the database.</p>
+ * <p>Each instance corresponds to a single row in the {@code course} table and
+ * captures the essential metadata of a course, such as its title, description,
+ * difficulty level, owner, and audit timestamps.</p>
  */
 @Entity
 @Table(name = "course")
 @Data
+@NoArgsConstructor
+@AllArgsConstructor
+@Builder
 public class Course {
 
     /**
-     * Unique identifier for the course.
-     * <p>This is the primary key and is auto-generated.</p>
+     * Primary key for the course (auto‑generated).
      */
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -34,76 +38,79 @@ public class Course {
     private long courseId;
 
     /**
-     * Identifier for the owner (e.g., instructor or admin) who created the course.
+     * Identifier of the user (e.g., instructor or admin) who created this course.
      */
     @Column(name = "ownerId")
     private long ownerId;
 
     /**
-     * Title of the course.
-     * <p>This is typically a short name describing the course.</p>
+     * Human‑readable title of the course.
      */
     @Column(name = "title")
     private String title;
 
     /**
-     * Detailed description of the course content and purpose.
+     * Rich description outlining the course objectives, scope, and content.
      */
     @Column(name = "description")
     private String description;
 
     /**
-     * Level of the course (e.g., BEGINNER, INTERMEDIATE, ADVANCED).
+     * Difficulty level of the course (e.g., {@code BEGINNER}, {@code INTERMEDIATE}, {@code ADVANCED}).
      */
     @Column(name = "level")
     private String level;
 
+    /**
+     * Flag indicating whether the course is currently active and visible to learners.
+     */
     @Column(name = "is_active")
-    private boolean Active;
+    private boolean isActive;
 
+    /**
+     * Timestamp when the course record was first created.
+     */
     @Column(name = "created_at")
     private LocalDateTime createdAt;
 
+    /**
+     * Timestamp for the last update made to the course record.
+     */
     @Column(name = "updated_at")
     private LocalDateTime updatedAt;
 
     /**
-     * All-args constructor used for manually creating a Course instance.
+     * Determines equality based on all persistent fields.
      *
-     * @param courseId     the course ID
-     * @param ownerId      the owner/instructor ID
-     * @param title        the course title
-     * @param description  the course description
-     * @param level        the course difficulty level
+     * @param o object to compare
+     * @return {@code true} if both objects represent the same course; {@code false} otherwise
      */
-    public Course(long courseId, long ownerId, String title, String description, String level, boolean Active, LocalDateTime createdAt, LocalDateTime updatedAt) {
-        this.courseId = courseId;
-        this.ownerId = ownerId;
-        this.title = title;
-        this.description = description;
-        this.level = level;
-        this.Active = Active;
-        this.createdAt = createdAt;
-        this.updatedAt = updatedAt;
+    @Override
+    public boolean equals(final Object o) {
+        if (this == o) {
+            return true;
+        }
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
+        Course course = (Course) o;
+        return courseId == course.courseId
+                && ownerId == course.ownerId
+                && isActive == course.isActive
+                && Objects.equals(title, course.title)
+                && Objects.equals(description, course.description)
+                && Objects.equals(level, course.level)
+                && Objects.equals(createdAt, course.createdAt)
+                && Objects.equals(updatedAt, course.updatedAt);
     }
 
     /**
-     * Default no-argument constructor required by JPA.
+     * Generates a hash code consistent with {@link #equals(Object)}.
+     *
+     * @return hash code based on all persistent fields
      */
-    public Course() {
-    }
-
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-        Course course = (Course) o;
-        return courseId == course.courseId && ownerId == course.ownerId && Active == course.Active && Objects.equals(title, course.title) && Objects.equals(description, course.description) && Objects.equals(level, course.level) && Objects.equals(createdAt, course.createdAt) && Objects.equals(updatedAt, course.updatedAt);
-    }
-
     @Override
     public int hashCode() {
-        return Objects.hash(courseId, ownerId, title, description, level, Active, createdAt, updatedAt);
+        return Objects.hash(courseId, ownerId, title, description, level, isActive, createdAt, updatedAt);
     }
 }
-

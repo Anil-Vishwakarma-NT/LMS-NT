@@ -5,11 +5,13 @@ import com.nt.user_service_lms.dto.inDTO.GroupInDTO;
 import com.nt.user_service_lms.dto.outDTO.GroupOutDTO;
 import com.nt.user_service_lms.dto.outDTO.MessageOutDto;
 import com.nt.user_service_lms.dto.outDTO.UserOutDTO;
-import com.nt.user_service_lms.service.serviceImpl.GroupServiceImpl;
 import com.nt.user_service_lms.repository.UserRepository;
+import com.nt.user_service_lms.service.serviceImpl.GroupServiceImpl;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.mockito.*;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.MockitoAnnotations;
 import org.springframework.http.MediaType;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContext;
@@ -17,11 +19,17 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
 
-import static org.mockito.Mockito.*;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 
 class GroupControllerTest {
@@ -109,7 +117,7 @@ class GroupControllerTest {
 
     @Test
     void testGetUsersInGroup_WhenUsersExist() throws Exception {
-        List<UserOutDTO> users = List.of(new UserOutDTO(1L, "John","John" ,"Doe", "john@example.com", "unknown",""));
+        List<UserOutDTO> users = List.of(new UserOutDTO(1L, "John", "John", "Doe", "john@example.com", "unknown", ""));
         when(groupService.getUsersInGroup(1L)).thenReturn(users);
 
         mockMvc.perform(get("/group/group-emps/1"))
@@ -128,7 +136,7 @@ class GroupControllerTest {
 
     @Test
     void testGetGroups_WhenGroupsExist() throws Exception {
-        List<GroupOutDTO> groups = List.of(new GroupOutDTO("Developers", 1L,"Dev Team"));
+        List<GroupOutDTO> groups = List.of(new GroupOutDTO("Developers", 1L, "Dev Team"));
         when(groupService.getGroups("testuser")).thenReturn(groups);
 
         mockMvc.perform(get("/group/groups"))

@@ -14,7 +14,7 @@ import java.util.Base64;
 public class RsaDecryptUtil {
 
 
-    private  final String privateKey;
+    private final String privateKey;
 
     public RsaDecryptUtil(@Value("${private.key}") String privateKey) {
 
@@ -22,14 +22,13 @@ public class RsaDecryptUtil {
     }
 
 
-    public  String decrypt(String encryptedText) {
+    public String decrypt(String encryptedText) {
         try {
             // Remove header/footer and decode base64
             String privateKeyPEM = privateKey
                     .replace("-----BEGIN PRIVATE KEY-----", "")
                     .replace("-----END PRIVATE KEY-----", "")
                     .replaceAll("\\s+", "");
-
 
 
             System.out.print(privateKeyPEM);

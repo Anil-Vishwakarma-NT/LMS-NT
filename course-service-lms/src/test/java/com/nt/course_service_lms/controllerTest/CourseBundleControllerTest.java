@@ -93,7 +93,7 @@ class CourseBundleControllerTest {
     @Test
     void testUpdateCourseBundle() throws Exception {
         // Mock service response
-        CourseBundleInDTO mockUpdatedCourseBundleInDTO = new CourseBundleInDTO(1L, 102L,  202L);
+        CourseBundleInDTO mockUpdatedCourseBundleInDTO = new CourseBundleInDTO(1L, 102L, 202L);
         when(courseBundleService.updateCourseBundle(eq(1L), any(CourseBundleInDTO.class))).thenReturn(mockUpdatedCourseBundleInDTO);
 
         // Perform PUT request

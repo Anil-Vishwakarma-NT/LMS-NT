@@ -43,7 +43,9 @@ public class CustomUserDetails implements UserDetails {
         return fullName;
     }
 
-    public boolean isActive() { return active; }
+    public boolean isActive() {
+        return active;
+    }
     // Other methods like isAccountNonExpired, etc.
 }
 

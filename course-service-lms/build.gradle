@@ -1,49 +1,51 @@
 plugins {
-	id 'java'
-	id 'org.springframework.boot' version '3.4.4'
-	id 'io.spring.dependency-management' version '1.1.7'
-	id 'jacoco'
-	id 'checkstyle'
-	id 'pmd'
-	id 'com.github.spotbugs' version '5.0.13'
+    id 'java'
+    id 'org.springframework.boot' version '3.4.4'
+    id 'io.spring.dependency-management' version '1.1.7'
+    id 'jacoco'
+    id 'checkstyle'
+    id 'pmd'
+    id 'com.github.spotbugs' version '5.0.13'
 }
 
 group = 'com.example'
 version = '0.0.1-SNAPSHOT'
 
 java {
-	toolchain {
-		languageVersion = JavaLanguageVersion.of(17)
-	}
+    toolchain {
+        languageVersion = JavaLanguageVersion.of(17)
+    }
 }
 
 configurations {
-	compileOnly {
-		extendsFrom annotationProcessor
-	}
+    compileOnly {
+        extendsFrom annotationProcessor
+    }
 }
 
 repositories {
-	mavenCentral()
+    mavenCentral()
 }
 
 dependencies {
-	implementation 'org.springframework.boot:spring-boot-starter-validation'
-	implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
-	implementation 'org.springframework.boot:spring-boot-starter-web'
+    implementation 'org.springframework.boot:spring-boot-starter-validation'
+    implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
+    implementation 'org.springframework.boot:spring-boot-starter-web'
 
-	// Spring Security (for token validation, role-based access, etc.)
-	implementation 'org.springframework.boot:spring-boot-starter-security'
+    // Spring Security (for token validation, role-based access, etc.)
+    implementation 'org.springframework.boot:spring-boot-starter-security'
+    implementation 'org.apache.poi:poi:5.2.3'
+    implementation 'org.apache.poi:poi-ooxml:5.2.3'
+    implementation 'com.opencsv:opencsv:5.7.1'
 
+    compileOnly 'org.projectlombok:lombok'
+    runtimeOnly 'org.postgresql:postgresql'
+    annotationProcessor 'org.projectlombok:lombok'
 
-	compileOnly 'org.projectlombok:lombok'
-	runtimeOnly 'org.postgresql:postgresql'
-	annotationProcessor 'org.projectlombok:lombok'
-
-	// JWT Support (JSON Web Tokens)
-	implementation 'io.jsonwebtoken:jjwt-api:0.11.5'
-	runtimeOnly 'io.jsonwebtoken:jjwt-impl:0.11.5'
-	runtimeOnly 'io.jsonwebtoken:jjwt-jackson:0.11.5'
+    // JWT Support (JSON Web Tokens)
+    implementation 'io.jsonwebtoken:jjwt-api:0.11.5'
+    runtimeOnly 'io.jsonwebtoken:jjwt-impl:0.11.5'
+    runtimeOnly 'io.jsonwebtoken:jjwt-jackson:0.11.5'
 
 	//aws
 	implementation 'software.amazon.awssdk:secretsmanager:2.25.20'
@@ -65,66 +67,66 @@ dependencies {
 }
 
 tasks.named('test') {
-	useJUnitPlatform()
+    useJUnitPlatform()
 }
 
 jacoco {
-	toolVersion = "0.8.10"
+    toolVersion = "0.8.10"
 }
 
 jacocoTestReport {
-	dependsOn test
-	reports {
-		xml.required = true
-		html.required = true
-		csv.required = false
-		html.outputLocation = layout.buildDirectory.dir('jacocoHtml')
-	}
+    dependsOn test
+    reports {
+        xml.required = true
+        html.required = true
+        csv.required = false
+        html.outputLocation = layout.buildDirectory.dir('jacocoHtml')
+    }
 }
 
 checkstyle {
-	toolVersion = '10.12.1'
-	configFile = file("${rootDir}/config/checkstyle-checker.xml")
-	configProperties = [
-			'checkstyle.cache.file': "${buildDir}/checkstyle.cache"
-	]
-	showViolations = true
+    toolVersion = '10.12.1'
+    configFile = file("${rootDir}/config/checkstyle-checker.xml")
+    configProperties = [
+            'checkstyle.cache.file': "${buildDir}/checkstyle.cache"
+    ]
+    showViolations = true
 }
 
 tasks.withType(Checkstyle).configureEach {
-	ignoreFailures = false // Fail build on violations
+    ignoreFailures = false // Fail build on violations
 }
 
 pmd {
-	toolVersion = '6.55.0' // Latest stable as of now
-	consoleOutput = true
-	ignoreFailures = false
+    toolVersion = '6.55.0' // Latest stable as of now
+    consoleOutput = true
+    ignoreFailures = false
 }
 
 spotbugs {
-	toolVersion = '4.8.5'
-	ignoreFailures = false
-	showProgress = true
-	effort = 'max'
-	reportLevel = 'medium'
-	reportsDir = file("$buildDir/reports/spotbugs")
+    toolVersion = '4.8.5'
+    ignoreFailures = false
+    showProgress = true
+    effort = 'max'
+    reportLevel = 'medium'
+    reportsDir = file("$buildDir/reports/spotbugs")
 }
 
 spotbugsMain {
-	reports {
-		html.enabled = true
-		xml.enabled = false
-	}
+    reports {
+        html.enabled = true
+        xml.enabled = false
+    }
 }
 
 spotbugsTest {
-	reports {
-		html.enabled = true
-		xml.enabled = false
-	}
+    reports {
+        html.enabled = true
+        xml.enabled = false
+    }
 }
 
 // If you need to execute spotbugs during the build process
 tasks.named('check') {
-	dependsOn 'spotbugsMain'
+    dependsOn 'spotbugsMain'
 }

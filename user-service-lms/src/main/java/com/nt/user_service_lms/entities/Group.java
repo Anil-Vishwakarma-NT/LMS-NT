@@ -56,7 +56,7 @@ public class Group {
     /**
      * Constructor to initialize group with name and creator ID.
      *
-     * @param name the group name
+     * @param name      the group name
      * @param creatorId the creator's user ID
      */
     public Group(final String name, final long creatorId) {

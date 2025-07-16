@@ -95,6 +95,7 @@ public class AuthServiceImp {
                     return Mono.just(ResponseEntity.status(400).body(null));
                 });
     }
+
     public Mono<ResponseEntity<AuthResponse>> refreshToken(RefreshTokenRequest request) {
         return Mono.fromCallable(() -> jwtTokenManager.extractEmail(request.getRefreshToken()))
                 .flatMap(email ->

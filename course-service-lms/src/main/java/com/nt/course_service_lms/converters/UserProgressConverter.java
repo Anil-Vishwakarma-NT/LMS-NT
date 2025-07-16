@@ -9,19 +9,33 @@ import java.time.LocalDateTime;
 @Component
 public class UserProgressConverter {
 
-    public UserProgressOutDTO toDTO(UserProgress entity) {
+    /**
+     * Converts a UserProgress entity to a UserProgressOutDTO.
+     * This method is typically used for retrieving user progress data.
+     *
+     * @param entity the UserProgress entity to convert
+     * @return the corresponding UserProgressOutDTO
+     */
+    public UserProgressOutDTO toDTO(final UserProgress entity) {
         return UserProgressOutDTO.builder()
                 .userId(entity.getUserId())
                 .contentId(entity.getContentId())
-                .courseId(entity.getCourseId()) // Course ID retained
+                .courseId(entity.getCourseId())
                 .contentType(entity.getContentType())
                 .lastPosition(entity.getLastPosition())
-                .contentCompletionPercentage(entity.getContentCompletionPercentage()) // Only content percentage, backend will calculate course progress
-                .lastUpdated(entity.getLastUpdated()) // Direct LocalDateTime mapping
+                .contentCompletionPercentage(entity.getContentCompletionPercentage())
+                .lastUpdated(entity.getLastUpdated())
                 .build();
     }
 
-    public UserProgress toEntity(UserProgressOutDTO dto) {
+    /**
+     * Converts a UserProgressOutDTO to a UserProgress entity.
+     * This method is typically used when updating user progress.
+     *
+     * @param dto the DTO object containing user progress data
+     * @return the corresponding UserProgress entity
+     */
+    public UserProgress toEntity(final UserProgressOutDTO dto) {
         return UserProgress.builder()
                 .userId(dto.getUserId())
                 .contentId(dto.getContentId())

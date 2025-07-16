@@ -129,8 +129,8 @@ public class UserResponseServiceImpl implements UserResponseService {
      * Validates if the user's answer is correct based on the question type and correct answer.
      * Fixed version with proper JSON array handling
      *
-     * @param userAnswer    the user's answer in JSON format
-     * @param question      the quiz question entity
+     * @param userAnswer the user's answer in JSON format
+     * @param question   the quiz question entity
      * @return true if the answer is correct, false otherwise
      */
     private boolean validateAnswer(String userAnswer, QuizQuestion question) {

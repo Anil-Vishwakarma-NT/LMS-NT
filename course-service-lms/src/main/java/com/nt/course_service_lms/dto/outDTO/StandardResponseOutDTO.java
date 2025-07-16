@@ -12,13 +12,19 @@ import java.util.Objects;
  */
 public class StandardResponseOutDTO<T> {
 
-    /** The status of the response (e.g., "SUCCESS", "ERROR"). */
+    /**
+     * The status of the response (e.g., "SUCCESS", "ERROR").
+     */
     private String status;
 
-    /** A human-readable message describing the result of the operation. */
+    /**
+     * A human-readable message describing the result of the operation.
+     */
     private String message;
 
-    /** The actual data payload of the response. */
+    /**
+     * The actual data payload of the response.
+     */
     private T data;
 
     /**
@@ -118,6 +124,17 @@ public class StandardResponseOutDTO<T> {
     }
 
     /**
+     * Creates a failure response wrapper with the given error message.
+     *
+     * @param message the failure message
+     * @param <T>     the type of the payload (null in this case)
+     * @return a {@code StandardResponseOutDTO} with "FAILURE" status
+     */
+    public static <T> StandardResponseOutDTO<T> failure(String message) {
+        return new StandardResponseOutDTO<>("FAILURE", message, null);
+    }
+
+    /**
      * Indicates whether some other object is "equal to" this one.
      *
      * @param o the reference object with which to compare
@@ -125,8 +142,12 @@ public class StandardResponseOutDTO<T> {
      */
     @Override
     public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
+        if (this == o) {
+            return true;
+        }
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
         StandardResponseOutDTO<?> that = (StandardResponseOutDTO<?>) o;
         return Objects.equals(status, that.status) &&
                 Objects.equals(message, that.message) &&

@@ -3,7 +3,11 @@ package com.nt.user_service_lms.entities;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
 public class UserGroupTests {
 
     private UserGroup userGroup;
@@ -21,7 +25,7 @@ public class UserGroupTests {
 
     @Test
     public void testAllArgsConstructor() {
-        UserGroup userGroup = new UserGroup(1L,11L, 2L);
+        UserGroup userGroup = new UserGroup(1L, 11L, 2L);
         assertEquals(1L, userGroup.getId());
         assertEquals(11L, userGroup.getUserId());
         assertEquals(2L, userGroup.getGroupId());

@@ -10,7 +10,14 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
 
@@ -37,7 +44,9 @@ public class QuizController {
      * @return ResponseEntity containing the StandardResponseOutDTO with created QuizOutDTO.
      */
     @PostMapping
-    public ResponseEntity<StandardResponseOutDTO<QuizOutDTO>> createQuiz(@Valid @RequestBody final QuizCreateInDTO quizCreateInDTO) {
+    public ResponseEntity<StandardResponseOutDTO<QuizOutDTO>> createQuiz(
+            @Valid @RequestBody final QuizCreateInDTO quizCreateInDTO
+    ) {
         log.info("Received request to create quiz: {}", quizCreateInDTO.getTitle());
         QuizOutDTO createdQuiz = quizService.createQuiz(quizCreateInDTO);
         log.info("Quiz created successfully with ID: {}", createdQuiz.getQuizId());
@@ -93,7 +102,9 @@ public class QuizController {
      * @return ResponseEntity containing StandardResponseOutDTO with a list of QuizOutDTO for the course content.
      */
     @GetMapping("/course-content/{courseContentId}")
-    public ResponseEntity<StandardResponseOutDTO<List<QuizOutDTO>>> getQuizzesByCourseContent(@PathVariable final Long courseContentId) {
+    public ResponseEntity<StandardResponseOutDTO<List<QuizOutDTO>>> getQuizzesByCourseContent(
+            @PathVariable final Long courseContentId
+    ) {
         log.info("Received request to fetch quizzes for course content ID: {}", courseContentId);
         List<QuizOutDTO> quizzes = quizService.getQuizzesByCourseContent(courseContentId);
         log.info("Retrieved {} quizzes for course content ID: {}", quizzes.size(), courseContentId);
@@ -103,13 +114,14 @@ public class QuizController {
     /**
      * Updates an existing quiz with the given ID.
      *
-     * @param id The ID of the quiz to update.
+     * @param id              The ID of the quiz to update.
      * @param quizUpdateInDTO DTO containing the updated quiz details.
      * @return ResponseEntity containing StandardResponseOutDTO with updated QuizOutDTO.
      */
     @PutMapping("/{id}")
     public ResponseEntity<StandardResponseOutDTO<QuizOutDTO>> updateQuiz(@PathVariable final Long id,
-                                                                         @Valid @RequestBody final QuizUpdateInDTO quizUpdateInDTO) {
+                                                                         @Valid @RequestBody final QuizUpdateInDTO quizUpdateInDTO
+    ) {
         log.info("Received request to update quiz with ID: {}", id);
         QuizOutDTO updatedQuiz = quizService.updateQuiz(id, quizUpdateInDTO);
         log.info("Quiz updated successfully with ID: {}", id);
