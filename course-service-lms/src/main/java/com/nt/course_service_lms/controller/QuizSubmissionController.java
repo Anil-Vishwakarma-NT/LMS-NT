@@ -6,6 +6,7 @@ import com.nt.course_service_lms.dto.outDTO.StandardResponseOutDTO;
 import com.nt.course_service_lms.service.serviceImpl.QuizSubmissionService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 
@@ -31,6 +32,7 @@ public class QuizSubmissionController {
      * Service layer component responsible for handling quiz submission business logic.
      * Injected via constructor using Lombok's @RequiredArgsConstructor annotation.
      */
+    @Autowired
     private QuizSubmissionService quizSubmissionService;
 
     /**
