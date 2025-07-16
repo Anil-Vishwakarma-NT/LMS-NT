@@ -43,7 +43,7 @@ public class SecurityConfig {
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(authz -> authz
                         // user endpoints - require authentication
-                        .requestMatchers("/**").permitAll()
+                        .requestMatchers("/**").authenticated()
                         .anyRequest().authenticated()
                 )
                 .addFilterBefore(serviceAuthenticationFilter, UsernamePasswordAuthenticationFilter.class)

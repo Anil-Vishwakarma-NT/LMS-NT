@@ -4,13 +4,7 @@ import com.nt.user_service_lms.constants.UserConstants;
 import com.nt.user_service_lms.converter.GroupDTOConverter;
 import com.nt.user_service_lms.converter.UserDTOConverter;
 import com.nt.user_service_lms.dto.inDTO.GroupInDTO;
-import com.nt.user_service_lms.dto.outDTO.CourseInfoOutDTO;
-import com.nt.user_service_lms.dto.outDTO.GroupCourseOutDTO;
-import com.nt.user_service_lms.dto.outDTO.GroupOutDTO;
-import com.nt.user_service_lms.dto.outDTO.GroupSummaryOutDTO;
-import com.nt.user_service_lms.dto.outDTO.GroupUserOutDTO;
-import com.nt.user_service_lms.dto.outDTO.MessageOutDto;
-import com.nt.user_service_lms.dto.outDTO.StandardResponseOutDTO;
+import com.nt.user_service_lms.dto.outDTO.*;
 import com.nt.user_service_lms.entities.Enrollment;
 import com.nt.user_service_lms.entities.Group;
 import com.nt.user_service_lms.entities.User;
@@ -560,5 +554,58 @@ public class GroupServiceImpl implements GroupService {
             }
         }
         return StandardResponseOutDTO.success(new ArrayList<>(mp.values()), "Successfully fetched course details.");
+    }
+
+    @Override
+    public StandardResponseOutDTO<List<UserGroupOutDTO>> getUserGroupDetail(String email) {
+
+        User user = userRepository.findByEmailIgnoreCase(email)
+                .orElseThrow(() -> new ResourceNotFoundException(USER_NOT_FOUND));
+
+        List<Enrollment> enrols = enrollmentRepository.findByUserId(user.getUserId());
+
+        Map<Long , UserGroupOutDTO> mp = new HashMap<>();
+
+        for (Enrollment en : enrols) {
+            if (en.getIsActive() && en.getGroupId()!=null) {
+                Optional<Group> group = groupRepository.findByGroupId(en.getGroupId());
+                if (group.isPresent()) {
+                    String groupName = group.get().getGroupName();
+                    UserGroupOutDTO gc = mp.getOrDefault(en.getGroupId(), new UserGroupOutDTO());
+                    long totalenrols = gc.getEnrols() + 1;
+                    double userprogress = courseMicroserviceClient.getCourseProgressWithMeta(en.getUserId().longValue(), en.getCourseId().longValue()).getCourseCompletionPercentage();
+                    double progress = ((gc.getProgress() * gc.getEnrols()) + userprogress) / totalenrols;
+                    gc.setGroupName(groupName);
+                    gc.setGroupId(group.get().getGroupId());
+                    mp.put(en.getCourseId(), gc);
+                }
+                else{
+                    throw new ResourceNotFoundException(GROUP_NOT_FOUND);
+                }
+            }
+        }
+        return StandardResponseOutDTO.success( new ArrayList<>(mp.values()),"Successfully fetched course details.");
+    }
+
+    @Override
+    public StandardResponseOutDTO<List<GroupCourseOutDTO>> getCourseEmpDetail(long groupId) {
+
+        List<Enrollment> enrols = enrollmentRepository.findByGroupId(groupId);
+
+        Map<Long , GroupCourseOutDTO > mp = new HashMap<>();
+
+        for (Enrollment en : enrols) {
+            if (en.getIsActive()) {
+                String courseName = courseMicroserviceClient.getCourseNameById(en.getCourseId()).getBody();
+                GroupCourseOutDTO gc = mp.getOrDefault(en.getCourseId(), new GroupCourseOutDTO());
+                gc.setCourseName(courseName);
+                gc.setCourseId(en.getCourseId());
+                mp.put(en.getCourseId(), gc);
+            }
+        }
+
+
+
+        return StandardResponseOutDTO.success( new ArrayList<>(mp.values()),"Successfully fetched course details.");
     }
 }

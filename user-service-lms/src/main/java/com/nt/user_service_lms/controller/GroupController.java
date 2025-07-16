@@ -272,7 +272,7 @@ public class GroupController {
      * and HTTP status OK (200) if groups found, or NO_CONTENT (204) if no groups found
      */
     @GetMapping("/Allgroups")
-    @PreAuthorize("hasAnyRole('ADMIN')")
+    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<StandardResponseOutDTO<List<GroupOutDTO>>> getAllGroups() {
         log.info("Fetching groups ");
         StandardResponseOutDTO<List<GroupOutDTO>> response = groupService.getAllGroups();
