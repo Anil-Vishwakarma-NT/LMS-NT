@@ -9,6 +9,7 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import com.nt.user_service_lms.service.serviceImpl.CourseReportKPIQueries;
 import com.nt.user_service_lms.service.serviceImpl.CoursePDFReportBuilder;
 import com.nt.user_service_lms.service.serviceImpl.CourseExcelReportBuilder;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;

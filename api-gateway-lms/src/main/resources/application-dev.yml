@@ -5,9 +5,6 @@ spring:
   application:
     name: api-gateway-auth-service
   datasource:
-    url: jdbc:postgresql://<dev-rds-endpoint>:5432/lms
-    username: dev_user
-    password: dev_password
     driver-class-name: org.postgresql.Driver
   jpa:
     database-platform: org.hibernate.dialect.PostgreSQLDialect
@@ -17,7 +14,7 @@ spring:
     gateway:
       routes:
         - id: user-service-client-api
-          uri: http://user-service-lms:8081
+          uri: http://user-service-lms:8081  # Update with development service DNS if needed
           predicates:
             - Path=/lms/user/api/client-api/**
           filters:
@@ -25,7 +22,7 @@ spring:
             - AddRequestHeader=X-Gateway-Service, user-service
 
         - id: course-service-client-api
-          uri: http://course-service-lms:8080
+          uri: http://course-service-lms:8080  # Update with development service DNS if needed
           predicates:
             - Path=/lms/course/api/client-api/**
           filters:
@@ -41,6 +38,14 @@ spring:
       httpclient:
         connect-timeout: 10000
         response-timeout: 60s
+
+aws:
+  s3:
+    bucket-name: your-bucket-name
+  secretsmanager:
+    region: ap-south-1
+    secretName: /dev/lms/db/credentials
+
 
 jwt:
   secret: ${JWT_SECRET}

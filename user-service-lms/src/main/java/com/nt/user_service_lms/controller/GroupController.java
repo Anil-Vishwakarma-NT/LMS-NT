@@ -12,6 +12,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -36,9 +37,9 @@ import java.util.List;
  * @version 1.0
  * @since 1.0
  */
+@Slf4j
 @RestController
 @RequestMapping("/api/service-api/group")
-@Slf4j
 public class GroupController {
 
     /**
@@ -75,13 +76,13 @@ public class GroupController {
      * @throws UnauthorizedAccessException if authentication fails or user is not authorized
      */
     @PostMapping("/create-group")
+    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<StandardResponseOutDTO<MessageOutDto>> createGroup(@Valid @RequestBody final GroupInDTO groupInDTO) {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
 
         if (!(authentication.getPrincipal() instanceof ServicePrincipal principal)) {
             throw new UnauthorizedAccessException("Authentication failed");
         }
-
         String username = principal.getUserEmail();
         log.info("Attempting to create a group with name: {}", groupInDTO.getGroupName());
         StandardResponseOutDTO<MessageOutDto> response = groupService
@@ -100,6 +101,7 @@ public class GroupController {
      *         and HTTP status OK (200)
      */
     @DeleteMapping("/remove/{groupId}")
+    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<StandardResponseOutDTO<MessageOutDto>> deleteGroup(@PathVariable final long groupId) {
         log.info("Attempting to delete group with ID: {}", groupId);
         StandardResponseOutDTO<MessageOutDto> response = groupService.deleteGroup(groupId);
@@ -118,6 +120,7 @@ public class GroupController {
      *         and HTTP status OK (200)
      */
     @PutMapping("/update-group")
+    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<StandardResponseOutDTO<MessageOutDto>> updateGroup(@RequestBody final GroupInDTO groupInDTO) {
         log.info("Updating Group details");
         StandardResponseOutDTO<MessageOutDto> response = groupService
@@ -138,6 +141,7 @@ public class GroupController {
      * @throws UnauthorizedAccessException if authentication fails or user lacks permissions
      */
     @PostMapping("/add-user")
+    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<StandardResponseOutDTO<MessageOutDto>> addUserToGroup(@Valid @RequestBody final GroupInDTO groupInDTO) {
         log.info("Attempting to add user with ID: to group with ID: {}", groupInDTO.getGroupId());
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
@@ -163,6 +167,7 @@ public class GroupController {
      *         and HTTP status OK (200)
      */
     @DeleteMapping("/remove-user")
+    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<StandardResponseOutDTO<MessageOutDto>> removeUserFromGroup(
             @Valid @RequestBody final GroupInDTO groupdto) {
         log.info("Attempting to remove user with ID: {} from group with ID: {}", groupdto.getUserId(), groupdto.getGroupId());
@@ -182,23 +187,10 @@ public class GroupController {
      *         and HTTP status OK (200) if users found, or NO_CONTENT (204) if no users found
      */
     @GetMapping("/group-emps/{groupId}")
+    @PreAuthorize("hasRole('ADMIN') or hasRole('EMPLOYEE')")
     public ResponseEntity<StandardResponseOutDTO<List<GroupUserOutDTO>>> getUsersInGroup(@PathVariable final long groupId) {
         log.info("Fetching users in group with ID: {}", groupId);
         StandardResponseOutDTO<List<GroupUserOutDTO>> response = groupService.getUserDetail(groupId);
-
-        if (response.getData().isEmpty()) {
-            log.warn("No users found in group with ID: {}", groupId);
-            return new ResponseEntity<>(response, HttpStatus.NO_CONTENT);
-        }
-
-        log.info("Users found in group with ID: {}: {}", groupId, response.getData().size());
-        return new ResponseEntity<>(response, HttpStatus.OK);
-    }
-
-    @GetMapping("emp/group-emps/{groupId}")
-    public ResponseEntity<StandardResponseOutDTO<List<GroupUserOutDTO>>> getUsersInGroupForEmp(@PathVariable final long groupId) {
-        log.info("Fetching users in group with ID: {}", groupId);
-        StandardResponseOutDTO<List<GroupUserOutDTO>> response = groupService.getUserDetailEmp(groupId);
 
         if (response.getData().isEmpty()) {
             log.warn("No users found in group with ID: {}", groupId);
@@ -220,6 +212,7 @@ public class GroupController {
      *         and HTTP status OK (200)
      */
     @GetMapping("/group-courses/{groupId}")
+    @PreAuthorize("hasRole('ADMIN') or hasRole('EMPLOYEE')")
     public ResponseEntity<StandardResponseOutDTO<List<GroupCourseOutDTO>>> getCourseDetails(@PathVariable final long groupId) {
         log.info("Attempting to get course details of groupId : {}", groupId);
         StandardResponseOutDTO<List<GroupCourseOutDTO>> response = groupService.getCourseDetail(groupId);
@@ -229,6 +222,7 @@ public class GroupController {
 
 
     @GetMapping("emp/group-courses/{groupId}")
+    @PreAuthorize("hasRole('ADMIN') or hasRole('EMPLOYEE')")
     public ResponseEntity<StandardResponseOutDTO<List<GroupCourseOutDTO>>> getCourseEmpDetails(@PathVariable final long groupId){     // pass group id in dto
         log.info("Attempting to get course details of groupId : {}",groupId);
         StandardResponseOutDTO<List<GroupCourseOutDTO>> response = groupService.getCourseEmpDetail(groupId);
@@ -247,6 +241,7 @@ public class GroupController {
      * @throws UnauthorizedAccessException if authentication fails
      */
     @GetMapping("/groups")
+    @PreAuthorize("hasRole('ADMIN') or hasRole('EMPLOYEE')")
     public ResponseEntity<StandardResponseOutDTO<List<GroupOutDTO>>> getGroups() {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
 
@@ -277,6 +272,7 @@ public class GroupController {
      *         and HTTP status OK (200) if groups found, or NO_CONTENT (204) if no groups found
      */
     @GetMapping("/Allgroups")
+    @PreAuthorize("hasAnyRole('ADMIN')")
     public ResponseEntity<StandardResponseOutDTO<List<GroupOutDTO>>> getAllGroups() {
         log.info("Fetching groups ");
         StandardResponseOutDTO<List<GroupOutDTO>> response = groupService.getAllGroups();
@@ -300,6 +296,7 @@ public class GroupController {
      *         and HTTP status OK (200) if active groups found, or NO_CONTENT (204) if no active groups found
      */
     @GetMapping("/all-active-groups")
+    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<StandardResponseOutDTO<List<GroupOutDTO>>> getAllActiveGroups() {
         log.info("Fetching groups ");
         StandardResponseOutDTO<List<GroupOutDTO>> response = groupService.getAllActiveGroups();
@@ -323,6 +320,7 @@ public class GroupController {
      *         the total group count and HTTP status OK (200)
      */
     @GetMapping("/count")
+    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<StandardResponseOutDTO<Long>> getGroupCount() {
         log.info("Received request to get total Group count.");
         long count = groupService.countGroups();
@@ -346,6 +344,7 @@ public class GroupController {
      *         and HTTP status OK (200)
      */
     @GetMapping("/recent")
+    @PreAuthorize("hasRole('ADMIN') or hasRole('MANAGER')")
     public ResponseEntity<StandardResponseOutDTO<List<GroupSummaryOutDTO>>> getRecentGroups() {
         StandardResponseOutDTO<List<GroupSummaryOutDTO>> response = groupService.getRecentGroupSummaries();
         return new ResponseEntity<>(response, HttpStatus.OK);
@@ -363,6 +362,7 @@ public class GroupController {
      *         and HTTP status OK (200)
      */
     @PostMapping("/user-courses")
+    @PreAuthorize("hasRole('ADMIN') or hasRole('EMPLOYEE')")
     public ResponseEntity<StandardResponseOutDTO<List<CourseInfoOutDTO>>> getUserCoursesInGroups(@RequestBody GroupInDTO groupInDTO){
         StandardResponseOutDTO<List<CourseInfoOutDTO>> response = groupService.getUserCourses(groupInDTO.getGroupId(), groupInDTO.getUserId());
         return new ResponseEntity<>(response,HttpStatus.OK);
@@ -370,6 +370,7 @@ public class GroupController {
 
 
     @GetMapping("/user-groups")
+    @PreAuthorize("hasRole('ADMIN') or hasRole('EMPLOYEE')")
     public ResponseEntity<StandardResponseOutDTO<List<UserGroupOutDTO>>>getUserGroupDetails(){
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
 

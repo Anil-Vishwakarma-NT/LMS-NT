@@ -11,6 +11,7 @@ import jakarta.validation.Valid;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -36,6 +37,7 @@ public class CourseController {
      * @return ResponseEntity containing the created Course entity.
      */
     @PostMapping
+    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<StandardResponseOutDTO<CourseOutDTO>> createCourse(@Valid @RequestBody final CourseInDTO courseInDTO) {
         log.info("Received request to create course: {}", courseInDTO.getTitle());
         CourseOutDTO createdCourse = courseService.createCourse(courseInDTO);
@@ -49,6 +51,7 @@ public class CourseController {
      * @return ResponseEntity containing a list of all Course entities.
      */
     @GetMapping
+    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<StandardResponseOutDTO<List<CourseOutDTO>>> getAllCourses() {
         log.info("Received request to get all courses.");
         List<CourseOutDTO> courses = courseService.getAllCourses();
@@ -77,6 +80,7 @@ public class CourseController {
      * @return ResponseEntity containing a confirmation message.
      */
     @DeleteMapping("/{id}")
+    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<StandardResponseOutDTO<Void>> deleteCourse(@PathVariable final Long id) {
         log.info("Received request to delete course with ID: {}", id);
         String response = courseService.deleteCourse(id);
@@ -92,6 +96,7 @@ public class CourseController {
      * @return ResponseEntity containing a confirmation message.
      */
     @PutMapping("/{id}")
+    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<StandardResponseOutDTO<CourseOutDTO>> updateCourse(@PathVariable final Long id, @Valid @RequestBody final UpdateCourseInDTO updateCourseInDTO) {
         log.info("Received request to update course with ID: {}", id);
         CourseOutDTO courseOutDTO = courseService.updateCourse(id, updateCourseInDTO);
@@ -107,6 +112,7 @@ public class CourseController {
      * @return ResponseEntity with true if course exists, false otherwise.
      */
     @GetMapping("/{id}/exists")
+    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<Boolean> checkIfCourseExists(@PathVariable final Long id) {
         log.info("Fetching course with ID: {}", id);
         boolean exists = courseService.courseExistsById(id);
@@ -114,6 +120,7 @@ public class CourseController {
     }
 
     @GetMapping("/count")
+    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<StandardResponseOutDTO<Long>> getCourseCount() {
         log.info("Received request to get total course count.");
         long count = courseService.countCourses();
@@ -123,6 +130,7 @@ public class CourseController {
     }
 
     @GetMapping("/recent")
+    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<StandardResponseOutDTO<List<CourseSummaryOutDTO>>> getRecentCourses() {
         List<CourseSummaryOutDTO> recentCourses = courseService.getRecentCourseSummaries();
         StandardResponseOutDTO<List<CourseSummaryOutDTO>> standardResponseOutDTO = StandardResponseOutDTO.success(recentCourses, "Fetched Recent Courses");

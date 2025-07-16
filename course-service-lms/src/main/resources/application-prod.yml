@@ -1,0 +1,42 @@
+spring:
+  application:
+    name: course-service
+
+  datasource:
+    driver-class-name: org.postgresql.Driver  # Needed for DataSourceBuilder
+
+  jpa:
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.PostgreSQLDialect
+    hibernate:
+      ddl-auto: validate
+
+  web:
+    resources:
+      static-locations: classpath:/static/
+
+aws:
+  s3:
+    bucket-name: your-bucket-name
+  secretsmanager:
+    region: ap-south-1
+    secretName: /prod/lms/db/credentials  # Replace with your actual prod secret path
+
+jwt:
+  secret: ${JWT_SECRET}
+  issuer: https://auth.nucleusteq.com
+
+gateway:
+  validation:
+    enabled: false
+  secret:
+    header: X-Gateway-Secret
+    value: ${GATEWAY_SECRET}
+  signature:
+    header: X-Gateway-Signature
+
+direct:
+  secret:
+    header: X-Direct-Secret
+    value: ${DIRECT_SECRET}
