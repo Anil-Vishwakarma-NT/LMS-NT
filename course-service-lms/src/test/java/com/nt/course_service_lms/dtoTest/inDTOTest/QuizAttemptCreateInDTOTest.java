@@ -57,6 +57,16 @@ class QuizAttemptCreateInDTOTest {
         assertFalse(violations.isEmpty());
         assertTrue(violations.stream().anyMatch(v -> v.getPropertyPath().toString().equals("userId")));
     }
+    @Test
+    void testBuilderCreatesValidObject() {
+        QuizAttemptCreateInDTO dto = QuizAttemptCreateInDTO.builder()
+                .quizId(1L)
+                .userId(2L)
+                .build();
+
+        assertEquals(1L, dto.getQuizId());
+        assertEquals(2L, dto.getUserId());
+    }
 
     @Test
     void testEqualsAndHashCode_sameValues() {

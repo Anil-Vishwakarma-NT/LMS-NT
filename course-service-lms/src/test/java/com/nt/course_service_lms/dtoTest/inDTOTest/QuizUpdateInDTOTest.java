@@ -96,6 +96,28 @@ class QuizUpdateInDTOTest {
         violations = validator.validate(dto);
         assertTrue(violations.stream().anyMatch(v -> v.getPropertyPath().toString().equals("passingScore")));
     }
+    @Test
+    void testBuilderCreatesCorrectObject() {
+        QuizUpdateInDTO dto = QuizUpdateInDTO.builder()
+                .title("Builder Title")
+                .description("Builder Desc")
+                .timeLimit(120)
+                .attemptsAllowed(3)
+                .passingScore(new BigDecimal("60.00"))
+                .randomizeQuestions(true)
+                .showResults(false)
+                .isActive(true)
+                .build();
+
+        assertEquals("Builder Title", dto.getTitle());
+        assertEquals("Builder Desc", dto.getDescription());
+        assertEquals(120, dto.getTimeLimit());
+        assertEquals(3, dto.getAttemptsAllowed());
+        assertEquals(new BigDecimal("60.00"), dto.getPassingScore());
+        assertTrue(dto.getRandomizeQuestions());
+        assertFalse(dto.getShowResults());
+        assertTrue(dto.getIsActive());
+    }
 
     @Test
     void testEqualsAndHashCode() {

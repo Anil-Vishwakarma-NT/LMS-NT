@@ -109,6 +109,34 @@ class QuizCreateInDTOTest {
         assertTrue(hasViolation(v, "isActive"));
         assertTrue(hasViolation(v, "createdBy"));
     }
+    @Test
+    void testBuilderCreatesValidObject() {
+        QuizCreateInDTO dto = QuizCreateInDTO.builder()
+                .parentType("course")
+                .parentId(1L)
+                .title("Sample Quiz")
+                .description("Quiz description")
+                .timeLimit(30)
+                .attemptsAllowed(2)
+                .passingScore(BigDecimal.valueOf(75.5))
+                .randomizeQuestions(true)
+                .showResults(true)
+                .isActive(true)
+                .createdBy(123)
+                .build();
+
+        assertEquals("course", dto.getParentType());
+        assertEquals(1L, dto.getParentId());
+        assertEquals("Sample Quiz", dto.getTitle());
+        assertEquals("Quiz description", dto.getDescription());
+        assertEquals(30, dto.getTimeLimit());
+        assertEquals(2, dto.getAttemptsAllowed());
+        assertEquals(BigDecimal.valueOf(75.5), dto.getPassingScore());
+        assertTrue(dto.getRandomizeQuestions());
+        assertTrue(dto.getShowResults());
+        assertTrue(dto.getIsActive());
+        assertEquals(123, dto.getCreatedBy());
+    }
 
     @Test
     void testDefaultConstructorSetters() {

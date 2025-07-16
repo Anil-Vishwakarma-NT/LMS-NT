@@ -74,6 +74,23 @@ class QuizSubmissionInDTOTest {
         Set<ConstraintViolation<QuizSubmissionInDTO>> violations = validator.validate(dto);
         assertTrue(violations.isEmpty(), "List is allowed to be null unless @NotNull is used");
     }
+    @Test
+    void testBuilderCreatesValidQuizSubmission() {
+        UserResponseInDTO response = new UserResponseInDTO(
+                1L, 2L, 3L, 4L, "{\"response\":\"C\"}", LocalDateTime.now()
+        );
+
+        QuizSubmissionInDTO dto = QuizSubmissionInDTO.builder()
+                .userResponses(Arrays.asList(response))
+                .notes("Attempt via builder")
+                .timeSpent(120L)
+                .build();
+
+        assertEquals("Attempt via builder", dto.getNotes());
+        assertEquals(120L, dto.getTimeSpent());
+        assertEquals(1, dto.getUserResponses().size());
+        assertEquals(response, dto.getUserResponses().get(0));
+    }
 
     @Test
     void testDefaultConstructorAndSetters() {
