@@ -102,6 +102,7 @@ class QuizUpdateInDTOTest {
         violations = validator.validate(dto);
         assertTrue(violations.stream().anyMatch(v -> v.getPropertyPath().toString().equals("passingScore")));
     }
+
     @Test
     void testBuilderCreatesCorrectObject() {
         QuizUpdateInDTO dto = QuizUpdateInDTO.builder()

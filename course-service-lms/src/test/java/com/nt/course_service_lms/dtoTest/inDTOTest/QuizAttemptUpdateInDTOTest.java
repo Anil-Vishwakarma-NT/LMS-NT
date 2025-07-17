@@ -60,6 +60,7 @@ class QuizAttemptUpdateInDTOTest {
         Set<ConstraintViolation<QuizAttemptUpdateInDTO>> violations = validator.validate(dto);
         assertTrue(violations.isEmpty());
     }
+
     @Test
     void testBuilderCreatesValidObject() {
         LocalDateTime now = LocalDateTime.now();

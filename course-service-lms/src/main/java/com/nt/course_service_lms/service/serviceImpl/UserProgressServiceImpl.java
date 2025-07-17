@@ -84,11 +84,9 @@ public class UserProgressServiceImpl implements UserProgressService {
      * </ul>
      *
      * @param progressDTO the progress data transfer object containing user ID, course ID,
-     *                   content ID, completion percentage, and last position
+     *                    content ID, completion percentage, and last position
      * @throws IllegalArgumentException if progressDTO is null or contains invalid data
-     *
-     * @example
-     * <pre>{@code
+     * @example <pre>{@code
      * UserProgressOutDTO progressDTO = new UserProgressOutDTO();
      * progressDTO.setUserId(123L);
      * progressDTO.setCourseId(456L);
@@ -176,7 +174,7 @@ public class UserProgressServiceImpl implements UserProgressService {
      *   <li>Maps content items to DTOs with progress information</li>
      * </ul>
      *
-     * @param userId the unique identifier of the user
+     * @param userId   the unique identifier of the user
      * @param courseId the unique identifier of the course
      * @return a list of CourseContentInDTO objects representing all content items in the course
      * @throws IllegalArgumentException if userId or courseId is null or negative
@@ -221,7 +219,7 @@ public class UserProgressServiceImpl implements UserProgressService {
      *
      * <p>If there are no content items in the course, the method returns 0.0.</p>
      *
-     * @param userId the unique identifier of the user
+     * @param userId   the unique identifier of the user
      * @param courseId the unique identifier of the course
      * @return the calculated completion percentage as a double value between 0.0 and 100.0
      * @throws IllegalArgumentException if userId or courseId is null or negative
@@ -256,10 +254,10 @@ public class UserProgressServiceImpl implements UserProgressService {
      *   <li>First completion timestamp (null if not yet completed)</li>
      * </ul>
      *
-     * @param userId the unique identifier of the user
+     * @param userId   the unique identifier of the user
      * @param courseId the unique identifier of the course
      * @return a CourseProgressWithMetaDTO containing completion percentage and first completion timestamp,
-     *         or a DTO with 0.0 completion and null timestamp if no progress exists
+     * or a DTO with 0.0 completion and null timestamp if no progress exists
      * @throws IllegalArgumentException if userId or courseId is null or negative
      */
     public CourseProgressWithMetaDTO getCourseProgressWithMeta(final Long userId, final Long courseId) {
@@ -283,8 +281,8 @@ public class UserProgressServiceImpl implements UserProgressService {
      * <p>If no progress record exists for the specified user, course, and content combination,
      * the method returns 0 as the default starting position.</p>
      *
-     * @param userId the unique identifier of the user
-     * @param courseId the unique identifier of the course
+     * @param userId    the unique identifier of the user
+     * @param courseId  the unique identifier of the course
      * @param contentId the unique identifier of the content item
      * @return the last position as an Integer value, or 0 if no progress exists
      * @throws IllegalArgumentException if any of the parameters are null or negative
@@ -307,11 +305,11 @@ public class UserProgressServiceImpl implements UserProgressService {
      * <p>The completion percentage is returned as a double value between 0.0 and 100.0,
      * where 0.0 indicates no progress and 100.0 indicates complete consumption of the content.</p>
      *
-     * @param userId the unique identifier of the user
-     * @param courseId the unique identifier of the course
+     * @param userId    the unique identifier of the user
+     * @param courseId  the unique identifier of the course
      * @param contentId the unique identifier of the content item
      * @return the completion percentage as a Double value between 0.0 and 100.0,
-     *         or 0.0 if no progress exists for the specified content
+     * or 0.0 if no progress exists for the specified content
      * @throws IllegalArgumentException if any of the parameters are null or negative
      */
     public Double getContentProgress(final Long userId, final Long courseId, final Long contentId) {

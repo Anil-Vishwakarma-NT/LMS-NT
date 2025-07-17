@@ -81,6 +81,7 @@ class QuizSubmissionInDTOTest {
         Set<ConstraintViolation<QuizSubmissionInDTO>> violations = validator.validate(dto);
         assertTrue(violations.isEmpty(), "List is allowed to be null unless @NotNull is used");
     }
+
     @Test
     void testBuilderCreatesValidQuizSubmission() {
         UserResponseInDTO response = new UserResponseInDTO(

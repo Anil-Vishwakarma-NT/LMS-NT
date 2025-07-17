@@ -99,7 +99,7 @@ public class QuizSubmissionService {
      * @return QuizSubmissionResultOutDTO containing complete submission results including scores and attempt details
      * @throws ResourceNotFoundException if the quiz attempt is not found
      * @throws ResourceNotValidException if the quiz attempt is not in a valid state for submission
-     * @throws RuntimeException if any unexpected error occurs during submission processing
+     * @throws RuntimeException          if any unexpected error occurs during submission processing
      */
     @Transactional
     public QuizSubmissionResultOutDTO submitQuiz(final Long quizAttemptId,
@@ -213,7 +213,7 @@ public class QuizSubmissionService {
      * @return QuizSubmissionResultOutDTO containing the timeout submission results
      * @throws ResourceNotFoundException if the quiz attempt is not found
      * @throws ResourceNotValidException if the quiz attempt is not in a valid state for timeout submission
-     * @throws RuntimeException if any unexpected error occurs during timeout processing
+     * @throws RuntimeException          if any unexpected error occurs during timeout processing
      */
     @Transactional
     public QuizSubmissionResultOutDTO submitQuizOnTimeout(final Long quizAttemptId,
@@ -249,7 +249,7 @@ public class QuizSubmissionService {
      * @return QuizSubmissionResultOutDTO containing the manual submission results
      * @throws ResourceNotFoundException if the quiz attempt is not found
      * @throws ResourceNotValidException if the quiz attempt is not in a valid state for manual submission
-     * @throws RuntimeException if any unexpected error occurs during manual submission processing
+     * @throws RuntimeException          if any unexpected error occurs during manual submission processing
      */
     @Transactional
     public QuizSubmissionResultOutDTO submitQuizManually(final Long quizAttemptId,
@@ -288,7 +288,7 @@ public class QuizSubmissionService {
      * @return QuizAttempt entity if validation passes
      * @throws ResourceNotFoundException if the quiz attempt is not found in the database
      * @throws ResourceNotValidException if the quiz attempt ID is null or the attempt is not in progress
-     * @throws RuntimeException if any unexpected error occurs during validation
+     * @throws RuntimeException          if any unexpected error occurs during validation
      */
     private QuizAttempt validateAndGetAttempt(final Long quizAttemptId) {
         try {
@@ -340,12 +340,12 @@ public class QuizSubmissionService {
      * </ul>
      * </p>
      *
-     * @param attempt the quiz attempt entity containing user and quiz information
+     * @param attempt   the quiz attempt entity containing user and quiz information
      * @param responses list of user responses (can be null or empty)
      * @return QuizScoreCalculation containing all calculated scores and statistics
      * @throws ResourceNotFoundException if required data for score calculation is not found
      * @throws ResourceNotValidException if the data required for calculation is invalid
-     * @throws RuntimeException if any unexpected error occurs during score calculation
+     * @throws RuntimeException          if any unexpected error occurs during score calculation
      */
     private QuizScoreCalculation calculateScores(final QuizAttempt attempt, final List<UserResponseOutDTO> responses) {
         try {
@@ -482,13 +482,13 @@ public class QuizSubmissionService {
      * </ul>
      * </p>
      *
-     * @param attempt the quiz attempt entity to complete
-     * @param calculation the calculated scores and statistics
+     * @param attempt        the quiz attempt entity to complete
+     * @param calculation    the calculated scores and statistics
      * @param submissionType the type of submission ("MANUAL" or "AUTO_TIMEOUT")
      * @return QuizAttemptOutDTO containing the updated quiz attempt information
      * @throws ResourceNotFoundException if the quiz attempt cannot be found during update
      * @throws ResourceNotValidException if the update data is invalid
-     * @throws RuntimeException if JSON serialization fails or any unexpected error occurs
+     * @throws RuntimeException          if JSON serialization fails or any unexpected error occurs
      */
     private QuizAttemptOutDTO completeQuizAttempt(final QuizAttempt attempt,
                                                   final QuizScoreCalculation calculation,

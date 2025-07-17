@@ -74,7 +74,7 @@ public class CourseServiceImpl implements CourseService {
      * @param courseInDTO the course data transfer object containing course information
      * @return {@link CourseOutDTO} containing the created course details
      * @throws ResourceAlreadyExistsException if a course with the same title already exists for the owner
-     * @throws IllegalArgumentException if courseInDTO is null or contains invalid data
+     * @throws IllegalArgumentException       if courseInDTO is null or contains invalid data
      * @since 1.0
      */
     @Override
@@ -130,7 +130,7 @@ public class CourseServiceImpl implements CourseService {
      * @param courseId the unique identifier of the course to retrieve
      * @return {@link CourseInfoOutDTO} containing detailed course information
      * @throws ResourceNotFoundException if no course is found with the given ID
-     * @throws IllegalArgumentException if courseId is null or invalid
+     * @throws IllegalArgumentException  if courseId is null or invalid
      * @since 1.0
      */
     @Override
@@ -151,7 +151,7 @@ public class CourseServiceImpl implements CourseService {
      * @param courseId the unique identifier of the course
      * @return {@link String} containing the course title
      * @throws ResourceNotFoundException if no course is found with the given ID
-     * @throws IllegalArgumentException if courseId is null or invalid
+     * @throws IllegalArgumentException  if courseId is null or invalid
      * @since 1.0
      */
     @Override
@@ -170,7 +170,7 @@ public class CourseServiceImpl implements CourseService {
      * @param courseId the unique identifier of the course to delete
      * @return {@link String} confirmation message indicating successful deletion
      * @throws ResourceNotFoundException if no course is found with the given ID
-     * @throws IllegalArgumentException if courseId is null or invalid
+     * @throws IllegalArgumentException  if courseId is null or invalid
      * @since 1.0
      */
     @Override
@@ -220,8 +220,8 @@ public class CourseServiceImpl implements CourseService {
      * @param courseIds {@link List} of course IDs to validate
      * @return {@link List} of {@link Long} containing only the IDs of courses that exist
      * @throws ResourceNotFoundException if no courses are found with the given IDs
-     * @throws RuntimeException if a server error occurs during validation
-     * @throws IllegalArgumentException if courseIds is null or empty
+     * @throws RuntimeException          if a server error occurs during validation
+     * @throws IllegalArgumentException  if courseIds is null or empty
      * @since 1.0
      */
     @Override
@@ -245,12 +245,12 @@ public class CourseServiceImpl implements CourseService {
      * <p>This method validates that the update won't create duplicate title-owner combinations,
      * applies the updates, and sets the updated timestamp.
      *
-     * @param courseId the unique identifier of the course to update
+     * @param courseId          the unique identifier of the course to update
      * @param updateCourseInDTO the DTO containing updated course information
      * @return {@link CourseOutDTO} containing the updated course details
      * @throws ResourceNotFoundException if no course is found with the given ID
      * @throws ResourceNotValidException if the update would create a duplicate course for the owner
-     * @throws IllegalArgumentException if courseId is null or updateCourseInDTO is null/invalid
+     * @throws IllegalArgumentException  if courseId is null or updateCourseInDTO is null/invalid
      * @since 1.0
      */
     @Override
@@ -342,7 +342,7 @@ public class CourseServiceImpl implements CourseService {
      * @param courseId the unique identifier of the course to find
      * @return {@link Course} entity if found
      * @throws ResourceNotFoundException if no course is found with the given ID
-     * @throws IllegalArgumentException if courseId is null
+     * @throws IllegalArgumentException  if courseId is null
      */
     private Course findCourseByIdOrThrow(final Long courseId) {
         return courseRepository.findById(courseId)
@@ -358,10 +358,10 @@ public class CourseServiceImpl implements CourseService {
      * <p>This method ensures uniqueness of course titles within the scope of a single owner.
      * The validation is case-insensitive for the title comparison.
      *
-     * @param title the course title to validate
+     * @param title   the course title to validate
      * @param ownerId the ID of the course owner
      * @throws ResourceAlreadyExistsException if a course with the same title already exists for the owner
-     * @throws IllegalArgumentException if title is null/empty or ownerId is null
+     * @throws IllegalArgumentException       if title is null/empty or ownerId is null
      */
     private void validateCourseDoesNotExist(final String title, final Long ownerId) {
         Optional<Course> existingCourse = courseRepository.findByTitleIgnoreCaseAndOwnerId(title, ownerId);
@@ -377,11 +377,11 @@ public class CourseServiceImpl implements CourseService {
      * <p>This method checks if the proposed update would result in a duplicate course
      * for the same owner. It only performs validation if the title or owner is actually changing.
      *
-     * @param courseId the ID of the course being updated
-     * @param updateDTO the DTO containing the proposed updates
+     * @param courseId       the ID of the course being updated
+     * @param updateDTO      the DTO containing the proposed updates
      * @param existingCourse the current course entity
      * @throws ResourceNotValidException if the update would create a duplicate course for the owner
-     * @throws IllegalArgumentException if any parameter is null
+     * @throws IllegalArgumentException  if any parameter is null
      */
     private void validateNoDuplicateOnUpdate(
             final Long courseId,

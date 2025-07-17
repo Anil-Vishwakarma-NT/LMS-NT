@@ -76,6 +76,7 @@ class UpdateCourseBundleInDTOTest {
         assertTrue(violations.stream().anyMatch(v -> v.getPropertyPath().toString().equals("bundleId")));
         assertTrue(violations.stream().anyMatch(v -> v.getPropertyPath().toString().equals("courseId")));
     }
+
     @Test
     void testBuilderCreatesValidObject() {
         UpdateCourseBundleInDTO dto = UpdateCourseBundleInDTO.builder()

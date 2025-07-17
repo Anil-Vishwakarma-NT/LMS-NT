@@ -93,7 +93,8 @@ public class QuizServiceImpl implements QuizService {
                         throw new ResourceNotFoundException("Course Content Not Found");
                     }
                     break;
-                default: throw new ResourceNotValidException("Invalid Request");
+                default:
+                    throw new ResourceNotValidException("Invalid Request");
             }
 
             // Check for duplicate quiz title within the same parent
@@ -278,9 +279,9 @@ public class QuizServiceImpl implements QuizService {
             if (quizUpdateInDTO.getTitle() != null
                     && !existingQuiz.getTitle().equalsIgnoreCase(quizUpdateInDTO.getTitle())
                     && quizRepository.existsByTitleAndParentTypeAndParentId(
-                            quizUpdateInDTO.getTitle(),
-                            existingQuiz.getParentType(),
-                            existingQuiz.getParentId())) {
+                    quizUpdateInDTO.getTitle(),
+                    existingQuiz.getParentType(),
+                    existingQuiz.getParentId())) {
                 log.error("Quiz with title '{}' already exists for parent type '{}' and parent ID '{}'",
                         quizUpdateInDTO.getTitle(),
                         existingQuiz.getParentType(),

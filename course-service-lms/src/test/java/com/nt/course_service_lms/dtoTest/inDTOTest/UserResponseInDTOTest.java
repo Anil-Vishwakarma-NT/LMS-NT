@@ -112,6 +112,7 @@ class UserResponseInDTOTest {
         dto.setUserAnswer(new String(new char[10001]).replace('\0', 'A'));
         assertViolation(dto, "User answer cannot exceed 10000 characters");
     }
+
     @Test
     void testBuilderCreatesValidDTO() {
         UserResponseInDTO dto = UserResponseInDTO.builder()

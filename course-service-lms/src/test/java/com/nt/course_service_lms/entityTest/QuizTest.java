@@ -252,6 +252,7 @@ public class QuizTest {
         assertThat(str).contains("createdAt=");
         assertThat(str).contains("updatedAt=");
     }
+
     @Test
     void testSettingAllFields() {
         Quiz quiz = new Quiz();

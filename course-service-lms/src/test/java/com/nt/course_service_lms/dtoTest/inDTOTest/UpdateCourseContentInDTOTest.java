@@ -133,6 +133,7 @@ class UpdateCourseContentInDTOTest {
         Set<ConstraintViolation<UpdateCourseContentInDTO>> violations = validator.validate(dto);
         assertTrue(violations.isEmpty());
     }
+
     @Test
     void testBuilderCreatesValidObject() {
         UpdateCourseContentInDTO dto = UpdateCourseContentInDTO.builder()

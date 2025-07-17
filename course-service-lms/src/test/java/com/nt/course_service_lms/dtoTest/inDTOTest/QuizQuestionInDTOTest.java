@@ -110,6 +110,7 @@ class QuizQuestionInDTOTest {
         Set<ConstraintViolation<QuizQuestionInDTO>> violations = validator.validate(dto);
         assertTrue(violations.stream().anyMatch(v -> v.getPropertyPath().toString().equals("questionType")));
     }
+
     @Test
     void testBuilderCreatesValidObject() {
         QuizQuestionInDTO dto = QuizQuestionInDTO.builder()

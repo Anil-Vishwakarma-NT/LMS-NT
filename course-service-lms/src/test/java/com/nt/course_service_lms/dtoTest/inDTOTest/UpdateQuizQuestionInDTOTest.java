@@ -87,6 +87,7 @@ class UpdateQuizQuestionInDTOTest {
         dto.setCorrectAnswer(new String(new char[5001]).replace('\0', 'A'));
         assertViolation(dto, "Correct answer cannot exceed 5000 characters");
     }
+
     @Test
     void testOptionsTooLong() {
         UpdateQuizQuestionInDTO dto = createValidDTO();
@@ -128,6 +129,7 @@ class UpdateQuizQuestionInDTOTest {
         dto.setRequired(null);
         assertViolation(dto, "Required field must be specified");
     }
+
     @Test
     void testBuilderCreatesValidDTO() {
         UpdateQuizQuestionInDTO dto = UpdateQuizQuestionInDTO.builder()

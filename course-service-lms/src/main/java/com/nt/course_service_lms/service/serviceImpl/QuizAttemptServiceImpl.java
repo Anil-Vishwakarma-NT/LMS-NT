@@ -154,7 +154,7 @@ public class QuizAttemptServiceImpl implements QuizAttemptService {
      * is changed to COMPLETED, ABANDONED, or TIMED_OUT.</p>
      *
      * @param quizAttemptId the unique identifier of the quiz attempt to update
-     * @param dto the data transfer object containing the fields to update
+     * @param dto           the data transfer object containing the fields to update
      * @return QuizAttemptOutDTO containing the updated attempt details
      * @throws ResourceNotValidException if the quiz attempt ID is null or status transition is invalid
      * @throws ResourceNotFoundException if the quiz attempt with the given ID is not found
@@ -392,7 +392,7 @@ public class QuizAttemptServiceImpl implements QuizAttemptService {
      * It automatically sets the finished timestamp to the current time.</p>
      *
      * @param quizAttemptId the unique identifier of the quiz attempt to complete
-     * @param scoreDetails the score details or results of the completed attempt
+     * @param scoreDetails  the score details or results of the completed attempt
      * @return QuizAttemptOutDTO containing the completed attempt details
      * @throws ResourceNotValidException if the quiz attempt ID is null or attempt cannot be completed
      * @throws ResourceNotFoundException if the quiz attempt with the given ID is not found
@@ -582,7 +582,7 @@ public class QuizAttemptServiceImpl implements QuizAttemptService {
      * prevents manipulation of completed attempts.</p>
      *
      * @param currentStatus the current status of the quiz attempt
-     * @param newStatus the new status to transition to
+     * @param newStatus     the new status to transition to
      * @return true if the transition is invalid, false if it's valid
      */
     private boolean isInvalidStatusTransition(final String currentStatus, final String newStatus) {

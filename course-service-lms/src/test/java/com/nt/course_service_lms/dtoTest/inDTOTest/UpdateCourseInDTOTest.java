@@ -122,6 +122,7 @@ class UpdateCourseInDTOTest {
         Set<ConstraintViolation<UpdateCourseInDTO>> violations = validator.validate(dto);
         assertTrue(violations.stream().anyMatch(v -> v.getPropertyPath().toString().equals("description")));
     }
+
     @Test
     void builderShouldCreateValidDTO() {
         UpdateCourseInDTO dto = UpdateCourseInDTO.builder()

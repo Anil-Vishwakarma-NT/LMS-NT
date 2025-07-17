@@ -93,6 +93,7 @@ class QuizQuestionUpdateInDTOTest {
 
         assertTrue(violations.stream().allMatch(v -> v.getPropertyPath().toString().equals("points")));
     }
+
     @Test
     void testBuilderCreatesValidObject() {
         QuizQuestionUpdateInDTO dto = QuizQuestionUpdateInDTO.builder()

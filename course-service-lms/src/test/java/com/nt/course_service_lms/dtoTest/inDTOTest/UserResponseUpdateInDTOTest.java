@@ -90,6 +90,7 @@ class UserResponseUpdateInDTOTest {
         dto.setPointsEarned(new BigDecimal("10.123"));
         assertViolation(dto, "Points earned must have at most 3 integer digits and 2 decimal places");
     }
+
     @Test
     void testBuilderCreatesValidDTO() {
         UserResponseUpdateInDTO dto = UserResponseUpdateInDTO.builder()
@@ -102,6 +103,7 @@ class UserResponseUpdateInDTOTest {
         Set<ConstraintViolation<UserResponseUpdateInDTO>> violations = validator.validate(dto);
         assertTrue(violations.isEmpty(), "DTO created with builder should be valid");
     }
+
     @Test
     void testPointsEarnedAtMinBoundary() {
         UserResponseUpdateInDTO dto = createValidDTO();

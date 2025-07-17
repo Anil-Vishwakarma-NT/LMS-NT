@@ -47,13 +47,19 @@ import static com.nt.course_service_lms.converters.QuizQuestionConverter.convert
 @Transactional
 public class QuizQuestionServiceImpl implements QuizQuestionService {
 
-    /** Repository for quiz question data access operations. */
+    /**
+     * Repository for quiz question data access operations.
+     */
     private final QuizQuestionRepository quizQuestionRepository;
 
-    /** Repository for quiz data access operations - used for validation. */
+    /**
+     * Repository for quiz data access operations - used for validation.
+     */
     private final QuizRepository quizRepository;
 
-    /** ObjectMapper for JSON serialization/deserialization and validation. */
+    /**
+     * ObjectMapper for JSON serialization/deserialization and validation.
+     */
     private final ObjectMapper objectMapper;
 
     /**
@@ -194,7 +200,7 @@ public class QuizQuestionServiceImpl implements QuizQuestionService {
      *   <li>Updates timestamps appropriately</li>
      * </ul>
      *
-     * @param questionId the ID of the question to update
+     * @param questionId    the ID of the question to update
      * @param questionInDTO the updated question data
      * @return QuizQuestionOutDTO the updated question as an output DTO
      * @throws ResourceNotFoundException if the question is not found
@@ -319,8 +325,8 @@ public class QuizQuestionServiceImpl implements QuizQuestionService {
      * <p>Valid positions are from 1 to the total number of questions + 1 (to allow insertion).
      * The excludeQuestionId parameter is used when updating a question to exclude it from the count.</p>
      *
-     * @param quizId the ID of the quiz to validate position for
-     * @param newPosition the position to validate
+     * @param quizId            the ID of the quiz to validate position for
+     * @param newPosition       the position to validate
      * @param excludeQuestionId the ID of a question to exclude from the count (for updates)
      * @throws ResourceNotValidException if the position is out of valid range
      */
@@ -346,8 +352,8 @@ public class QuizQuestionServiceImpl implements QuizQuestionService {
      *   <li>Moving down: shifts questions up from oldPosition+1 to newPosition</li>
      * </ul>
      *
-     * @param quizId the ID of the quiz containing the questions
-     * @param questionId the ID of the question being moved (excluded from reordering)
+     * @param quizId      the ID of the quiz containing the questions
+     * @param questionId  the ID of the question being moved (excluded from reordering)
      * @param oldPosition the current position of the question
      * @param newPosition the desired position of the question
      */
@@ -405,7 +411,7 @@ public class QuizQuestionServiceImpl implements QuizQuestionService {
      * <p>This method shifts all questions with positions greater than the deleted position
      * up by one position to maintain sequential numbering.</p>
      *
-     * @param quizId the ID of the quiz containing the remaining questions
+     * @param quizId          the ID of the quiz containing the remaining questions
      * @param deletedPosition the position of the deleted question
      */
     private void reorderQuestionsAfterDelete(final Long quizId, final Integer deletedPosition) {
@@ -493,7 +499,7 @@ public class QuizQuestionServiceImpl implements QuizQuestionService {
      * from the provided DTO. The updated timestamp is set separately.</p>
      *
      * @param question the question entity to update
-     * @param dto the DTO containing the updated data
+     * @param dto      the DTO containing the updated data
      */
     private void updateQuestionFromUpdateDTO(final QuizQuestion question, final UpdateQuizQuestionInDTO dto) {
         // Note: quizId is not updated since UpdateQuizQuestionInDTO doesn't contain it

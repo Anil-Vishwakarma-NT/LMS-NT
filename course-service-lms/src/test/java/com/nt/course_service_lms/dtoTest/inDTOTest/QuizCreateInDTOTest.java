@@ -115,6 +115,7 @@ class QuizCreateInDTOTest {
         assertTrue(hasViolation(v, "isActive"));
         assertTrue(hasViolation(v, "createdBy"));
     }
+
     @Test
     void testBuilderCreatesValidObject() {
         QuizCreateInDTO dto = QuizCreateInDTO.builder()
