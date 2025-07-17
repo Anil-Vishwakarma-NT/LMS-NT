@@ -64,6 +64,7 @@ public class EnrollmentController {
      * @since 1.0
      */
     @PostMapping("/enroll")
+    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<StandardResponseOutDTO<List<EnrollmentOutDTO>>> enroll(
             @Valid @RequestBody final EnrollmentRequestInDTO enrollmentRequestInDTO) {
 
@@ -98,6 +99,7 @@ public class EnrollmentController {
      * @since 1.0
      */
     @GetMapping("/statistics")
+    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<StandardResponseOutDTO<EnrollmentDashBoardStatsOutDTO>> getEnrollmentStatistics() {
 
         log.info("Fetching enrollment statistics for dashboard");
@@ -130,6 +132,7 @@ public class EnrollmentController {
      * @since 1.0
      */
     @GetMapping("/user-enrollments/{id}")
+    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<StandardResponseOutDTO<UserEnrollmentsOutDTO>> getUserEnrollmentsByUserId(
             @PathVariable("id") final Long userId) {
 
@@ -163,6 +166,7 @@ public class EnrollmentController {
      * @since 1.0
      */
     @GetMapping("/user-enrollments")
+    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<StandardResponseOutDTO<List<UserEnrollmentsOutDTO>>> getUserEnrollments() {
 
         log.info("Fetching enrollments for all users");
@@ -195,6 +199,7 @@ public class EnrollmentController {
      * @since 1.0
      */
     @GetMapping("/user-course-enrollments")
+    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<StandardResponseOutDTO<List<UserCourseEnrollmentOutDTO>>> getUserCourseEnrollments() {
 
         log.info("Fetching individual course enrollments for all users");
@@ -229,6 +234,7 @@ public class EnrollmentController {
      * @since 1.0
      */
     @GetMapping("/user-bundle-enrollments")
+    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<StandardResponseOutDTO<List<UserBundleEnrollmentOutDTO>>> getUserBundleEnrollments() {
 
         log.info("Fetching individual bundle enrollments for all users");
@@ -263,6 +269,7 @@ public class EnrollmentController {
      * @since 1.0
      */
     @GetMapping("/userCourses/{userId}")
+    @PreAuthorize("hasRole('ADMIN') or hasRole('EMPLOYEE')")
     public ResponseEntity<StandardResponseOutDTO<List<UserCourseEnrollDetails>>> getEnrolledCoursesByUserId(
             @PathVariable final Long userId) {
 

@@ -10,6 +10,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -50,6 +51,7 @@ public class BundleController {
      * and HTTP status 201 (CREATED) on successful creation
      */
     @PostMapping
+    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<StandardResponseOutDTO<BundleOutDTO>> createBundle(@Valid @RequestBody final BundleInDTO bundleInDTO) {
         log.info("Received request to create bundle: {}", bundleInDTO.getBundleName());
         BundleOutDTO createdBundle = bundleService.createBundle(bundleInDTO);
@@ -65,6 +67,7 @@ public class BundleController {
      * representing all available bundles and HTTP status 200 (OK)
      */
     @GetMapping
+    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<StandardResponseOutDTO<List<BundleOutDTO>>> getAllBundles() {
         log.info("Received request to fetch all bundles.");
         List<BundleOutDTO> bundles = bundleService.getAllBundles();
@@ -96,6 +99,7 @@ public class BundleController {
      * and HTTP status 200 (OK) on successful update
      */
     @PutMapping("/{id}")
+    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<StandardResponseOutDTO<BundleOutDTO>> updateBundle(@PathVariable final Long id,
                                                                              @Valid @RequestBody final
                                                                              UpdateBundleInDTO updateBundleInDTO) {
@@ -145,6 +149,7 @@ public class BundleController {
      * representing the total bundle count and HTTP status 200 (OK)
      */
     @GetMapping("/count")
+    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<StandardResponseOutDTO<Long>> getBundleCount() {
         log.info("Received request to get total Bundle count.");
         long count = bundleService.countBundles();

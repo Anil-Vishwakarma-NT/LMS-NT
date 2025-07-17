@@ -16,9 +16,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
-
 import java.util.List;
 
 /**
@@ -159,7 +157,6 @@ public class AdminController {
      * @return ResponseEntity containing the success message with HTTP 200 status
      */
     @PatchMapping("/update-user/{userId}")
-    @PreAuthorize("hasAuthority('admin')")
     public ResponseEntity<MessageOutDto> updateUser(@PathVariable final long userId, @RequestBody final UserInDTO userInDTO) {
         log.info("Received request to update user details");
         return new ResponseEntity<>(
