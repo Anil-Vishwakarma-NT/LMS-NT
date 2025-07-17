@@ -107,6 +107,21 @@ class UserResponseInDTOTest {
         dto.setUserAnswer(new String(new char[10001]).replace('\0', 'A'));
         assertViolation(dto, "User answer cannot exceed 10000 characters");
     }
+    @Test
+    void testBuilderCreatesValidDTO() {
+        UserResponseInDTO dto = UserResponseInDTO.builder()
+                .userId(1L)
+                .quizId(1L)
+                .questionId(1L)
+                .attempt(1L)
+                .userAnswer("{\"answer\":\"A\"}")
+                .answeredAt(LocalDateTime.now())
+                .build();
+
+        Set<ConstraintViolation<UserResponseInDTO>> violations = validator.validate(dto);
+        assertTrue(violations.isEmpty(), "DTO built with builder should be valid");
+    }
+
 
     @Test
     void testEqualsAndHashCode() {

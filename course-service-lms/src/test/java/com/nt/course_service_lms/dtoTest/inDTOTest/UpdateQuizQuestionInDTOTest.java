@@ -81,6 +81,12 @@ class UpdateQuizQuestionInDTOTest {
         dto.setCorrectAnswer(new String(new char[5001]).replace('\0', 'A'));
         assertViolation(dto, "Correct answer cannot exceed 5000 characters");
     }
+    @Test
+    void testOptionsTooLong() {
+        UpdateQuizQuestionInDTO dto = createValidDTO();
+        dto.setOptions(new String(new char[10001]).replace('\0', 'A'));
+        assertViolation(dto, "Options cannot exceed 10000 characters");
+    }
 
     @Test
     void testPointsNull() {
@@ -116,6 +122,23 @@ class UpdateQuizQuestionInDTOTest {
         dto.setRequired(null);
         assertViolation(dto, "Required field must be specified");
     }
+    @Test
+    void testBuilderCreatesValidDTO() {
+        UpdateQuizQuestionInDTO dto = UpdateQuizQuestionInDTO.builder()
+                .questionText("What is Java?")
+                .questionType("MCQ_SINGLE")
+                .options("[\"OOP\", \"Procedural\"]")
+                .correctAnswer("\"OOP\"")
+                .points(BigDecimal.valueOf(10))
+                .explanation("Basic question")
+                .required(true)
+                .position(1)
+                .build();
+
+        Set<ConstraintViolation<UpdateQuizQuestionInDTO>> violations = validator.validate(dto);
+        assertTrue(violations.isEmpty());
+    }
+
 
     @Test
     void testPositionNull() {

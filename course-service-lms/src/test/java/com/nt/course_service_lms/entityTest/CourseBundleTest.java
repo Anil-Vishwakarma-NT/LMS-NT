@@ -11,11 +11,9 @@ class CourseBundleTest {
 
     @Test
     void testNoArgsConstructorAndSetters() {
-        // Given
         CourseBundle cb = new CourseBundle();
         LocalDateTime now = LocalDateTime.now();
 
-        // When
         cb.setCourseBundleId(1L);
         cb.setBundleId(2L);
         cb.setCourseId(3L);
@@ -23,7 +21,6 @@ class CourseBundleTest {
         cb.setCreatedAt(now);
         cb.setUpdatedAt(now);
 
-        // Then
         assertThat(cb.getCourseBundleId()).isEqualTo(1L);
         assertThat(cb.getBundleId()).isEqualTo(2L);
         assertThat(cb.getCourseId()).isEqualTo(3L);
@@ -33,36 +30,57 @@ class CourseBundleTest {
     }
 
     @Test
-    void testAllArgsConstructorOnlySetsThreeFields() {
-        // Given
-        CourseBundle cb = new CourseBundle(10L, 20L, 30L);
+    void testManualSetValuesInsteadOfConstructor() {
+        CourseBundle cb = new CourseBundle();
+        cb.setCourseBundleId(10L);
+        cb.setBundleId(20L);
+        cb.setCourseId(30L);
 
-        // Then
         assertThat(cb.getCourseBundleId()).isEqualTo(10L);
         assertThat(cb.getBundleId()).isEqualTo(20L);
         assertThat(cb.getCourseId()).isEqualTo(30L);
-        assertThat(cb.isActive()).isFalse(); // Default
+        assertThat(cb.isActive()).isFalse();
         assertThat(cb.getCreatedAt()).isNull();
         assertThat(cb.getUpdatedAt()).isNull();
     }
 
     @Test
     void testEquals_SameValues() {
-        // Given
-        CourseBundle cb1 = new CourseBundle(1L, 2L, 3L);
-        CourseBundle cb2 = new CourseBundle(1L, 2L, 3L);
+        CourseBundle cb1 = new CourseBundle();
+        cb1.setCourseBundleId(1L);
+        cb1.setBundleId(2L);
+        cb1.setCourseId(3L);
 
-        // Then
+        CourseBundle cb2 = new CourseBundle();
+        cb2.setCourseBundleId(1L);
+        cb2.setBundleId(2L);
+        cb2.setCourseId(3L);
+
         assertThat(cb1).isEqualTo(cb2);
         assertThat(cb1.hashCode()).isEqualTo(cb2.hashCode());
     }
 
     @Test
     void testEquals_DifferentValues() {
-        CourseBundle cb1 = new CourseBundle(1L, 2L, 3L);
-        CourseBundle cb2 = new CourseBundle(9L, 2L, 3L);
-        CourseBundle cb3 = new CourseBundle(1L, 9L, 3L);
-        CourseBundle cb4 = new CourseBundle(1L, 2L, 9L);
+        CourseBundle cb1 = new CourseBundle();
+        cb1.setCourseBundleId(1L);
+        cb1.setBundleId(2L);
+        cb1.setCourseId(3L);
+
+        CourseBundle cb2 = new CourseBundle();
+        cb2.setCourseBundleId(9L);
+        cb2.setBundleId(2L);
+        cb2.setCourseId(3L);
+
+        CourseBundle cb3 = new CourseBundle();
+        cb3.setCourseBundleId(1L);
+        cb3.setBundleId(9L);
+        cb3.setCourseId(3L);
+
+        CourseBundle cb4 = new CourseBundle();
+        cb4.setCourseBundleId(1L);
+        cb4.setBundleId(2L);
+        cb4.setCourseId(9L);
 
         assertThat(cb1).isNotEqualTo(cb2);
         assertThat(cb1).isNotEqualTo(cb3);
@@ -71,7 +89,10 @@ class CourseBundleTest {
 
     @Test
     void testEquals_OtherClassAndNull() {
-        CourseBundle cb = new CourseBundle(1L, 2L, 3L);
+        CourseBundle cb = new CourseBundle();
+        cb.setCourseBundleId(1L);
+        cb.setBundleId(2L);
+        cb.setCourseId(3L);
 
         assertThat(cb).isNotEqualTo(null);
         assertThat(cb).isNotEqualTo("some string");
@@ -79,16 +100,30 @@ class CourseBundleTest {
 
     @Test
     void testHashCode_DifferentObjects() {
-        CourseBundle cb1 = new CourseBundle(1L, 2L, 3L);
-        CourseBundle cb2 = new CourseBundle(4L, 5L, 6L);
+        CourseBundle cb1 = new CourseBundle();
+        cb1.setCourseBundleId(1L);
+        cb1.setBundleId(2L);
+        cb1.setCourseId(3L);
+
+        CourseBundle cb2 = new CourseBundle();
+        cb2.setCourseBundleId(4L);
+        cb2.setBundleId(5L);
+        cb2.setCourseId(6L);
 
         assertThat(cb1.hashCode()).isNotEqualTo(cb2.hashCode());
     }
 
     @Test
     void testEqualsAndHashCodeAfterFieldModification() {
-        CourseBundle cb1 = new CourseBundle(1L, 2L, 3L);
-        CourseBundle cb2 = new CourseBundle(1L, 2L, 3L);
+        CourseBundle cb1 = new CourseBundle();
+        cb1.setCourseBundleId(1L);
+        cb1.setBundleId(2L);
+        cb1.setCourseId(3L);
+
+        CourseBundle cb2 = new CourseBundle();
+        cb2.setCourseBundleId(1L);
+        cb2.setBundleId(2L);
+        cb2.setCourseId(3L);
 
         assertThat(cb1).isEqualTo(cb2);
         assertThat(cb1.hashCode()).isEqualTo(cb2.hashCode());

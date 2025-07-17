@@ -127,6 +127,20 @@ class UpdateCourseContentInDTOTest {
         Set<ConstraintViolation<UpdateCourseContentInDTO>> violations = validator.validate(dto);
         assertTrue(violations.isEmpty());
     }
+    @Test
+    void testBuilderCreatesValidObject() {
+        UpdateCourseContentInDTO dto = UpdateCourseContentInDTO.builder()
+                .courseId(1L)
+                .title("Builder Title")
+                .description("Builder Description")
+                .resourceLink("https://builder.com")
+                .isActive(true)
+                .build();
+
+        Set<ConstraintViolation<UpdateCourseContentInDTO>> violations = validator.validate(dto);
+        assertTrue(violations.isEmpty());
+        assertEquals("Builder Title", dto.getTitle());
+    }
 
     @Test
     void testDefaultConstructorAndSetters() {
