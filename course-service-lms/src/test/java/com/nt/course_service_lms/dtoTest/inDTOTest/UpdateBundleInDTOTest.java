@@ -69,6 +69,19 @@ class UpdateBundleInDTOTest {
     }
 
     @Test
+    void testBuilderCreatesValidObject() {
+        UpdateBundleInDTO dto = UpdateBundleInDTO.builder()
+                .bundleName("BuilderBundle")
+                .isActive(true)
+                .build();
+
+        assertEquals("BuilderBundle", dto.getBundleName());
+        assertTrue(dto.isActive());
+        assertTrue(validator.validate(dto).isEmpty());
+    }
+
+
+    @Test
     void testDefaultConstructorAndSetters() {
         UpdateBundleInDTO dto = new UpdateBundleInDTO();
         dto.setBundleName("TestBundle");

@@ -18,6 +18,7 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.time.LocalDateTime;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
@@ -49,7 +50,7 @@ class CourseContentImplTest {
     void setUp() {
         inDTO = new CourseContentInDTO(1L, "Title", "Desc", "https://example.com", true);
         updateDTO = new UpdateCourseContentInDTO(1L, "Updated Title", "Updated Desc", "https://updated.com", true);
-        entity = new CourseContent(1L, "Title", "Desc", 1L, LocalDateTime.now(), LocalDateTime.now());
+        entity = new CourseContent(1L, 1L, "Title", "Desc", "https://example.com", true, LocalDateTime.now(), LocalDateTime.now());
     }
 
     // CREATE
@@ -81,7 +82,7 @@ class CourseContentImplTest {
     // GET ALL
     @Test
     void getAllCourseContents_success() {
-        when(contentRepo.findAll()).thenReturn(List.of(entity));
+        when(contentRepo.findAll()).thenReturn(Arrays.asList(entity));
         List<CourseContentOutDTO> result = service.getAllCourseContents();
         assertEquals(1, result.size());
     }
@@ -148,7 +149,7 @@ class CourseContentImplTest {
 
     @Test
     void updateCourseContent_duplicate() {
-        CourseContent other = new CourseContent(2L, "Updated Title", "Other", 1L, LocalDateTime.now(), LocalDateTime.now());
+        CourseContent other = new CourseContent(2L, 1L, "Updated Title", "Other", "https://updated.com", true, LocalDateTime.now(), LocalDateTime.now());
         when(contentRepo.findById(1L)).thenReturn(Optional.of(entity));
         when(courseRepo.existsById(1L)).thenReturn(true);
         when(contentRepo.findByTitleIgnoreCaseAndCourseId("Updated Title", 1L)).thenReturn(Optional.of(other));
@@ -159,7 +160,7 @@ class CourseContentImplTest {
     @Test
     void getAllCourseContentByCourseId_success() {
         when(courseRepo.existsById(1L)).thenReturn(true);
-        when(contentRepo.findByCourseId(1L)).thenReturn(List.of(entity));
+        when(contentRepo.findByCourseId(1L)).thenReturn(Arrays.asList(entity));
 
         List<CourseContentOutDTO> result = service.getAllCourseContentByCourseId(1L);
         assertEquals(1, result.size());

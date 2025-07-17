@@ -111,6 +111,16 @@ class BundleInDTOTest {
         Set<ConstraintViolation<BundleInDTO>> violations = validator.validate(dto);
         assertTrue(violations.isEmpty());
     }
+    @Test
+    void testBuilderCreatesValidDTO() {
+        BundleInDTO dto = BundleInDTO.builder()
+                .bundleName("BuiltCourse")
+                .isActive(true)
+                .build();
+
+        assertEquals("BuiltCourse", dto.getBundleName());
+        assertTrue(dto.isActive());
+    }
 
     @Test
     void testSettersAndGetters() {

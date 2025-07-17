@@ -94,6 +94,34 @@ class CourseInDTOTest {
         Set<ConstraintViolation<CourseInDTO>> v = validator.validate(dto);
         assertTrue(v.isEmpty());
     }
+    @Test
+    void whenTitleIsWhitespace_thenViolation() {
+        CourseInDTO dto = new CourseInDTO("   ", 1L, "Desc", "BEGINNER", true);
+        Set<ConstraintViolation<CourseInDTO>> violations = validator.validate(dto);
+        assertFalse(violations.isEmpty());
+    }
+    @Test
+    void whenCourseLevelIsEmpty_thenViolation() {
+        CourseInDTO dto = new CourseInDTO("Valid Title", 1L, "Valid Desc", "", true);
+        Set<ConstraintViolation<CourseInDTO>> violations = validator.validate(dto);
+        assertFalse(violations.isEmpty());
+    }
+    @Test
+    void testBuilderCreatesValidObject() {
+        CourseInDTO dto = CourseInDTO.builder()
+                .title("Spring Boot")
+                .ownerId(5L)
+                .description("Spring Boot for beginners")
+                .courseLevel("BEGINNER")
+                .Active(true)
+                .build();
+
+        Set<ConstraintViolation<CourseInDTO>> violations = validator.validate(dto);
+        assertTrue(violations.isEmpty());
+        assertEquals("Spring Boot", dto.getTitle());
+        assertEquals(5L, dto.getOwnerId());
+    }
+
 
     @Test
     void testConstructorsGettersSetters() {
@@ -139,5 +167,19 @@ class CourseInDTOTest {
         assertNotEquals(a, null);
         assertNotEquals(a, "some string");
     }
+    @Test
+    void testEquals_differentActiveField() {
+        CourseInDTO dto1 = new CourseInDTO("Title", 1L, "Desc", "BEGINNER", true);
+        CourseInDTO dto2 = new CourseInDTO("Title", 1L, "Desc", "BEGINNER", false);
+        assertNotEquals(dto1, dto2);
+    }
+    @Test
+    void testHashCode_consistency() {
+        CourseInDTO dto = new CourseInDTO("Title", 1L, "Desc", "BEGINNER", true);
+        int hash1 = dto.hashCode();
+        int hash2 = dto.hashCode();
+        assertEquals(hash1, hash2);
+    }
+
 }
 

@@ -25,7 +25,12 @@ class CourseConverterTest {
 
     @Test
     void testCourseInDTOToCourse() {
-        CourseInDTO dto = new CourseInDTO("java", 1L, "description", "BEGINNER", true);
+        CourseInDTO dto = new CourseInDTO();
+        dto.setTitle("java");
+        dto.setOwnerId(1L);
+        dto.setDescription("description");
+        dto.setCourseLevel("BEGINNER");
+        dto.setActive(true);
 
         Course entity = CourseConvertors.courseInDTOToCourse(dto);
 
@@ -71,7 +76,12 @@ class CourseConverterTest {
         course.setOwnerId(1L);
         course.setActive(false);
 
-        UpdateCourseInDTO updateDTO = new UpdateCourseInDTO("new title", 5L, "new desc", "ADVANCED", true);
+        UpdateCourseInDTO updateDTO = new UpdateCourseInDTO();
+        updateDTO.setTitle("new title");
+        updateDTO.setOwnerId(5L);
+        updateDTO.setDescription("new desc");
+        updateDTO.setCourseLevel("ADVANCED");
+        updateDTO.setActive(true);
 
         CourseConvertors.updateCourseFromDTO(course, updateDTO);
 
@@ -163,4 +173,3 @@ class CourseConverterTest {
         assertThat(dto.isActive()).isTrue();
     }
 }
-

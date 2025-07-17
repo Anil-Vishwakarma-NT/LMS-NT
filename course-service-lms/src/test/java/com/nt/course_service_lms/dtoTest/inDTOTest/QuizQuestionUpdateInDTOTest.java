@@ -93,6 +93,24 @@ class QuizQuestionUpdateInDTOTest {
 
         assertTrue(violations.stream().allMatch(v -> v.getPropertyPath().toString().equals("points")));
     }
+    @Test
+    void testBuilderCreatesValidObject() {
+        QuizQuestionUpdateInDTO dto = QuizQuestionUpdateInDTO.builder()
+                .questionText("Describe OOP")
+                .questionType("MCQ_SINGLE")
+                .points(BigDecimal.valueOf(15.0))
+                .explanation("Used in Java")
+                .required(true)
+                .position(3)
+                .build();
+
+        assertEquals("Describe OOP", dto.getQuestionText());
+        assertEquals("MCQ_SINGLE", dto.getQuestionType());
+        assertEquals(BigDecimal.valueOf(15.0), dto.getPoints());
+        assertEquals("Used in Java", dto.getExplanation());
+        assertTrue(dto.getRequired());
+        assertEquals(3, dto.getPosition());
+    }
 
     @Test
     void testEqualsAndHashCode() {

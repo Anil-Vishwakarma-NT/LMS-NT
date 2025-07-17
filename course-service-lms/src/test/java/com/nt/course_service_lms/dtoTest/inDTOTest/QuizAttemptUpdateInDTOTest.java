@@ -60,6 +60,19 @@ class QuizAttemptUpdateInDTOTest {
         Set<ConstraintViolation<QuizAttemptUpdateInDTO>> violations = validator.validate(dto);
         assertTrue(violations.isEmpty());
     }
+    @Test
+    void testBuilderCreatesValidObject() {
+        LocalDateTime now = LocalDateTime.now();
+        QuizAttemptUpdateInDTO dto = QuizAttemptUpdateInDTO.builder()
+                .finishedAt(now)
+                .scoreDetails("75%")
+                .status("COMPLETED")
+                .build();
+
+        assertEquals(now, dto.getFinishedAt());
+        assertEquals("75%", dto.getScoreDetails());
+        assertEquals("COMPLETED", dto.getStatus());
+    }
 
     @Test
     void testEqualsAndHashCode_sameValues() {

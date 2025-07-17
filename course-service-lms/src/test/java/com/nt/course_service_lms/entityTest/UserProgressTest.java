@@ -40,14 +40,21 @@ class UserProgressTest {
     }
 
     @Test
-    void testAllArgsConstructor() {
+    void testAllArgsConstructorWithSetters() {
         LocalDateTime now = LocalDateTime.now();
 
-        UserProgress progress = new UserProgress(
-                2L, 202L, 302L, 402L, "video",
-                45.0, 90.0, 100.0,
-                true, now, now
-        );
+        UserProgress progress = new UserProgress();
+        progress.setProgressId(2L);
+        progress.setUserId(202L);
+        progress.setContentId(302L);
+        progress.setCourseId(402L);
+        progress.setContentType("video");
+        progress.setLastPosition(45.0);
+        progress.setContentCompletionPercentage(90.0);
+        progress.setCourseCompletionPercentage(100.0);
+        progress.setCourseCompleted(true);
+        progress.setLastUpdated(now);
+        progress.setFirstCompletedAt(now);
 
         assertThat(progress.getProgressId()).isEqualTo(2L);
         assertThat(progress.getUserId()).isEqualTo(202L);
@@ -66,11 +73,31 @@ class UserProgressTest {
     void testEqualsAndHashCode_SameValues() {
         LocalDateTime now = LocalDateTime.now();
 
-        UserProgress p1 = new UserProgress(1L, 10L, 20L, 30L, "pdf",
-                5.0, 10.0, 15.0, true, now, now);
+        UserProgress p1 = new UserProgress();
+        p1.setProgressId(1L);
+        p1.setUserId(10L);
+        p1.setContentId(20L);
+        p1.setCourseId(30L);
+        p1.setContentType("pdf");
+        p1.setLastPosition(5.0);
+        p1.setContentCompletionPercentage(10.0);
+        p1.setCourseCompletionPercentage(15.0);
+        p1.setCourseCompleted(true);
+        p1.setLastUpdated(now);
+        p1.setFirstCompletedAt(now);
 
-        UserProgress p2 = new UserProgress(1L, 10L, 20L, 30L, "pdf",
-                5.0, 10.0, 15.0, true, now, now);
+        UserProgress p2 = new UserProgress();
+        p2.setProgressId(1L);
+        p2.setUserId(10L);
+        p2.setContentId(20L);
+        p2.setCourseId(30L);
+        p2.setContentType("pdf");
+        p2.setLastPosition(5.0);
+        p2.setContentCompletionPercentage(10.0);
+        p2.setCourseCompletionPercentage(15.0);
+        p2.setCourseCompleted(true);
+        p2.setLastUpdated(now);
+        p2.setFirstCompletedAt(now);
 
         assertThat(p1).isEqualTo(p2);
         assertThat(p1.hashCode()).isEqualTo(p2.hashCode());
@@ -80,11 +107,31 @@ class UserProgressTest {
     void testEqualsAndHashCode_DifferentValues() {
         LocalDateTime now = LocalDateTime.now();
 
-        UserProgress p1 = new UserProgress(1L, 10L, 20L, 30L, "pdf",
-                5.0, 10.0, 15.0, true, now, now);
+        UserProgress p1 = new UserProgress();
+        p1.setProgressId(1L);
+        p1.setUserId(10L);
+        p1.setContentId(20L);
+        p1.setCourseId(30L);
+        p1.setContentType("pdf");
+        p1.setLastPosition(5.0);
+        p1.setContentCompletionPercentage(10.0);
+        p1.setCourseCompletionPercentage(15.0);
+        p1.setCourseCompleted(true);
+        p1.setLastUpdated(now);
+        p1.setFirstCompletedAt(now);
 
-        UserProgress p2 = new UserProgress(2L, 11L, 21L, 31L, "video",
-                6.0, 11.0, 16.0, false, now, null);
+        UserProgress p2 = new UserProgress();
+        p2.setProgressId(2L);
+        p2.setUserId(11L);
+        p2.setContentId(21L);
+        p2.setCourseId(31L);
+        p2.setContentType("video");
+        p2.setLastPosition(6.0);
+        p2.setContentCompletionPercentage(11.0);
+        p2.setCourseCompletionPercentage(16.0);
+        p2.setCourseCompleted(false);
+        p2.setLastUpdated(now);
+        p2.setFirstCompletedAt(null);
 
         assertThat(p1).isNotEqualTo(p2);
         assertThat(p1.hashCode()).isNotEqualTo(p2.hashCode());
@@ -107,8 +154,31 @@ class UserProgressTest {
     void testEqualsAfterMutation() {
         LocalDateTime now = LocalDateTime.now();
 
-        UserProgress p1 = new UserProgress(1L, 10L, 20L, 30L, "pdf", 5.0, 10.0, 15.0, false, now, null);
-        UserProgress p2 = new UserProgress(1L, 10L, 20L, 30L, "pdf", 5.0, 10.0, 15.0, false, now, null);
+        UserProgress p1 = new UserProgress();
+        p1.setProgressId(1L);
+        p1.setUserId(10L);
+        p1.setContentId(20L);
+        p1.setCourseId(30L);
+        p1.setContentType("pdf");
+        p1.setLastPosition(5.0);
+        p1.setContentCompletionPercentage(10.0);
+        p1.setCourseCompletionPercentage(15.0);
+        p1.setCourseCompleted(false);
+        p1.setLastUpdated(now);
+        p1.setFirstCompletedAt(null);
+
+        UserProgress p2 = new UserProgress();
+        p2.setProgressId(1L);
+        p2.setUserId(10L);
+        p2.setContentId(20L);
+        p2.setCourseId(30L);
+        p2.setContentType("pdf");
+        p2.setLastPosition(5.0);
+        p2.setContentCompletionPercentage(10.0);
+        p2.setCourseCompletionPercentage(15.0);
+        p2.setCourseCompleted(false);
+        p2.setLastUpdated(now);
+        p2.setFirstCompletedAt(null);
 
         assertThat(p1).isEqualTo(p2);
 

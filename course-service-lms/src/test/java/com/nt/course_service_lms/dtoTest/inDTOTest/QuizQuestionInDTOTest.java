@@ -110,6 +110,27 @@ class QuizQuestionInDTOTest {
         Set<ConstraintViolation<QuizQuestionInDTO>> violations = validator.validate(dto);
         assertTrue(violations.stream().anyMatch(v -> v.getPropertyPath().toString().equals("questionType")));
     }
+    @Test
+    void testBuilderCreatesValidObject() {
+        QuizQuestionInDTO dto = QuizQuestionInDTO.builder()
+                .quizId(1L)
+                .questionText("Explain JVM")
+                .questionType("SHORT_ANSWER")
+                .options(null)
+                .correctAnswer("['Java Virtual Machine']")
+                .points(BigDecimal.valueOf(5))
+                .explanation("The JVM runs bytecode.")
+                .required(true)
+                .build();
+
+        assertEquals(1L, dto.getQuizId());
+        assertEquals("Explain JVM", dto.getQuestionText());
+        assertEquals("SHORT_ANSWER", dto.getQuestionType());
+        assertEquals("['Java Virtual Machine']", dto.getCorrectAnswer());
+        assertEquals(BigDecimal.valueOf(5), dto.getPoints());
+        assertEquals("The JVM runs bytecode.", dto.getExplanation());
+        assertTrue(dto.getRequired());
+    }
 
     @Test
     void testEqualsAndHashCode() {
