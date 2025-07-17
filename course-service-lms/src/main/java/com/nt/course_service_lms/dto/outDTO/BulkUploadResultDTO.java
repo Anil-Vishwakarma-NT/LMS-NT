@@ -1,8 +1,8 @@
 package com.nt.course_service_lms.dto.outDTO;
 
+import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
-import lombok.AllArgsConstructor;
 import lombok.NoArgsConstructor;
 
 import java.util.List;

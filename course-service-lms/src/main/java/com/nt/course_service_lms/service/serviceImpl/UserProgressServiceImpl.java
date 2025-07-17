@@ -1,16 +1,16 @@
 package com.nt.course_service_lms.service.serviceImpl;
 
+import com.nt.course_service_lms.converters.UserProgressConverter;
+import com.nt.course_service_lms.dto.inDTO.CourseContentInDTO;
 import com.nt.course_service_lms.dto.outDTO.CourseProgressWithMetaDTO;
 import com.nt.course_service_lms.dto.outDTO.UserProgressOutDTO;
-import com.nt.course_service_lms.dto.inDTO.CourseContentInDTO;
-import com.nt.course_service_lms.entity.UserProgress;
 import com.nt.course_service_lms.entity.CourseContent;
-import com.nt.course_service_lms.repository.UserProgressRepository;
+import com.nt.course_service_lms.entity.UserProgress;
 import com.nt.course_service_lms.repository.CourseContentRepository;
+import com.nt.course_service_lms.repository.UserProgressRepository;
 import com.nt.course_service_lms.service.UserProgressService;
-import com.nt.course_service_lms.converters.UserProgressConverter;
 import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j; // Enable logging
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;

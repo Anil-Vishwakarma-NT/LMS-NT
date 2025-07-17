@@ -1,8 +1,8 @@
 package com.nt.course_service_lms.converters;
 
 import com.nt.course_service_lms.dto.inDTO.BundleInDTO;
-import com.nt.course_service_lms.dto.outDTO.BundleOutDTO;
 import com.nt.course_service_lms.dto.inDTO.UpdateBundleInDTO;
+import com.nt.course_service_lms.dto.outDTO.BundleOutDTO;
 import com.nt.course_service_lms.entity.Bundle;
 import org.springframework.stereotype.Component;
 

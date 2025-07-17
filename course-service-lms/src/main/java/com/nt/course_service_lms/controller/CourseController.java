@@ -1,10 +1,10 @@
 package com.nt.course_service_lms.controller;
 
 import com.nt.course_service_lms.dto.inDTO.CourseInDTO;
+import com.nt.course_service_lms.dto.inDTO.UpdateCourseInDTO;
+import com.nt.course_service_lms.dto.outDTO.CourseInfoOutDTO;
 import com.nt.course_service_lms.dto.outDTO.CourseOutDTO;
 import com.nt.course_service_lms.dto.outDTO.CourseSummaryOutDTO;
-import com.nt.course_service_lms.dto.outDTO.CourseInfoOutDTO;
-import com.nt.course_service_lms.dto.inDTO.UpdateCourseInDTO;
 import com.nt.course_service_lms.dto.outDTO.StandardResponseOutDTO;
 import com.nt.course_service_lms.service.CourseService;
 import jakarta.validation.Valid;

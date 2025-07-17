@@ -18,7 +18,12 @@ import org.springframework.stereotype.Service;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import static com.nt.course_service_lms.constants.QuizConstants.*;
+import static com.nt.course_service_lms.constants.QuizConstants.GENERAL_ERROR;
+import static com.nt.course_service_lms.constants.QuizConstants.NO_QUIZ_FOR_COURSE_CONTENT;
+import static com.nt.course_service_lms.constants.QuizConstants.NO_QUIZ_FOR_COURSE_ID;
+import static com.nt.course_service_lms.constants.QuizConstants.NO_QUIZ_FOUND;
+import static com.nt.course_service_lms.constants.QuizConstants.NO_QUIZ_WITH_ID;
+import static com.nt.course_service_lms.constants.QuizConstants.QUIZ_EXISTS;
 
 
 /**

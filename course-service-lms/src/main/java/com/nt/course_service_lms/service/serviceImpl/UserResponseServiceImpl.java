@@ -1,5 +1,7 @@
 package com.nt.course_service_lms.service.serviceImpl;
 
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.nt.course_service_lms.converters.UserResponseConverter;
 import com.nt.course_service_lms.dto.inDTO.UserResponseInDTO;
 import com.nt.course_service_lms.dto.inDTO.UserResponseUpdateInDTO;
@@ -11,8 +13,6 @@ import com.nt.course_service_lms.exception.ResourceNotFoundException;
 import com.nt.course_service_lms.repository.QuizQuestionRepository;
 import com.nt.course_service_lms.repository.UserResponseRepository;
 import com.nt.course_service_lms.service.UserResponseService;
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;

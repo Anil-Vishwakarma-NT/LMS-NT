@@ -1,18 +1,11 @@
 package com.nt.course_service_lms.dto.outDTO;
 
-import jakarta.validation.constraints.NotNull;
-import jakarta.validation.constraints.Positive;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.util.Objects;
-
-import static com.nt.course_service_lms.constants.CourseBundleConstants.BUNDLE_ID_NOT_NULL;
-import static com.nt.course_service_lms.constants.CourseBundleConstants.BUNDLE_ID_POSITIVE;
-import static com.nt.course_service_lms.constants.CourseBundleConstants.COURSE_ID_NOT_NULL;
-import static com.nt.course_service_lms.constants.CourseBundleConstants.COURSE_ID_POSITIVE;
 
 /**
  * CourseBundleDTO is a Data Transfer Object used to transfer course-bundle relationship data

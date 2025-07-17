@@ -11,7 +11,9 @@ import com.nt.course_service_lms.repository.BundleRepository;
 import com.nt.course_service_lms.service.serviceImpl.BundleServiceImpl;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.mockito.*;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.MockitoAnnotations;
 
 import java.time.LocalDateTime;
 import java.util.Arrays;
@@ -19,9 +21,16 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 
-import static com.nt.course_service_lms.constants.BundleConstants.*;
-import static org.assertj.core.api.Assertions.*;
-import static org.mockito.Mockito.*;
+import static com.nt.course_service_lms.constants.BundleConstants.BUNDLE_ALREADY_EXISTS;
+import static com.nt.course_service_lms.constants.BundleConstants.BUNDLE_NOT_FOUND_BY_ID;
+import static com.nt.course_service_lms.constants.BundleConstants.GENERAL_ERROR;
+import static com.nt.course_service_lms.constants.BundleConstants.NO_BUNDLES_FOUND;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.mockito.Mockito.any;
+import static org.mockito.Mockito.doNothing;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 class BundleServiceImplTest {
 
