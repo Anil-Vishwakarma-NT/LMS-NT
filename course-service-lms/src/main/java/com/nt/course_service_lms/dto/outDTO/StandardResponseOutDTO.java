@@ -94,14 +94,14 @@ public class StandardResponseOutDTO<T> {
      */
     public String getMessage() {
         return message;
-    }
+    }final
 
     /**
      * Sets the response message.
      *
      * @param message the message to set
      */
-    public void setMessage(String message) {
+    public void setMessage(final String message) {
         this.message = message;
     }
 
@@ -119,7 +119,7 @@ public class StandardResponseOutDTO<T> {
      *
      * @param data the data to set
      */
-    public void setData(T data) {
+    public void setData(final T data) {
         this.data = data;
     }
 
@@ -130,7 +130,7 @@ public class StandardResponseOutDTO<T> {
      * @param <T>     the type of the payload (null in this case)
      * @return a {@code StandardResponseOutDTO} with "FAILURE" status
      */
-    public static <T> StandardResponseOutDTO<T> failure(String message) {
+    public static <T> StandardResponseOutDTO<T> failure(final String message) {
         return new StandardResponseOutDTO<>("FAILURE", message, null);
     }
 
@@ -141,7 +141,7 @@ public class StandardResponseOutDTO<T> {
      * @return {@code true} if this object is the same as the object argument; {@code false} otherwise
      */
     @Override
-    public boolean equals(Object o) {
+    public boolean equals(final Object o) {
         if (this == o) {
             return true;
         }
@@ -149,9 +149,9 @@ public class StandardResponseOutDTO<T> {
             return false;
         }
         StandardResponseOutDTO<?> that = (StandardResponseOutDTO<?>) o;
-        return Objects.equals(status, that.status) &&
-                Objects.equals(message, that.message) &&
-                Objects.equals(data, that.data);
+        return Objects.equals(status, that.status)
+                && Objects.equals(message, that.message)
+                && Objects.equals(data, that.data);
     }
 
     /**
@@ -171,10 +171,10 @@ public class StandardResponseOutDTO<T> {
      */
     @Override
     public String toString() {
-        return "StandardResponseOutDTO{" +
-                "status='" + status + '\'' +
-                ", message='" + message + '\'' +
-                ", data=" + data +
-                '}';
+        return "StandardResponseOutDTO{"
+                + "status='" + status + '\''
+                + ", message='" + message + '\''
+                + ", data=" + data
+                + '}';
     }
 }

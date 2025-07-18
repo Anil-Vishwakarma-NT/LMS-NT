@@ -56,4 +56,14 @@ public final class CommonConstants {
      * Number 200 constant.
      */
     public static final int NUMBER_TWO_HUNDRED = 200;
+
+    /**
+     * Number 5000 constant.
+     */
+    public static final int NUMBER_FIVE_THOUSAND = 5000;
+
+    /**
+     * Number 10000 constant.
+     */
+    public static final int NUMBER_TEN_THOUSAND = 10000;
 }

@@ -10,7 +10,7 @@ import java.time.LocalDateTime;
 import java.util.List;
 
 /**
- * DTO for quiz submission results containing attempt details and responses
+ * DTO for quiz submission results containing attempt details and responses.
  */
 @Data
 @NoArgsConstructor

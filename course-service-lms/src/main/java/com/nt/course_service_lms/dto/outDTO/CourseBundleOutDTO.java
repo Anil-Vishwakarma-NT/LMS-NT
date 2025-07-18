@@ -61,8 +61,14 @@ public class CourseBundleOutDTO {
 
     private String courseName;
 
+    /**
+     * Compares this course bundle out dto to another object for equality.
+     *
+     * @param o the object to compare with
+     * @return {@code true} if the bundles are equal; {@code false} otherwise
+     */
     @Override
-    public boolean equals(Object o) {
+    public boolean equals(final Object o) {
         if (this == o) {
             return true;
         }
@@ -70,9 +76,18 @@ public class CourseBundleOutDTO {
             return false;
         }
         CourseBundleOutDTO that = (CourseBundleOutDTO) o;
-        return courseBundleId == that.courseBundleId && Objects.equals(bundleId, that.bundleId) && Objects.equals(bundleName, that.bundleName) && Objects.equals(courseId, that.courseId) && Objects.equals(courseName, that.courseName);
+        return courseBundleId == that.courseBundleId
+                && Objects.equals(bundleId, that.bundleId)
+                && Objects.equals(bundleName, that.bundleName)
+                && Objects.equals(courseId, that.courseId)
+                && Objects.equals(courseName, that.courseName);
     }
 
+    /**
+     * Generates a hash code consistent with {@link #equals(Object)}.
+     *
+     * @return hash code based on all persistent fields
+     */
     @Override
     public int hashCode() {
         return Objects.hash(courseBundleId, bundleId, bundleName, courseId, courseName);
