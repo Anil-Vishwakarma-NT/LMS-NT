@@ -1,14 +1,19 @@
 package com.nt.course_service_lms.dtoTest.inDTOTest;
 
 import com.nt.course_service_lms.dto.inDTO.UserResponseInDTO;
-import jakarta.validation.*;
+import jakarta.validation.ConstraintViolation;
+import jakarta.validation.Validation;
+import jakarta.validation.Validator;
+import jakarta.validation.ValidatorFactory;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import java.time.LocalDateTime;
 import java.util.Set;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class UserResponseInDTOTest {
 
@@ -107,6 +112,22 @@ class UserResponseInDTOTest {
         dto.setUserAnswer(new String(new char[10001]).replace('\0', 'A'));
         assertViolation(dto, "User answer cannot exceed 10000 characters");
     }
+
+    @Test
+    void testBuilderCreatesValidDTO() {
+        UserResponseInDTO dto = UserResponseInDTO.builder()
+                .userId(1L)
+                .quizId(1L)
+                .questionId(1L)
+                .attempt(1L)
+                .userAnswer("{\"answer\":\"A\"}")
+                .answeredAt(LocalDateTime.now())
+                .build();
+
+        Set<ConstraintViolation<UserResponseInDTO>> violations = validator.validate(dto);
+        assertTrue(violations.isEmpty(), "DTO built with builder should be valid");
+    }
+
 
     @Test
     void testEqualsAndHashCode() {

@@ -2,8 +2,8 @@ package com.nt.course_service_lms.service.serviceImpl;
 
 import com.nt.course_service_lms.converters.BundleConverter;
 import com.nt.course_service_lms.dto.inDTO.BundleInDTO;
-import com.nt.course_service_lms.dto.outDTO.BundleOutDTO;
 import com.nt.course_service_lms.dto.inDTO.UpdateBundleInDTO;
+import com.nt.course_service_lms.dto.outDTO.BundleOutDTO;
 import com.nt.course_service_lms.entity.Bundle;
 import com.nt.course_service_lms.exception.ResourceAlreadyExistsException;
 import com.nt.course_service_lms.exception.ResourceNotFoundException;
@@ -259,7 +259,7 @@ public class BundleServiceImpl implements BundleService {
      * @throws RuntimeException          if there is a general error
      */
     @Override
-    public String getBundleNameById(Long bundleId) {
+    public String getBundleNameById(final Long bundleId) {
         try {
             log.info("Fetching bundle name for ID: {}", bundleId);
 
@@ -280,8 +280,16 @@ public class BundleServiceImpl implements BundleService {
         }
     }
 
+    /**
+     * Finds existing bundle IDs from a list of provided IDs.
+     *
+     * @param bundleIds the list of bundle IDs to check
+     * @return a list of existing bundle IDs
+     * @throws ResourceNotFoundException if no bundles are found with the provided IDs
+     * @throws RuntimeException          if there is a general error during the operation
+     */
     @Override
-    public List<Long> findExistingIds(List<Long> bundleIds) {
+    public List<Long> findExistingIds(final List<Long> bundleIds) {
         try {
             List<Long> existingCourseIds = bundleRepository.findExistingIds(bundleIds);
             if (existingCourseIds.isEmpty()) {

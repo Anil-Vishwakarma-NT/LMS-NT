@@ -1,13 +1,19 @@
 package com.nt.course_service_lms.dtoTest.inDTOTest;
 
 import com.nt.course_service_lms.dto.inDTO.UpdateBundleInDTO;
-import jakarta.validation.*;
+import jakarta.validation.ConstraintViolation;
+import jakarta.validation.Validation;
+import jakarta.validation.Validator;
+import jakarta.validation.ValidatorFactory;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import java.util.Set;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class UpdateBundleInDTOTest {
 
@@ -61,6 +67,19 @@ class UpdateBundleInDTOTest {
         Set<ConstraintViolation<UpdateBundleInDTO>> violations = validator.validate(dto);
         assertTrue(violations.stream().anyMatch(v -> v.getPropertyPath().toString().equals("bundleName")));
     }
+
+    @Test
+    void testBuilderCreatesValidObject() {
+        UpdateBundleInDTO dto = UpdateBundleInDTO.builder()
+                .bundleName("BuilderBundle")
+                .isActive(true)
+                .build();
+
+        assertEquals("BuilderBundle", dto.getBundleName());
+        assertTrue(dto.isActive());
+        assertTrue(validator.validate(dto).isEmpty());
+    }
+
 
     @Test
     void testDefaultConstructorAndSetters() {

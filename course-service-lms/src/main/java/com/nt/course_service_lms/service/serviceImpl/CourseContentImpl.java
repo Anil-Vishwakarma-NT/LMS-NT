@@ -20,7 +20,13 @@ import java.util.List;
 import java.util.Optional;
 
 import static com.nt.course_service_lms.constants.BundleConstants.GENERAL_ERROR;
-import static com.nt.course_service_lms.constants.CourseContentConstants.*;
+import static com.nt.course_service_lms.constants.CourseContentConstants.CONTENT_NOT_FOUND;
+import static com.nt.course_service_lms.constants.CourseContentConstants.COURSE_CONTENT_ALREADY_PRESENT;
+import static com.nt.course_service_lms.constants.CourseContentConstants.COURSE_CONTENT_DELETED;
+import static com.nt.course_service_lms.constants.CourseContentConstants.COURSE_CONTENT_DUPLICATE;
+import static com.nt.course_service_lms.constants.CourseContentConstants.COURSE_CONTENT_NOT_FOUND;
+import static com.nt.course_service_lms.constants.CourseContentConstants.COURSE_NOT_FOUND;
+import static com.nt.course_service_lms.constants.CourseContentConstants.NO_COURSE_CONTENTS_FOUND;
 
 /**
  * Optimized implementation of the {@link CourseContentService} interface that handles operations related to course content.
@@ -34,7 +40,15 @@ import static com.nt.course_service_lms.constants.CourseContentConstants.*;
 @Transactional
 public class CourseContentImpl implements CourseContentService {
 
+    /**
+     * Repository for performing database operations on CourseContent entities.
+     * Provides methods for finding, saving, and deleting course content records.
+     */
     private final CourseContentRepository courseContentRepository;
+    /**
+     * Repository for performing database operations on Course entities.
+     * Used to validate course existence before creating or updating course content.
+     */
     private final CourseRepository courseRepository;
 
     /**
@@ -44,8 +58,8 @@ public class CourseContentImpl implements CourseContentService {
      * @param courseRepository        repository for course operations
      */
     @Autowired
-    public CourseContentImpl(CourseContentRepository courseContentRepository,
-                             CourseRepository courseRepository) {
+    public CourseContentImpl(final CourseContentRepository courseContentRepository,
+                             final CourseRepository courseRepository) {
         this.courseContentRepository = courseContentRepository;
         this.courseRepository = courseRepository;
     }
@@ -243,6 +257,8 @@ public class CourseContentImpl implements CourseContentService {
 
     /**
      * Validates course content creation requirements.
+     *
+     * @param courseContentInDTO details of course content
      */
     private void validateCourseContentCreation(final CourseContentInDTO courseContentInDTO) {
         // Check if course content with same title already exists for the course
@@ -260,7 +276,11 @@ public class CourseContentImpl implements CourseContentService {
     }
 
     /**
-     * Validates course content update requirements.
+     * validate if course content can be updated.
+     *
+     * @param existingContent
+     * @param updateDto
+     * @param courseContentId
      */
     private void validateCourseContentUpdate(final CourseContent existingContent,
                                              final UpdateCourseContentInDTO updateDto,
@@ -286,6 +306,8 @@ public class CourseContentImpl implements CourseContentService {
 
     /**
      * Sets audit fields for new course content.
+     *
+     * @param courseContent details of course content
      */
     private void setAuditFields(final CourseContent courseContent) {
         LocalDateTime now = LocalDateTime.now();

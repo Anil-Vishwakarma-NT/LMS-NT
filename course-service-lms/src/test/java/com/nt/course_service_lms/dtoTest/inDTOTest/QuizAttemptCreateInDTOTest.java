@@ -1,13 +1,19 @@
 package com.nt.course_service_lms.dtoTest.inDTOTest;
 
 import com.nt.course_service_lms.dto.inDTO.QuizAttemptCreateInDTO;
-import jakarta.validation.*;
+import jakarta.validation.ConstraintViolation;
+import jakarta.validation.Validation;
+import jakarta.validation.Validator;
+import jakarta.validation.ValidatorFactory;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import java.util.Set;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class QuizAttemptCreateInDTOTest {
 
@@ -56,6 +62,17 @@ class QuizAttemptCreateInDTOTest {
         Set<ConstraintViolation<QuizAttemptCreateInDTO>> violations = validator.validate(dto);
         assertFalse(violations.isEmpty());
         assertTrue(violations.stream().anyMatch(v -> v.getPropertyPath().toString().equals("userId")));
+    }
+
+    @Test
+    void testBuilderCreatesValidObject() {
+        QuizAttemptCreateInDTO dto = QuizAttemptCreateInDTO.builder()
+                .quizId(1L)
+                .userId(2L)
+                .build();
+
+        assertEquals(1L, dto.getQuizId());
+        assertEquals(2L, dto.getUserId());
     }
 
     @Test

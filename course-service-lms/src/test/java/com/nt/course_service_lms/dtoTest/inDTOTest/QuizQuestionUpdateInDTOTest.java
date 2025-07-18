@@ -1,14 +1,20 @@
 package com.nt.course_service_lms.dtoTest.inDTOTest;
 
 import com.nt.course_service_lms.dto.inDTO.QuizQuestionUpdateInDTO;
-import jakarta.validation.*;
+import jakarta.validation.ConstraintViolation;
+import jakarta.validation.Validation;
+import jakarta.validation.Validator;
+import jakarta.validation.ValidatorFactory;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import java.math.BigDecimal;
 import java.util.Set;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class QuizQuestionUpdateInDTOTest {
 
@@ -86,6 +92,25 @@ class QuizQuestionUpdateInDTOTest {
         assertEquals(2, violations.size(), "Expected 2 violations for digits and max value");
 
         assertTrue(violations.stream().allMatch(v -> v.getPropertyPath().toString().equals("points")));
+    }
+
+    @Test
+    void testBuilderCreatesValidObject() {
+        QuizQuestionUpdateInDTO dto = QuizQuestionUpdateInDTO.builder()
+                .questionText("Describe OOP")
+                .questionType("MCQ_SINGLE")
+                .points(BigDecimal.valueOf(15.0))
+                .explanation("Used in Java")
+                .required(true)
+                .position(3)
+                .build();
+
+        assertEquals("Describe OOP", dto.getQuestionText());
+        assertEquals("MCQ_SINGLE", dto.getQuestionType());
+        assertEquals(BigDecimal.valueOf(15.0), dto.getPoints());
+        assertEquals("Used in Java", dto.getExplanation());
+        assertTrue(dto.getRequired());
+        assertEquals(3, dto.getPosition());
     }
 
     @Test

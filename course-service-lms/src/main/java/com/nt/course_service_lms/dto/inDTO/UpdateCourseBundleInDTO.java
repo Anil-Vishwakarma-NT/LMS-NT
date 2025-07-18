@@ -9,7 +9,9 @@ import lombok.NoArgsConstructor;
 
 import java.util.Objects;
 
-import static com.nt.course_service_lms.constants.CourseBundleConstants.*;
+import static com.nt.course_service_lms.constants.CourseBundleConstants.BUNDLE_ID_NOT_NULL;
+import static com.nt.course_service_lms.constants.CourseBundleConstants.BUNDLE_ID_POSITIVE;
+import static com.nt.course_service_lms.constants.CourseBundleConstants.COURSE_ID_NOT_NULL;
 import static com.nt.course_service_lms.constants.CourseBundleConstants.COURSE_ID_POSITIVE;
 
 @Data

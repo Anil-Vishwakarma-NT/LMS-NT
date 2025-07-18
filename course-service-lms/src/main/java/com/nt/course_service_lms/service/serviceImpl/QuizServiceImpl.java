@@ -7,6 +7,7 @@ import com.nt.course_service_lms.dto.outDTO.QuizOutDTO;
 import com.nt.course_service_lms.entity.Quiz;
 import com.nt.course_service_lms.exception.ResourceAlreadyExistsException;
 import com.nt.course_service_lms.exception.ResourceNotFoundException;
+import com.nt.course_service_lms.exception.ResourceNotValidException;
 import com.nt.course_service_lms.repository.CourseContentRepository;
 import com.nt.course_service_lms.repository.CourseRepository;
 import com.nt.course_service_lms.repository.QuizRepository;
@@ -18,7 +19,12 @@ import org.springframework.stereotype.Service;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import static com.nt.course_service_lms.constants.QuizConstants.*;
+import static com.nt.course_service_lms.constants.QuizConstants.GENERAL_ERROR;
+import static com.nt.course_service_lms.constants.QuizConstants.NO_QUIZ_FOR_COURSE_CONTENT;
+import static com.nt.course_service_lms.constants.QuizConstants.NO_QUIZ_FOR_COURSE_ID;
+import static com.nt.course_service_lms.constants.QuizConstants.NO_QUIZ_FOUND;
+import static com.nt.course_service_lms.constants.QuizConstants.NO_QUIZ_WITH_ID;
+import static com.nt.course_service_lms.constants.QuizConstants.QUIZ_EXISTS;
 
 
 /**
@@ -44,9 +50,16 @@ public class QuizServiceImpl implements QuizService {
     @Autowired
     private QuizConverter quizConverter;
 
+    /**
+     * Repository for course data access operations.
+     * Used for retrieving and validating course.
+     */
     @Autowired
     private CourseRepository courseRepository;
-
+    /**
+     * Repository for course content data access operations.
+     * Used for retrieving and validating course content.
+     */
     @Autowired
     private CourseContentRepository courseContentRepository;
 
@@ -80,6 +93,8 @@ public class QuizServiceImpl implements QuizService {
                         throw new ResourceNotFoundException("Course Content Not Found");
                     }
                     break;
+                default:
+                    throw new ResourceNotValidException("Invalid Request");
             }
 
             // Check for duplicate quiz title within the same parent
@@ -87,7 +102,11 @@ public class QuizServiceImpl implements QuizService {
                     quizCreateInDTO.getTitle(),
                     quizCreateInDTO.getParentType(),
                     quizCreateInDTO.getParentId())) {
-                log.error("Quiz with title '{}' already exists for parent type '{}' and parent ID '{}'", quizCreateInDTO.getTitle(), quizCreateInDTO.getParentType(), quizCreateInDTO.getParentId());
+                log.error("Quiz with title '{}' already exists for parent type '{}' and parent ID '{}'",
+                        quizCreateInDTO.getTitle(),
+                        quizCreateInDTO.getParentType(),
+                        quizCreateInDTO.getParentId()
+                );
                 throw new ResourceAlreadyExistsException(String.format(QUIZ_EXISTS, quizCreateInDTO.getTitle()));
             }
 
@@ -257,13 +276,17 @@ public class QuizServiceImpl implements QuizService {
             });
 
             // Validate if the updated title is unique within the same parent (excluding the same quiz)
-            if (quizUpdateInDTO.getTitle() != null &&
-                    !existingQuiz.getTitle().equalsIgnoreCase(quizUpdateInDTO.getTitle()) &&
-                    quizRepository.existsByTitleAndParentTypeAndParentId(
-                            quizUpdateInDTO.getTitle(),
-                            existingQuiz.getParentType(),
-                            existingQuiz.getParentId())) {
-                log.error("Quiz with title '{}' already exists for parent type '{}' and parent ID '{}'", quizUpdateInDTO.getTitle(), existingQuiz.getParentType(), existingQuiz.getParentId());
+            if (quizUpdateInDTO.getTitle() != null
+                    && !existingQuiz.getTitle().equalsIgnoreCase(quizUpdateInDTO.getTitle())
+                    && quizRepository.existsByTitleAndParentTypeAndParentId(
+                    quizUpdateInDTO.getTitle(),
+                    existingQuiz.getParentType(),
+                    existingQuiz.getParentId())) {
+                log.error("Quiz with title '{}' already exists for parent type '{}' and parent ID '{}'",
+                        quizUpdateInDTO.getTitle(),
+                        existingQuiz.getParentType(),
+                        existingQuiz.getParentId()
+                );
                 throw new ResourceAlreadyExistsException(String.format(QUIZ_EXISTS, quizUpdateInDTO.getTitle()));
             }
 

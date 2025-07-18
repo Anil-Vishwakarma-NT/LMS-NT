@@ -1,14 +1,20 @@
 package com.nt.course_service_lms.dtoTest.inDTOTest;
 
 import com.nt.course_service_lms.dto.inDTO.QuizAttemptUpdateInDTO;
-import jakarta.validation.*;
+import jakarta.validation.ConstraintViolation;
+import jakarta.validation.Validation;
+import jakarta.validation.Validator;
+import jakarta.validation.ValidatorFactory;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import java.time.LocalDateTime;
 import java.util.Set;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class QuizAttemptUpdateInDTOTest {
 
@@ -53,6 +59,20 @@ class QuizAttemptUpdateInDTOTest {
         );
         Set<ConstraintViolation<QuizAttemptUpdateInDTO>> violations = validator.validate(dto);
         assertTrue(violations.isEmpty());
+    }
+
+    @Test
+    void testBuilderCreatesValidObject() {
+        LocalDateTime now = LocalDateTime.now();
+        QuizAttemptUpdateInDTO dto = QuizAttemptUpdateInDTO.builder()
+                .finishedAt(now)
+                .scoreDetails("75%")
+                .status("COMPLETED")
+                .build();
+
+        assertEquals(now, dto.getFinishedAt());
+        assertEquals("75%", dto.getScoreDetails());
+        assertEquals("COMPLETED", dto.getStatus());
     }
 
     @Test

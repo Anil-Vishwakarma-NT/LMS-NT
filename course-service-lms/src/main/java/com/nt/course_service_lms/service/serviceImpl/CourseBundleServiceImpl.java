@@ -1,19 +1,19 @@
 package com.nt.course_service_lms.service.serviceImpl;
 
+import com.nt.course_service_lms.dto.inDTO.CourseBundleInDTO;
+import com.nt.course_service_lms.dto.inDTO.UpdateCourseBundleInDTO;
+import com.nt.course_service_lms.dto.outDTO.BundleInfoOutDTO;
+import com.nt.course_service_lms.dto.outDTO.BundleSummaryOutDTO;
+import com.nt.course_service_lms.dto.outDTO.CourseBundleOutDTO;
 import com.nt.course_service_lms.entity.Bundle;
 import com.nt.course_service_lms.entity.Course;
 import com.nt.course_service_lms.entity.CourseBundle;
 import com.nt.course_service_lms.exception.ResourceAlreadyExistsException;
 import com.nt.course_service_lms.exception.ResourceNotFoundException;
 import com.nt.course_service_lms.exception.ResourceNotValidException;
-import com.nt.course_service_lms.dto.inDTO.CourseBundleInDTO;
-import com.nt.course_service_lms.dto.inDTO.UpdateCourseBundleInDTO;
-import com.nt.course_service_lms.dto.outDTO.BundleInfoOutDTO;
-import com.nt.course_service_lms.dto.outDTO.BundleSummaryOutDTO;
-import com.nt.course_service_lms.dto.outDTO.CourseBundleOutDTO;
+import com.nt.course_service_lms.repository.BundleRepository;
 import com.nt.course_service_lms.repository.CourseBundleRepository;
 import com.nt.course_service_lms.repository.CourseRepository;
-import com.nt.course_service_lms.repository.BundleRepository;
 import com.nt.course_service_lms.service.CourseBundleService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -58,7 +58,9 @@ public class CourseBundleServiceImpl implements CourseBundleService {
      */
     @Autowired
     private final CourseBundleRepository courseBundleRepository;
-
+    /**
+     * Repository for performing CRUD operations on {@link Bundle} entity.
+     */
     @Autowired
     private final BundleRepository bundleRepository;
     /**
@@ -66,10 +68,6 @@ public class CourseBundleServiceImpl implements CourseBundleService {
      */
     @Autowired
     private final CourseRepository courseRepository;
-
-    /**
-     * Repository for performing CRUD operations on {@link Bundle} entity.
-     */
 
     /**
      * Retrieves all course-bundle mappings from the repository.
@@ -301,6 +299,13 @@ public class CourseBundleServiceImpl implements CourseBundleService {
         }
     }
 
+    /**
+     * Retrieves information about all bundles, including their IDs, names, total courses, and active status.
+     *
+     * @return a list of {@link BundleInfoOutDTO} objects containing bundle information
+     * @throws ResourceNotFoundException if no bundles are found
+     * @throws RuntimeException          if an unexpected error occurs during the process
+     */
     @Override
     public List<BundleInfoOutDTO> getBundlesInfo() {
         try {
@@ -354,6 +359,12 @@ public class CourseBundleServiceImpl implements CourseBundleService {
         }
     }
 
+    /**
+     * Retrieves the 5 most recent bundles along with their course counts.
+     *
+     * @return a list of {@link BundleSummaryOutDTO} objects containing bundle summaries
+     * @throws RuntimeException if an unexpected error occurs during the process
+     */
     @Override
     public List<BundleSummaryOutDTO> getRecentBundleSummaries() {
         // Get the 5 most recent bundles
@@ -374,8 +385,16 @@ public class CourseBundleServiceImpl implements CourseBundleService {
                 .collect(Collectors.toList());
     }
 
+    /**
+     * Retrieves the IDs of all courses associated with a specific bundle.
+     *
+     * @param bundleId the ID of the bundle
+     * @return a list of course IDs associated with the specified bundle
+     * @throws ResourceNotFoundException if no course IDs are found for the given bundle ID
+     * @throws RuntimeException          if an unexpected error occurs during the process
+     */
     @Override
-    public List<Long> findCourseIdsByBundleId(Long bundleId) {
+    public List<Long> findCourseIdsByBundleId(final Long bundleId) {
         try {
             List<Long> courseIds = courseBundleRepository.findCourseIdsByBundleId(bundleId);
             if (courseIds.isEmpty()) {

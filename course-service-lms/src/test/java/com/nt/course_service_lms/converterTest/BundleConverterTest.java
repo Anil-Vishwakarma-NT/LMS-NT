@@ -23,7 +23,9 @@ class BundleConverterTest {
 
     @Test
     void testToEntity_withValidInput() {
-        BundleInDTO inDTO = new BundleInDTO("Spring Boot Bundle", true);
+        BundleInDTO inDTO = new BundleInDTO();
+        inDTO.setBundleName("Spring Boot Bundle");
+        inDTO.setActive(true);
 
         Bundle bundle = converter.toEntity(inDTO);
 
@@ -50,7 +52,9 @@ class BundleConverterTest {
         existing.setCreatedAt(LocalDateTime.now().minusDays(1));
         existing.setUpdatedAt(LocalDateTime.now().minusDays(1));
 
-        UpdateBundleInDTO updateDTO = new UpdateBundleInDTO("New Name", true);
+        UpdateBundleInDTO updateDTO = new UpdateBundleInDTO();
+        updateDTO.setBundleName("New Name");
+        updateDTO.setActive(true);
 
         Bundle updated = converter.updateEntity(existing, updateDTO);
 
@@ -74,7 +78,10 @@ class BundleConverterTest {
 
     @Test
     void testUpdateEntity_withNullEntity() {
-        UpdateBundleInDTO updateDTO = new UpdateBundleInDTO("Should Not Matter", false);
+        UpdateBundleInDTO updateDTO = new UpdateBundleInDTO();
+        updateDTO.setBundleName("Should Not Matter");
+        updateDTO.setActive(false);
+
         Bundle updated = converter.updateEntity(null, updateDTO);
         assertThat(updated).isNull();
     }
@@ -134,4 +141,3 @@ class BundleConverterTest {
         assertThat(dto.isActive()).isFalse();
     }
 }
-

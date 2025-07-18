@@ -1,14 +1,20 @@
 package com.nt.course_service_lms.dtoTest.inDTOTest;
 
 import com.nt.course_service_lms.dto.inDTO.UpdateQuizQuestionInDTO;
-import jakarta.validation.*;
+import jakarta.validation.ConstraintViolation;
+import jakarta.validation.Validation;
+import jakarta.validation.Validator;
+import jakarta.validation.ValidatorFactory;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import java.math.BigDecimal;
 import java.util.Set;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class UpdateQuizQuestionInDTOTest {
 
@@ -83,6 +89,13 @@ class UpdateQuizQuestionInDTOTest {
     }
 
     @Test
+    void testOptionsTooLong() {
+        UpdateQuizQuestionInDTO dto = createValidDTO();
+        dto.setOptions(new String(new char[10001]).replace('\0', 'A'));
+        assertViolation(dto, "Options cannot exceed 10000 characters");
+    }
+
+    @Test
     void testPointsNull() {
         UpdateQuizQuestionInDTO dto = createValidDTO();
         dto.setPoints(null);
@@ -116,6 +129,24 @@ class UpdateQuizQuestionInDTOTest {
         dto.setRequired(null);
         assertViolation(dto, "Required field must be specified");
     }
+
+    @Test
+    void testBuilderCreatesValidDTO() {
+        UpdateQuizQuestionInDTO dto = UpdateQuizQuestionInDTO.builder()
+                .questionText("What is Java?")
+                .questionType("MCQ_SINGLE")
+                .options("[\"OOP\", \"Procedural\"]")
+                .correctAnswer("\"OOP\"")
+                .points(BigDecimal.valueOf(10))
+                .explanation("Basic question")
+                .required(true)
+                .position(1)
+                .build();
+
+        Set<ConstraintViolation<UpdateQuizQuestionInDTO>> violations = validator.validate(dto);
+        assertTrue(violations.isEmpty());
+    }
+
 
     @Test
     void testPositionNull() {

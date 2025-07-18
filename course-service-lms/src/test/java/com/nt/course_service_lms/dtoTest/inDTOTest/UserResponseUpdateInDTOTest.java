@@ -1,7 +1,10 @@
 package com.nt.course_service_lms.dtoTest.inDTOTest;
 
 import com.nt.course_service_lms.dto.inDTO.UserResponseUpdateInDTO;
-import jakarta.validation.*;
+import jakarta.validation.ConstraintViolation;
+import jakarta.validation.Validation;
+import jakarta.validation.Validator;
+import jakarta.validation.ValidatorFactory;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -9,7 +12,9 @@ import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.Set;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class UserResponseUpdateInDTOTest {
 
@@ -84,6 +89,37 @@ class UserResponseUpdateInDTOTest {
         UserResponseUpdateInDTO dto = createValidDTO();
         dto.setPointsEarned(new BigDecimal("10.123"));
         assertViolation(dto, "Points earned must have at most 3 integer digits and 2 decimal places");
+    }
+
+    @Test
+    void testBuilderCreatesValidDTO() {
+        UserResponseUpdateInDTO dto = UserResponseUpdateInDTO.builder()
+                .userAnswer("{\"value\": true}")
+                .isCorrect(true)
+                .pointsEarned(new BigDecimal("10.00"))
+                .answeredAt(LocalDateTime.now())
+                .build();
+
+        Set<ConstraintViolation<UserResponseUpdateInDTO>> violations = validator.validate(dto);
+        assertTrue(violations.isEmpty(), "DTO created with builder should be valid");
+    }
+
+    @Test
+    void testPointsEarnedAtMinBoundary() {
+        UserResponseUpdateInDTO dto = createValidDTO();
+        dto.setPointsEarned(new BigDecimal("0.00"));
+
+        Set<ConstraintViolation<UserResponseUpdateInDTO>> violations = validator.validate(dto);
+        assertTrue(violations.isEmpty(), "0.00 should be a valid pointsEarned value");
+    }
+
+    @Test
+    void testPointsEarnedAtMaxBoundary() {
+        UserResponseUpdateInDTO dto = createValidDTO();
+        dto.setPointsEarned(new BigDecimal("999.99"));
+
+        Set<ConstraintViolation<UserResponseUpdateInDTO>> violations = validator.validate(dto);
+        assertTrue(violations.isEmpty(), "999.99 should be a valid pointsEarned value");
     }
 
     @Test

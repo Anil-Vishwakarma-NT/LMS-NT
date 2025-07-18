@@ -1,10 +1,9 @@
 package com.nt.course_service_lms.dto.inDTO;
 
+import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
-
-import jakarta.validation.Valid;
 import lombok.NoArgsConstructor;
 
 import java.util.List;

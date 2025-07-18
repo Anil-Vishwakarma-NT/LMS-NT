@@ -10,7 +10,10 @@ import org.junit.jupiter.api.Test;
 
 import java.util.Set;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class UpdateCourseInDTOTest {
 
@@ -119,6 +122,21 @@ class UpdateCourseInDTOTest {
         Set<ConstraintViolation<UpdateCourseInDTO>> violations = validator.validate(dto);
         assertTrue(violations.stream().anyMatch(v -> v.getPropertyPath().toString().equals("description")));
     }
+
+    @Test
+    void builderShouldCreateValidDTO() {
+        UpdateCourseInDTO dto = UpdateCourseInDTO.builder()
+                .title("Built Title")
+                .ownerId(10L)
+                .description("Built description")
+                .courseLevel("INTERMEDIATE")
+                .Active(true)
+                .build();
+
+        Set<ConstraintViolation<UpdateCourseInDTO>> violations = validator.validate(dto);
+        assertTrue(violations.isEmpty());
+    }
+
 
     @Test
     void courseLevelNull_shouldFailValidation() {
