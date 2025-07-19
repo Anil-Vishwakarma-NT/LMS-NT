@@ -60,7 +60,18 @@ public final class CommonConstants {
      */
     public static final int NUMBER_ONE_HUNDRED_FIFTY = 150;
 
+    public static final String STATUS_ACTIVE = "ACTIVE";
+
+
+    public static final String STATUS_INACTIVE = "INACTIVE";
+
+    public static final String GROUP_ENROL = "GROUP";
+
+    public static final String  GROUP_BUNDLE_ENROL = "GROUP_BUNDLE";
+
+
     private CommonConstants() {
         // Prevent instantiation
     }
+
 }

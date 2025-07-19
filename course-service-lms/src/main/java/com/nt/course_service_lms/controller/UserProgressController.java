@@ -1,9 +1,13 @@
 package com.nt.course_service_lms.controller;
 
+import com.nt.course_service_lms.config.ServicePrincipal;
 import com.nt.course_service_lms.dto.outDTO.CourseProgressWithMetaDTO;
 import com.nt.course_service_lms.dto.outDTO.UserProgressOutDTO;
+import com.nt.course_service_lms.exception.ResourceNotFoundException;
 import com.nt.course_service_lms.service.UserProgressService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -47,6 +51,20 @@ public class UserProgressController {
             @RequestParam final Long userId, @RequestParam final Long courseId
     ) {
         return userProgressService.getCourseProgressWithMeta(userId, courseId);
+    }
+
+    @GetMapping("/meta-courseId")
+    public CourseProgressWithMetaDTO getCourseProgressWithMetaCourseId( @RequestParam final int courseId) {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+
+        if (!(authentication.getPrincipal() instanceof ServicePrincipal principal)) {
+            throw new ResourceNotFoundException("Authentication failed");
+        }
+        System.out.println("USER" + principal);
+
+          String userId = principal.getUserId();
+        System.out.println("USERID" + userId);
+        return userProgressService.getCourseProgressWithMeta(Long.parseLong(userId), (long)courseId);
     }
 
     /**

@@ -4,8 +4,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpStatus;
-import org.springframework.security.config.annotation.web.builders.HttpSecurity;
+import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
+import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -27,6 +28,7 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
  */
 @Configuration
 @EnableWebSecurity
+@EnableMethodSecurity
 public class SecurityConfig {
 
     /**
@@ -50,13 +52,19 @@ public class SecurityConfig {
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(authz -> authz
                         .requestMatchers("/api/auth/**").permitAll()
-                        .requestMatchers("/api/service-api/enrollment/**").permitAll()
-                        .requestMatchers("/api/service-api/admin/**").hasRole("ADMIN")
-                        .requestMatchers("/employee/**").hasAnyAuthority("employee", "admin")
-                        .requestMatchers("/manager/**").hasAnyAuthority("manager", "admin")
-                        .requestMatchers("/group/all-groups").permitAll()
-                        .requestMatchers("/group/**").permitAll()
+                        .requestMatchers("/api/service-api/admin/**",
+                                        "/api/service-api/custom-report/**",
+                                        "/api/service-api/custom-user-report/**").hasRole("ADMIN")
+
+                        .requestMatchers("api/service-api/manager/**").hasAnyRole("MANAGER","ADMIN")
+
+                        .requestMatchers("/api/service-api/users/**",
+                                        "/api/service-api/enrollments/**",
+                                        "/api/service-api/enrollment/**",
+                                        "/api/service-api/group/**").hasAnyRole("EMPLOYEE", "ADMIN","MANAGER")
+
                         .anyRequest().authenticated()
+
                 )
                 .addFilterBefore(serviceAuthenticationFilter, UsernamePasswordAuthenticationFilter.class)
                 .exceptionHandling(exceptions -> exceptions

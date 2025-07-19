@@ -32,6 +32,7 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 
 import static com.nt.user_service_lms.constants.UserConstants.USER_NOT_FOUND;
+import static com.nt.user_service_lms.constants.CommonConstants.NUMBER_FIVE;
 
 
 /**
@@ -130,12 +131,13 @@ public class UserServiceImpl implements UserService {
      * @return map containing statistics
      */
     @Override
-    public Map<String, Long> userStatistics(final long userId) {
+    public Map<String, Long> userStatistics(long userId) {
         Map<String, Long> stats = new HashMap<>();
         Long enrols = enrollmentRepository.getUserTotalEnrollments(userId);
         stats.put("enrollments", enrols);
         long userGroup = userGroupRepository.getAllUserGroups(userId);
         stats.put("groups", userGroup);
+
         return stats;
     }
 
@@ -152,7 +154,7 @@ public class UserServiceImpl implements UserService {
             if (user.isPresent()) {
                 List<Enrollment> enrols = enrollmentRepository.findByUserId(user.get().getUserId());
                 LocalDate today = LocalDate.now();
-                LocalDate later = today.plusDays(CommonConstants.NUMBER_FIVE);
+                LocalDate later = today.plusDays(NUMBER_FIVE);
                 List<Enrollment> filteredEnrols = enrols.stream()
                         .filter(enrol ->
                                 enrol.getDeadline() != null

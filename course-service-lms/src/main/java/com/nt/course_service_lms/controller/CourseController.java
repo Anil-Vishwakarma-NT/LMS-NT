@@ -11,6 +11,7 @@ import jakarta.validation.Valid;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -46,6 +47,7 @@ public class CourseController {
      * @return ResponseEntity containing the created course wrapped in a standard response format
      */
     @PostMapping
+    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<StandardResponseOutDTO<CourseOutDTO>> createCourse(@Valid @RequestBody final CourseInDTO courseInDTO) {
         log.info("Received request to create course: {}", courseInDTO.getTitle());
         final CourseOutDTO createdCourse = courseService.createCourse(courseInDTO);
@@ -61,6 +63,7 @@ public class CourseController {
      * @return ResponseEntity containing a list of all courses wrapped in a standard response format
      */
     @GetMapping
+    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<StandardResponseOutDTO<List<CourseOutDTO>>> getAllCourses() {
         log.info("Received request to get all courses.");
         final List<CourseOutDTO> courses = courseService.getAllCourses();
@@ -93,6 +96,7 @@ public class CourseController {
      * @return ResponseEntity containing a confirmation message wrapped in a standard response format
      */
     @DeleteMapping("/{id}")
+    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<StandardResponseOutDTO<Void>> deleteCourse(@PathVariable final Long id) {
         log.info("Received request to delete course with ID: {}", id);
         final String response = courseService.deleteCourse(id);
@@ -108,6 +112,7 @@ public class CourseController {
      * @return ResponseEntity containing the updated course wrapped in a standard response format
      */
     @PutMapping("/{id}")
+    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<StandardResponseOutDTO<CourseOutDTO>> updateCourse(
             @PathVariable final Long id, @Valid @RequestBody final UpdateCourseInDTO updateCourseInDTO
     ) {
@@ -139,6 +144,7 @@ public class CourseController {
      * @return ResponseEntity containing the total course count wrapped in a standard response format
      */
     @GetMapping("/count")
+    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<StandardResponseOutDTO<Long>> getCourseCount() {
         log.info("Received request to get total course count.");
         final long count = courseService.countCourses();
@@ -155,6 +161,7 @@ public class CourseController {
      * @return ResponseEntity containing a list of recent course summaries wrapped in a standard response format
      */
     @GetMapping("/recent")
+    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<StandardResponseOutDTO<List<CourseSummaryOutDTO>>> getRecentCourses() {
         final List<CourseSummaryOutDTO> recentCourses = courseService.getRecentCourseSummaries();
         final StandardResponseOutDTO<List<CourseSummaryOutDTO>> standardResponseOutDTO = StandardResponseOutDTO.success(
@@ -183,6 +190,7 @@ public class CourseController {
      * @return ResponseEntity containing a list of detailed course information wrapped in a standard response format
      */
     @GetMapping("/info")
+    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<StandardResponseOutDTO<List<CourseInfoOutDTO>>> getCoursesInfo() {
         final List<CourseInfoOutDTO> courseDTOS = courseService.getCoursesInfo();
         final StandardResponseOutDTO<List<CourseInfoOutDTO>> standardResponseOutDTO = StandardResponseOutDTO.success(

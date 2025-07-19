@@ -27,7 +27,7 @@ public class GroupInDTO {
      * Special characters and numbers are not allowed.
      */
     @Pattern(
-            regexp = "^[a-zA-Z]+$",
+            regexp = "^[a-zA-Z0-9 _-]+$",
             message = "Group name must contain only alphabets."
     )
     private String groupName;

@@ -111,8 +111,8 @@ public interface EnrollmentRepository extends JpaRepository<Enrollment, Long> {
      * @param userId the user ID
      * @return total number of enrollments
      */
-    @Query("SELECT Count(DISTINCT ug.courseId) FROM Enrollment ug WHERE ug.userId = :userId")
-    Long getUserTotalEnrollments(Long userId);
+@Query("SELECT Count(DISTINCT ug.courseId) FROM Enrollment ug WHERE ug.userId = :userId AND ug.isActive = TRUE")
+Long getUserTotalEnrollments(Long userId);
 
     /**
      * Soft deletes an enrollment by group ID and user ID.

@@ -30,7 +30,7 @@ public class CoursePDFReportBuilder {
         PdfDocument pdf = new PdfDocument(writer);
         Document document = new Document(pdf);
 
-        ImageData imageData = ImageDataFactory.create("C:\\Users\\DELL\\Desktop\\LMS-NT\\LMS\\src\\main\\resources\\static\\logo.png");
+        ImageData imageData = ImageDataFactory.create("user-service-lms/src/main/resources/static/logo.png");
         Image logo = new Image(imageData);
         logo.scaleToFit(130, 150);
         logo.setFixedPosition(pdf.getDefaultPageSize().getWidth() - 150, pdf.getDefaultPageSize().getTop() - 50);
