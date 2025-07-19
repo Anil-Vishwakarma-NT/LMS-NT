@@ -2,6 +2,7 @@ package com.nt.lms.api_gateway_lms.service.serviceImp;
 
 import com.nt.lms.api_gateway_lms.config.JwtUtil;
 import com.nt.lms.api_gateway_lms.config.RsaDecryptUtil;
+import com.nt.lms.api_gateway_lms.constant.CommonConstants;
 import com.nt.lms.api_gateway_lms.constant.UserConstants;
 import com.nt.lms.api_gateway_lms.dto.AuthRequest;
 import com.nt.lms.api_gateway_lms.dto.AuthResponse;
@@ -20,26 +21,49 @@ import reactor.core.publisher.Mono;
 
 import java.util.Map;
 
+/**
+ * Service implementation responsible for handling authentication-related operations
+ * such as login, token refresh, and logout.
+ */
 @Slf4j
 @Service
 public class AuthServiceImp {
+
+    /**
+     * Reactive authentication manager for performing non-blocking authentication.
+     */
     @Autowired
     private ReactiveAuthenticationManager authenticationManager;
 
+    /**
+     * Utility for generating and validating JWT access and refresh tokens.
+     */
     @Autowired
     private JwtUtil jwtTokenManager;
 
+    /**
+     * Utility for decrypting RSA encrypted data (e.g., encrypted passwords).
+     */
     @Autowired
-    RsaDecryptUtil rsaDecryptUtil;
+    private RsaDecryptUtil rsaDecryptUtil;
 
+    /**
+     * Service to retrieve user details for authentication.
+     */
     @Autowired
     private CustomUserDetailsService customUserDetailsService;
 
-    public Mono<ResponseEntity<AuthResponse>> login(AuthRequest request) {
+    /**
+     * Authenticates a user based on email and password, and generates JWT tokens upon successful login.
+     *
+     * @param request AuthRequest containing email and password.
+     * @return Mono emitting ResponseEntity containing AuthResponse with tokens or appropriate error status.
+     */
+    public Mono<ResponseEntity<AuthResponse>> login(final AuthRequest request) {
         log.info("Attempting login for email: {}", request.getEmail());
 
         if (request.getEmail() == null || request.getPassword() == null) {
-            log.warn("Login failed - email or password is null ***************");
+            log.warn("Login failed - email or password is null");
             return Mono.just(ResponseEntity.badRequest().body(null));
         }
 
@@ -53,8 +77,6 @@ public class AuthServiceImp {
                         return Mono.error(new ResourceNotFoundException(UserConstants.USER_DELETED));
                     }
 
-//                    String decodedPassword = rsaDecryptUtil.decrypt(request.getPassword());
-//                    System.out.println("Passowrd" + decodedPassword);
                     Authentication auth = new UsernamePasswordAuthenticationToken(
                             request.getEmail(), request.getPassword()
                     );
@@ -81,7 +103,7 @@ public class AuthServiceImp {
                                         .accessToken(accessToken)
                                         .refreshToken(refreshToken)
                                         .tokenType("Bearer")
-                                        .expiresIn(jwtTokenManager.getAccessTokenExpiration() / 1000)
+                                        .expiresIn(jwtTokenManager.getAccessTokenExpiration() / CommonConstants.INTEGER_ONE_THOUSAND)
                                         .build();
 
                                 return ResponseEntity.ok(response);
@@ -89,14 +111,20 @@ public class AuthServiceImp {
                 })
                 .onErrorResume(e -> {
                     if (e instanceof ResourceNotFoundException) {
-                        return Mono.just(ResponseEntity.status(404).body(null));
+                        return Mono.just(ResponseEntity.status(CommonConstants.INTEGER_FOUR_HUNDRED_FOUR).body(null));
                     }
                     log.error("Authentication failed: {}", e.getMessage());
-                    return Mono.just(ResponseEntity.status(400).body(null));
+                    return Mono.just(ResponseEntity.status(CommonConstants.INTEGER_FOUR_HUNDRED).body(null));
                 });
     }
 
-    public Mono<ResponseEntity<AuthResponse>> refreshToken(RefreshTokenRequest request) {
+    /**
+     * Generates a new access token using a valid refresh token.
+     *
+     * @param request RefreshTokenRequest containing the refresh token.
+     * @return Mono emitting ResponseEntity with new access token and existing refresh token.
+     */
+    public Mono<ResponseEntity<AuthResponse>> refreshToken(final RefreshTokenRequest request) {
         return Mono.fromCallable(() -> jwtTokenManager.extractEmail(request.getRefreshToken()))
                 .flatMap(email ->
                         customUserDetailsService.findByUsername(email)
@@ -114,7 +142,7 @@ public class AuthServiceImp {
                                             .accessToken(newAccessToken)
                                             .refreshToken(request.getRefreshToken())
                                             .tokenType("Bearer")
-                                            .expiresIn(jwtTokenManager.getAccessTokenExpiration() / 1000)
+                                            .expiresIn(jwtTokenManager.getAccessTokenExpiration() / CommonConstants.INTEGER_ONE_THOUSAND)
                                             .build();
 
                                     return Mono.just(ResponseEntity.ok(response));
@@ -126,19 +154,14 @@ public class AuthServiceImp {
                 });
     }
 
-    public Mono<ResponseEntity<Map<String, String>>> logout(String authHeader) {
+    /**
+     * Handles user logout. Currently a placeholder without actual token invalidation.
+     *
+     * @param authHeader Authorization header containing bearer token.
+     * @return Mono emitting ResponseEntity with logout confirmation message.
+     */
+    public Mono<ResponseEntity<Map<String, String>>> logout(final String authHeader) {
         // Token invalidation can be implemented here
         return Mono.just(ResponseEntity.ok(Map.of("message", "Logged out successfully")));
-
-//        log.info("Logout request for user: {}", email);
-//
-//        User user = userRepository.findByEmailIgnoreCase(email)
-//                .orElseThrow(() -> {
-//                    log.error("Logout failed - user not found: {}", email);
-//                    return new ResourceNotFoundException(UserConstants.USER_NOT_FOUND);
-//                });
-//
-//        refreshTokenRepository.deleteByUserId(user.getUserId());
-//        log.info("Refresh token deleted for user: {}", email);
     }
 }

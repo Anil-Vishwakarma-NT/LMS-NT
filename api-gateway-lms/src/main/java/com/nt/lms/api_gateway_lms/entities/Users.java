@@ -89,16 +89,11 @@ public class Users {
     @Column(name = "updated_at")
     private Date updatedAt;
 
-
     /**
-     * The status for the user
+     * The status for the user.
      */
     @Column(name = "is_active", nullable = false, columnDefinition = "Boolean Default True")
     private boolean active = true;
-
-//    @Column(name = "is_loggedIn" , nullable=false,columnDefinition = "Boolean default false")
-//    private boolean is_loggedIn = false;
-
 
     /**
      * Default constructor. Sets the managerId to ADMIN_ID.
