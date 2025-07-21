@@ -2,7 +2,9 @@ package com.nt.course_service_lms.controllerTest;
 
 import com.nt.course_service_lms.controller.BundleController;
 import com.nt.course_service_lms.dto.inDTO.BundleInDTO;
-import com.nt.course_service_lms.entity.Bundle;
+import com.nt.course_service_lms.dto.inDTO.UpdateBundleInDTO;
+import com.nt.course_service_lms.dto.outDTO.BundleOutDTO;
+import com.nt.course_service_lms.dto.outDTO.StandardResponseOutDTO;
 import com.nt.course_service_lms.service.BundleService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -12,8 +14,8 @@ import org.mockito.MockitoAnnotations;
 import org.springframework.http.ResponseEntity;
 
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
-import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
@@ -27,76 +29,152 @@ public class BundleControllerTest {
     private BundleService bundleService;
 
     @BeforeEach
-    public void setUp() {
+    void setUp() {
         MockitoAnnotations.openMocks(this);
     }
 
     @Test
-    public void testCreateBundle() {
-        BundleInDTO bundleInDTO = new BundleInDTO("Test Bundle");
-        Bundle bundle = new Bundle();
-        bundle.setBundleId(1L);
+    void testCreateBundle() {
+        BundleInDTO bundleInDTO = new BundleInDTO();
+        bundleInDTO.setBundleName("Test Bundle");
+
+        BundleOutDTO bundleOutDTO = new BundleOutDTO();
+        bundleOutDTO.setBundleName("Test Bundle");
+
+        when(bundleService.createBundle(bundleInDTO)).thenReturn(bundleOutDTO);
+
+        ResponseEntity<StandardResponseOutDTO<BundleOutDTO>> response = bundleController.createBundle(bundleInDTO);
+
+        assertEquals(201, response.getStatusCodeValue());
+        assertEquals("Test Bundle", response.getBody().getData().getBundleName());
+    }
+
+    @Test
+    void testGetAllBundles() {
+        BundleOutDTO b1 = new BundleOutDTO();
+        b1.setBundleName("Bundle 1");
+
+        BundleOutDTO b2 = new BundleOutDTO();
+        b2.setBundleName("Bundle 2");
+
+        when(bundleService.getAllBundles()).thenReturn(Arrays.asList(b1, b2));
+
+        ResponseEntity<StandardResponseOutDTO<List<BundleOutDTO>>> response = bundleController.getAllBundles();
+
+        assertEquals(200, response.getStatusCodeValue());
+        assertEquals(2, response.getBody().getData().size());
+    }
+
+    @Test
+    void testGetAllBundlesEmpty() {
+        when(bundleService.getAllBundles()).thenReturn(Collections.emptyList());
+
+        ResponseEntity<StandardResponseOutDTO<List<BundleOutDTO>>> response = bundleController.getAllBundles();
+
+        assertEquals(200, response.getStatusCodeValue());
+        assertTrue(response.getBody().getData().isEmpty());
+    }
+
+    @Test
+    void testGetBundleById() {
+        Long id = 1L;
+
+        BundleOutDTO bundle = new BundleOutDTO();
         bundle.setBundleName("Test Bundle");
 
-        when(bundleService.createBundle(bundleInDTO)).thenReturn(bundle);
+        when(bundleService.getBundleById(id)).thenReturn(bundle);
 
-        ResponseEntity<Bundle> response = bundleController.createBundle(bundleInDTO);
+        ResponseEntity<StandardResponseOutDTO<BundleOutDTO>> response = bundleController.getBundleById(id);
 
         assertEquals(200, response.getStatusCodeValue());
-        assertEquals(bundle, response.getBody());
+        assertEquals("Test Bundle", response.getBody().getData().getBundleName());
     }
 
     @Test
-    public void testGetAllBundles() {
-        List<Bundle> bundleList = Arrays.asList(
-                new Bundle(1L, "Bundle 1"),
-                new Bundle(2L, "Bundle 2")
-        );
+    void testUpdateBundle() {
+        Long id = 1L;
+        UpdateBundleInDTO updateDTO = new UpdateBundleInDTO();
+        updateDTO.setBundleName("Updated");
 
-        when(bundleService.getAllBundles()).thenReturn(bundleList);
+        BundleOutDTO updated = new BundleOutDTO();
+        updated.setBundleName("Updated");
 
-        ResponseEntity<List<Bundle>> response = bundleController.getAllBundles();
+        when(bundleService.updateBundle(id, updateDTO)).thenReturn(updated);
+
+        ResponseEntity<StandardResponseOutDTO<BundleOutDTO>> response = bundleController.updateBundle(id, updateDTO);
 
         assertEquals(200, response.getStatusCodeValue());
-        assertEquals(bundleList, response.getBody());
+        assertEquals("Updated", response.getBody().getData().getBundleName());
     }
 
     @Test
-    public void testGetBundleById() {
-        Bundle bundle = new Bundle(1L, "Bundle 1");
+    void testDeleteBundle() {
+        Long id = 1L;
 
-        when(bundleService.getBundleById(1L)).thenReturn(Optional.of(bundle));
+        ResponseEntity<StandardResponseOutDTO<Void>> response = bundleController.deleteBundle(id);
 
-        ResponseEntity<Optional<Bundle>> response = bundleController.getBundleById(1L);
-
+        verify(bundleService, times(1)).deleteBundle(id);
         assertEquals(200, response.getStatusCodeValue());
-        assertTrue(response.getBody().isPresent());
-        assertEquals("Bundle 1", response.getBody().get().getBundleName());
+        assertEquals("Bundle deleted successfully", response.getBody().getMessage());
     }
 
     @Test
-    public void testUpdateBundle() {
-        Long bundleId = 1L;
-        BundleInDTO inputDTO = new BundleInDTO("Updated Bundle");
-        BundleInDTO returnedDTO = new BundleInDTO("Updated Bundle");
+    void testCheckIfBundleExists_True() {
+        Long id = 1L;
+        when(bundleService.existsByBundleId(id)).thenReturn(true);
 
-        when(bundleService.updateBundle(bundleId, inputDTO)).thenReturn(returnedDTO);
-
-        ResponseEntity<BundleInDTO> response = bundleController.updateBundle(bundleId, inputDTO);
+        ResponseEntity<StandardResponseOutDTO<Boolean>> response = bundleController.checkIfBundleExists(id);
 
         assertEquals(200, response.getStatusCodeValue());
-        assertEquals("Updated Bundle", response.getBody().getBundleName());
+        assertTrue(response.getBody().getData());
+        assertEquals("Bundle exists", response.getBody().getMessage());
     }
 
     @Test
-    public void testDeleteBundle() {
-        Long bundleId = 1L;
+    void testCheckIfBundleExists_False() {
+        Long id = 2L;
+        when(bundleService.existsByBundleId(id)).thenReturn(false);
 
-        doNothing().when(bundleService).deleteBundle(bundleId);
-
-        ResponseEntity<String> response = bundleController.deleteBundle(bundleId);
+        ResponseEntity<StandardResponseOutDTO<Boolean>> response = bundleController.checkIfBundleExists(id);
 
         assertEquals(200, response.getStatusCodeValue());
-        assertEquals("Bundle with ID 1 deleted successfully.", response.getBody());
+        assertFalse(response.getBody().getData());
+        assertEquals("Bundle does not exist", response.getBody().getMessage());
+    }
+
+    @Test
+    void testGetBundleCount() {
+        when(bundleService.countBundles()).thenReturn(5L);
+
+        ResponseEntity<StandardResponseOutDTO<Long>> response = bundleController.getBundleCount();
+
+        assertEquals(200, response.getStatusCodeValue());
+        assertEquals(5L, response.getBody().getData());
+    }
+
+    @Test
+    void testGetBundleNameById() {
+        Long id = 1L;
+        when(bundleService.getBundleNameById(id)).thenReturn("Test Bundle");
+
+        ResponseEntity<StandardResponseOutDTO<String>> response = bundleController.getBundleNameById(id);
+
+        assertEquals(200, response.getStatusCodeValue());
+        assertEquals("Test Bundle", response.getBody().getData());
+    }
+
+    @Test
+    void testGetExistingBundleIds() {
+        List<Long> input = Arrays.asList(1L, 2L, 3L);
+        List<Long> output = Arrays.asList(1L, 3L);
+
+        when(bundleService.findExistingIds(input)).thenReturn(output);
+
+        ResponseEntity<List<Long>> response = bundleController.getExistingBundleIds(input);
+
+        assertEquals(200, response.getStatusCodeValue());
+        assertEquals(2, response.getBody().size());
+        assertTrue(response.getBody().contains(1L));
+        assertFalse(response.getBody().contains(2L));
     }
 }

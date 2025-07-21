@@ -15,8 +15,8 @@ public class QuizQuestionOutDTO {
     private Long quizId;
     private String questionText;
     private String questionType;
-    private String options; // JSON string for question options
-    private String correctAnswer; // JSON string for correct answer(s) - may be hidden based on context
+    private String options;
+    private String correctAnswer;
     private BigDecimal points;
     private String explanation;
     private Boolean required;

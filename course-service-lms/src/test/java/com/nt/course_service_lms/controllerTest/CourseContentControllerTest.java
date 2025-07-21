@@ -2,154 +2,171 @@ package com.nt.course_service_lms.controllerTest;
 
 import com.nt.course_service_lms.controller.CourseContentController;
 import com.nt.course_service_lms.dto.inDTO.CourseContentInDTO;
-import com.nt.course_service_lms.entity.CourseContent;
+import com.nt.course_service_lms.dto.inDTO.UpdateCourseContentInDTO;
+import com.nt.course_service_lms.dto.outDTO.CourseContentOutDTO;
+import com.nt.course_service_lms.dto.outDTO.StandardResponseOutDTO;
 import com.nt.course_service_lms.service.CourseContentService;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.junit.jupiter.MockitoExtension;
+import org.mockito.MockitoAnnotations;
 import org.springframework.http.ResponseEntity;
 
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
-import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
-@ExtendWith(MockitoExtension.class)
-class CourseContentControllerTest {
-
-    @Mock
-    private CourseContentService courseContentService;
+public class CourseContentControllerTest {
 
     @InjectMocks
-    private CourseContentController courseContentController;
+    private CourseContentController controller;
 
-    // Test for createCourseContent()
+    @Mock
+    private CourseContentService service;
+
+    @BeforeEach
+    void setUp() {
+        MockitoAnnotations.openMocks(this);
+    }
+
     @Test
     void testCreateCourseContent() {
-        // Given
-        CourseContentInDTO dto = new CourseContentInDTO();
-        dto.setCourseId(1L);
-        dto.setTitle("Java Basics");
-        dto.setDescription("Introduction to Java Programming");
-        dto.setVideoLink("https://example.com/java-video");
-        dto.setResourceLink("https://example.com/java-resource");
+        CourseContentInDTO inDTO = new CourseContentInDTO();
+        inDTO.setTitle("Intro");
+        inDTO.setCourseId(1L);
 
-        CourseContent courseContent = new CourseContent(1L, 1L, "Java Basics", "Introduction to Java Programming", "https://example.com/java-video", "https://example.com/java-resource");
+        CourseContentOutDTO outDTO = new CourseContentOutDTO();
+        outDTO.setCourseContentId(10L);
+        outDTO.setTitle("Intro");
 
-        when(courseContentService.createCourseContent(dto)).thenReturn(courseContent);
+        when(service.createCourseContent(inDTO)).thenReturn(outDTO);
 
-        // When
-        ResponseEntity<CourseContent> response = courseContentController.createCourseContent(dto);
+        ResponseEntity<StandardResponseOutDTO<CourseContentOutDTO>> response = controller.createCourseContent(inDTO);
 
-        // Then
-        assertEquals(ResponseEntity.ok(courseContent), response);
-        verify(courseContentService, times(1)).createCourseContent(dto);
+        assertEquals(201, response.getStatusCodeValue());
+        assertEquals("Intro", response.getBody().getData().getTitle());
     }
 
-    // Test for getAllCourseContents()
     @Test
     void testGetAllCourseContents() {
-        // Given
-        List<CourseContent> mockContents = Arrays.asList(
-                new CourseContent(1L, 1L, "Title1", "Description1", "VideoLink1", "ResourceLink1"),
-                new CourseContent(2L, 1L, "Title2", "Description2", "VideoLink2", "ResourceLink2")
-        );
+        CourseContentOutDTO c1 = new CourseContentOutDTO();
+        c1.setTitle("Topic 1");
 
-        when(courseContentService.getAllCourseContents()).thenReturn(mockContents);
+        CourseContentOutDTO c2 = new CourseContentOutDTO();
+        c2.setTitle("Topic 2");
 
-        // When
-        ResponseEntity<List<CourseContent>> response = courseContentController.getAllCourseContents();
+        when(service.getAllCourseContents()).thenReturn(Arrays.asList(c1, c2));
 
-        // Then
-        assertEquals(ResponseEntity.ok(mockContents), response);
-        verify(courseContentService, times(1)).getAllCourseContents();
+        ResponseEntity<StandardResponseOutDTO<List<CourseContentOutDTO>>> response = controller.getAllCourseContents();
+
+        assertEquals(200, response.getStatusCodeValue());
+        assertEquals(2, response.getBody().getData().size());
     }
 
-    // Test for getCourseContentById()
+    @Test
+    void testGetAllCourseContents_Empty() {
+        when(service.getAllCourseContents()).thenReturn(Collections.emptyList());
+
+        ResponseEntity<StandardResponseOutDTO<List<CourseContentOutDTO>>> response = controller.getAllCourseContents();
+
+        assertEquals(200, response.getStatusCodeValue());
+        assertTrue(response.getBody().getData().isEmpty());
+    }
+
     @Test
     void testGetCourseContentById() {
-        // Given
-        CourseContent mockContent = new CourseContent(1L, 1L, "Title1", "Description1", "VideoLink1", "ResourceLink1");
-        when(courseContentService.getCourseContentById(anyLong())).thenReturn(Optional.of(mockContent));
+        Long id = 1L;
+        CourseContentOutDTO dto = new CourseContentOutDTO();
+        dto.setCourseContentId(id);
+        dto.setTitle("Unit");
 
-        // When
-        ResponseEntity<Optional<CourseContent>> response = courseContentController.getCourseContentById(1L);
+        when(service.getCourseContentById(id)).thenReturn(dto);
 
-        // Then
-        assertEquals(ResponseEntity.ok(Optional.of(mockContent)), response);
-        verify(courseContentService, times(1)).getCourseContentById(1L);
+        ResponseEntity<StandardResponseOutDTO<CourseContentOutDTO>> response = controller.getCourseContentById(id);
+
+        assertEquals(200, response.getStatusCodeValue());
+        assertEquals("Unit", response.getBody().getData().getTitle());
     }
 
-    @Test
-    void testGetCourseContentByIdNotFound() {
-        // Given
-        when(courseContentService.getCourseContentById(anyLong())).thenReturn(Optional.empty());
-
-        // When
-        ResponseEntity<Optional<CourseContent>> response = courseContentController.getCourseContentById(1L);
-
-        // Then
-        assertEquals(ResponseEntity.ok(Optional.empty()), response);
-        verify(courseContentService, times(1)).getCourseContentById(1L);
-    }
-
-    // Test for getCourseContentByCourseId()
     @Test
     void testGetCourseContentByCourseId() {
-        // Given
-        List<CourseContent> mockContents = Arrays.asList(
-                new CourseContent(1L, 1L, "Title1", "Description1", "VideoLink1", "ResourceLink1"),
-                new CourseContent(2L, 1L, "Title2", "Description2", "VideoLink2", "ResourceLink2")
-        );
+        Long courseId = 101L;
 
-        when(courseContentService.getAllCourseContentByCourseId(anyLong())).thenReturn(mockContents);
+        CourseContentOutDTO dto = new CourseContentOutDTO();
+        dto.setCourseContentId(1L);
 
-        // When
-        ResponseEntity<List<CourseContent>> response = courseContentController.getCourseContentByCourseId(1L);
+        when(service.getAllCourseContentByCourseId(courseId)).thenReturn(Collections.singletonList(dto));
 
-        // Then
-        assertEquals(ResponseEntity.ok(mockContents), response);
-        verify(courseContentService, times(1)).getAllCourseContentByCourseId(1L);
+        ResponseEntity<StandardResponseOutDTO<List<CourseContentOutDTO>>> response = controller.getCourseContentByCourseId(courseId);
+
+        assertEquals(200, response.getStatusCodeValue());
+        assertEquals(1, response.getBody().getData().size());
     }
 
-    // Test for deleteCourseContent()
     @Test
     void testDeleteCourseContent() {
-        // Given
-        String mockMessage = "Course content deleted successfully.";
-        when(courseContentService.deleteCourseContent(anyLong())).thenReturn(mockMessage);
+        Long id = 99L;
+        when(service.deleteCourseContent(id)).thenReturn("Deleted");
 
-        // When
-        ResponseEntity<String> response = courseContentController.deleteCourseContent(1L);
+        ResponseEntity<StandardResponseOutDTO<Void>> response = controller.deleteCourseContent(id);
 
-        // Then
-        assertEquals(ResponseEntity.ok(mockMessage), response);
-        verify(courseContentService, times(1)).deleteCourseContent(1L);
+        assertEquals(200, response.getStatusCodeValue());
+        assertEquals("Deleted", response.getBody().getMessage());
+        verify(service, times(1)).deleteCourseContent(id);
     }
 
-    // Test for updateCourseContent()
     @Test
     void testUpdateCourseContent() {
-        // Given
-        CourseContentInDTO dto = new CourseContentInDTO();
-        dto.setCourseId(1L);
-        dto.setTitle("Updated Title");
-        dto.setDescription("Updated Description");
-        dto.setVideoLink("https://example.com/updated-video");
-        dto.setResourceLink("https://example.com/updated-resource");
+        Long id = 1L;
+        UpdateCourseContentInDTO updateDTO = new UpdateCourseContentInDTO();
+        updateDTO.setTitle("Updated");
 
-        String mockMessage = "Course content updated successfully.";
-        when(courseContentService.updateCourseContent(anyLong(), eq(dto))).thenReturn(mockMessage);
+        CourseContentOutDTO updatedDTO = new CourseContentOutDTO();
+        updatedDTO.setCourseContentId(id);
+        updatedDTO.setTitle("Updated");
 
-        // When
-        ResponseEntity<String> response = courseContentController.updateCourseContent(1L, dto);
+        when(service.updateCourseContent(id, updateDTO)).thenReturn(updatedDTO);
 
-        // Then
-        assertEquals(ResponseEntity.ok(mockMessage), response);
-        verify(courseContentService, times(1)).updateCourseContent(1L, dto);
+        ResponseEntity<StandardResponseOutDTO<CourseContentOutDTO>> response = controller.updateCourseContent(id, updateDTO);
+
+        assertEquals(200, response.getStatusCodeValue());
+        assertEquals("Updated", response.getBody().getData().getTitle());
+    }
+
+    @Test
+    void testHealthCheck() {
+        ResponseEntity<StandardResponseOutDTO<String>> response = controller.healthCheck();
+
+        assertEquals(200, response.getStatusCodeValue());
+        assertEquals("UP", response.getBody().getData());
+    }
+
+    @Test
+    void testGetCourseContentCount() {
+        Long courseId = 3L;
+        List<CourseContentOutDTO> list = Arrays.asList(new CourseContentOutDTO(), new CourseContentOutDTO());
+
+        when(service.getAllCourseContentByCourseId(courseId)).thenReturn(list);
+
+        ResponseEntity<StandardResponseOutDTO<Integer>> response = controller.getCourseContentCount(courseId);
+
+        assertEquals(200, response.getStatusCodeValue());
+        assertEquals(2, response.getBody().getData());
+    }
+
+    @Test
+    void testGetCourseContentCount_Empty() {
+        Long courseId = 3L;
+
+        when(service.getAllCourseContentByCourseId(courseId)).thenReturn(Collections.emptyList());
+
+        ResponseEntity<StandardResponseOutDTO<Integer>> response = controller.getCourseContentCount(courseId);
+
+        assertEquals(200, response.getStatusCodeValue());
+        assertEquals(0, response.getBody().getData());
     }
 }
