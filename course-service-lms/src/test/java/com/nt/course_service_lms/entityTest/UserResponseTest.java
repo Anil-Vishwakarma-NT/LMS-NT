@@ -170,6 +170,7 @@ public class UserResponseTest {
         r2.setUserAnswer("Changed");
         assertThat(r1).isNotEqualTo(r2);
     }
+
     @Test
     void testBuilder() {
         LocalDateTime now = LocalDateTime.now();

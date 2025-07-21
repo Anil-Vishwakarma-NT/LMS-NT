@@ -16,6 +16,16 @@ public final class CommonConstants {
     }
 
     /**
+     * Float 95.0 constant.
+     */
+    public static final float FLOAT_NINTY_FIVE = 95.0F;
+
+    /**
+     * Number 3 constant.
+     */
+    public static final int NUMBER_THREE = 3;
+
+    /**
      * Number 5 constant.
      */
     public static final int NUMBER_FIVE = 5;
@@ -31,4 +41,29 @@ public final class CommonConstants {
      * Number 20 constant.
      */
     public static final int NUMBER_TWENTY = 20;
+
+    /**
+     * Number 80 constant.
+     */
+    public static final int NUMBER_EIGHTY = 80;
+
+    /**
+     * Number 200 constant.
+     */
+    public static final int NUMBER_HUNDRED = 100;
+
+    /**
+     * Number 200 constant.
+     */
+    public static final int NUMBER_TWO_HUNDRED = 200;
+
+    /**
+     * Number 5000 constant.
+     */
+    public static final int NUMBER_FIVE_THOUSAND = 5000;
+
+    /**
+     * Number 10000 constant.
+     */
+    public static final int NUMBER_TEN_THOUSAND = 10000;
 }

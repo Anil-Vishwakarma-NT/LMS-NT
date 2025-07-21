@@ -44,6 +44,7 @@ public interface UserRepository extends JpaRepository<User, Long> {
      * @return A list of users managed by the specified manager.
      */
     List<User> findByManagerId(long managerId);
+
     /**
      * Checks if a user exists by their ID.
      *
@@ -51,6 +52,7 @@ public interface UserRepository extends JpaRepository<User, Long> {
      * @return true if a user with the given ID exists, false otherwise.
      */
     boolean existsById(long id);
+
     /**
      * Fetches details of the 5 most recently created active users (excluding the user with ID 1).
      * The details include full name, email, role, manager's name, and creation date.
@@ -58,19 +60,19 @@ public interface UserRepository extends JpaRepository<User, Long> {
      * @return A list of object arrays containing user details.
      */
     @Query(value = """
-    SELECT
-        CONCAT(u.firstname, ' ', u.lastname) AS fullName,
-        u.email AS email,
-        r.name AS role,
-        CONCAT(m.firstname, ' ', m.lastname) AS managerName,
-        u.created_at AS createdAt
-    FROM users u
-    LEFT JOIN role r ON u.role_id = r.role_id
-    LEFT JOIN users m ON u.manager_id = m.user_id
-    WHERE u.is_active = true AND u.user_id <> 1
-    ORDER BY u.created_at DESC
-    LIMIT 5
-    """, nativeQuery = true)
+            SELECT
+                CONCAT(u.firstname, ' ', u.lastname) AS fullName,
+                u.email AS email,
+                r.name AS role,
+                CONCAT(m.firstname, ' ', m.lastname) AS managerName,
+                u.created_at AS createdAt
+            FROM users u
+            LEFT JOIN role r ON u.role_id = r.role_id
+            LEFT JOIN users m ON u.manager_id = m.user_id
+            WHERE u.is_active = true AND u.user_id <> 1
+            ORDER BY u.created_at DESC
+            LIMIT 5
+            """, nativeQuery = true)
     List<Object[]> fetchRecentUserDetails();
 
     /**

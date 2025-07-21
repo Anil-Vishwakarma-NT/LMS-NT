@@ -1,4 +1,5 @@
 package com.nt.course_service_lms.entity;
+
 import com.nt.course_service_lms.constants.CommonConstants;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -20,6 +21,7 @@ import java.util.Objects;
  * This entity holds the details of a quiz including configuration settings
  * such as time limits, attempts allowed, and scoring parameters.
  * This class maps to the quiz table in the database.
+ *
  * @version 1.0
  * @since 1.0
  */

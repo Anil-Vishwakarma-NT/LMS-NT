@@ -32,10 +32,10 @@ import java.util.List;
  *
  * @author Course Service LMS Team
  * @version 1.0
- * @since 1.0
  * @see UserResponseInDTO
  * @see UserResponseUpdateInDTO
  * @see UserResponseOutDTO
+ * @since 1.0
  */
 public interface UserResponseService {
 
@@ -70,8 +70,8 @@ public interface UserResponseService {
      * <p>This method allows modification of user response data, typically used
      * for corrections or updates to previously submitted answers.</p>
      *
-     * @param responseId the unique identifier of the response to update.
-     *                   Must be a positive number.
+     * @param responseId              the unique identifier of the response to update.
+     *                                Must be a positive number.
      * @param userResponseUpdateInDTO the update data containing the new response information.
      *                                Must not be null.
      * @return the updated user response DTO with the new information
@@ -146,8 +146,8 @@ public interface UserResponseService {
      * <p>This method returns responses for a single quiz attempt, useful for
      * reviewing specific attempt details and calculating attempt-specific scores.</p>
      *
-     * @param userId the unique identifier of the user. Must be a positive number.
-     * @param quizId the unique identifier of the quiz. Must be a positive number.
+     * @param userId  the unique identifier of the user. Must be a positive number.
+     * @param quizId  the unique identifier of the quiz. Must be a positive number.
      * @param attempt the attempt number. Must be a positive number.
      * @return a list of user response DTOs for the specified user, quiz, and attempt
      */
@@ -159,8 +159,8 @@ public interface UserResponseService {
      * <p>This is the paginated version of getUserResponsesByUserId, useful when
      * a user has submitted a large number of responses.</p>
      *
-     * @param userId the unique identifier of the user whose responses to retrieve.
-     *               Must be a positive number.
+     * @param userId   the unique identifier of the user whose responses to retrieve.
+     *                 Must be a positive number.
      * @param pageable the pagination information including page number, size, and sorting.
      *                 Must not be null.
      * @return a paginated collection of user response DTOs for the specified user
@@ -173,8 +173,8 @@ public interface UserResponseService {
      * <p>This is the paginated version of getUserResponsesByQuizId, useful when
      * a quiz has received a large number of responses.</p>
      *
-     * @param quizId the unique identifier of the quiz whose responses to retrieve.
-     *               Must be a positive number.
+     * @param quizId   the unique identifier of the quiz whose responses to retrieve.
+     *                 Must be a positive number.
      * @param pageable the pagination information including page number, size, and sorting.
      *                 Must not be null.
      * @return a paginated collection of user response DTOs for the specified quiz
@@ -188,8 +188,8 @@ public interface UserResponseService {
      * The score is calculated by aggregating the pointsEarned field from all responses
      * in the specified attempt.</p>
      *
-     * @param userId the unique identifier of the user. Must be a positive number.
-     * @param quizId the unique identifier of the quiz. Must be a positive number.
+     * @param userId  the unique identifier of the user. Must be a positive number.
+     * @param quizId  the unique identifier of the quiz. Must be a positive number.
      * @param attempt the attempt number for which to calculate the score.
      *                Must be a positive number.
      * @return the total score as a BigDecimal, or BigDecimal.ZERO if no responses found
@@ -202,8 +202,8 @@ public interface UserResponseService {
      * <p>This method provides a count of questions answered correctly in a specific
      * quiz attempt, useful for performance analysis and pass/fail determination.</p>
      *
-     * @param userId the unique identifier of the user. Must be a positive number.
-     * @param quizId the unique identifier of the quiz. Must be a positive number.
+     * @param userId  the unique identifier of the user. Must be a positive number.
+     * @param quizId  the unique identifier of the quiz. Must be a positive number.
      * @param attempt the attempt number for which to count correct answers.
      *                Must be a positive number.
      * @return the count of correct answers, or 0 if no correct answers found

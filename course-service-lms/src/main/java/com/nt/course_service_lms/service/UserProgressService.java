@@ -20,7 +20,7 @@ public interface UserProgressService {
      * to the underlying data store.
      *
      * @param progressDTO the progress data transfer object containing user progress information
-     *                   including user ID, course ID, content ID, progress percentage, and position
+     *                    including user ID, course ID, content ID, progress percentage, and position
      * @throws IllegalArgumentException if progressDTO is null or contains invalid data
      */
     void updateProgress(UserProgressOutDTO progressDTO);
@@ -30,7 +30,7 @@ public interface UserProgressService {
      * This method returns detailed progress data including completion status, overall progress percentage,
      * and additional metadata about the course progress.
      *
-     * @param userId the unique identifier of the user
+     * @param userId   the unique identifier of the user
      * @param courseId the unique identifier of the course
      * @return CourseProgressWithMetaDTO containing complete progress information and metadata
      * @throws IllegalArgumentException if userId or courseId is null or invalid
@@ -42,8 +42,8 @@ public interface UserProgressService {
      * in a specific content item within a course.
      * This is useful for resuming content consumption from where the user previously stopped.
      *
-     * @param userId the unique identifier of the user
-     * @param courseId the unique identifier of the course
+     * @param userId    the unique identifier of the user
+     * @param courseId  the unique identifier of the course
      * @param contentId the unique identifier of the content item
      * @return Integer representing the last position in the content, or null if no progress exists
      * @throws IllegalArgumentException if any of the provided IDs are null or invalid
@@ -54,8 +54,8 @@ public interface UserProgressService {
      * Retrieves the progress percentage for a specific content item within a course for a user.
      * The progress is returned as a percentage value between 0.0 and 100.0.
      *
-     * @param userId the unique identifier of the user
-     * @param courseId the unique identifier of the course
+     * @param userId    the unique identifier of the user
+     * @param courseId  the unique identifier of the course
      * @param contentId the unique identifier of the content item
      * @return Double representing the progress percentage (0.0 to 100.0), or null if no progress exists
      * @throws IllegalArgumentException if any of the provided IDs are null or invalid

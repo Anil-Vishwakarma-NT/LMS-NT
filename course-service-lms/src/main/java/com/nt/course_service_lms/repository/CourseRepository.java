@@ -23,7 +23,7 @@ public interface CourseRepository extends JpaRepository<Course, Long> {
     /**
      * Finds a course by its title (case-insensitive) and the owner's ID.
      *
-     * @param title the title of the course
+     * @param title   the title of the course
      * @param ownerId the ID of the course owner
      * @return an {@link Optional} containing the matching {@link Course}, or empty if none found
      */

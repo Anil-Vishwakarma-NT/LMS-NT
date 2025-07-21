@@ -19,7 +19,7 @@ public interface UserProgressRepository extends JpaRepository<UserProgress, Inte
     /**
      * Finds user progress for a specific content.
      *
-     * @param userId the ID of the user
+     * @param userId    the ID of the user
      * @param contentId the ID of the content
      * @return an Optional containing the UserProgress if found, empty otherwise
      */
@@ -29,7 +29,7 @@ public interface UserProgressRepository extends JpaRepository<UserProgress, Inte
     /**
      * Finds all progress records for a specific user and course.
      *
-     * @param userId the ID of the user
+     * @param userId   the ID of the user
      * @param courseId the ID of the course
      * @return a list of UserProgress records for the specified user and course
      */
@@ -39,7 +39,7 @@ public interface UserProgressRepository extends JpaRepository<UserProgress, Inte
     /**
      * Finds the first progress record for a specific user and course, ordered by progress ID.
      *
-     * @param userId the ID of the user
+     * @param userId   the ID of the user
      * @param courseId the ID of the course
      * @return the first UserProgress record for the specified user and course
      */
@@ -49,8 +49,8 @@ public interface UserProgressRepository extends JpaRepository<UserProgress, Inte
     /**
      * Finds the last position for a specific user's progress in a course content.
      *
-     * @param userId the ID of the user
-     * @param courseId the ID of the course
+     * @param userId    the ID of the user
+     * @param courseId  the ID of the course
      * @param contentId the ID of the content
      * @return the last position as a Double value
      */
@@ -61,7 +61,7 @@ public interface UserProgressRepository extends JpaRepository<UserProgress, Inte
     /**
      * Finds the content type for a specific user's content progress.
      *
-     * @param userId the ID of the user
+     * @param userId    the ID of the user
      * @param contentId the ID of the content
      * @return the content type as a String
      */
@@ -71,8 +71,8 @@ public interface UserProgressRepository extends JpaRepository<UserProgress, Inte
     /**
      * Finds the content progress for a specific user, course, and content combination.
      *
-     * @param userId the ID of the user
-     * @param courseId the ID of the course
+     * @param userId    the ID of the user
+     * @param courseId  the ID of the course
      * @param contentId the ID of the content
      * @return the UserProgress record for the specified criteria, ordered by progress ID
      */

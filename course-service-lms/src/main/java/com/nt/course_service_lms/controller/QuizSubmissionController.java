@@ -4,12 +4,12 @@ import com.nt.course_service_lms.dto.inDTO.QuizSubmissionInDTO;
 import com.nt.course_service_lms.dto.outDTO.QuizSubmissionResultOutDTO;
 import com.nt.course_service_lms.dto.outDTO.StandardResponseOutDTO;
 import com.nt.course_service_lms.service.serviceImpl.QuizSubmissionService;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-
-import jakarta.validation.Valid;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -31,6 +31,7 @@ public class QuizSubmissionController {
      * Service layer component responsible for handling quiz submission business logic.
      * Injected via constructor using Lombok's @RequiredArgsConstructor annotation.
      */
+    @Autowired
     private QuizSubmissionService quizSubmissionService;
 
     /**
@@ -87,8 +88,8 @@ public class QuizSubmissionController {
      * This is a flexible endpoint that can process both manual and automatic submissions
      * based on the submission type parameter.
      *
-     * @param quizAttemptId The unique identifier of the quiz attempt being submitted
-     * @param submissionDTO The data transfer object containing user responses and submission details
+     * @param quizAttemptId  The unique identifier of the quiz attempt being submitted
+     * @param submissionDTO  The data transfer object containing user responses and submission details
      * @param submissionType The type of submission (defaults to "MANUAL" if not specified)
      * @return ResponseEntity containing the quiz submission result wrapped in a standard response format
      * @throws jakarta.validation.ConstraintViolationException if the submission data is invalid

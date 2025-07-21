@@ -9,7 +9,9 @@ import lombok.NoArgsConstructor;
 
 import java.util.Objects;
 
-import static com.nt.course_service_lms.constants.CourseBundleConstants.*;
+import static com.nt.course_service_lms.constants.CourseBundleConstants.BUNDLE_ID_NOT_NULL;
+import static com.nt.course_service_lms.constants.CourseBundleConstants.BUNDLE_ID_POSITIVE;
+import static com.nt.course_service_lms.constants.CourseBundleConstants.COURSE_ID_NOT_NULL;
 import static com.nt.course_service_lms.constants.CourseBundleConstants.COURSE_ID_POSITIVE;
 
 @Data
@@ -39,10 +41,14 @@ public class UpdateCourseBundleInDTO {
 
     @Override
     public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
+        if (this == o) {
+            return true;
+        }
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
         UpdateCourseBundleInDTO that = (UpdateCourseBundleInDTO) o;
-        return isActive == that.isActive && Objects.equals(bundleId, that.bundleId) && Objects.equals(courseId, that.courseId) ;
+        return isActive == that.isActive && Objects.equals(bundleId, that.bundleId) && Objects.equals(courseId, that.courseId);
     }
 
     @Override

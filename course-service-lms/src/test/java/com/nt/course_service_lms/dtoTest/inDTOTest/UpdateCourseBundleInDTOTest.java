@@ -1,13 +1,18 @@
 package com.nt.course_service_lms.dtoTest.inDTOTest;
 
 import com.nt.course_service_lms.dto.inDTO.UpdateCourseBundleInDTO;
-import jakarta.validation.*;
+import jakarta.validation.ConstraintViolation;
+import jakarta.validation.Validation;
+import jakarta.validation.Validator;
+import jakarta.validation.ValidatorFactory;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import java.util.Set;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class UpdateCourseBundleInDTOTest {
 
@@ -71,6 +76,7 @@ class UpdateCourseBundleInDTOTest {
         assertTrue(violations.stream().anyMatch(v -> v.getPropertyPath().toString().equals("bundleId")));
         assertTrue(violations.stream().anyMatch(v -> v.getPropertyPath().toString().equals("courseId")));
     }
+
     @Test
     void testBuilderCreatesValidObject() {
         UpdateCourseBundleInDTO dto = UpdateCourseBundleInDTO.builder()

@@ -1,10 +1,10 @@
 package com.nt.course_service_lms.service;
 
 import com.nt.course_service_lms.dto.inDTO.CourseInDTO;
+import com.nt.course_service_lms.dto.inDTO.UpdateCourseInDTO;
+import com.nt.course_service_lms.dto.outDTO.CourseInfoOutDTO;
 import com.nt.course_service_lms.dto.outDTO.CourseOutDTO;
 import com.nt.course_service_lms.dto.outDTO.CourseSummaryOutDTO;
-import com.nt.course_service_lms.dto.outDTO.CourseInfoOutDTO;
-import com.nt.course_service_lms.dto.inDTO.UpdateCourseInDTO;
 
 import java.util.List;
 
@@ -66,7 +66,7 @@ public interface CourseService {
     /**
      * Updates an existing course with new information.
      *
-     * @param courseId the unique identifier of the course to update
+     * @param courseId          the unique identifier of the course to update
      * @param updateCourseInDTO the data transfer object containing updated course information
      * @return the updated course as a {@link CourseOutDTO}
      * @throws IllegalArgumentException if courseId is null or updateCourseInDTO is invalid

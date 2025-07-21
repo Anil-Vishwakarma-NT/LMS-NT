@@ -2,15 +2,22 @@ package com.nt.course_service_lms.dtoTest.inDTOTest;
 
 import com.nt.course_service_lms.dto.inDTO.QuizSubmissionInDTO;
 import com.nt.course_service_lms.dto.inDTO.UserResponseInDTO;
-import jakarta.validation.*;
-
+import jakarta.validation.ConstraintViolation;
+import jakarta.validation.Validation;
+import jakarta.validation.Validator;
+import jakarta.validation.ValidatorFactory;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import java.time.LocalDateTime;
-import java.util.*;
+import java.util.Arrays;
+import java.util.List;
+import java.util.Set;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class QuizSubmissionInDTOTest {
 
@@ -74,6 +81,7 @@ class QuizSubmissionInDTOTest {
         Set<ConstraintViolation<QuizSubmissionInDTO>> violations = validator.validate(dto);
         assertTrue(violations.isEmpty(), "List is allowed to be null unless @NotNull is used");
     }
+
     @Test
     void testBuilderCreatesValidQuizSubmission() {
         UserResponseInDTO response = new UserResponseInDTO(

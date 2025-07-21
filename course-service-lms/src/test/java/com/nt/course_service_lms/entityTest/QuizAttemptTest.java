@@ -65,6 +65,7 @@ public class QuizAttemptTest {
         assertThat(attempt.getCreatedAt()).isEqualTo(now);
         assertThat(attempt.getUpdatedAt()).isEqualTo(later);
     }
+
     @Test
     void testBuilderSetsAllFields() {
         LocalDateTime now = LocalDateTime.now();
@@ -93,6 +94,7 @@ public class QuizAttemptTest {
         assertThat(attempt.getCreatedAt()).isEqualTo(now);
         assertThat(attempt.getUpdatedAt()).isEqualTo(now);
     }
+
     @Test
     void testStartedAtHasDefaultValue() {
         QuizAttempt attempt = new QuizAttempt();

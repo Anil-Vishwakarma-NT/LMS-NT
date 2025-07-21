@@ -21,9 +21,9 @@ public interface UserResponseRepository extends JpaRepository<UserResponse, Long
     /**
      * Check if a user response exists for given user ID, question ID, and attempt number.
      *
-     * @param userId the user ID
+     * @param userId     the user ID
      * @param questionId the question ID
-     * @param attempt the attempt number
+     * @param attempt    the attempt number
      * @return true if response exists, false otherwise
      */
     boolean existsByUserIdAndQuestionIdAndAttempt(Long userId, Long questionId, Long attempt);
@@ -39,7 +39,7 @@ public interface UserResponseRepository extends JpaRepository<UserResponse, Long
     /**
      * Find all user responses by user ID with pagination.
      *
-     * @param userId the user ID
+     * @param userId   the user ID
      * @param pageable pagination information
      * @return paginated user responses
      */
@@ -56,7 +56,7 @@ public interface UserResponseRepository extends JpaRepository<UserResponse, Long
     /**
      * Find all user responses by quiz ID with pagination.
      *
-     * @param quizId the quiz ID
+     * @param quizId   the quiz ID
      * @param pageable pagination information
      * @return paginated user responses
      */
@@ -74,8 +74,8 @@ public interface UserResponseRepository extends JpaRepository<UserResponse, Long
     /**
      * Find all user responses by user ID, quiz ID, and attempt number.
      *
-     * @param userId the user ID
-     * @param quizId the quiz ID
+     * @param userId  the user ID
+     * @param quizId  the quiz ID
      * @param attempt the attempt number
      * @return list of user responses
      */
@@ -85,8 +85,8 @@ public interface UserResponseRepository extends JpaRepository<UserResponse, Long
      * Calculate total score for a specific user, quiz, and attempt.
      * Uses pointsEarned field instead of score field.
      *
-     * @param userId the user ID
-     * @param quizId the quiz ID
+     * @param userId  the user ID
+     * @param quizId  the quiz ID
      * @param attempt the attempt number
      * @return total score or null if no responses found
      */
@@ -99,8 +99,8 @@ public interface UserResponseRepository extends JpaRepository<UserResponse, Long
     /**
      * Count correct answers for a specific user, quiz, and attempt.
      *
-     * @param userId the user ID
-     * @param quizId the quiz ID
+     * @param userId  the user ID
+     * @param quizId  the quiz ID
      * @param attempt the attempt number
      * @return count of correct answers
      */

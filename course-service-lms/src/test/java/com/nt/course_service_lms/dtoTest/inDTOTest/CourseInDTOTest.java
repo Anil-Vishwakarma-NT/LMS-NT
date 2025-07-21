@@ -1,13 +1,19 @@
 package com.nt.course_service_lms.dtoTest.inDTOTest;
 
 import com.nt.course_service_lms.dto.inDTO.CourseInDTO;
-import jakarta.validation.*;
+import jakarta.validation.ConstraintViolation;
+import jakarta.validation.Validation;
+import jakarta.validation.Validator;
+import jakarta.validation.ValidatorFactory;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import java.util.Set;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class CourseInDTOTest {
 
@@ -88,18 +94,21 @@ class CourseInDTOTest {
         Set<ConstraintViolation<CourseInDTO>> v = validator.validate(dto);
         assertTrue(v.isEmpty());
     }
+
     @Test
     void whenTitleIsWhitespace_thenViolation() {
         CourseInDTO dto = new CourseInDTO("   ", 1L, "Desc", "BEGINNER", true);
         Set<ConstraintViolation<CourseInDTO>> violations = validator.validate(dto);
         assertFalse(violations.isEmpty());
     }
+
     @Test
     void whenCourseLevelIsEmpty_thenViolation() {
         CourseInDTO dto = new CourseInDTO("Valid Title", 1L, "Valid Desc", "", true);
         Set<ConstraintViolation<CourseInDTO>> violations = validator.validate(dto);
         assertFalse(violations.isEmpty());
     }
+
     @Test
     void testBuilderCreatesValidObject() {
         CourseInDTO dto = CourseInDTO.builder()
@@ -161,12 +170,14 @@ class CourseInDTOTest {
         assertNotEquals(a, null);
         assertNotEquals(a, "some string");
     }
+
     @Test
     void testEquals_differentActiveField() {
         CourseInDTO dto1 = new CourseInDTO("Title", 1L, "Desc", "BEGINNER", true);
         CourseInDTO dto2 = new CourseInDTO("Title", 1L, "Desc", "BEGINNER", false);
         assertNotEquals(dto1, dto2);
     }
+
     @Test
     void testHashCode_consistency() {
         CourseInDTO dto = new CourseInDTO("Title", 1L, "Desc", "BEGINNER", true);

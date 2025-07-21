@@ -40,7 +40,7 @@ public interface QuizAttemptService {
      *            Must include valid user ID, quiz ID, and other required fields.
      *            Cannot be null.
      * @return QuizAttemptOutDTO containing the created quiz attempt information
-     *         including generated ID, timestamps, and status
+     * including generated ID, timestamps, and status
      * @throws IllegalArgumentException if the input DTO is null or contains invalid data
      */
     QuizAttemptOutDTO createQuizAttempt(QuizAttemptCreateInDTO dto);
@@ -54,11 +54,11 @@ public interface QuizAttemptService {
      *
      * @param quizAttemptId the unique identifier of the quiz attempt to update.
      *                      Must be a positive long value representing an existing attempt.
-     * @param dto the data transfer object containing updated quiz attempt information.
-     *            Only non-null fields will be updated. Cannot be null.
+     * @param dto           the data transfer object containing updated quiz attempt information.
+     *                      Only non-null fields will be updated. Cannot be null.
      * @return QuizAttemptOutDTO containing the updated quiz attempt information
      * @throws IllegalArgumentException if quizAttemptId is null or non-positive,
-     *                                 or if dto is null
+     *                                  or if dto is null
      */
     QuizAttemptOutDTO updateQuizAttempt(Long quizAttemptId, QuizAttemptUpdateInDTO dto);
 
@@ -85,7 +85,7 @@ public interface QuizAttemptService {
      * @param pageable the pagination information including page number, size, and sort criteria.
      *                 Cannot be null. Use Pageable.unpaged() for retrieving all results.
      * @return Page containing QuizAttemptOutDTO objects for the requested page,
-     *         along with pagination metadata
+     * along with pagination metadata
      * @throws IllegalArgumentException if pageable is null
      */
     Page<QuizAttemptOutDTO> getAllQuizAttempts(Pageable pageable);
@@ -100,7 +100,7 @@ public interface QuizAttemptService {
      * @param userId the unique identifier of the user whose attempts to retrieve.
      *               Must be a positive long value representing an existing user.
      * @return List of QuizAttemptOutDTO objects representing all attempts by the user.
-     *         Returns empty list if user has no attempts.
+     * Returns empty list if user has no attempts.
      */
     List<QuizAttemptOutDTO> getQuizAttemptsByUserId(Long userId);
 
@@ -114,7 +114,7 @@ public interface QuizAttemptService {
      * @param quizId the unique identifier of the quiz whose attempts to retrieve.
      *               Must be a positive long value representing an existing quiz.
      * @return List of QuizAttemptOutDTO objects representing all attempts for the quiz.
-     *         Returns empty list if quiz has no attempts.
+     * Returns empty list if quiz has no attempts.
      */
     List<QuizAttemptOutDTO> getQuizAttemptsByQuizId(Long quizId);
 
@@ -128,7 +128,7 @@ public interface QuizAttemptService {
      * @param userId the unique identifier of the user. Must be a positive long value.
      * @param quizId the unique identifier of the quiz. Must be a positive long value.
      * @return List of QuizAttemptOutDTO objects representing all attempts by the user
-     *         for the specified quiz. Returns empty list if no attempts exist.
+     * for the specified quiz. Returns empty list if no attempts exist.
      */
     List<QuizAttemptOutDTO> getQuizAttemptsByUserAndQuiz(Long userId, Long quizId);
 
@@ -142,7 +142,7 @@ public interface QuizAttemptService {
      * @param status the status string to filter by. Must be a valid status value.
      *               Cannot be null or empty. Case-sensitive matching is performed.
      * @return List of QuizAttemptOutDTO objects matching the specified status.
-     *         Returns empty list if no attempts have the given status.
+     * Returns empty list if no attempts have the given status.
      * @throws IllegalArgumentException if status is null, empty, or not a valid status value
      */
     List<QuizAttemptOutDTO> getQuizAttemptsByStatus(String status);
@@ -156,7 +156,7 @@ public interface QuizAttemptService {
      * @param userId the unique identifier of the user. Must be a positive long value.
      * @param quizId the unique identifier of the quiz. Must be a positive long value.
      * @return Optional containing the latest QuizAttemptOutDTO if any attempts exist,
-     *         empty Optional otherwise
+     * empty Optional otherwise
      */
     Optional<QuizAttemptOutDTO> getLatestAttemptByUserAndQuiz(Long userId, Long quizId);
 
@@ -180,8 +180,8 @@ public interface QuizAttemptService {
      *
      * @param quizAttemptId the unique identifier of the quiz attempt to complete.
      *                      Must be a positive long value representing an existing attempt.
-     * @param scoreDetails the detailed scoring information in JSON or structured format.
-     *                     Cannot be null but can be empty string if no score details available.
+     * @param scoreDetails  the detailed scoring information in JSON or structured format.
+     *                      Cannot be null but can be empty string if no score details available.
      * @return QuizAttemptOutDTO containing the updated attempt information with completion data
      */
     QuizAttemptOutDTO completeAttempt(Long quizAttemptId, String scoreDetails);
@@ -234,7 +234,7 @@ public interface QuizAttemptService {
      * @param userId the unique identifier of the user. Must be a positive long value.
      * @param quizId the unique identifier of the quiz. Must be a positive long value.
      * @return the total count of attempts (including all statuses) made by the user
-     *         for the specified quiz. Returns 0 if no attempts exist.
+     * for the specified quiz. Returns 0 if no attempts exist.
      * @throws IllegalArgumentException if userId or quizId is null or non-positive
      */
     long countAttemptsByUserAndQuiz(Long userId, Long quizId);

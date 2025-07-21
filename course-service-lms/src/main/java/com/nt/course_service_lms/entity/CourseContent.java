@@ -80,13 +80,35 @@ public class CourseContent {
     @Column(name = "updated_at")
     private LocalDateTime updatedAt;
 
+    /**
+     * Checks if this CourseContent is equal to another object.
+     *
+     * @param o the object to compare with this CourseContent instance.
+     * @return true if the other object is a CourseContent with the same ID,
+     * course ID, title, description, resource link, active status, and timestamps; false otherwise.
+     */
     @Override
-    public boolean equals(Object o) {
-        if (o == null || getClass() != o.getClass()) return false;
+    public boolean equals(final Object o) {
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
         CourseContent that = (CourseContent) o;
-        return courseContentId == that.courseContentId && courseId == that.courseId && isActive == that.isActive && Objects.equals(title, that.title) && Objects.equals(description, that.description) && Objects.equals(resourceLink, that.resourceLink) && Objects.equals(createdAt, that.createdAt) && Objects.equals(updatedAt, that.updatedAt);
+        return courseContentId == that.courseContentId
+                && courseId == that.courseId
+                && isActive == that.isActive
+                && Objects.equals(title, that.title)
+                && Objects.equals(description, that.description)
+                && Objects.equals(resourceLink, that.resourceLink)
+                && Objects.equals(createdAt, that.createdAt)
+                && Objects.equals(updatedAt, that.updatedAt);
     }
 
+    /**
+     * Generates a hash code for this CourseContent instance.
+     *
+     * @return a hash code based on the course content ID, course ID, title, description,
+     * resource link, active status, created at, and updated at timestamps.
+     */
     @Override
     public int hashCode() {
         return Objects.hash(courseContentId, courseId, title, description, resourceLink, isActive, createdAt, updatedAt);

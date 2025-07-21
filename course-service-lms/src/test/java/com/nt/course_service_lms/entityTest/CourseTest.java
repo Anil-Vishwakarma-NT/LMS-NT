@@ -85,6 +85,7 @@ public class CourseTest {
         assertEquals(c1, c2);
         assertEquals(c1.hashCode(), c2.hashCode());
     }
+
     @Test
     void testDefaultFieldValuesAfterNoArgsConstructor() {
         Course course = new Course();
@@ -98,6 +99,7 @@ public class CourseTest {
         assertNull(course.getCreatedAt());
         assertNull(course.getUpdatedAt());
     }
+
     @Test
     void testBuilderCreatesCorrectObject() {
         LocalDateTime now = LocalDateTime.now();

@@ -6,7 +6,8 @@ import com.nt.course_service_lms.dto.outDTO.CourseBundleOutDTO;
 import com.nt.course_service_lms.entity.CourseBundle;
 import org.junit.jupiter.api.Test;
 
-import static org.assertj.core.api.Assertions.*;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 class CourseBundleConvertorTest {
 

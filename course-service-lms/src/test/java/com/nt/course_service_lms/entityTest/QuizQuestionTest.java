@@ -226,6 +226,7 @@ class QuizQuestionTest {
         assertThat(q.getExplanation()).isNull();
         assertThat(q.getCorrectAnswer()).isNull();
     }
+
     @Test
     void testEquals_FailsOnDifferentQuestionText() {
         LocalDateTime now = LocalDateTime.now();
@@ -256,6 +257,7 @@ class QuizQuestionTest {
 
         assertThat(q1).isNotEqualTo(q2);
     }
+
     @Test
     void testHashCodeChangesWhenFieldChanges() {
         LocalDateTime now = LocalDateTime.now();
@@ -277,6 +279,7 @@ class QuizQuestionTest {
 
         assertThat(q.hashCode()).isNotEqualTo(originalHash);
     }
+
     @Test
     void testBuilderPattern() {
         LocalDateTime now = LocalDateTime.now();

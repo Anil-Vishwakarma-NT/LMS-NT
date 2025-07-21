@@ -16,7 +16,7 @@ public final class EnrollmentValidator implements ConstraintValidator<ValidateEn
     /**
      * Validates the enrollment DTO according to the business rules.
      *
-     * @param dto the object to validate
+     * @param dto     the object to validate
      * @param context the constraint validator context
      * @return true if valid, false otherwise
      */
@@ -47,7 +47,7 @@ public final class EnrollmentValidator implements ConstraintValidator<ValidateEn
     /**
      * Retrieves the value of a property using its getter method.
      *
-     * @param object the object from which to retrieve the property
+     * @param object       the object from which to retrieve the property
      * @param propertyName the name of the property
      * @return the value of the property
      * @throws Exception if the getter method is not found or cannot be invoked

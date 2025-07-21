@@ -12,6 +12,7 @@ package com.nt.user_service_lms.exception;
 public class ResourceNotValidException extends RuntimeException {
 
     private static final long serialVersionUID = 1L;
+
     /**
      * Constructs a new {@code ResourceNotValidException} with the specified detail message.
      *

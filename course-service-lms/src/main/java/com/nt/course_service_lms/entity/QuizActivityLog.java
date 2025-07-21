@@ -24,6 +24,7 @@ import java.util.Objects;
  * Each log entry captures the specific action taken, the user who performed it,
  * the quiz involved, and the attempt number.
  * </p>
+ *
  * @version 1.0
  * @since 1.0
  */

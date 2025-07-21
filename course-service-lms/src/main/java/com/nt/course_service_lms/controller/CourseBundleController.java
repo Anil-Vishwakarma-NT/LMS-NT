@@ -1,12 +1,12 @@
 package com.nt.course_service_lms.controller;
 
-import com.nt.course_service_lms.entity.CourseBundle;
 import com.nt.course_service_lms.dto.inDTO.CourseBundleInDTO;
 import com.nt.course_service_lms.dto.inDTO.UpdateCourseBundleInDTO;
 import com.nt.course_service_lms.dto.outDTO.BundleInfoOutDTO;
 import com.nt.course_service_lms.dto.outDTO.BundleSummaryOutDTO;
 import com.nt.course_service_lms.dto.outDTO.CourseBundleOutDTO;
 import com.nt.course_service_lms.dto.outDTO.StandardResponseOutDTO;
+import com.nt.course_service_lms.entity.CourseBundle;
 import com.nt.course_service_lms.service.CourseBundleService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -26,7 +26,7 @@ import java.util.List;
 /**
  * REST Controller for managing the relationship between Courses and Bundles
  * in the Course Service of the LMS.
- *
+ * <p>
  * This controller provides endpoints for creating, retrieving, updating, and deleting
  * course-bundle associations, as well as querying bundle information and recent bundles.
  */
@@ -106,7 +106,7 @@ public class CourseBundleController {
     /**
      * Updates an existing CourseBundle with new data.
      *
-     * @param courseBundleId ID of the CourseBundle to update
+     * @param courseBundleId          ID of the CourseBundle to update
      * @param updateCourseBundleInDTO DTO containing updated data for the CourseBundle
      * @return ResponseEntity containing the update response string wrapped in StandardResponseOutDTO
      */
@@ -116,8 +116,8 @@ public class CourseBundleController {
             @RequestBody final UpdateCourseBundleInDTO updateCourseBundleInDTO) {
         final String response = courseBundleService.updateCourseBundle(courseBundleId, updateCourseBundleInDTO);
         return ResponseEntity.ok(StandardResponseOutDTO.success(
-                response, "Course bundle with id" + courseBundleId + " updated successfully."
-            )
+                        response, "Course bundle with id" + courseBundleId + " updated successfully."
+                )
         );
     }
 

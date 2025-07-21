@@ -29,8 +29,7 @@ public class JacksonConfig {
      * </p>
      *
      * @return A configured ObjectMapper instance with Java 8 time support
-     *         and ISO-8601 date formatting
-     *
+     * and ISO-8601 date formatting
      * @see ObjectMapper
      * @see JavaTimeModule
      * @see SerializationFeature#WRITE_DATES_AS_TIMESTAMPS

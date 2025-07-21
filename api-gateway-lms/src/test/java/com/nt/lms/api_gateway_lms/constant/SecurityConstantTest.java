@@ -1,9 +1,11 @@
 package com.nt.lms.api_gateway_lms.constant;
+
 import org.junit.jupiter.api.Test;
 
 import java.lang.reflect.Constructor;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 public class SecurityConstantTest {
 

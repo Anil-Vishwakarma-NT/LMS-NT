@@ -96,7 +96,7 @@ public class QuizQuestionController {
     /**
      * Updates an existing quiz question.
      *
-     * @param questionId The ID of the question to update
+     * @param questionId          The ID of the question to update
      * @param questionUpdateInDTO The DTO containing updated question data
      * @return ResponseEntity containing the updated question and success message
      */

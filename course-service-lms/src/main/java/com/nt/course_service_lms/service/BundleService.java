@@ -1,8 +1,8 @@
 package com.nt.course_service_lms.service;
 
 import com.nt.course_service_lms.dto.inDTO.BundleInDTO;
-import com.nt.course_service_lms.dto.outDTO.BundleOutDTO;
 import com.nt.course_service_lms.dto.inDTO.UpdateBundleInDTO;
+import com.nt.course_service_lms.dto.outDTO.BundleOutDTO;
 
 import java.util.List;
 
@@ -41,7 +41,7 @@ public interface BundleService {
     /**
      * Updates the details of an existing bundle.
      *
-     * @param bundleId the ID of the bundle to update
+     * @param bundleId          the ID of the bundle to update
      * @param updateBundleInDTO the updated bundle data
      * @return success message
      */

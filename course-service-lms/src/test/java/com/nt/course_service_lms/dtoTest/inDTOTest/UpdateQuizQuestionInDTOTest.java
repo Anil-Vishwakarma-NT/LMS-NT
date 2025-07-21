@@ -1,14 +1,20 @@
 package com.nt.course_service_lms.dtoTest.inDTOTest;
 
 import com.nt.course_service_lms.dto.inDTO.UpdateQuizQuestionInDTO;
-import jakarta.validation.*;
+import jakarta.validation.ConstraintViolation;
+import jakarta.validation.Validation;
+import jakarta.validation.Validator;
+import jakarta.validation.ValidatorFactory;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import java.math.BigDecimal;
 import java.util.Set;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class UpdateQuizQuestionInDTOTest {
 
@@ -81,6 +87,7 @@ class UpdateQuizQuestionInDTOTest {
         dto.setCorrectAnswer(new String(new char[5001]).replace('\0', 'A'));
         assertViolation(dto, "Correct answer cannot exceed 5000 characters");
     }
+
     @Test
     void testOptionsTooLong() {
         UpdateQuizQuestionInDTO dto = createValidDTO();
@@ -122,6 +129,7 @@ class UpdateQuizQuestionInDTOTest {
         dto.setRequired(null);
         assertViolation(dto, "Required field must be specified");
     }
+
     @Test
     void testBuilderCreatesValidDTO() {
         UpdateQuizQuestionInDTO dto = UpdateQuizQuestionInDTO.builder()

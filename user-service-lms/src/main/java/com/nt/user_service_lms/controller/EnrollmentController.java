@@ -13,6 +13,7 @@ import jakarta.validation.Valid;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -60,10 +61,10 @@ public class EnrollmentController {
      *
      * @param enrollmentRequestInDTO the enrollment request data containing user and course/bundle information
      * @return ResponseEntity containing a standardized response with the list of created enrollments
-     *
      * @since 1.0
      */
     @PostMapping("/enroll")
+    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<StandardResponseOutDTO<List<EnrollmentOutDTO>>> enroll(
             @Valid @RequestBody final EnrollmentRequestInDTO enrollmentRequestInDTO) {
 
@@ -95,10 +96,10 @@ public class EnrollmentController {
      * administrative dashboard displays.</p>
      *
      * @return ResponseEntity containing standardized response with enrollment statistics
-     *
      * @since 1.0
      */
     @GetMapping("/statistics")
+    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<StandardResponseOutDTO<EnrollmentDashBoardStatsOutDTO>> getEnrollmentStatistics() {
 
         log.info("Fetching enrollment statistics for dashboard");
@@ -128,10 +129,10 @@ public class EnrollmentController {
      *
      * @param userId the unique identifier of the user whose enrollments are to be retrieved
      * @return ResponseEntity containing standardized response with user's enrollment data
-     *
      * @since 1.0
      */
     @GetMapping("/user-enrollments/{id}")
+    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<StandardResponseOutDTO<UserEnrollmentsOutDTO>> getUserEnrollmentsByUserId(
             @PathVariable("id") final Long userId) {
 
@@ -162,10 +163,10 @@ public class EnrollmentController {
      * bundle enrollments.</p>
      *
      * @return ResponseEntity containing standardized response with all users' enrollment data
-     *
      * @since 1.0
      */
     @GetMapping("/user-enrollments")
+    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<StandardResponseOutDTO<List<UserEnrollmentsOutDTO>>> getUserEnrollments() {
 
         log.info("Fetching enrollments for all users");
@@ -195,10 +196,10 @@ public class EnrollmentController {
      * and enrollment dates.</p>
      *
      * @return ResponseEntity containing standardized response with individual course enrollment data
-     *
      * @since 1.0
      */
     @GetMapping("/user-course-enrollments")
+    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<StandardResponseOutDTO<List<UserCourseEnrollmentOutDTO>>> getUserCourseEnrollments() {
 
         log.info("Fetching individual course enrollments for all users");
@@ -230,10 +231,10 @@ public class EnrollmentController {
      * progress tracking, and completion status.</p>
      *
      * @return ResponseEntity containing standardized response with individual bundle enrollment data
-     *
      * @since 1.0
      */
     @GetMapping("/user-bundle-enrollments")
+    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<StandardResponseOutDTO<List<UserBundleEnrollmentOutDTO>>> getUserBundleEnrollments() {
 
         log.info("Fetching individual bundle enrollments for all users");
@@ -265,10 +266,10 @@ public class EnrollmentController {
      *
      * @param userId the unique identifier of the user whose enrolled courses are to be retrieved
      * @return ResponseEntity containing standardized response with detailed course enrollment information
-     *
      * @since 1.0
      */
     @GetMapping("/userCourses/{userId}")
+    @PreAuthorize("hasRole('ADMIN') or hasRole('EMPLOYEE')")
     public ResponseEntity<StandardResponseOutDTO<List<UserCourseEnrollDetails>>> getEnrolledCoursesByUserId(
             @PathVariable final Long userId) {
 

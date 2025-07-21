@@ -1,6 +1,12 @@
 package com.nt.course_service_lms.entity;
 
-import jakarta.persistence.*;
+import com.nt.course_service_lms.constants.CommonConstants;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.Table;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -45,7 +51,7 @@ public class QuizQuestion {
     /**
      * Type of the question (e.g., MULTIPLE_CHOICE, TRUE_FALSE).
      */
-    @Column(name = "question_type", nullable = false, length = 20)
+    @Column(name = "question_type", nullable = false, length = CommonConstants.NUMBER_TWENTY)
     private String questionType;
 
     /**
@@ -63,7 +69,7 @@ public class QuizQuestion {
     /**
      * Points assigned to the question.
      */
-    @Column(name = "points", nullable = false, precision = 5, scale = 2)
+    @Column(name = "points", nullable = false, precision = CommonConstants.NUMBER_FIVE, scale = 2)
     private BigDecimal points;
 
     /**
@@ -103,21 +109,25 @@ public class QuizQuestion {
      * @return true if objects are equal, false otherwise
      */
     @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (!(o instanceof QuizQuestion that)) return false;
-        return Objects.equals(questionId, that.questionId) &&
-                Objects.equals(quizId, that.quizId) &&
-                Objects.equals(questionText, that.questionText) &&
-                Objects.equals(questionType, that.questionType) &&
-                Objects.equals(options, that.options) &&
-                Objects.equals(correctAnswer, that.correctAnswer) &&
-                Objects.equals(points, that.points) &&
-                Objects.equals(explanation, that.explanation) &&
-                Objects.equals(required, that.required) &&
-                Objects.equals(position, that.position) &&
-                Objects.equals(createdAt, that.createdAt) &&
-                Objects.equals(updatedAt, that.updatedAt);
+    public boolean equals(final Object o) {
+        if (this == o) {
+            return true;
+        }
+        if (!(o instanceof QuizQuestion that)) {
+            return false;
+        }
+        return Objects.equals(questionId, that.questionId)
+                && Objects.equals(quizId, that.quizId)
+                && Objects.equals(questionText, that.questionText)
+                && Objects.equals(questionType, that.questionType)
+                && Objects.equals(options, that.options)
+                && Objects.equals(correctAnswer, that.correctAnswer)
+                && Objects.equals(points, that.points)
+                && Objects.equals(explanation, that.explanation)
+                && Objects.equals(required, that.required)
+                && Objects.equals(position, that.position)
+                && Objects.equals(createdAt, that.createdAt)
+                && Objects.equals(updatedAt, that.updatedAt);
     }
 
     /**

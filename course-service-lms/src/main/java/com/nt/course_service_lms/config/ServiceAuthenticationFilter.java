@@ -33,7 +33,7 @@ import static com.nt.course_service_lms.constants.SecurityConstant.TOKEN_TYPE_SE
  * Authentication filter for service-to-service communication in the LMS system.
  * This filter handles both gateway-routed requests and direct service requests,
  * validating JWT tokens and gateway signatures as appropriate.
- *
+ * <p>
  * The filter supports two types of requests:
  * 1. Gateway requests - routed through API Gateway with additional validation headers
  * 2. Direct requests - direct service-to-service calls (when enabled)
@@ -102,11 +102,11 @@ public class ServiceAuthenticationFilter extends OncePerRequestFilter {
      * Processes each HTTP request through the authentication filter.
      * Validates tokens and headers based on request type (gateway or direct).
      *
-     * @param request the HTTP servlet request
-     * @param response the HTTP servlet response
+     * @param request     the HTTP servlet request
+     * @param response    the HTTP servlet response
      * @param filterChain the filter chain to continue processing
      * @throws ServletException if a servlet-specific error occurs
-     * @throws IOException if an I/O error occurs
+     * @throws IOException      if an I/O error occurs
      */
     @Override
     protected void doFilterInternal(final HttpServletRequest request,
@@ -165,7 +165,7 @@ public class ServiceAuthenticationFilter extends OncePerRequestFilter {
     /**
      * Handles gateway-routed requests by validating gateway headers and service tokens.
      *
-     * @param request the HTTP servlet request
+     * @param request  the HTTP servlet request
      * @param response the HTTP servlet response
      * @return true if the request is valid and should continue, false otherwise
      * @throws IOException if an I/O error occurs during response writing
@@ -229,7 +229,7 @@ public class ServiceAuthenticationFilter extends OncePerRequestFilter {
      * Validates that the provided secret header matches the expected secret value.
      *
      * @param secretHeader the secret value from the request header
-     * @param secretValue the expected secret value
+     * @param secretValue  the expected secret value
      * @return true if the secrets match, false otherwise
      */
     private boolean validateSecret(final String secretHeader, final String secretValue) {
@@ -242,7 +242,7 @@ public class ServiceAuthenticationFilter extends OncePerRequestFilter {
      *
      * @param signature the signature from the request header
      * @param timestamp the timestamp from the request header
-     * @param nonce the nonce from the request header
+     * @param nonce     the nonce from the request header
      * @return true if the signature is valid and timestamp is acceptable, false otherwise
      */
     private boolean validateSignature(final String signature, final String timestamp, final String nonce) {
@@ -272,8 +272,8 @@ public class ServiceAuthenticationFilter extends OncePerRequestFilter {
      * Generates a signature hash based on timestamp, nonce, and secret.
      *
      * @param timestamp the request timestamp
-     * @param nonce the request nonce
-     * @param secret the secret key for signature generation
+     * @param nonce     the request nonce
+     * @param secret    the secret key for signature generation
      * @return the generated signature as a string
      */
     private String generateSignature(final String timestamp, final String nonce, final String secret) {
@@ -284,7 +284,7 @@ public class ServiceAuthenticationFilter extends OncePerRequestFilter {
     /**
      * Handles direct service-to-service requests by validating direct secret and service token.
      *
-     * @param request the HTTP servlet request
+     * @param request  the HTTP servlet request
      * @param response the HTTP servlet response
      * @return true if the direct request is valid and should continue, false otherwise
      * @throws IOException if an I/O error occurs during response writing
@@ -332,7 +332,7 @@ public class ServiceAuthenticationFilter extends OncePerRequestFilter {
      * Sets the service authentication in the Security Context based on the provided token.
      * Extracts user information and roles from the token and creates authentication object.
      *
-     * @param token the validated service token
+     * @param token             the validated service token
      * @param originalTokenType the original token type from the request
      */
     private void setServiceAuthentication(final String token, final String originalTokenType) {
@@ -374,7 +374,7 @@ public class ServiceAuthenticationFilter extends OncePerRequestFilter {
      * Handles unauthorized requests by setting HTTP 401 status and writing error response.
      *
      * @param response the HTTP servlet response
-     * @param message the error message to include in the response
+     * @param message  the error message to include in the response
      * @throws IOException if an I/O error occurs during response writing
      */
     private void handleUnauthorized(final HttpServletResponse response, final String message) throws IOException {
@@ -387,7 +387,7 @@ public class ServiceAuthenticationFilter extends OncePerRequestFilter {
      * Handles forbidden requests by setting HTTP 403 status and writing error response.
      *
      * @param response the HTTP servlet response
-     * @param message the error message to include in the response
+     * @param message  the error message to include in the response
      * @throws IOException if an I/O error occurs during response writing
      */
     private void handleForbidden(final HttpServletResponse response, final String message) throws IOException {

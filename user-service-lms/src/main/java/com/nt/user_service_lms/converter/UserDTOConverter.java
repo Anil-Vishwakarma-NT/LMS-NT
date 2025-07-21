@@ -14,8 +14,8 @@ public final class UserDTOConverter {
     /**
      * Converts a {@link User} entity to a {@link UserOutDTO}.
      *
-     * @param user the {@link User} entity to convert. Must not be null.
-     * @param manager the manager's name, can be null if not available.
+     * @param user     the {@link User} entity to convert. Must not be null.
+     * @param manager  the manager's name, can be null if not available.
      * @param rolename the user role
      * @return a {@link UserOutDTO} representing the user entity.
      */

@@ -5,16 +5,16 @@ import com.nt.user_service_lms.dto.UsersDetailsViewDTO;
 import com.nt.user_service_lms.dto.inDTO.UserInDTO;
 import com.nt.user_service_lms.dto.outDTO.MessageOutDto;
 import com.nt.user_service_lms.dto.outDTO.StandardResponseOutDTO;
+import com.nt.user_service_lms.dto.outDTO.UserCourseEnrollDetails;
 import com.nt.user_service_lms.dto.outDTO.UserOutDTO;
+import com.nt.user_service_lms.service.serviceImpl.AdminServiceImpl;
 import com.nt.user_service_lms.service.serviceImpl.GroupServiceImpl;
 import com.nt.user_service_lms.service.serviceImpl.UserServiceImpl;
-import com.nt.user_service_lms.service.serviceImpl.AdminServiceImpl;
 import jakarta.validation.Valid;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
@@ -22,6 +22,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
@@ -34,7 +35,6 @@ import java.util.List;
 @Slf4j
 @RestController
 @RequestMapping("/api/service-api/admin")
-@PreAuthorize("hasRole('admin')")
 public class AdminController {
 
     /**
@@ -92,10 +92,9 @@ public class AdminController {
      * Returns a list of all users who are currently active.
      *
      * @return ResponseEntity containing the list of active employees with HTTP 200 status,
-     *         or HTTP 204 if no active employees exist
+     * or HTTP 204 if no active employees exist
      */
     @GetMapping("/active-employees")
-    @PreAuthorize("hasAuthority('admin')")
     public ResponseEntity<StandardResponseOutDTO<List<UserOutDTO>>> getAllEmployees() {
         log.info("Fetching all employees");
         StandardResponseOutDTO<List<UserOutDTO>> response = adminService.getAllActiveUsers();
@@ -111,7 +110,7 @@ public class AdminController {
      * Returns a list of all users who are currently inactive or disabled.
      *
      * @return ResponseEntity containing the list of inactive employees with HTTP 200 status,
-     *         or HTTP 204 if no inactive employees exist
+     * or HTTP 204 if no inactive employees exist
      */
     @GetMapping("/inactive-employees")
     public ResponseEntity<StandardResponseOutDTO<List<UserOutDTO>>> getAllInactiveEmployees() {
@@ -130,7 +129,7 @@ public class AdminController {
      *
      * @param userId the unique identifier of the manager
      * @return ResponseEntity containing the list of employees under the manager with HTTP 200 status,
-     *         or HTTP 204 if no employees are found under the manager
+     * or HTTP 204 if no employees are found under the manager
      */
     @GetMapping("/manager-employee/{userId}")
     public ResponseEntity<StandardResponseOutDTO<List<UserOutDTO>>> getManagerEmployee(@PathVariable final long userId) {
@@ -161,12 +160,11 @@ public class AdminController {
      * Updates user details for a specific user.
      * Modifies the user's information based on the provided data.
      *
-     * @param userId the unique identifier of the user to update
+     * @param userId    the unique identifier of the user to update
      * @param userInDTO contains the updated user information
      * @return ResponseEntity containing the success message with HTTP 200 status
      */
     @PatchMapping("/update-user/{userId}")
-    @PreAuthorize("hasAuthority('admin')")
     public ResponseEntity<MessageOutDto> updateUser(@PathVariable final long userId, @RequestBody final UserInDTO userInDTO) {
         log.info("Received request to update user details");
         return new ResponseEntity<>(
@@ -203,6 +201,20 @@ public class AdminController {
         StandardResponseOutDTO<List<UsersDetailsViewDTO>> standardResponseOutDTO = StandardResponseOutDTO
                 .success(usersDetailsViewDTOS, "Fetched Recent Users");
         return ResponseEntity.ok(standardResponseOutDTO);
+    }
+
+    /**
+     * Retrieves all courses enrolled by the currently authenticated user.
+     * Uses custom ServicePrincipal authentication to identify the user.
+     * @param userId the Id of user
+     * @return ResponseEntity containing StandardResponseOutDTO with list of UserCourseEnrollDetails
+     */
+    @GetMapping("/userCourses/{userId}")
+    public ResponseEntity<StandardResponseOutDTO<List<UserCourseEnrollDetails>>> getEnrolledCoursesByUserId(
+            @RequestParam final long userId
+    ) {
+        List<UserCourseEnrollDetails> enrolledCourses = userService.getUserEnrolledCourses(userId);
+        return ResponseEntity.ok(StandardResponseOutDTO.success(enrolledCourses, "Fetched enrolled courses successfully"));
     }
 
 }

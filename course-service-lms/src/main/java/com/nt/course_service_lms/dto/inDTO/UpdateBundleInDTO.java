@@ -1,6 +1,9 @@
 package com.nt.course_service_lms.dto.inDTO;
 
-import jakarta.validation.constraints.*;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Pattern;
+import jakarta.validation.constraints.Size;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -8,8 +11,10 @@ import lombok.NoArgsConstructor;
 
 import java.util.Objects;
 
-import static com.nt.course_service_lms.constants.BundleConstants.*;
 import static com.nt.course_service_lms.constants.BundleConstants.BUNDLE_NAME_INVALID;
+import static com.nt.course_service_lms.constants.BundleConstants.BUNDLE_NAME_MIN_LENGTH;
+import static com.nt.course_service_lms.constants.BundleConstants.BUNDLE_NAME_NOT_BLANK;
+import static com.nt.course_service_lms.constants.BundleConstants.INT_VALUE_3;
 
 @Data
 @NoArgsConstructor
@@ -29,7 +34,9 @@ public class UpdateBundleInDTO {
 
     @Override
     public boolean equals(Object o) {
-        if (o == null || getClass() != o.getClass()) return false;
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
         UpdateBundleInDTO that = (UpdateBundleInDTO) o;
         return isActive == that.isActive && Objects.equals(bundleName, that.bundleName);
     }

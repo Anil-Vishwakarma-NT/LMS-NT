@@ -22,10 +22,10 @@ public interface EnrollmentService {
      *
      * @param requestDTO the enrollment request containing all necessary information
      * @return list of created or updated enrollments
-     * @throws com.nt.user_service_lms.exception.ResourceNotFoundException if referenced entities do not exist
+     * @throws com.nt.user_service_lms.exception.ResourceNotFoundException      if referenced entities do not exist
      * @throws com.nt.user_service_lms.exception.ResourceAlreadyExistsException if
-     * enrollment already exists and force is not enabled
-     * @throws com.nt.user_service_lms.exception.ResourceNotValidException if the request is invalid or enrollment fails
+     *                                                                          enrollment already exists and force is not enabled
+     * @throws com.nt.user_service_lms.exception.ResourceNotValidException      if the request is invalid or enrollment fails
      */
     List<EnrollmentOutDTO> enroll(EnrollmentRequestInDTO requestDTO);
 

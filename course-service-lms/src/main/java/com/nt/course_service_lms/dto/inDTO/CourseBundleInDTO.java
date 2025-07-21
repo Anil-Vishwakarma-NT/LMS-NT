@@ -60,8 +60,12 @@ public class CourseBundleInDTO {
 
     @Override
     public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
+        if (this == o) {
+            return true;
+        }
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
         CourseBundleInDTO that = (CourseBundleInDTO) o;
         return courseBundleId == that.courseBundleId && isActive == that.isActive && Objects.equals(bundleId, that.bundleId) && Objects.equals(courseId, that.courseId);
     }

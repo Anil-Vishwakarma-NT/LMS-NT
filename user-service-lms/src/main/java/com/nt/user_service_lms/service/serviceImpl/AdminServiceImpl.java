@@ -1,17 +1,17 @@
 package com.nt.user_service_lms.service.serviceImpl;
 
+import com.nt.user_service_lms.constants.UserConstants;
 import com.nt.user_service_lms.converter.UserDTOConverter;
+import com.nt.user_service_lms.dto.RegisterDto;
 import com.nt.user_service_lms.dto.inDTO.UserInDTO;
 import com.nt.user_service_lms.dto.outDTO.MessageOutDto;
 import com.nt.user_service_lms.dto.outDTO.StandardResponseOutDTO;
 import com.nt.user_service_lms.dto.outDTO.UserOutDTO;
-import com.nt.user_service_lms.exception.InvalidRequestException;
-import com.nt.user_service_lms.exception.ResourceNotFoundException;
-import com.nt.user_service_lms.constants.UserConstants;
-import com.nt.user_service_lms.dto.RegisterDto;
 import com.nt.user_service_lms.entities.Role;
 import com.nt.user_service_lms.entities.User;
+import com.nt.user_service_lms.exception.InvalidRequestException;
 import com.nt.user_service_lms.exception.ResourceConflictException;
+import com.nt.user_service_lms.exception.ResourceNotFoundException;
 import com.nt.user_service_lms.repository.RoleRepository;
 import com.nt.user_service_lms.repository.UserRepository;
 import com.nt.user_service_lms.service.AdminService;
@@ -107,15 +107,15 @@ public class AdminServiceImpl implements AdminService {
         log.info("Attempting to delete user with ID: {}", id);
         if (id != UserConstants.getAdminId()) {
             User user = userRepository.findById(id)
-                .orElseThrow(() -> {
-                    log.error("User with ID {} not found", id);
-                    return new ResourceNotFoundException(UserConstants.USER_NOT_FOUND);
-                });
+                    .orElseThrow(() -> {
+                        log.error("User with ID {} not found", id);
+                        return new ResourceNotFoundException(UserConstants.USER_NOT_FOUND);
+                    });
             Role role = roleRepository.findById(user.getRoleId())
-                .orElseThrow(() -> {
-                    log.error("Role with ID {} not found for user ID {}", user.getRoleId(), id);
-                    return new IllegalStateException(UserConstants.INVALID_USER_ROLE);
-                });
+                    .orElseThrow(() -> {
+                        log.error("Role with ID {} not found for user ID {}", user.getRoleId(), id);
+                        return new IllegalStateException(UserConstants.INVALID_USER_ROLE);
+                    });
             String roleName = role.getName();
             if ("employee".equalsIgnoreCase(roleName)) {
                 user.setActive(false);
@@ -162,16 +162,16 @@ public class AdminServiceImpl implements AdminService {
             for (User user : employees) {
                 if (user.isActive() && (user.getUserId() != UserConstants.getAdminId())) {
                     User manager = userRepository.findById(user.getManagerId())
-                        .orElseThrow(() -> {
-                            log.error("Manager with ID {} not found", user.getManagerId());
-                            throw new ResourceNotFoundException(UserConstants.USER_NOT_FOUND);
-                        });
+                            .orElseThrow(() -> {
+                                log.error("Manager with ID {} not found", user.getManagerId());
+                                throw new ResourceNotFoundException(UserConstants.USER_NOT_FOUND);
+                            });
                     String managerName = manager.getFirstName() + " " + manager.getLastName();
                     Role role = roleRepository.findById(user.getRoleId()).orElseThrow(
-                        () -> {
-                            log.error("Role with ID {} not found", user.getManagerId());
-                            throw new ResourceNotFoundException(UserConstants.USER_NOT_FOUND);
-                        }
+                            () -> {
+                                log.error("Role with ID {} not found", user.getManagerId());
+                                throw new ResourceNotFoundException(UserConstants.USER_NOT_FOUND);
+                            }
                     );
                     UserOutDTO userDto = userDTOConverter.userToOutDto(user, managerName, role.getName());
                     userDtos.add(userDto);
@@ -203,16 +203,16 @@ public class AdminServiceImpl implements AdminService {
             for (User user : employees) {
                 if (!user.isActive() && (user.getUserId() != UserConstants.getAdminId())) {
                     User manager = userRepository.findById(user.getManagerId())
-                        .orElseThrow(() -> {
-                            log.error("Manager with ID {} not found", user.getManagerId());
-                            throw new ResourceNotFoundException(UserConstants.USER_NOT_FOUND);
-                        });
+                            .orElseThrow(() -> {
+                                log.error("Manager with ID {} not found", user.getManagerId());
+                                throw new ResourceNotFoundException(UserConstants.USER_NOT_FOUND);
+                            });
                     String managerName = manager.getFirstName() + " " + manager.getLastName();
                     Role role = roleRepository.findById(user.getRoleId()).orElseThrow(
-                        () -> {
-                            log.error("Role with ID {} not found", user.getManagerId());
-                            throw new ResourceNotFoundException(UserConstants.USER_NOT_FOUND);
-                        }
+                            () -> {
+                                log.error("Role with ID {} not found", user.getManagerId());
+                                throw new ResourceNotFoundException(UserConstants.USER_NOT_FOUND);
+                            }
                     );
                     UserOutDTO userDto = userDTOConverter.userToOutDto(user, managerName, role.getName());
                     userDtos.add(userDto);
@@ -229,7 +229,7 @@ public class AdminServiceImpl implements AdminService {
     /**
      * Changes a user's role.
      *
-     * @param userId the user ID
+     * @param userId      the user ID
      * @param newRoleName the new role name
      * @return a message response
      */
@@ -239,15 +239,15 @@ public class AdminServiceImpl implements AdminService {
         try {
             if (userId != UserConstants.getAdminId()) {
                 User user = userRepository.findById(userId)
-                    .orElseThrow(() -> {
-                        log.error("User with ID {} not found", userId);
-                        throw new ResourceNotFoundException(UserConstants.USER_NOT_FOUND);
-                    });
+                        .orElseThrow(() -> {
+                            log.error("User with ID {} not found", userId);
+                            throw new ResourceNotFoundException(UserConstants.USER_NOT_FOUND);
+                        });
                 Role role = roleRepository.findByName(newRoleName)
-                    .orElseThrow(() -> {
-                        log.error("Invalid role provided: {}", newRoleName);
-                        throw new IllegalArgumentException(UserConstants.INVALID_USER_ROLE);
-                    });
+                        .orElseThrow(() -> {
+                            log.error("Invalid role provided: {}", newRoleName);
+                            throw new IllegalArgumentException(UserConstants.INVALID_USER_ROLE);
+                        });
                 user.setRoleId(role.getRoleId());
                 user.setUpdatedAt(new Date());
                 userRepository.save(user);
@@ -304,7 +304,7 @@ public class AdminServiceImpl implements AdminService {
      * Updates user details.
      *
      * @param registerDto the user input DTO
-     * @param userId the user ID
+     * @param userId      the user ID
      * @return a message response
      */
     public MessageOutDto updateUserDetails(final UserInDTO registerDto, final long userId) {

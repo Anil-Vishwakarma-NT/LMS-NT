@@ -12,6 +12,7 @@ import java.util.List;
  * Data Transfer Object for group input operations.
  * Represents the input data for creating, updating, or managing groups
  * within the learning management system.
+ *
  * @version 1.0
  * @since 1.0
  */
@@ -26,7 +27,7 @@ public class GroupInDTO {
      * Special characters and numbers are not allowed.
      */
     @Pattern(
-            regexp = "^[a-zA-Z]+$",
+            regexp = "^[a-zA-Z0-9 _-]+$",
             message = "Group name must contain only alphabets."
     )
     private String groupName;

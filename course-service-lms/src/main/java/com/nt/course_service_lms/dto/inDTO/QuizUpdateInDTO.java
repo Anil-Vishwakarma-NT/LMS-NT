@@ -1,6 +1,10 @@
 package com.nt.course_service_lms.dto.inDTO;
 
-import jakarta.validation.constraints.*;
+import jakarta.validation.constraints.DecimalMin;
+import jakarta.validation.constraints.Digits;
+import jakarta.validation.constraints.Max;
+import jakarta.validation.constraints.Min;
+import jakarta.validation.constraints.Size;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -44,7 +48,9 @@ public class QuizUpdateInDTO {
 
     @Override
     public boolean equals(Object o) {
-        if (o == null || getClass() != o.getClass()) return false;
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
         QuizUpdateInDTO that = (QuizUpdateInDTO) o;
         return Objects.equals(title, that.title) && Objects.equals(description, that.description) && Objects.equals(timeLimit, that.timeLimit) && Objects.equals(attemptsAllowed, that.attemptsAllowed) && Objects.equals(passingScore, that.passingScore) && Objects.equals(randomizeQuestions, that.randomizeQuestions) && Objects.equals(showResults, that.showResults) && Objects.equals(isActive, that.isActive);
     }

@@ -45,6 +45,7 @@ public interface BundleRepository extends JpaRepository<Bundle, Long> {
 
     /**
      * Finds all bundles that are currently active.
+     *
      * @param bundleIds the list of bundle IDs to check
      * @return a list of active bundles
      */

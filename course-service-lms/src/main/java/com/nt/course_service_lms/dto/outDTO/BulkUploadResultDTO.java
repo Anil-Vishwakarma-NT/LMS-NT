@@ -1,7 +1,8 @@
 package com.nt.course_service_lms.dto.outDTO;
 
-import lombok.Data;
 import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.util.List;
@@ -10,8 +11,9 @@ import java.util.List;
  * DTO for bulk upload results
  */
 @Data
-@AllArgsConstructor
 @NoArgsConstructor
+@AllArgsConstructor
+@Builder
 public class BulkUploadResultDTO {
     private int totalQuestions;
     private int successfulUploads;

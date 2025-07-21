@@ -1,10 +1,9 @@
 package com.nt.course_service_lms.dto.inDTO;
 
+import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
-
-import jakarta.validation.Valid;
 import lombok.NoArgsConstructor;
 
 import java.util.List;
@@ -28,7 +27,9 @@ public class QuizSubmissionInDTO {
 
     @Override
     public boolean equals(Object o) {
-        if (o == null || getClass() != o.getClass()) return false;
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
         QuizSubmissionInDTO that = (QuizSubmissionInDTO) o;
         return Objects.equals(userResponses, that.userResponses) && Objects.equals(notes, that.notes) && Objects.equals(timeSpent, that.timeSpent);
     }

@@ -28,7 +28,9 @@ public class QuizAttemptUpdateInDTO {
 
     @Override
     public boolean equals(Object o) {
-        if (o == null || getClass() != o.getClass()) return false;
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
         QuizAttemptUpdateInDTO that = (QuizAttemptUpdateInDTO) o;
         return Objects.equals(finishedAt, that.finishedAt) && Objects.equals(scoreDetails, that.scoreDetails) && Objects.equals(status, that.status);
     }
