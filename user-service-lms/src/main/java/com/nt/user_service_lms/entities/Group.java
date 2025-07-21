@@ -11,6 +11,8 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+import java.util.Objects;
+
 
 /**
  * Represents a user-created group entity in the system.
@@ -62,5 +64,17 @@ public class Group {
     public Group(final String name, final long creatorId) {
         this.groupName = name;
         this.creatorId = creatorId;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (o == null || getClass() != o.getClass()) return false;
+        Group group = (Group) o;
+        return creatorId == group.creatorId && isActive == group.isActive && Objects.equals(groupId, group.groupId) && Objects.equals(groupName, group.groupName);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(groupId, groupName, creatorId, isActive);
     }
 }
