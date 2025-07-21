@@ -407,6 +407,4 @@ public class CourseBundleServiceImpl implements CourseBundleService {
             throw new RuntimeException("SERVER ERROR");
         }
     }
-
-
 }
