@@ -31,8 +31,8 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
-import static com.nt.user_service_lms.constants.UserConstants.USER_NOT_FOUND;
 import static com.nt.user_service_lms.constants.CommonConstants.NUMBER_FIVE;
+import static com.nt.user_service_lms.constants.UserConstants.USER_NOT_FOUND;
 
 
 /**

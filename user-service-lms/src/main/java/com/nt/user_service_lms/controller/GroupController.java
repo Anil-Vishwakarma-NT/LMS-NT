@@ -2,7 +2,14 @@ package com.nt.user_service_lms.controller;
 
 import com.nt.user_service_lms.config.ServicePrincipal;
 import com.nt.user_service_lms.dto.inDTO.GroupInDTO;
-import com.nt.user_service_lms.dto.outDTO.*;
+import com.nt.user_service_lms.dto.outDTO.CourseInfoOutDTO;
+import com.nt.user_service_lms.dto.outDTO.GroupCourseOutDTO;
+import com.nt.user_service_lms.dto.outDTO.GroupOutDTO;
+import com.nt.user_service_lms.dto.outDTO.GroupSummaryOutDTO;
+import com.nt.user_service_lms.dto.outDTO.GroupUserOutDTO;
+import com.nt.user_service_lms.dto.outDTO.MessageOutDto;
+import com.nt.user_service_lms.dto.outDTO.StandardResponseOutDTO;
+import com.nt.user_service_lms.dto.outDTO.UserGroupOutDTO;
 import com.nt.user_service_lms.exception.UnauthorizedAccessException;
 import com.nt.user_service_lms.repository.UserRepository;
 import com.nt.user_service_lms.service.EnrollmentsService;
@@ -217,17 +224,17 @@ public class GroupController {
         log.info("Attempting to get course details of groupId : {}", groupId);
         StandardResponseOutDTO<List<GroupCourseOutDTO>> response = groupService.getCourseDetail(groupId);
 
-        return new ResponseEntity<>(response,HttpStatus.OK);
+        return new ResponseEntity<>(response, HttpStatus.OK);
     }
 
 
     @GetMapping("emp/group-courses/{groupId}")
     @PreAuthorize("hasRole('ADMIN') or hasRole('EMPLOYEE')")
-    public ResponseEntity<StandardResponseOutDTO<List<GroupCourseOutDTO>>> getCourseEmpDetails(@PathVariable final long groupId){     // pass group id in dto
-        log.info("Attempting to get course details of groupId : {}",groupId);
+    public ResponseEntity<StandardResponseOutDTO<List<GroupCourseOutDTO>>> getCourseEmpDetails(@PathVariable final long groupId) {     // pass group id in dto
+        log.info("Attempting to get course details of groupId : {}", groupId);
         StandardResponseOutDTO<List<GroupCourseOutDTO>> response = groupService.getCourseEmpDetail(groupId);
 
-        return new ResponseEntity<>(response,HttpStatus.OK);
+        return new ResponseEntity<>(response, HttpStatus.OK);
     }
 
     /**
@@ -363,15 +370,15 @@ public class GroupController {
      */
     @PostMapping("/user-courses")
     @PreAuthorize("hasRole('ADMIN') or hasRole('EMPLOYEE')")
-    public ResponseEntity<StandardResponseOutDTO<List<CourseInfoOutDTO>>> getUserCoursesInGroups(@RequestBody GroupInDTO groupInDTO){
+    public ResponseEntity<StandardResponseOutDTO<List<CourseInfoOutDTO>>> getUserCoursesInGroups(@RequestBody GroupInDTO groupInDTO) {
         StandardResponseOutDTO<List<CourseInfoOutDTO>> response = groupService.getUserCourses(groupInDTO.getGroupId(), groupInDTO.getUserId());
-        return new ResponseEntity<>(response,HttpStatus.OK);
+        return new ResponseEntity<>(response, HttpStatus.OK);
     }
 
 
     @GetMapping("/user-groups")
     @PreAuthorize("hasRole('ADMIN') or hasRole('EMPLOYEE')")
-    public ResponseEntity<StandardResponseOutDTO<List<UserGroupOutDTO>>>getUserGroupDetails(){
+    public ResponseEntity<StandardResponseOutDTO<List<UserGroupOutDTO>>> getUserGroupDetails() {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
 
         if (!(authentication.getPrincipal() instanceof ServicePrincipal principal)) {
@@ -380,7 +387,7 @@ public class GroupController {
 
         String username = principal.getUserEmail();
         StandardResponseOutDTO<List<UserGroupOutDTO>> response = groupService.getUserGroupDetail(username);
-        return new ResponseEntity<>(response , HttpStatus.OK);
+        return new ResponseEntity<>(response, HttpStatus.OK);
     }
 
 }

@@ -15,13 +15,36 @@ import software.amazon.awssdk.services.secretsmanager.model.GetSecretValueRespon
 
 import javax.sql.DataSource;
 
+/**
+ * Configuration class for setting up the database connection using credentials
+ * securely stored in AWS Secrets Manager.
+ * <p>
+ * This configuration is only active for non-local environments.
+ * </p>
+ */
 @Configuration
 @Profile("!local")
 public class DatabaseConfig {
 
+    /**
+     * Spring Environment used to access configuration properties
+     * such as AWS Secrets Manager secret name and region.
+     */
     @Autowired
     private Environment environment;
 
+    /**
+     * Creates and configures a {@link DataSource} bean using database credentials
+     * retrieved from AWS Secrets Manager.
+     * <p>
+     * The secret is expected to be a JSON object containing fields like:
+     * <code>username</code>, <code>password</code>, <code>hostname</code>,
+     * <code>db_name</code>, and <code>schema_name</code>.
+     * </p>
+     *
+     * @return configured {@link DataSource} instance
+     * @throws Exception if the secret cannot be retrieved or parsed
+     */
     @Bean
     public DataSource getDataSource() throws Exception {
         JsonNode secret = getSecretDetails();
@@ -42,6 +65,19 @@ public class DatabaseConfig {
                 .build();
     }
 
+    /**
+     * Retrieves and parses the secret from AWS Secrets Manager as a JSON object.
+     * <p>
+     * The secret ID and AWS region are read from the Spring environment properties:
+     * <ul>
+     *   <li><code>aws.secretsmanager.secretName</code></li>
+     *   <li><code>aws.secretsmanager.region</code></li>
+     * </ul>
+     * </p>
+     *
+     * @return parsed secret as {@link JsonNode}
+     * @throws RuntimeException if the secret cannot be retrieved or parsed
+     */
     private JsonNode getSecretDetails() {
         String secretName = environment.getProperty("aws.secretsmanager.secretName");
         String region = environment.getProperty("aws.secretsmanager.region");
@@ -55,7 +91,6 @@ public class DatabaseConfig {
                 .build();
 
         GetSecretValueResponse response = client.getSecretValue(request);
-
         String secretString = response.secretString();
 
         try {

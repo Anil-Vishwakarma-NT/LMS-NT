@@ -21,6 +21,11 @@ public final class CommonConstants {
     public static final long LONG_THREE_THOUSAND_SIX_HUNDRED = 3600L;
 
     /**
+     * Integer 16 constant.
+     */
+    public static final int INTEGER_SIXTEEN = 16;
+
+    /**
      * Integer 500 constant.
      */
     public static final int INTEGER_FIVE_HUNDRED = 500;

@@ -58,7 +58,7 @@ public class ServiceTokenConverter {
      * Default value is provided if not specified in configuration.
      */
     @Value("${jwt.secret}")
-    private String SECRET;
+    private String secret;
 
     /**
      * JWT issuer identifier that specifies who issued the token.
@@ -94,7 +94,7 @@ public class ServiceTokenConverter {
      * @return Key object used for JWT signing and verification
      */
     private Key getSigningKey() {
-        byte[] keyBytes = Base64.getDecoder().decode(SECRET);
+        byte[] keyBytes = Base64.getDecoder().decode(secret);
         return Keys.hmacShaKeyFor(keyBytes);
     }
 

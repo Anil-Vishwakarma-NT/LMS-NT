@@ -8,43 +8,72 @@ import org.springframework.stereotype.Repository;
 import java.util.List;
 import java.util.Optional;
 
+/**
+ * Repository interface for performing CRUD and custom operations on the {@link Users} entity.
+ * <p>
+ * Extends {@link JpaRepository} to provide built-in methods for interacting with the database,
+ * and includes additional query methods for user-specific logic.
+ * </p>
+ */
 @Repository
 public interface UserRepository extends JpaRepository<Users, Long> {
 
     /**
-     * Finds a user by their email address.
+     * Finds a user by their email address (case-insensitive).
      *
      * @param email The email address of the user.
-     * @return An Optional containing the user if found, or empty if no user with the provided email exists.
+     * @return An {@link Optional} containing the user if found, or empty if no user with the provided email exists.
      */
     Optional<Users> findByEmailIgnoreCase(String email);
 
     /**
-     * Finds a user by their username, ignoring case.
+     * Finds a user by their username (case-insensitive).
      *
      * @param userName The username of the user.
-     * @return An Optional containing the user if found, or empty if no user with the provided username exists.
+     * @return An {@link Optional} containing the user if found, or empty if no user with the provided username exists.
      */
     Optional<Users> findByUserNameIgnoreCase(String userName);
 
     /**
-     * Finds a user by their user ID.
+     * Finds a user by their unique user ID.
      *
-     * @param userId The ID of the user.
-     * @return An Optional containing the user if found, or empty if no user with the provided ID exists.
+     * @param userId The unique identifier of the user.
+     * @return An {@link Optional} containing the user if found, or empty if no user with the provided ID exists.
      */
     Optional<Users> findById(long userId);
 
     /**
-     * Finds all users managed by a particular manager.
+     * Retrieves a list of users who are managed by a given manager.
      *
-     * @param managerId The ID of the manager.
-     * @return A list of users managed by the specified manager.
+     * @param managerId The user ID of the manager.
+     * @return A list of {@link Users} managed by the specified manager.
      */
     List<Users> findByManagerId(long managerId);
 
+    /**
+     * Checks if a user exists with the specified ID.
+     *
+     * @param id The ID to check for existence.
+     * @return {@code true} if a user exists with the given ID, otherwise {@code false}.
+     */
     boolean existsById(long id);
 
+    /**
+     * Retrieves recent active user details including their full name, email, role,
+     * manager name, and account creation date.
+     * <p>
+     * Excludes the super admin (user ID 1) from the results and returns the 5 most recently created users.
+     * </p>
+     *
+     * @return A list of object arrays where each array contains:
+     * <ul>
+     *     <li>full name (String)</li>
+     *     <li>email (String)</li>
+     *     <li>role (String)</li>
+     *     <li>manager name (String)</li>
+     *     <li>created at (Timestamp)</li>
+     * </ul>
+     */
     @Query(value = """
             SELECT
                 CONCAT(u.firstname, ' ', u.lastname) AS fullName,
@@ -60,6 +89,4 @@ public interface UserRepository extends JpaRepository<Users, Long> {
             LIMIT 5
             """, nativeQuery = true)
     List<Object[]> fetchRecentUserDetails();
-
 }
-

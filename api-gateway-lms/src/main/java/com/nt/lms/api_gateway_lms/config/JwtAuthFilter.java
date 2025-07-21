@@ -1,5 +1,6 @@
 package com.nt.lms.api_gateway_lms.config;
 
+import com.nt.lms.api_gateway_lms.constant.CommonConstants;
 import io.jsonwebtoken.ExpiredJwtException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -25,7 +26,28 @@ import java.util.Base64;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import static com.nt.lms.api_gateway_lms.constant.SecurityConstant.*;
+import static com.nt.lms.api_gateway_lms.constant.SecurityConstant.ACCESS_TOKEN_TYPE;
+import static com.nt.lms.api_gateway_lms.constant.SecurityConstant.BEARER_PREFIX;
+import static com.nt.lms.api_gateway_lms.constant.SecurityConstant.COURSE_SERVICE;
+import static com.nt.lms.api_gateway_lms.constant.SecurityConstant.GATEWAY_NONCE_HEADER;
+import static com.nt.lms.api_gateway_lms.constant.SecurityConstant.GATEWAY_SECRET_HEADER;
+import static com.nt.lms.api_gateway_lms.constant.SecurityConstant.GATEWAY_SIGNATURE_HEADER;
+import static com.nt.lms.api_gateway_lms.constant.SecurityConstant.GATEWAY_SOURCE_HEADER;
+import static com.nt.lms.api_gateway_lms.constant.SecurityConstant.GATEWAY_SOURCE_VALUE;
+import static com.nt.lms.api_gateway_lms.constant.SecurityConstant.GATEWAY_TIMESTAMP_HEADER;
+import static com.nt.lms.api_gateway_lms.constant.SecurityConstant.INVALID_ACCESS_TOKEN_MSG;
+import static com.nt.lms.api_gateway_lms.constant.SecurityConstant.INVALID_SERVICE_TOKEN_MSG;
+import static com.nt.lms.api_gateway_lms.constant.SecurityConstant.INVALID_TOKEN_MSG;
+import static com.nt.lms.api_gateway_lms.constant.SecurityConstant.INVALID_TOKEN_TYPE_MSG;
+import static com.nt.lms.api_gateway_lms.constant.SecurityConstant.ORIGINAL_TOKEN_TYPE_HEADER;
+import static com.nt.lms.api_gateway_lms.constant.SecurityConstant.SERVICE_TOKEN_HEADER;
+import static com.nt.lms.api_gateway_lms.constant.SecurityConstant.SERVICE_TOKEN_PROCESSING_ERROR_MSG;
+import static com.nt.lms.api_gateway_lms.constant.SecurityConstant.SERVICE_TOKEN_TYPE;
+import static com.nt.lms.api_gateway_lms.constant.SecurityConstant.TOKEN_EXPIRED_MSG;
+import static com.nt.lms.api_gateway_lms.constant.SecurityConstant.TOKEN_PROCESSING_ERROR_MSG;
+import static com.nt.lms.api_gateway_lms.constant.SecurityConstant.UNKNOWN_SERVICE;
+import static com.nt.lms.api_gateway_lms.constant.SecurityConstant.USER_NOT_FOUND_MSG;
+import static com.nt.lms.api_gateway_lms.constant.SecurityConstant.USER_SERVICE;
 
 /**
  * JWT Authentication Filter for LMS API Gateway.
@@ -104,7 +126,7 @@ public class JwtAuthFilter implements WebFilter {
      * @return a Mono&lt;Void&gt; representing completion of the filter operation
      */
     @Override
-    public Mono<Void> filter(ServerWebExchange exchange, WebFilterChain chain) {
+    public Mono<Void> filter(final ServerWebExchange exchange, final WebFilterChain chain) {
         ServerHttpRequest request = exchange.getRequest();
         ServerHttpResponse response = exchange.getResponse();
         String authHeader = request.getHeaders().getFirst(HttpHeaders.AUTHORIZATION);
@@ -150,7 +172,7 @@ public class JwtAuthFilter implements WebFilter {
      * @param token the access token to be processed
      * @return a Mono&lt;Void&gt; representing completion of access token handling
      */
-    private Mono<Void> handleAccessToken(ServerWebExchange exchange, WebFilterChain chain, String token) {
+    private Mono<Void> handleAccessToken(final ServerWebExchange exchange, final WebFilterChain chain, final String token) {
         try {
             String username = jwtTokenManager.extractEmail(token);
 
@@ -205,7 +227,7 @@ public class JwtAuthFilter implements WebFilter {
      * @param token the service token to be processed
      * @return a Mono&lt;Void&gt; representing completion of service token handling
      */
-    private Mono<Void> handleServiceToken(ServerWebExchange exchange, WebFilterChain chain, String token) {
+    private Mono<Void> handleServiceToken(final ServerWebExchange exchange, final WebFilterChain chain, final String token) {
         try {
             String targetService = extractTargetService(exchange.getRequest());
 
@@ -260,9 +282,9 @@ public class JwtAuthFilter implements WebFilter {
      * @param originalTokenType the type of the original token (ACCESS or SERVICE)
      * @return a new ServerHttpRequest with added security headers
      */
-    private ServerHttpRequest addGatewaySecurityHeaders(ServerHttpRequest request,
-                                                        String serviceToken,
-                                                        String originalTokenType) {
+    private ServerHttpRequest addGatewaySecurityHeaders(final ServerHttpRequest request,
+                                                        final String serviceToken,
+                                                        final String originalTokenType) {
 
         ServerHttpRequest.Builder builder = request.mutate()
                 .header(SERVICE_TOKEN_HEADER, serviceToken)
@@ -292,7 +314,7 @@ public class JwtAuthFilter implements WebFilter {
      * @return a Base64-encoded random nonce string
      */
     private String generateNonce() {
-        byte[] nonce = new byte[16];
+        byte[] nonce = new byte[CommonConstants.INTEGER_SIXTEEN];
         secureRandom.nextBytes(nonce);
         return Base64.getEncoder().encodeToString(nonce);
     }
@@ -312,7 +334,7 @@ public class JwtAuthFilter implements WebFilter {
      * @param secret the gateway secret key
      * @return a signature string for request verification
      */
-    private String generateSignature(long timestamp, String nonce, String secret) {
+    private String generateSignature(final long timestamp, final String nonce, final String secret) {
         String data = timestamp + ":" + nonce + ":" + secret;
         return Integer.toString(data.hashCode());
     }
@@ -331,7 +353,7 @@ public class JwtAuthFilter implements WebFilter {
      * @param request the HTTP request containing the path information
      * @return the target service name as defined in SecurityConstant
      */
-    private String extractTargetService(ServerHttpRequest request) {
+    private String extractTargetService(final ServerHttpRequest request) {
         String path = request.getPath().value();
         if (path.startsWith("/lms/user/")) {
             return USER_SERVICE;
@@ -357,7 +379,7 @@ public class JwtAuthFilter implements WebFilter {
      * @param message the error message to include in the response body
      * @return a Mono&lt;Void&gt; representing completion of the error response writing
      */
-    private Mono<Void> handleUnauthorized(ServerHttpResponse response, String message) {
+    private Mono<Void> handleUnauthorized(final ServerHttpResponse response, final String message) {
         if (response.isCommitted()) {
             log.warn("Response already committed, cannot set unauthorized status");
             return Mono.empty();

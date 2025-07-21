@@ -34,7 +34,7 @@ public class Group {
     /**
      * The name of the group.
      */
-    @Column(name = "group_name",unique = true, nullable = false)
+    @Column(name = "group_name", unique = true, nullable = false)
     private String groupName;
 
     /**

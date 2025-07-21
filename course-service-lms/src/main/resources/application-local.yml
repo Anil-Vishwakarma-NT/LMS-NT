@@ -3,9 +3,9 @@ spring:
     name: course-service
 
   datasource:
-    url: jdbc:postgresql://localhost:5432/lms
+    url: jdbc:postgresql://localhost:5432/lms_db
     username: postgres
-    password: anil@123
+    password: root
 
   jpa:
     properties:

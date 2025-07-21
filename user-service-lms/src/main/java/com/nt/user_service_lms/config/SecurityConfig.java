@@ -5,8 +5,8 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
-import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
+import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -53,15 +53,15 @@ public class SecurityConfig {
                 .authorizeHttpRequests(authz -> authz
                         .requestMatchers("/api/auth/**").permitAll()
                         .requestMatchers("/api/service-api/admin/**",
-                                        "/api/service-api/custom-report/**",
-                                        "/api/service-api/custom-user-report/**").hasRole("ADMIN")
+                                "/api/service-api/custom-report/**",
+                                "/api/service-api/custom-user-report/**").hasRole("ADMIN")
 
-                        .requestMatchers("api/service-api/manager/**").hasAnyRole("MANAGER","ADMIN")
+                        .requestMatchers("api/service-api/manager/**").hasAnyRole("MANAGER", "ADMIN")
 
                         .requestMatchers("/api/service-api/users/**",
-                                        "/api/service-api/enrollments/**",
-                                        "/api/service-api/enrollment/**",
-                                        "/api/service-api/group/**").hasAnyRole("EMPLOYEE", "ADMIN","MANAGER")
+                                "/api/service-api/enrollments/**",
+                                "/api/service-api/enrollment/**",
+                                "/api/service-api/group/**").hasAnyRole("EMPLOYEE", "ADMIN", "MANAGER")
 
                         .anyRequest().authenticated()
 

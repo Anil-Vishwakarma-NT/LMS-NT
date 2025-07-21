@@ -70,6 +70,7 @@ public interface GroupRepository extends JpaRepository<Group, Long> {
 
 
     Optional<Group> findByGroupId(Long groupId);
+
     /**
      * Finds all groups that are currently active.
      *

@@ -103,7 +103,11 @@ public class AuthServiceImp {
                                         .accessToken(accessToken)
                                         .refreshToken(refreshToken)
                                         .tokenType("Bearer")
-                                        .expiresIn(jwtTokenManager.getAccessTokenExpiration() / CommonConstants.INTEGER_ONE_THOUSAND)
+                                        .expiresIn(
+                                                jwtTokenManager
+                                                        .getAccessTokenExpiration()
+                                                        / CommonConstants.INTEGER_ONE_THOUSAND
+                                        )
                                         .build();
 
                                 return ResponseEntity.ok(response);
@@ -142,7 +146,11 @@ public class AuthServiceImp {
                                             .accessToken(newAccessToken)
                                             .refreshToken(request.getRefreshToken())
                                             .tokenType("Bearer")
-                                            .expiresIn(jwtTokenManager.getAccessTokenExpiration() / CommonConstants.INTEGER_ONE_THOUSAND)
+                                            .expiresIn(
+                                                    jwtTokenManager
+                                                            .getAccessTokenExpiration()
+                                                            / CommonConstants.INTEGER_ONE_THOUSAND
+                                            )
                                             .build();
 
                                     return Mono.just(ResponseEntity.ok(response));

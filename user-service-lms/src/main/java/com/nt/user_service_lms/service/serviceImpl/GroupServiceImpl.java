@@ -4,7 +4,14 @@ import com.nt.user_service_lms.constants.UserConstants;
 import com.nt.user_service_lms.converter.GroupDTOConverter;
 import com.nt.user_service_lms.converter.UserDTOConverter;
 import com.nt.user_service_lms.dto.inDTO.GroupInDTO;
-import com.nt.user_service_lms.dto.outDTO.*;
+import com.nt.user_service_lms.dto.outDTO.CourseInfoOutDTO;
+import com.nt.user_service_lms.dto.outDTO.GroupCourseOutDTO;
+import com.nt.user_service_lms.dto.outDTO.GroupOutDTO;
+import com.nt.user_service_lms.dto.outDTO.GroupSummaryOutDTO;
+import com.nt.user_service_lms.dto.outDTO.GroupUserOutDTO;
+import com.nt.user_service_lms.dto.outDTO.MessageOutDto;
+import com.nt.user_service_lms.dto.outDTO.StandardResponseOutDTO;
+import com.nt.user_service_lms.dto.outDTO.UserGroupOutDTO;
 import com.nt.user_service_lms.entities.Enrollment;
 import com.nt.user_service_lms.entities.Group;
 import com.nt.user_service_lms.entities.User;
@@ -564,10 +571,10 @@ public class GroupServiceImpl implements GroupService {
 
         List<Enrollment> enrols = enrollmentRepository.findByUserId(user.getUserId());
 
-        Map<Long , UserGroupOutDTO> mp = new HashMap<>();
+        Map<Long, UserGroupOutDTO> mp = new HashMap<>();
 
         for (Enrollment en : enrols) {
-            if (en.getIsActive() && en.getGroupId()!=null) {
+            if (en.getIsActive() && en.getGroupId() != null) {
                 Optional<Group> group = groupRepository.findByGroupId(en.getGroupId());
                 if (group.isPresent()) {
                     String groupName = group.get().getGroupName();
@@ -578,13 +585,12 @@ public class GroupServiceImpl implements GroupService {
                     gc.setGroupName(groupName);
                     gc.setGroupId(group.get().getGroupId());
                     mp.put(en.getCourseId(), gc);
-                }
-                else{
+                } else {
                     throw new ResourceNotFoundException(GROUP_NOT_FOUND);
                 }
             }
         }
-        return StandardResponseOutDTO.success( new ArrayList<>(mp.values()),"Successfully fetched course details.");
+        return StandardResponseOutDTO.success(new ArrayList<>(mp.values()), "Successfully fetched course details.");
     }
 
     @Override
@@ -592,7 +598,7 @@ public class GroupServiceImpl implements GroupService {
 
         List<Enrollment> enrols = enrollmentRepository.findByGroupId(groupId);
 
-        Map<Long , GroupCourseOutDTO > mp = new HashMap<>();
+        Map<Long, GroupCourseOutDTO> mp = new HashMap<>();
 
         for (Enrollment en : enrols) {
             if (en.getIsActive()) {
@@ -605,7 +611,6 @@ public class GroupServiceImpl implements GroupService {
         }
 
 
-
-        return StandardResponseOutDTO.success( new ArrayList<>(mp.values()),"Successfully fetched course details.");
+        return StandardResponseOutDTO.success(new ArrayList<>(mp.values()), "Successfully fetched course details.");
     }
 }

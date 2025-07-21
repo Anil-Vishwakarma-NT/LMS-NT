@@ -7,7 +7,6 @@ import com.nt.user_service_lms.dto.outDTO.MessageOutDto;
 import com.nt.user_service_lms.dto.outDTO.StandardResponseOutDTO;
 import com.nt.user_service_lms.dto.outDTO.UserCourseEnrollDetails;
 import com.nt.user_service_lms.dto.outDTO.UserOutDTO;
-import com.nt.user_service_lms.exception.UnauthorizedAccessException;
 import com.nt.user_service_lms.service.serviceImpl.AdminServiceImpl;
 import com.nt.user_service_lms.service.serviceImpl.GroupServiceImpl;
 import com.nt.user_service_lms.service.serviceImpl.UserServiceImpl;
@@ -16,7 +15,16 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PatchMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
+
 import java.util.List;
 
 /**
@@ -198,12 +206,13 @@ public class AdminController {
     /**
      * Retrieves all courses enrolled by the currently authenticated user.
      * Uses custom ServicePrincipal authentication to identify the user.
-     *
+     * @param userId the Id of user
      * @return ResponseEntity containing StandardResponseOutDTO with list of UserCourseEnrollDetails
-     * @throws UnauthorizedAccessException if authentication fails or principal is not ServicePrincipal
      */
     @GetMapping("/userCourses/{userId}")
-    public ResponseEntity<StandardResponseOutDTO<List<UserCourseEnrollDetails>>> getEnrolledCoursesByUserId(@RequestParam long userId) {
+    public ResponseEntity<StandardResponseOutDTO<List<UserCourseEnrollDetails>>> getEnrolledCoursesByUserId(
+            @RequestParam final long userId
+    ) {
         List<UserCourseEnrollDetails> enrolledCourses = userService.getUserEnrolledCourses(userId);
         return ResponseEntity.ok(StandardResponseOutDTO.success(enrolledCourses, "Fetched enrolled courses successfully"));
     }

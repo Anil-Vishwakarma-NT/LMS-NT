@@ -167,9 +167,9 @@ public class UserController {
     }
 
     @GetMapping("/{userId}/statistics")
-    public ResponseEntity<StandardResponseOutDTO<Map<String,Long>>> getUserEnrollments(@PathVariable Long userId){
-        Map<String , Long> stats = userService.userStatistics(userId);
-        StandardResponseOutDTO<Map<String,Long>> standardResponseOutDTO = StandardResponseOutDTO.success(stats, "Fetched Users Enrolled");
+    public ResponseEntity<StandardResponseOutDTO<Map<String, Long>>> getUserEnrollments(@PathVariable Long userId) {
+        Map<String, Long> stats = userService.userStatistics(userId);
+        StandardResponseOutDTO<Map<String, Long>> standardResponseOutDTO = StandardResponseOutDTO.success(stats, "Fetched Users Enrolled");
         return ResponseEntity.ok(standardResponseOutDTO);
     }
 
