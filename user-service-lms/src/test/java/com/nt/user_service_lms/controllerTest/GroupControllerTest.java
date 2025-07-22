@@ -1,4 +1,4 @@
-package com.nt.user_service_lms.controller;
+package com.nt.user_service_lms.controllerTest;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.nt.user_service_lms.dto.inDTO.GroupInDTO;

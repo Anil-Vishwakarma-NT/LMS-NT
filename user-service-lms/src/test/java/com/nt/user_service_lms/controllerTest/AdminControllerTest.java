@@ -1,4 +1,4 @@
-package com.nt.user_service_lms.controller;
+package com.nt.user_service_lms.controllerTest;
 
 import com.nt.user_service_lms.dto.RegisterDto;
 import com.nt.user_service_lms.service.serviceImpl.AdminServiceImpl;

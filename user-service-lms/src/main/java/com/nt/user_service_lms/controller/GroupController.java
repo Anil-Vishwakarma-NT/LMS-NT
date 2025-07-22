@@ -1,15 +1,15 @@
-package com.nt.user_service_lms.controller;
+package com.nt.user_service_lms.controllerTest;
 
 import com.nt.user_service_lms.config.ServicePrincipal;
-import com.nt.user_service_lms.dto.inDTO.GroupInDTO;
-import com.nt.user_service_lms.dto.outDTO.CourseInfoOutDTO;
-import com.nt.user_service_lms.dto.outDTO.GroupCourseOutDTO;
-import com.nt.user_service_lms.dto.outDTO.GroupOutDTO;
-import com.nt.user_service_lms.dto.outDTO.GroupSummaryOutDTO;
-import com.nt.user_service_lms.dto.outDTO.GroupUserOutDTO;
-import com.nt.user_service_lms.dto.outDTO.MessageOutDto;
-import com.nt.user_service_lms.dto.outDTO.StandardResponseOutDTO;
-import com.nt.user_service_lms.dto.outDTO.UserGroupOutDTO;
+import com.nt.user_service_lms.dtoTest.inDTO.GroupInDTO;
+import com.nt.user_service_lms.dtoTest.outDTO.CourseInfoOutDTO;
+import com.nt.user_service_lms.dtoTest.outDTO.GroupCourseOutDTO;
+import com.nt.user_service_lms.dtoTest.outDTO.GroupOutDTO;
+import com.nt.user_service_lms.dtoTest.outDTO.GroupSummaryOutDTO;
+import com.nt.user_service_lms.dtoTest.outDTO.GroupUserOutDTO;
+import com.nt.user_service_lms.dtoTest.outDTO.MessageOutDto;
+import com.nt.user_service_lms.dtoTest.outDTO.StandardResponseOutDTO;
+import com.nt.user_service_lms.dtoTest.outDTO.UserGroupOutDTO;
 import com.nt.user_service_lms.exception.UnauthorizedAccessException;
 import com.nt.user_service_lms.repository.UserRepository;
 import com.nt.user_service_lms.service.EnrollmentsService;

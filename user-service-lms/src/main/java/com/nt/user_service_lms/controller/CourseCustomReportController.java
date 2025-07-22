@@ -1,4 +1,4 @@
-package com.nt.user_service_lms.controller;
+package com.nt.user_service_lms.controllerTest;
 
 import com.nt.user_service_lms.service.serviceImpl.CourseExcelReportBuilder;
 import com.nt.user_service_lms.service.serviceImpl.CoursePDFReportBuilder;

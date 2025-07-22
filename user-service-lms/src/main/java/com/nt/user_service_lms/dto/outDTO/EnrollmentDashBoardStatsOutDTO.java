@@ -1,4 +1,4 @@
-package com.nt.user_service_lms.dto.outDTO;
+package com.nt.user_service_lms.dtoTest.outDTO;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;

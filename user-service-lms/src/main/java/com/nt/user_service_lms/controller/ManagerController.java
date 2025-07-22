@@ -1,7 +1,7 @@
-package com.nt.user_service_lms.controller;
+package com.nt.user_service_lms.controllerTest;
 
-import com.nt.user_service_lms.dto.outDTO.StandardResponseOutDTO;
-import com.nt.user_service_lms.dto.outDTO.UserOutDTO;
+import com.nt.user_service_lms.dtoTest.outDTO.StandardResponseOutDTO;
+import com.nt.user_service_lms.dtoTest.outDTO.UserOutDTO;
 import com.nt.user_service_lms.service.serviceImpl.GroupServiceImpl;
 import com.nt.user_service_lms.service.serviceImpl.ManagerServiceImpl;
 import lombok.extern.slf4j.Slf4j;
