@@ -1,0 +1,242 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>ServiceTokenConverter.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">user-service-lms</a> &gt; <a href="index.source.html" class="el_package">com.nt.user_service_lms.config</a> &gt; <span class="el_source">ServiceTokenConverter.java</span></div><h1>ServiceTokenConverter.java</h1><pre class="source lang-java linenums">package com.nt.user_service_lms.config;
+
+import io.jsonwebtoken.Jwts;
+import io.jsonwebtoken.security.Keys;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.stereotype.Component;
+
+import java.security.Key;
+import java.util.*;
+
+import static com.nt.user_service_lms.constants.TokenConverterConstant.CLIENT_ID;
+import static com.nt.user_service_lms.constants.TokenConverterConstant.CONVERSION_CHAIN;
+import static com.nt.user_service_lms.constants.TokenConverterConstant.CONVERTED_AT;
+import static com.nt.user_service_lms.constants.TokenConverterConstant.CONVERTED_FROM;
+import static com.nt.user_service_lms.constants.TokenConverterConstant.DEFAULT_SCOPE;
+import static com.nt.user_service_lms.constants.TokenConverterConstant.FULL_NAME;
+import static com.nt.user_service_lms.constants.TokenConverterConstant.ORIGINAL_TOKEN_TYPE;
+import static com.nt.user_service_lms.constants.TokenConverterConstant.ROLES;
+import static com.nt.user_service_lms.constants.TokenConverterConstant.ROLE_SERVICE;
+import static com.nt.user_service_lms.constants.TokenConverterConstant.SCOPE;
+import static com.nt.user_service_lms.constants.TokenConverterConstant.SERVICE;
+import static com.nt.user_service_lms.constants.TokenConverterConstant.SERVICE_TOKEN_SUBJECT;
+import static com.nt.user_service_lms.constants.TokenConverterConstant.TOKEN_TYPE;
+import static com.nt.user_service_lms.constants.TokenConverterConstant.UNKNOWN;
+import static com.nt.user_service_lms.constants.TokenConverterConstant.USER_EMAIL;
+import static com.nt.user_service_lms.constants.TokenConverterConstant.USER_ID;
+import static com.nt.user_service_lms.constants.TokenConverterConstant.USER_ROLES;
+
+/**
+ * Service responsible for converting JWT tokens between different services.
+ * This component handles the transformation of service tokens to ensure proper
+ * authentication and authorization across microservices within the system.
+ *
+ * &lt;p&gt;The converter maintains conversion metadata including original token type,
+ * conversion timestamps, and conversion chains to track token transformations.&lt;/p&gt;
+ *
+ * @author System
+ * @version 1.0
+ * @since 1.0
+ */
+@Component
+<span class="nc" id="L45">public class ServiceTokenConverter {</span>
+
+    /**
+     * Logger instance for this class to handle logging operations.
+     */
+<span class="nc" id="L50">    private static final Logger LOGGER = LoggerFactory.getLogger(ServiceTokenConverter.class);</span>
+
+    /**
+     * JWT secret key used for signing and verifying tokens.
+     * Default value is provided if not specified in configuration.
+     */
+    @Value(&quot;${jwt.secret}&quot;)
+    private String SECRET;
+
+    /**
+     * JWT issuer identifier that specifies who issued the token.
+     * Default value points to the authentication service.
+     */
+    @Value(&quot;${jwt.issuer}&quot;)
+    private String issuer;
+
+    /**
+     * Token expiration time in milliseconds.
+     * Default value is 3600000ms (1 hour).
+     */
+    @Value(&quot;${jwt.expiration:3600000}&quot;)
+    private Long expiration;
+
+    /**
+     * Expected audience for the current service, derived from application name.
+     * This represents the current service that will be set as the client ID.
+     */
+    @Value(&quot;${spring.application.name}&quot;)
+    private String expectedAudience;
+
+    /**
+     * Utility class for JWT operations including token extraction and validation.
+     */
+    @Autowired
+    private JwtUtil jwtUtil;
+
+    /**
+     * Creates and returns the signing key used for JWT token signing.
+     * The key is generated from the secret string using HMAC SHA algorithm.
+     *
+     * @return Key object used for JWT signing and verification
+     */
+    private Key getSigningKey() {
+<span class="nc" id="L93">        byte[] keyBytes = Base64.getDecoder().decode(SECRET);</span>
+<span class="nc" id="L94">        return Keys.hmacShaKeyFor(keyBytes);</span>
+    }
+
+    /**
+     * Converts an original JWT token to a service token for a specific target service.
+     * This method extracts claims from the original token and creates a new service token
+     * with appropriate audience and conversion metadata.
+     *
+     * @param originalToken the original JWT token to be converted (must not be null)
+     * @param targetService the target service name for which the token is being converted (must not be null)
+     * @return newly created service token as a JWT string
+     * @throws RuntimeException if token conversion fails due to invalid token or processing errors
+     */
+    public String convertServiceToken(final String originalToken, final String targetService) {
+        try {
+<span class="nc" id="L109">            String userId = jwtUtil.extractUserId(originalToken);</span>
+<span class="nc" id="L110">            String userEmail = jwtUtil.extractUserEmail(originalToken);</span>
+<span class="nc" id="L111">            String userFullName = jwtUtil.extractUserFullName(originalToken);</span>
+<span class="nc" id="L112">            List&lt;String&gt; userRoles = jwtUtil.extractUserRoles(originalToken);</span>
+<span class="nc" id="L113">            List&lt;String&gt; serviceRoles = jwtUtil.extractRoles(originalToken);</span>
+<span class="nc" id="L114">            String scope = jwtUtil.extractScope(originalToken);</span>
+<span class="nc" id="L115">            String originalTokenType = jwtUtil.extractTokenType(originalToken);</span>
+<span class="nc" id="L116">            String originalClientId = jwtUtil.extractClientId(originalToken);</span>
+<span class="nc" id="L117">            Date originalExpiration = jwtUtil.extractExpiration(originalToken);</span>
+
+<span class="nc" id="L119">            Map&lt;String, Object&gt; claims = new HashMap&lt;&gt;();</span>
+<span class="nc" id="L120">            claims.put(TOKEN_TYPE, SERVICE);</span>
+<span class="nc" id="L121">            claims.put(CLIENT_ID, expectedAudience);</span>
+<span class="nc bnc" id="L122" title="All 2 branches missed.">            claims.put(ROLES, serviceRoles != null ? serviceRoles : List.of(ROLE_SERVICE));</span>
+<span class="nc bnc" id="L123" title="All 2 branches missed.">            claims.put(SCOPE, scope != null ? scope : DEFAULT_SCOPE);</span>
+
+<span class="nc bnc" id="L125" title="All 2 branches missed.">            if (userId != null) {</span>
+<span class="nc" id="L126">                claims.put(USER_ID, userId);</span>
+            }
+<span class="nc bnc" id="L128" title="All 2 branches missed.">            if (userEmail != null) {</span>
+<span class="nc" id="L129">                claims.put(USER_EMAIL, userEmail);</span>
+            }
+<span class="nc bnc" id="L131" title="All 2 branches missed.">            if (userFullName != null) {</span>
+<span class="nc" id="L132">                claims.put(FULL_NAME, userFullName);</span>
+            }
+<span class="nc bnc" id="L134" title="All 2 branches missed.">            if (userRoles != null) {</span>
+<span class="nc" id="L135">                claims.put(USER_ROLES, userRoles);</span>
+            }
+
+<span class="nc" id="L138">            claims.put(ORIGINAL_TOKEN_TYPE, originalTokenType);</span>
+<span class="nc" id="L139">            claims.put(CONVERTED_FROM, originalClientId);</span>
+<span class="nc" id="L140">            claims.put(CONVERTED_AT, System.currentTimeMillis());</span>
+<span class="nc" id="L141">            claims.put(CONVERSION_CHAIN, buildConversionChain(originalToken));</span>
+
+<span class="nc" id="L143">            return Jwts.builder()</span>
+<span class="nc" id="L144">                    .setClaims(claims)</span>
+<span class="nc" id="L145">                    .setSubject(SERVICE_TOKEN_SUBJECT)</span>
+<span class="nc" id="L146">                    .setAudience(targetService)</span>
+<span class="nc" id="L147">                    .setIssuer(issuer)</span>
+<span class="nc" id="L148">                    .setIssuedAt(new Date())</span>
+<span class="nc" id="L149">                    .setExpiration(originalExpiration)</span>
+<span class="nc" id="L150">                    .signWith(getSigningKey())</span>
+<span class="nc" id="L151">                    .compact();</span>
+
+<span class="nc" id="L153">        } catch (Exception e) {</span>
+<span class="nc" id="L154">            LOGGER.error(&quot;Failed to convert service token for target service {}: {}&quot;, targetService, e.getMessage());</span>
+<span class="nc" id="L155">            throw new RuntimeException(&quot;Token conversion failed&quot;, e);</span>
+        }
+    }
+
+    /**
+     * Determines whether a token needs conversion for a specific target service.
+     * This method compares the current token's audience with the target service
+     * to determine if conversion is necessary.
+     *
+     * @param currentToken the current JWT token to check (must not be null)
+     * @param targetService the target service name to check against (must not be null)
+     * @return true if token conversion is needed, false otherwise
+     */
+    public boolean needsTokenConversion(final String currentToken, final String targetService) {
+        try {
+<span class="nc" id="L170">            String currentAudience = jwtUtil.extractAudience(currentToken);</span>
+<span class="nc bnc" id="L171" title="All 2 branches missed.">            return !targetService.equals(currentAudience);</span>
+<span class="nc" id="L172">        } catch (Exception e) {</span>
+<span class="nc" id="L173">            LOGGER.warn(&quot;Failed to check if token conversion is needed: {}&quot;, e.getMessage());</span>
+<span class="nc" id="L174">            return true;</span>
+        }
+    }
+
+    /**
+     * Builds a conversion chain string that tracks the token's transformation history.
+     * The chain shows the path of token conversions from original client to current service.
+     *
+     * @param originalToken the original JWT token from which to build the chain (must not be null)
+     * @return string representation of the conversion chain (e.g., &quot;client1 -&gt; service1 -&gt; service2&quot;)
+     */
+    private String buildConversionChain(final String originalToken) {
+        try {
+<span class="nc" id="L187">            String existingChain = jwtUtil.extractClaim(originalToken,</span>
+<span class="nc" id="L188">                    claims -&gt; (String) claims.get(CONVERSION_CHAIN));</span>
+
+<span class="nc" id="L190">            String originalClientId = jwtUtil.extractClientId(originalToken);</span>
+
+<span class="nc bnc" id="L192" title="All 4 branches missed.">            if (existingChain != null &amp;&amp; !existingChain.isEmpty()) {</span>
+<span class="nc" id="L193">                return existingChain + &quot; -&gt; &quot; + expectedAudience;</span>
+            } else {
+<span class="nc bnc" id="L195" title="All 2 branches missed.">                return (originalClientId != null ? originalClientId : UNKNOWN) + &quot; -&gt; &quot; + expectedAudience;</span>
+            }
+<span class="nc" id="L197">        } catch (Exception e) {</span>
+<span class="nc" id="L198">            LOGGER.debug(&quot;Could not build conversion chain: {}&quot;, e.getMessage());</span>
+<span class="nc" id="L199">            return UNKNOWN + &quot; -&gt; &quot; + expectedAudience;</span>
+        }
+    }
+
+    /**
+     * Validates whether a given token can be converted by this service.
+     * Checks if the token is a service token and is valid according to JWT standards.
+     *
+     * @param token the JWT token to validate for conversion (must not be null)
+     * @return true if the token can be converted, false otherwise
+     */
+    public boolean canConvertToken(final String token) {
+        try {
+<span class="nc" id="L212">            String tokenType = jwtUtil.extractTokenType(token);</span>
+<span class="nc bnc" id="L213" title="All 4 branches missed.">            return SERVICE.equals(tokenType) &amp;&amp; jwtUtil.validateToken(token);</span>
+<span class="nc" id="L214">        } catch (Exception e) {</span>
+<span class="nc" id="L215">            LOGGER.warn(&quot;Cannot convert token: {}&quot;, e.getMessage());</span>
+<span class="nc" id="L216">            return false;</span>
+        }
+    }
+
+    /**
+     * Extracts conversion metadata from a converted token.
+     * This method retrieves information about the token's conversion history
+     * including original token type, source, timestamp, and conversion chain.
+     *
+     * @param token the JWT token from which to extract metadata (must not be null)
+     * @return Map containing conversion metadata with keys: ORIGINAL_TOKEN_TYPE,
+     *         CONVERTED_FROM, CONVERTED_AT, CONVERSION_CHAIN
+     */
+    public Map&lt;String, Object&gt; getConversionMetadata(final String token) {
+<span class="nc" id="L230">        Map&lt;String, Object&gt; metadata = new HashMap&lt;&gt;();</span>
+        try {
+<span class="nc" id="L232">            metadata.put(ORIGINAL_TOKEN_TYPE, jwtUtil.extractClaim(token, claims -&gt; claims.get(ORIGINAL_TOKEN_TYPE)));</span>
+<span class="nc" id="L233">            metadata.put(CONVERTED_FROM, jwtUtil.extractClaim(token, claims -&gt; claims.get(CONVERTED_FROM)));</span>
+<span class="nc" id="L234">            metadata.put(CONVERTED_AT, jwtUtil.extractClaim(token, claims -&gt; claims.get(CONVERTED_AT)));</span>
+<span class="nc" id="L235">            metadata.put(CONVERSION_CHAIN, jwtUtil.extractClaim(token, claims -&gt; claims.get(CONVERSION_CHAIN)));</span>
+<span class="nc" id="L236">        } catch (Exception e) {</span>
+<span class="nc" id="L237">            LOGGER.debug(&quot;Could not extract conversion metadata: {}&quot;, e.getMessage());</span>
+<span class="nc" id="L238">        }</span>
+<span class="nc" id="L239">        return metadata;</span>
+    }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.11.202310140853</span></div></body></html>

@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>EnrollmentValidator.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">user-service-lms</a> &gt; <a href="index.source.html" class="el_package">com.nt.user_service_lms.validation</a> &gt; <span class="el_source">EnrollmentValidator.java</span></div><h1>EnrollmentValidator.java</h1><pre class="source lang-java linenums">package com.nt.user_service_lms.validation;
+
+import jakarta.validation.ConstraintValidator;
+import jakarta.validation.ConstraintValidatorContext;
+
+import java.lang.reflect.Method;
+import java.time.LocalDateTime;
+
+/**
+ * Validator for enrollment DTOs, ensuring that either userId or groupId is set (but not both),
+ * either courseId or bundleId is set (but not both), all IDs are non-negative or null,
+ * and the deadline (if present) is in the future.
+ */
+<span class="nc" id="L14">public final class EnrollmentValidator implements ConstraintValidator&lt;ValidateEnrollmentDTO, Object&gt; {</span>
+
+    /**
+     * Validates the enrollment DTO according to the business rules.
+     *
+     * @param dto the object to validate
+     * @param context the constraint validator context
+     * @return true if valid, false otherwise
+     */
+    @Override
+    public boolean isValid(final Object dto, final ConstraintValidatorContext context) {
+        try {
+<span class="nc" id="L26">            final Long userId = (Long) getProperty(dto, &quot;userId&quot;);</span>
+<span class="nc" id="L27">            final Long groupId = (Long) getProperty(dto, &quot;groupId&quot;);</span>
+<span class="nc" id="L28">            final Long courseId = (Long) getProperty(dto, &quot;courseId&quot;);</span>
+<span class="nc" id="L29">            final Long bundleId = (Long) getProperty(dto, &quot;bundleId&quot;);</span>
+<span class="nc" id="L30">            final LocalDateTime deadline = (LocalDateTime) getProperty(dto, &quot;deadline&quot;);</span>
+
+<span class="nc bnc" id="L32" title="All 4 branches missed.">            final boolean isUserOrGroupValid = (userId == null) ^ (groupId == null);</span>
+<span class="nc bnc" id="L33" title="All 4 branches missed.">            final boolean isCourseOrBundleValid = (courseId == null) ^ (bundleId == null);</span>
+
+<span class="nc bnc" id="L35" title="All 4 branches missed.">            final boolean isValidIds = isNonNegative(userId) &amp;&amp; isNonNegative(groupId)</span>
+<span class="nc bnc" id="L36" title="All 4 branches missed.">                    &amp;&amp; isNonNegative(courseId) &amp;&amp; isNonNegative(bundleId);</span>
+
+<span class="nc bnc" id="L38" title="All 4 branches missed.">            final boolean isDeadlineValid = deadline == null || deadline.isAfter(LocalDateTime.now());</span>
+
+<span class="nc bnc" id="L40" title="All 8 branches missed.">            return isUserOrGroupValid &amp;&amp; isCourseOrBundleValid &amp;&amp; isValidIds &amp;&amp; isDeadlineValid;</span>
+
+<span class="nc" id="L42">        } catch (Exception e) {</span>
+<span class="nc" id="L43">            return false;</span>
+        }
+    }
+
+    /**
+     * Retrieves the value of a property using its getter method.
+     *
+     * @param object the object from which to retrieve the property
+     * @param propertyName the name of the property
+     * @return the value of the property
+     * @throws Exception if the getter method is not found or cannot be invoked
+     */
+    private Object getProperty(final Object object, final String propertyName) throws Exception {
+<span class="nc" id="L56">        final String getter = &quot;get&quot; + propertyName.substring(0, 1).toUpperCase() + propertyName.substring(1);</span>
+<span class="nc" id="L57">        final Method method = object.getClass().getMethod(getter);</span>
+<span class="nc" id="L58">        return method.invoke(object);</span>
+    }
+
+    /**
+     * Checks if the given ID is non-negative or null.
+     *
+     * @param id the ID to check
+     * @return true if the ID is null or non-negative, false otherwise
+     */
+    private boolean isNonNegative(final Long id) {
+<span class="nc bnc" id="L68" title="All 4 branches missed.">        return id == null || id &gt;= 0;</span>
+    }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.11.202310140853</span></div></body></html>

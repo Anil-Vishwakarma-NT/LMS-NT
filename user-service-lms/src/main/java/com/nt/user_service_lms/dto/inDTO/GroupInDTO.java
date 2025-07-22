@@ -55,6 +55,13 @@ public class GroupInDTO {
      */
     private List<Long> courses;
 
+
+    /**
+     * List of bundle IDs assigned to this group.
+     * Contains the unique identifiers of bundles that group members should complete.
+     */
+    private List<Long> bundles;
+
     /**
      * The deadline for completing group-assigned tasks or courses.
      * Represents the date and time by which group activities should be completed.

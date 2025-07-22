@@ -14,14 +14,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.web.bind.annotation.DeleteMapping;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
@@ -75,7 +68,7 @@ public class GroupController {
      * @throws UnauthorizedAccessException if authentication fails or user is not authorized
      */
     @PostMapping("/create-group")
-    public ResponseEntity<StandardResponseOutDTO<MessageOutDto>> createGroup(@Valid @RequestBody final GroupInDTO groupInDTO) {
+    public ResponseEntity<StandardResponseOutDTO<MessageOutDTO>> createGroup(@Valid @RequestBody final GroupInDTO groupInDTO) {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
 
         if (!(authentication.getPrincipal() instanceof ServicePrincipal principal)) {
@@ -84,7 +77,7 @@ public class GroupController {
 
         String username = principal.getUserEmail();
         log.info("Attempting to create a group with name: {}", groupInDTO.getGroupName());
-        StandardResponseOutDTO<MessageOutDto> response = groupService
+        StandardResponseOutDTO<MessageOutDTO> response = groupService
                 .createGroup(groupInDTO.getGroupName(), username, groupInDTO.getEmployees());
         return new ResponseEntity<>(response, HttpStatus.CREATED);
     }
@@ -100,9 +93,9 @@ public class GroupController {
      *         and HTTP status OK (200)
      */
     @DeleteMapping("/remove/{groupId}")
-    public ResponseEntity<StandardResponseOutDTO<MessageOutDto>> deleteGroup(@PathVariable final long groupId) {
+    public ResponseEntity<StandardResponseOutDTO<MessageOutDTO>> deleteGroup(@PathVariable final long groupId) {
         log.info("Attempting to delete group with ID: {}", groupId);
-        StandardResponseOutDTO<MessageOutDto> response = groupService.deleteGroup(groupId);
+        StandardResponseOutDTO<MessageOutDTO> response = groupService.deleteGroup(groupId);
         return new ResponseEntity<>(response, HttpStatus.OK);
     }
 
@@ -118,9 +111,9 @@ public class GroupController {
      *         and HTTP status OK (200)
      */
     @PutMapping("/update-group")
-    public ResponseEntity<StandardResponseOutDTO<MessageOutDto>> updateGroup(@RequestBody final GroupInDTO groupInDTO) {
+    public ResponseEntity<StandardResponseOutDTO<MessageOutDTO>> updateGroup(@RequestBody final GroupInDTO groupInDTO) {
         log.info("Updating Group details");
-        StandardResponseOutDTO<MessageOutDto> response = groupService
+        StandardResponseOutDTO<MessageOutDTO> response = groupService
                 .updateGroup(groupInDTO.getGroupId(), groupInDTO.getGroupName());
         return new ResponseEntity<>(response, HttpStatus.OK);
     }
@@ -138,7 +131,7 @@ public class GroupController {
      * @throws UnauthorizedAccessException if authentication fails or user lacks permissions
      */
     @PostMapping("/add-user")
-    public ResponseEntity<StandardResponseOutDTO<MessageOutDto>> addUserToGroup(@Valid @RequestBody final GroupInDTO groupInDTO) {
+    public ResponseEntity<StandardResponseOutDTO<MessageOutDTO>> addUserToGroup(@Valid @RequestBody final GroupInDTO groupInDTO) {
         log.info("Attempting to add user with ID: to group with ID: {}", groupInDTO.getGroupId());
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
 
@@ -147,7 +140,7 @@ public class GroupController {
         }
 
         String username = principal.getUserEmail();
-        StandardResponseOutDTO<MessageOutDto> response = groupService.addUserToGroup(groupInDTO, username);
+        StandardResponseOutDTO<MessageOutDTO> response = groupService.addUserToGroup(groupInDTO, username);
         return new ResponseEntity<>(response, HttpStatus.OK);
     }
 
@@ -163,10 +156,10 @@ public class GroupController {
      *         and HTTP status OK (200)
      */
     @DeleteMapping("/remove-user")
-    public ResponseEntity<StandardResponseOutDTO<MessageOutDto>> removeUserFromGroup(
+    public ResponseEntity<StandardResponseOutDTO<MessageOutDTO>> removeUserFromGroup(
             @Valid @RequestBody final GroupInDTO groupdto) {
         log.info("Attempting to remove user with ID: {} from group with ID: {}", groupdto.getUserId(), groupdto.getGroupId());
-        StandardResponseOutDTO<MessageOutDto> response = groupService
+        StandardResponseOutDTO<MessageOutDTO> response = groupService
                 .removeUserFromGroup(groupdto.getUserId(), groupdto.getGroupId());
         return new ResponseEntity<>(response, HttpStatus.OK);
     }
@@ -368,6 +361,23 @@ public class GroupController {
         return new ResponseEntity<>(response,HttpStatus.OK);
     }
 
+    /**
+     * Retrieves bundles associated with a specific user within a group context.
+     *
+     * This endpoint returns detailed information about courses that are accessible to
+     * a specific user within the context of a particular group.
+     *
+     * @param groupInDTO the Data Transfer Object containing group ID and user ID
+     *                   for the course retrieval operation
+     * @return ResponseEntity containing a StandardResponseOutDTO with list of BundleInfoOutDTO
+     *         and HTTP status OK (200)
+     */
+    @PostMapping("/user-bundles")
+    public ResponseEntity<StandardResponseOutDTO<List<BundleOutDTO>>> getUserBundlesInGroups(@RequestBody GroupInDTO groupInDTO){
+        StandardResponseOutDTO<List<BundleOutDTO>> response = groupService.getUserBundles(groupInDTO.getGroupId(), groupInDTO.getUserId());
+        return new ResponseEntity<>(response,HttpStatus.OK);
+    }
+
 
     @GetMapping("/user-groups")
     public ResponseEntity<StandardResponseOutDTO<List<UserGroupOutDTO>>>getUserGroupDetails(){
@@ -379,6 +389,13 @@ public class GroupController {
 
         String username = principal.getUserEmail();
         StandardResponseOutDTO<List<UserGroupOutDTO>> response = groupService.getUserGroupDetail(username);
+        return new ResponseEntity<>(response , HttpStatus.OK);
+    }
+
+
+    @GetMapping("/bundles")
+    public ResponseEntity<StandardResponseOutDTO<List<GroupBundleOutDTO>>> getGroupBundles(@RequestParam Long groupId){
+        StandardResponseOutDTO<List<GroupBundleOutDTO>> response = groupService.getGroupBundles(groupId);
         return new ResponseEntity<>(response , HttpStatus.OK);
     }
 

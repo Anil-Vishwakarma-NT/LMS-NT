@@ -1,0 +1,161 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>UserCustomReportController.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">user-service-lms</a> &gt; <a href="index.source.html" class="el_package">com.nt.user_service_lms.controller</a> &gt; <span class="el_source">UserCustomReportController.java</span></div><h1>UserCustomReportController.java</h1><pre class="source lang-java linenums">package com.nt.user_service_lms.controller;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
+import org.springframework.jdbc.core.JdbcTemplate;
+
+import com.nt.user_service_lms.service.serviceImpl.UserReportKPIQueries;
+import com.nt.user_service_lms.service.serviceImpl.UserPDFReportBuilder;
+import com.nt.user_service_lms.service.serviceImpl.UserExcelReportBuilder;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
+
+import java.io.ByteArrayOutputStream;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+/**
+ * REST controller for generating custom user reports in various formats.
+ * Provides endpoints for creating, previewing, and downloading user reports
+ * in PDF and Excel formats based on specified KPIs and user data.
+ *
+ * @author Generated
+ * @version 1.0
+ * @since 1.0
+ */
+@RestController
+@RequestMapping(&quot;/api/service-api/custom-user-report&quot;)
+<span class="nc" id="L34">public class UserCustomReportController {</span>
+
+    /**
+     * Spring JDBC template for executing database queries.
+     * Used to fetch user-related data and KPI metrics from the database.
+     */
+    @Autowired
+    private JdbcTemplate jdbcTemplate;
+
+    /**
+     * Builder component for generating PDF reports focused on user data.
+     * Handles the creation and formatting of user reports in PDF format.
+     */
+    @Autowired
+    private UserPDFReportBuilder userPDFReportBuilder;
+
+    /**
+     * Builder component for generating Excel reports focused on user data.
+     * Handles the creation and formatting of user reports in Excel format.
+     */
+    @Autowired
+    private UserExcelReportBuilder userExcelReportBuilder;
+
+    /**
+     * Generates and returns a PDF report for preview (inline display).
+     * Creates a PDF report based on the provided KPIs and user data,
+     * returning it as a byte array for inline viewing in the browser.
+     *
+     * @param payload the request payload containing KPIs and user information
+     * @return ResponseEntity containing the PDF report as byte array with inline content disposition
+     * @throws Exception if an error occurs during PDF generation or data fetching
+     */
+    @PostMapping(&quot;/preview-pdf&quot;)
+    public ResponseEntity&lt;byte[]&gt; previewPdf(@RequestBody final Map&lt;String, Object&gt; payload) throws Exception {
+<span class="nc" id="L68">        final Map&lt;String, Object&gt; results = fetchKpiResults(payload);</span>
+<span class="nc" id="L69">        final ByteArrayOutputStream out = new ByteArrayOutputStream();</span>
+<span class="nc" id="L70">        userPDFReportBuilder.buildPdf(results, out);</span>
+
+<span class="nc" id="L72">        return ResponseEntity.ok()</span>
+<span class="nc" id="L73">                .header(HttpHeaders.CONTENT_DISPOSITION, &quot;inline; filename=user_report.pdf&quot;)</span>
+<span class="nc" id="L74">                .contentType(MediaType.APPLICATION_PDF)</span>
+<span class="nc" id="L75">                .body(out.toByteArray());</span>
+    }
+
+    /**
+     * Generates and returns a PDF report for download.
+     * Creates a PDF report based on the provided KPIs and user data,
+     * returning it as a downloadable attachment.
+     *
+     * @param payload the request payload containing KPIs and user information
+     * @return ResponseEntity containing the PDF report as byte array with attachment content disposition
+     * @throws Exception if an error occurs during PDF generation or data fetching
+     */
+    @PostMapping(&quot;/download-pdf&quot;)
+    public ResponseEntity&lt;byte[]&gt; downloadPdf(@RequestBody final Map&lt;String, Object&gt; payload) throws Exception {
+<span class="nc" id="L89">        final Map&lt;String, Object&gt; results = fetchKpiResults(payload);</span>
+<span class="nc" id="L90">        final ByteArrayOutputStream out = new ByteArrayOutputStream();</span>
+<span class="nc" id="L91">        userPDFReportBuilder.buildPdf(results, out);</span>
+
+<span class="nc" id="L93">        return ResponseEntity.ok()</span>
+<span class="nc" id="L94">                .header(HttpHeaders.CONTENT_DISPOSITION, &quot;attachment; filename=user_report.pdf&quot;)</span>
+<span class="nc" id="L95">                .contentType(MediaType.APPLICATION_PDF)</span>
+<span class="nc" id="L96">                .body(out.toByteArray());</span>
+    }
+
+    /**
+     * Generates and returns an Excel report for download.
+     * Creates an Excel spreadsheet report based on the provided KPIs and user data,
+     * returning it as a downloadable attachment.
+     *
+     * @param payload the request payload containing KPIs and user information
+     * @return ResponseEntity containing the Excel report as byte array with attachment content disposition
+     * @throws Exception if an error occurs during Excel generation or data fetching
+     */
+    @PostMapping(&quot;/download-excel&quot;)
+    public ResponseEntity&lt;byte[]&gt; downloadExcel(@RequestBody final Map&lt;String, Object&gt; payload) throws Exception {
+<span class="nc" id="L110">        final Map&lt;String, Object&gt; results = fetchKpiResults(payload);</span>
+<span class="nc" id="L111">        final ByteArrayOutputStream out = new ByteArrayOutputStream();</span>
+<span class="nc" id="L112">        userExcelReportBuilder.buildExcel(results, out);</span>
+
+<span class="nc" id="L114">        return ResponseEntity.ok()</span>
+<span class="nc" id="L115">                .header(HttpHeaders.CONTENT_DISPOSITION, &quot;attachment; filename=user_report.xlsx&quot;)</span>
+<span class="nc" id="L116">                .contentType(MediaType.parseMediaType(</span>
+                        &quot;application/vnd.openxmlformats-officedocument.spreadsheetml.sheet&quot;))
+<span class="nc" id="L118">                .body(out.toByteArray());</span>
+    }
+
+    /**
+     * Fetches KPI results from the database based on the provided payload.
+     * Processes the list of KPIs and optional user ID from the payload, executes
+     * corresponding database queries, and returns the results in a structured format.
+     * Handles both user-specific queries and general queries that don't require a user ID.
+     *
+     * @param payload the request payload containing KPIs list and optional user ID
+     * @return Map containing KPI names as keys and their corresponding data as values
+     */
+    private Map&lt;String, Object&gt; fetchKpiResults(final Map&lt;String, Object&gt; payload) {
+<span class="nc" id="L131">        final List&lt;String&gt; kpis = (List&lt;String&gt;) payload.get(&quot;kpis&quot;);</span>
+<span class="nc bnc" id="L132" title="All 2 branches missed.">        final Long userId = payload.get(&quot;userId&quot;) != null ? Long.valueOf((String) payload.get(&quot;userId&quot;)) : null;</span>
+
+<span class="nc" id="L134">        final Map&lt;String, Object&gt; results = new HashMap&lt;&gt;();</span>
+
+<span class="nc bnc" id="L136" title="All 2 branches missed.">        for (final String kpi : kpis) {</span>
+<span class="nc" id="L137">            final String query = UserReportKPIQueries.user_kpi_queries.get(kpi);</span>
+<span class="nc bnc" id="L138" title="All 2 branches missed.">            if (query != null) {</span>
+<span class="nc" id="L139">                final String finalQuery = UserReportKPIQueries.base_query + &quot; &quot; + query;</span>
+
+<span class="nc bnc" id="L141" title="All 2 branches missed.">                if (kpi.equals(&quot;User Details&quot;)</span>
+<span class="nc bnc" id="L142" title="All 4 branches missed.">                        || kpi.equals(&quot;Enrollment Details&quot;) || kpi.equals(&quot;Progress Details&quot;)) {</span>
+
+<span class="nc" id="L144">                    final List&lt;Map&lt;String, Object&gt;&gt; list = jdbcTemplate.queryForList(finalQuery, userId);</span>
+<span class="nc" id="L145">                    results.put(kpi, list);</span>
+
+<span class="nc bnc" id="L147" title="All 2 branches missed.">                } else if (query.contains(&quot;?&quot;)) {</span>
+<span class="nc" id="L148">                    final Object value = jdbcTemplate.queryForObject(finalQuery, new Object[]{userId}, Object.class);</span>
+<span class="nc" id="L149">                    results.put(kpi, Collections.singletonList(Collections.singletonMap(&quot;value&quot;, value)));</span>
+
+<span class="nc" id="L151">                } else {</span>
+<span class="nc" id="L152">                    final Object value = jdbcTemplate.queryForObject(finalQuery, Object.class);</span>
+<span class="nc" id="L153">                    results.put(kpi, Collections.singletonList(Collections.singletonMap(&quot;value&quot;, value)));</span>
+                }
+            }
+<span class="nc" id="L156">        }</span>
+
+<span class="nc" id="L158">        return results;</span>
+    }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.11.202310140853</span></div></body></html>

@@ -1,0 +1,114 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>EnrollmentsServiceImpl.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">user-service-lms</a> &gt; <a href="index.source.html" class="el_package">com.nt.user_service_lms.service.serviceImpl</a> &gt; <span class="el_source">EnrollmentsServiceImpl.java</span></div><h1>EnrollmentsServiceImpl.java</h1><pre class="source lang-java linenums">package com.nt.user_service_lms.service.serviceImpl;
+
+import com.nt.user_service_lms.dto.outDTO.GroupCourseOutDTO;
+import com.nt.user_service_lms.dto.outDTO.GroupUserOutDTO;
+import com.nt.user_service_lms.dto.outDTO.StandardResponseOutDTO;
+import com.nt.user_service_lms.entities.Enrollment;
+import com.nt.user_service_lms.entities.User;
+import com.nt.user_service_lms.entities.UserGroup;
+import com.nt.user_service_lms.feignClient.CourseMicroserviceClient;
+import com.nt.user_service_lms.repository.EnrollmentRepository;
+import com.nt.user_service_lms.repository.UserGroupRepository;
+import com.nt.user_service_lms.repository.UserRepository;
+import com.nt.user_service_lms.service.EnrollmentsService;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
+import java.util.*;
+
+
+@Service
+<span class="nc" id="L21">public class EnrollmentsServiceImpl implements EnrollmentsService {</span>
+
+    @Autowired
+    EnrollmentRepository enrollmentRepository;
+
+
+    @Autowired
+    private CourseMicroserviceClient courseMicroserviceClient;
+
+    @Autowired
+    private UserRepository userRepository;
+
+    @Autowired
+    private UserGroupRepository userGroupRepository;
+
+    @Override
+    public StandardResponseOutDTO&lt;List&lt;GroupCourseOutDTO&gt;&gt; getCourseDetail(long groupId) {
+
+<span class="nc" id="L39">           List&lt;Enrollment&gt; enrols = enrollmentRepository.findByGroupId(groupId);</span>
+
+
+<span class="nc" id="L42">        Map&lt;Long , GroupCourseOutDTO &gt; mp = new HashMap&lt;&gt;();</span>
+
+<span class="nc bnc" id="L44" title="All 2 branches missed.">        for (Enrollment en : enrols){</span>
+<span class="nc" id="L45">            String courseName = courseMicroserviceClient.getCourseNameById(en.getCourseId()).getBody();</span>
+<span class="nc" id="L46">            GroupCourseOutDTO gc = mp.getOrDefault(en.getCourseId(),new GroupCourseOutDTO());</span>
+<span class="nc" id="L47">            long totalenrols = gc.getEnrols()+1;</span>
+//            double userprogress = courseMicroserviceClient.getCourseProgress( en.getUserId().intValue() ,en.getCourseId());
+<span class="nc" id="L49">            double progress = ((gc.getProgress()*gc.getEnrols())+ 0)/totalenrols;</span>
+<span class="nc" id="L50">            gc.setCourseName(courseName);</span>
+<span class="nc" id="L51">            gc.setCourseId(en.getCourseId());</span>
+<span class="nc" id="L52">            gc.setEnrols(totalenrols);</span>
+<span class="nc" id="L53">            gc.setProgress(progress);</span>
+
+<span class="nc" id="L55">            mp.put(en.getCourseId(),gc);</span>
+<span class="nc" id="L56">        }</span>
+
+
+
+<span class="nc" id="L60">       return StandardResponseOutDTO.success( new ArrayList&lt;&gt;(mp.values()),&quot;Successfully fetched course details.&quot;);</span>
+    }
+
+   @Override
+    public StandardResponseOutDTO&lt;List&lt;GroupUserOutDTO&gt;&gt; getUserDetail(long groupId) {
+
+<span class="nc" id="L66">        List&lt;Enrollment&gt; enrols = enrollmentRepository.findByGroupId(groupId);</span>
+<span class="nc" id="L67">        List&lt;UserGroup&gt; usrgrp = userGroupRepository.findAllByGroupId(groupId);</span>
+
+<span class="nc" id="L69">        Map&lt;Long , GroupUserOutDTO &gt; mp = new HashMap&lt;&gt;();</span>
+
+<span class="nc bnc" id="L71" title="All 2 branches missed.">        for (Enrollment en : enrols){</span>
+<span class="nc" id="L72">            Optional&lt;User&gt; usr = userRepository.findById(en.getUserId());</span>
+<span class="nc" id="L73">            GroupUserOutDTO uc = mp.getOrDefault(en.getUserId(),new GroupUserOutDTO());</span>
+<span class="nc" id="L74">            long totalenrols = uc.getEnrols()+1;</span>
+//            double userprogress = courseMicroserviceClient.getCourseProgress( en.getUserId().intValue() ,en.getCourseId());
+<span class="nc" id="L76">            double progress = ((uc.getProgress()*uc.getEnrols())+ 0)/totalenrols;</span>
+<span class="nc" id="L77">            uc.setFirstName(usr.get().getFirstName());</span>
+<span class="nc" id="L78">            uc.setLastName(usr.get().getLastName());</span>
+<span class="nc" id="L79">            uc.setUserId(en.getUserId());</span>
+<span class="nc" id="L80">            uc.setEnrols(totalenrols);</span>
+<span class="nc" id="L81">            uc.setProgress(progress);</span>
+
+<span class="nc" id="L83">            mp.put(en.getUserId(),uc);</span>
+<span class="nc" id="L84">        }</span>
+
+<span class="nc bnc" id="L86" title="All 2 branches missed.">        for(UserGroup user : usrgrp){</span>
+
+<span class="nc bnc" id="L88" title="All 4 branches missed.">            if(!mp.containsKey(user.getUserId()) &amp;&amp; user.isActive()){</span>
+<span class="nc" id="L89">                Optional&lt;User&gt; usr = userRepository.findById(user.getUserId());</span>
+<span class="nc" id="L90">                GroupUserOutDTO uc = new GroupUserOutDTO();</span>
+<span class="nc" id="L91">                long totalenrols = 0;</span>
+<span class="nc" id="L92">                double progress = 0;</span>
+<span class="nc" id="L93">                uc.setFirstName(usr.get().getFirstName());</span>
+<span class="nc" id="L94">                uc.setLastName(usr.get().getLastName());</span>
+<span class="nc" id="L95">                uc.setUserId(usr.get().getUserId());</span>
+<span class="nc" id="L96">                uc.setEnrols(totalenrols);</span>
+<span class="nc" id="L97">                uc.setProgress(progress);</span>
+
+<span class="nc" id="L99">                mp.put(user.getUserId(),uc);</span>
+
+            }
+<span class="nc" id="L102">        }</span>
+
+
+<span class="nc" id="L105">        return StandardResponseOutDTO.success( new ArrayList&lt;&gt;(mp.values()),&quot;Successfully fetched course details.&quot;);</span>
+    }
+//
+//    public StandardResponseOutDTO&lt;List&lt;GroupCourseOutDTO&gt;&gt; getUserAndCourse(long groupId , long userId) {
+//
+//
+//
+//    }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.11.202310140853</span></div></body></html>

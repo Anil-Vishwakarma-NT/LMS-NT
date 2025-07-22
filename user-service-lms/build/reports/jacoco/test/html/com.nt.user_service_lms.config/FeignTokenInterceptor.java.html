@@ -1,0 +1,259 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>FeignTokenInterceptor.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">user-service-lms</a> &gt; <a href="index.source.html" class="el_package">com.nt.user_service_lms.config</a> &gt; <span class="el_source">FeignTokenInterceptor.java</span></div><h1>FeignTokenInterceptor.java</h1><pre class="source lang-java linenums">package com.nt.user_service_lms.config;
+
+import feign.RequestInterceptor;
+import feign.RequestTemplate;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.stereotype.Component;
+
+import static com.nt.user_service_lms.constants.TokenConverterConstant.DEFAULT_SOURCE_SERVICE;
+import static com.nt.user_service_lms.constants.TokenConverterConstant.HEADER_X_GATEWAY_NONCE;
+import static com.nt.user_service_lms.constants.TokenConverterConstant.HEADER_X_GATEWAY_TIMESTAMP;
+import static com.nt.user_service_lms.constants.TokenConverterConstant.HEADER_X_ORIGINAL_TOKEN_TYPE;
+import static com.nt.user_service_lms.constants.TokenConverterConstant.HEADER_X_REQUEST_SOURCE;
+import static com.nt.user_service_lms.constants.TokenConverterConstant.HEADER_X_REQUEST_TIMESTAMP;
+import static com.nt.user_service_lms.constants.TokenConverterConstant.HEADER_X_SERVICE_TOKEN;
+import static com.nt.user_service_lms.constants.TokenConverterConstant.HEADER_X_SOURCE_SERVICE;
+import static com.nt.user_service_lms.constants.TokenConverterConstant.HEADER_X_USER_EMAIL;
+import static com.nt.user_service_lms.constants.TokenConverterConstant.HEADER_X_USER_ID;
+
+/**
+ * Feign request interceptor that handles service-to-service authentication and authorization
+ * by automatically adding security headers, service tokens, and user context information
+ * to outgoing HTTP requests in a microservices architecture.
+ *
+ * &lt;p&gt;This interceptor performs the following operations:
+ * &lt;ul&gt;
+ *   &lt;li&gt;Converts and adds service tokens for inter-service communication&lt;/li&gt;
+ *   &lt;li&gt;Adds user context headers (user ID, email, source service)&lt;/li&gt;
+ *   &lt;li&gt;Generates and adds gateway security headers with signatures&lt;/li&gt;
+ *   &lt;li&gt;Handles token conversion for different target services&lt;/li&gt;
+ * &lt;/ul&gt;
+ *
+ * &lt;p&gt;The interceptor is automatically applied to all Feign clients in the application
+ * and ensures secure communication between microservices in the LMS system.
+ *
+ * @author Your Name
+ * @version 1.0
+ * @since 1.0
+ */
+@Component
+<span class="nc" id="L45">public class FeignTokenInterceptor implements RequestInterceptor {</span>
+
+    /**
+     * logger implementation.
+     */
+<span class="nc" id="L50">    private static final Logger LOGGER = LoggerFactory.getLogger(FeignTokenInterceptor.class);</span>
+
+    /**
+     * Service token converter for handling token transformations between services.
+     */
+    @Autowired
+    private ServiceTokenConverter serviceTokenConverter;
+
+    /**
+     * The HTTP header name for gateway secret authentication.
+     * Default value: &quot;X-Gateway-Secret&quot;
+     */
+    @Value(&quot;${gateway.secret.header:X-Gateway-Secret}&quot;)
+    private String gatewaySecretHeader;
+
+    /**
+     * The secret value used for gateway authentication.
+     * Default value: &quot;your-super-secret-gateway-key&quot;
+     */
+    @Value(&quot;${gateway.secret.value:your-super-secret-gateway-key}&quot;)
+    private String gatewaySecretValue;
+
+    /**
+     * The HTTP header name for gateway signature verification.
+     * Default value: &quot;X-Gateway-Signature&quot;
+     */
+    @Value(&quot;${gateway.signature.header:X-Gateway-Signature}&quot;)
+    private String gatewaySignatureHeader;
+
+    /**
+     * Intercepts outgoing Feign requests and adds necessary authentication and authorization headers.
+     *
+     * &lt;p&gt;This method is automatically called by the Feign framework before each HTTP request.
+     * It performs the following operations:
+     * &lt;ol&gt;
+     *   &lt;li&gt;Retrieves the current authentication context&lt;/li&gt;
+     *   &lt;li&gt;Validates the principal as a ServicePrincipal&lt;/li&gt;
+     *   &lt;li&gt;Converts service tokens if needed for the target service&lt;/li&gt;
+     *   &lt;li&gt;Adds service token and user context headers&lt;/li&gt;
+     *   &lt;li&gt;Generates and adds gateway security headers&lt;/li&gt;
+     * &lt;/ol&gt;
+     *
+     * &lt;p&gt;If any error occurs during header addition, the error is logged but the request
+     * continues without the problematic headers to maintain system resilience.
+     *
+     * @param template the Feign request template to be modified with security headers
+     * @throws Exception if critical security header generation fails
+     */
+    @Override
+    public void apply(final RequestTemplate template) {
+<span class="nc" id="L100">        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();</span>
+
+<span class="nc bnc" id="L102" title="All 4 branches missed.">        if (authentication != null &amp;&amp; authentication.getPrincipal() instanceof ServicePrincipal) {</span>
+<span class="nc" id="L103">            ServicePrincipal principal = (ServicePrincipal) authentication.getPrincipal();</span>
+
+            try {
+<span class="nc" id="L106">                String targetService = &quot;course-service&quot;;</span>
+
+<span class="nc bnc" id="L108" title="All 2 branches missed.">                if (targetService != null) {</span>
+<span class="nc" id="L109">                    String currentToken = getCurrentServiceToken();</span>
+
+<span class="nc bnc" id="L111" title="All 2 branches missed.">                    if (currentToken != null) {</span>
+<span class="nc bnc" id="L112" title="All 2 branches missed.">                        if (!serviceTokenConverter.canConvertToken(currentToken)) {</span>
+<span class="nc" id="L113">                            LOGGER.warn(&quot;Cannot convert current token for target service: {}&quot;, targetService);</span>
+<span class="nc" id="L114">                            return;</span>
+                        }
+
+<span class="nc bnc" id="L117" title="All 2 branches missed.">                        if (serviceTokenConverter.needsTokenConversion(currentToken, targetService)) {</span>
+<span class="nc" id="L118">                            String convertedToken = serviceTokenConverter.convertServiceToken(currentToken, targetService);</span>
+<span class="nc" id="L119">                            template.header(HEADER_X_SERVICE_TOKEN, convertedToken);</span>
+<span class="nc" id="L120">                        } else {</span>
+<span class="nc" id="L121">                            template.header(HEADER_X_SERVICE_TOKEN, currentToken);</span>
+                        }
+
+<span class="nc" id="L124">                        String originalTokenType = ServiceTokenContext.getOriginalTokenType();</span>
+<span class="nc bnc" id="L125" title="All 2 branches missed.">                        if (originalTokenType != null) {</span>
+<span class="nc" id="L126">                            template.header(HEADER_X_ORIGINAL_TOKEN_TYPE, originalTokenType);</span>
+                        }
+
+<span class="nc" id="L129">                        addUserContextHeaders(template, principal);</span>
+                    }
+                }
+
+<span class="nc" id="L133">                addGatewayHeaders(template);</span>
+
+<span class="nc" id="L135">            } catch (Exception e) {</span>
+<span class="nc" id="L136">                LOGGER.error(&quot;Failed to add service token to Feign request for URL {}: {}&quot;, template.url(), e.getMessage(), e);</span>
+<span class="nc" id="L137">            }</span>
+        }
+<span class="nc" id="L139">    }</span>
+
+    /**
+     * Retrieves the current service token from the token context.
+     *
+     * &lt;p&gt;This method acts as a wrapper around the ServiceTokenContext to get
+     * the current service token that should be used for authentication.
+     *
+     * @return the current service token, or null if no token is available
+     */
+    private String getCurrentServiceToken() {
+<span class="nc" id="L150">        return ServiceTokenContext.getCurrentToken();</span>
+    }
+
+    /**
+     * Adds user context headers to the outgoing request for service-to-service communication.
+     *
+     * &lt;p&gt;This method extracts user information from the ServicePrincipal and adds it
+     * as HTTP headers so that the target service can maintain user context across
+     * service boundaries.
+     *
+     * &lt;p&gt;Headers added:
+     * &lt;ul&gt;
+     *   &lt;li&gt;X-User-ID: The unique identifier of the current user&lt;/li&gt;
+     *   &lt;li&gt;X-User-Email: The email address of the current user&lt;/li&gt;
+     *   &lt;li&gt;X-Source-Service: The identifier of the originating service&lt;/li&gt;
+     *   &lt;li&gt;X-Request-Source: The default source service identifier&lt;/li&gt;
+     *   &lt;li&gt;X-Request-Timestamp: The current timestamp in milliseconds&lt;/li&gt;
+     * &lt;/ul&gt;
+     *
+     * @param template the request template to add headers to
+     * @param principal the service principal containing user information
+     */
+    private void addUserContextHeaders(final RequestTemplate template, final ServicePrincipal principal) {
+        try {
+<span class="nc bnc" id="L174" title="All 2 branches missed.">            if (principal.getUserId() != null) {</span>
+<span class="nc" id="L175">                template.header(HEADER_X_USER_ID, principal.getUserId());</span>
+            }
+<span class="nc bnc" id="L177" title="All 2 branches missed.">            if (principal.getUserEmail() != null) {</span>
+<span class="nc" id="L178">                template.header(HEADER_X_USER_EMAIL, principal.getUserEmail());</span>
+            }
+<span class="nc bnc" id="L180" title="All 2 branches missed.">            if (principal.getServiceId() != null) {</span>
+<span class="nc" id="L181">                template.header(HEADER_X_SOURCE_SERVICE, principal.getServiceId());</span>
+            }
+<span class="nc" id="L183">            template.header(HEADER_X_REQUEST_SOURCE, DEFAULT_SOURCE_SERVICE);</span>
+<span class="nc" id="L184">            template.header(HEADER_X_REQUEST_TIMESTAMP, String.valueOf(System.currentTimeMillis()));</span>
+
+<span class="nc" id="L186">        } catch (Exception e) {</span>
+<span class="nc" id="L187">            LOGGER.debug(&quot;Could not add user context headers: {}&quot;, e.getMessage());</span>
+<span class="nc" id="L188">        }</span>
+<span class="nc" id="L189">    }</span>
+
+    /**
+     * Adds gateway security headers to the outgoing request for authentication and integrity verification.
+     *
+     * &lt;p&gt;This method generates and adds security headers that allow the API gateway
+     * to verify the authenticity and integrity of inter-service requests.
+     *
+     * &lt;p&gt;Headers added:
+     * &lt;ul&gt;
+     *   &lt;li&gt;Gateway secret header: Contains the shared secret for authentication&lt;/li&gt;
+     *   &lt;li&gt;X-Gateway-Timestamp: Current timestamp for replay attack prevention&lt;/li&gt;
+     *   &lt;li&gt;X-Gateway-Nonce: Unique value to prevent replay attacks&lt;/li&gt;
+     *   &lt;li&gt;Gateway signature header: HMAC signature of timestamp, nonce, and secret&lt;/li&gt;
+     * &lt;/ul&gt;
+     *
+     * @param template the request template to add gateway headers to
+     */
+    private void addGatewayHeaders(final RequestTemplate template) {
+        try {
+<span class="nc" id="L209">            template.header(gatewaySecretHeader, gatewaySecretValue);</span>
+
+<span class="nc" id="L211">            long timestamp = System.currentTimeMillis();</span>
+<span class="nc" id="L212">            String nonce = generateNonce();</span>
+
+<span class="nc" id="L214">            template.header(HEADER_X_GATEWAY_TIMESTAMP, String.valueOf(timestamp));</span>
+<span class="nc" id="L215">            template.header(HEADER_X_GATEWAY_NONCE, nonce);</span>
+
+<span class="nc" id="L217">            String signature = generateSignature(String.valueOf(timestamp), nonce, gatewaySecretValue);</span>
+<span class="nc" id="L218">            template.header(gatewaySignatureHeader, signature);</span>
+
+<span class="nc" id="L220">        } catch (Exception e) {</span>
+<span class="nc" id="L221">            LOGGER.warn(&quot;Failed to add gateway headers: {}&quot;, e.getMessage());</span>
+<span class="nc" id="L222">        }</span>
+<span class="nc" id="L223">    }</span>
+
+    /**
+     * Generates a cryptographically secure nonce for request uniqueness.
+     *
+     * &lt;p&gt;The nonce is used to prevent replay attacks by ensuring each request
+     * has a unique identifier. This implementation uses the current nanosecond
+     * timestamp to ensure uniqueness.
+     *
+     * @return a unique nonce string based on the current nanosecond time
+     */
+    private String generateNonce() {
+<span class="nc" id="L235">        return String.valueOf(System.nanoTime());</span>
+    }
+
+    /**
+     * Generates a signature for gateway authentication using timestamp, nonce, and secret.
+     *
+     * &lt;p&gt;This method creates a simple signature by concatenating the timestamp,
+     * nonce, and secret with colons, then generating a hash code. In production,
+     * consider using a more robust cryptographic signature algorithm like HMAC-SHA256.
+     *
+     * &lt;p&gt;&lt;strong&gt;Security Note:&lt;/strong&gt; This implementation uses a simple hash code
+     * which may not be cryptographically secure for production use. Consider upgrading
+     * to a proper HMAC implementation for enhanced security.
+     *
+     * @param timestamp the timestamp string to include in the signature
+     * @param nonce the nonce string to include in the signature
+     * @param secret the secret key to use for signature generation
+     * @return a signature string for gateway authentication
+     */
+    private String generateSignature(final String timestamp, final String nonce, final String secret) {
+<span class="nc" id="L255">        String data = timestamp + &quot;:&quot; + nonce + &quot;:&quot; + secret;</span>
+<span class="nc" id="L256">        return Integer.toString(data.hashCode());</span>
+    }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.11.202310140853</span></div></body></html>

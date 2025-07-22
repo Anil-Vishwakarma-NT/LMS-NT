@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>ManagerController.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">user-service-lms</a> &gt; <a href="index.source.html" class="el_package">com.nt.user_service_lms.controller</a> &gt; <span class="el_source">ManagerController.java</span></div><h1>ManagerController.java</h1><pre class="source lang-java linenums">package com.nt.user_service_lms.controller;
+
+import com.nt.user_service_lms.dto.outDTO.StandardResponseOutDTO;
+import com.nt.user_service_lms.dto.outDTO.UserOutDTO;
+import com.nt.user_service_lms.service.serviceImpl.GroupServiceImpl;
+import com.nt.user_service_lms.service.serviceImpl.ManagerServiceImpl;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
+
+import java.util.List;
+
+/**
+ * Controller for managing employee-related operations for managers.
+ * Provides an endpoint for managers to view their list of employees.
+ */
+<span class="nc" id="L23">@Slf4j</span>
+@RestController
+@RequestMapping(&quot;api/service-api/manager&quot;)
+<span class="nc" id="L26">public class ManagerController {</span>
+
+    /**
+     * Service class to handle admin related operations.
+     */
+    @Autowired
+    private ManagerServiceImpl managerService;
+
+    /**
+     * Service class to handle group related operations.
+     */
+    @Autowired
+    private GroupServiceImpl groupService;
+
+    /**
+     * Endpoint to fetch the list of employees under the manager's supervision.
+     *
+     * @return ResponseEntity containing the list of employees if found, or an HTTP status
+     * of NO_CONTENT if no employees are found.
+     */
+    @GetMapping(&quot;/manager-employees&quot;)
+    public ResponseEntity&lt;StandardResponseOutDTO&lt;List&lt;UserOutDTO&gt;&gt;&gt; getManagerEmp() {
+<span class="nc" id="L48">        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();</span>
+<span class="nc" id="L49">        String email = authentication.getName();</span>
+<span class="nc" id="L50">        log.info(&quot;Manager with email {} is requesting the list of their employees&quot;, email);</span>
+<span class="nc" id="L51">        StandardResponseOutDTO&lt;List&lt;UserOutDTO&gt;&gt; employees = managerService.getEmployees(email);</span>
+
+<span class="nc bnc" id="L53" title="All 2 branches missed.">        if (employees.getData().isEmpty()) {</span>
+<span class="nc" id="L54">            return new ResponseEntity&lt;&gt;(employees, HttpStatus.NO_CONTENT);</span>
+        }
+
+<span class="nc" id="L57">        log.info(&quot;Fetched {} employees for manager with email {}&quot;, employees.getData().size(), email);</span>
+<span class="nc" id="L58">        return new ResponseEntity&lt;&gt;(employees, HttpStatus.OK);</span>
+    }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.11.202310140853</span></div></body></html>

@@ -2,18 +2,10 @@ package com.nt.user_service_lms.feignClient;
 
 
 import com.nt.user_service_lms.config.FeignTokenInterceptor;
-import com.nt.user_service_lms.dto.outDTO.BundleInfoOutDTO;
-import com.nt.user_service_lms.dto.outDTO.CourseBundleOutDTO;
-import com.nt.user_service_lms.dto.outDTO.CourseInfoOutDTO;
-import com.nt.user_service_lms.dto.outDTO.CourseProgressWithMetaDTO;
-import com.nt.user_service_lms.dto.outDTO.StandardResponseOutDTO;
+import com.nt.user_service_lms.dto.outDTO.*;
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
@@ -47,8 +39,8 @@ public interface CourseMicroserviceClient {
      * @param bundleId the bundle ID
      * @return a response entity containing a list of course bundles
      */
-    @GetMapping("/bundles/course-bundles/bundle/{id}")
-    ResponseEntity<StandardResponseOutDTO<List<CourseBundleOutDTO>>> getAllCoursesByBundleId(@PathVariable("id") Long bundleId);
+    @GetMapping("/course-bundles/bundle/{id}")
+    ResponseEntity<StandardResponseOutDTO<List<CourseInfoOutDTO>>> getAllCoursesByBundleId(@PathVariable("id") Long bundleId);
 
     /**
      * Retrieves the name of a course by its ID.
@@ -139,4 +131,25 @@ public interface CourseMicroserviceClient {
      */
     @GetMapping("/course/{id}")
     ResponseEntity<StandardResponseOutDTO<CourseInfoOutDTO>> getCourseById(@PathVariable Long id);
-}
+
+    @DeleteMapping("/bundles/{id}")
+    public ResponseEntity<StandardResponseOutDTO<Void>> deleteBundle(@PathVariable final Long id);
+
+    @GetMapping("/bundles/{id}")
+    public ResponseEntity<StandardResponseOutDTO<BundleOutDTO>> getBundleById(@PathVariable final Long id) ;
+
+
+    @PostMapping("/course/courses")
+    public ResponseEntity<StandardResponseOutDTO<List<CourseInfoOutDTO>>> getCoursesByIds(@RequestBody List<Long> courseIds);
+
+
+    @PostMapping("/bundles/meta-bundles")
+    public ResponseEntity<StandardResponseOutDTO<List<BundleOutDTO>>> getBundlesByIds(@RequestBody final List<Long> bundleIds);
+
+
+    @DeleteMapping("/course-bundles/bundle/removeCourse")
+    public ResponseEntity<StandardResponseOutDTO<MessageOutDTO>> removeCourseFromBundle(@RequestParam Long bundleId , @RequestParam Long courseId);
+
+
+
+    }

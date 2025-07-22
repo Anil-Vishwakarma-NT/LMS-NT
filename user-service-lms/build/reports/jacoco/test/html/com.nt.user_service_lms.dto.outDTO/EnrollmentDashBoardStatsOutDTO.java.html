@@ -1,0 +1,136 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>EnrollmentDashBoardStatsOutDTO.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">user-service-lms</a> &gt; <a href="index.source.html" class="el_package">com.nt.user_service_lms.dto.outDTO</a> &gt; <span class="el_source">EnrollmentDashBoardStatsOutDTO.java</span></div><h1>EnrollmentDashBoardStatsOutDTO.java</h1><pre class="source lang-java linenums">package com.nt.user_service_lms.dto.outDTO;
+
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+
+import java.math.BigDecimal;
+import java.util.Map;
+
+/**
+ * Data Transfer Object for Enrollment Dashboard statistics.
+ * Contains various enrollment counts, completion rates, and distributions.
+ */
+<span class="nc bnc" id="L15" title="All 190 branches missed.">@Data</span>
+<span class="nc" id="L16">@NoArgsConstructor</span>
+<span class="nc" id="L17">@AllArgsConstructor</span>
+<span class="nc" id="L18">@Builder</span>
+public class EnrollmentDashBoardStatsOutDTO {
+
+    /**
+     * Total number of enrollments.
+     */
+<span class="nc" id="L24">    private Long totalEnrollments;</span>
+
+    /**
+     * Number of active enrollments.
+     */
+<span class="nc" id="L29">    private Long activeEnrollments;</span>
+
+    /**
+     * Number of inactive enrollments.
+     */
+<span class="nc" id="L34">    private Long inactiveEnrollments;</span>
+
+    /**
+     * Number of pending enrollments.
+     */
+<span class="nc" id="L39">    private Long pendingEnrollments;</span>
+
+    /**
+     * Number of enrollments in progress.
+     */
+<span class="nc" id="L44">    private Long inProgressEnrollments;</span>
+
+    /**
+     * Number of completed enrollments.
+     */
+<span class="nc" id="L49">    private Long completedEnrollments;</span>
+
+    /**
+     * Number of expired enrollments.
+     */
+<span class="nc" id="L54">    private Long expiredEnrollments;</span>
+
+    /**
+     * Number of individual enrollments.
+     */
+<span class="nc" id="L59">    private Long individualEnrollments;</span>
+
+    /**
+     * Number of group enrollments.
+     */
+<span class="nc" id="L64">    private Long groupEnrollments;</span>
+
+    /**
+     * Number of bundle enrollments.
+     */
+<span class="nc" id="L69">    private Long bundleEnrollments;</span>
+
+    /**
+     * Number of group bundle enrollments.
+     */
+<span class="nc" id="L74">    private Long groupBundleEnrollments;</span>
+
+    /**
+     * Total number of unique users.
+     */
+<span class="nc" id="L79">    private Long totalUniqueUsers;</span>
+
+    /**
+     * Total number of unique courses.
+     */
+<span class="nc" id="L84">    private Long totalUniqueCourses;</span>
+
+    /**
+     * Total number of unique bundles.
+     */
+<span class="nc" id="L89">    private Long totalUniqueBundles;</span>
+
+    /**
+     * Total number of unique groups.
+     */
+<span class="nc" id="L94">    private Long totalUniqueGroups;</span>
+
+    /**
+     * Overall completion rate.
+     */
+<span class="nc" id="L99">    private BigDecimal overallCompletionRate;</span>
+
+    /**
+     * Completion rate for individual enrollments.
+     */
+<span class="nc" id="L104">    private BigDecimal individualCompletionRate;</span>
+
+    /**
+     * Completion rate for group enrollments.
+     */
+<span class="nc" id="L109">    private BigDecimal groupCompletionRate;</span>
+
+    /**
+     * Completion rate for bundle enrollments.
+     */
+<span class="nc" id="L114">    private BigDecimal bundleCompletionRate;</span>
+
+    /**
+     * Number of recent enrollments in the last 30 days.
+     */
+<span class="nc" id="L119">    private Long recentEnrollments;</span>
+
+    /**
+     * Number of recent completions in the last 30 days.
+     */
+<span class="nc" id="L124">    private Long recentCompletions;</span>
+
+    /**
+     * Status distribution as percentages.
+     */
+<span class="nc" id="L129">    private Map&lt;String, BigDecimal&gt; statusDistribution;</span>
+
+    /**
+     * Source distribution as percentages.
+     */
+<span class="nc" id="L134">    private Map&lt;String, BigDecimal&gt; sourceDistribution;</span>
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.11.202310140853</span></div></body></html>

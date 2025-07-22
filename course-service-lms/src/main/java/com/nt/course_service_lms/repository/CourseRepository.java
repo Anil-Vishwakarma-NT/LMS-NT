@@ -41,4 +41,8 @@ public interface CourseRepository extends JpaRepository<Course, Long> {
 
     @Query("SELECT c.courseId FROM Course c WHERE c.courseId IN :courseIds")
     List<Long> findExistingIds(@Param("courseIds") List<Long> courseIds);
+
+
+    List<Course> findByCourseIdIn(List<Long> courseIds);
+
 }

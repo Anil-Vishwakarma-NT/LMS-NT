@@ -1,0 +1,420 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>CourseReportKPIQueries.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">user-service-lms</a> &gt; <a href="index.source.html" class="el_package">com.nt.user_service_lms.service.serviceImpl</a> &gt; <span class="el_source">CourseReportKPIQueries.java</span></div><h1>CourseReportKPIQueries.java</h1><pre class="source lang-java linenums">package com.nt.user_service_lms.service.serviceImpl;
+
+import java.util.HashMap;
+import java.util.Map;
+
+<span class="nc" id="L6">public class CourseReportKPIQueries {</span>
+
+    public static final String base_query =
+            &quot;WITH course_base AS ( &quot; +
+                    &quot;SELECT c.course_id, c.title AS course_name, c.description AS course_description, &quot; +
+                    &quot;c.level, c.is_active, cc.course_content_id, cc.title AS content_title, cc.description AS content_description &quot; +
+                    &quot;FROM course c LEFT JOIN course_content cc ON c.course_id = cc.course_id &quot; +
+                    &quot;), &quot; +
+                    &quot;deduplicated_enrollments AS ( &quot; +
+                    &quot;SELECT DISTINCT ON (user_id, course_id) user_id, course_id, assigned_at, deadline &quot; +
+                    &quot;FROM enrollments ORDER BY user_id, course_id, assigned_at ASC &quot; +
+                    &quot;), &quot; +
+                    &quot;course_with_enrollments AS ( &quot; +
+                    &quot;SELECT cb.*, de.user_id, de.assigned_at, de.deadline, &quot; +
+                    &quot;u.firstname || ' ' || u.lastname AS user_full_name &quot; +
+                    &quot;FROM course_base cb &quot; +
+                    &quot;LEFT JOIN deduplicated_enrollments de ON cb.course_id = de.course_id &quot; +
+                    &quot;LEFT JOIN users u ON de.user_id = u.user_id &quot; +
+                    &quot;), &quot; +
+                    &quot;course_full_progress AS ( &quot; +
+                    &quot;SELECT cwe.course_id, cwe.course_name, cwe.course_description, cwe.level, cwe.is_active, &quot; +
+                    &quot;cwe.course_content_id, cwe.content_title, cwe.content_description, cwe.user_id, &quot; +
+                    &quot;cwe.user_full_name AS user_enrolled, cwe.assigned_at, cwe.deadline, &quot; +
+                    &quot;up.content_completion_percentage, up.course_completion_percentage, up.first_completed_at, up.content_type &quot; +
+                    &quot;FROM course_with_enrollments cwe &quot; +
+                    &quot;LEFT JOIN user_progress up ON cwe.user_id = up.user_id AND cwe.course_id = up.course_id AND cwe.course_content_id = up.content_id &quot; +
+                    &quot;)&quot;;
+
+<span class="nc" id="L34">    public static final Map&lt;String, String&gt; course_kpi_queries = new HashMap&lt;&gt;();</span>
+
+    static {
+<span class="nc" id="L37">        course_kpi_queries.put(</span>
+                &quot;Global: Total Courses&quot;,
+                &quot;SELECT COUNT(DISTINCT course_id) AS total_courses\n&quot; +
+                        &quot;FROM course_full_progress&quot;
+        );
+
+<span class="nc" id="L43">        course_kpi_queries.put(</span>
+                &quot;Global: Active Courses&quot;,
+                &quot;SELECT COUNT(DISTINCT course_id) AS active_courses\n&quot; +
+                        &quot;FROM course_full_progress\n&quot; +
+                        &quot;WHERE is_active = true&quot;
+        );
+
+<span class="nc" id="L50">        course_kpi_queries.put(</span>
+                &quot;Global: Inactive Courses&quot;,
+                &quot;SELECT COUNT(DISTINCT course_id) AS inactive_courses\n&quot; +
+                        &quot;FROM course_full_progress\n&quot; +
+                        &quot;WHERE is_active = false&quot;
+        );
+
+<span class="nc" id="L57">        course_kpi_queries.put(</span>
+                &quot;Global: Beginner-Level Courses&quot;,
+                &quot;SELECT COUNT(DISTINCT course_id) AS beginner_level_courses\n&quot; +
+                        &quot;FROM course_full_progress\n&quot; +
+                        &quot;WHERE level = 'BEGINNER'&quot;
+        );
+
+<span class="nc" id="L64">        course_kpi_queries.put(</span>
+                &quot;Global: Intermediate-Level Courses&quot;,
+                &quot;SELECT COUNT(DISTINCT course_id) AS intermediate_level_courses\n&quot; +
+                        &quot;FROM course_full_progress\n&quot; +
+                        &quot;WHERE level = 'INTERMEDIATE'&quot;
+        );
+
+<span class="nc" id="L71">        course_kpi_queries.put(</span>
+                &quot;Global: Professional-Level Courses&quot;,
+                &quot;SELECT COUNT(DISTINCT course_id) AS professional_level_courses\n&quot; +
+                        &quot;FROM course_full_progress\n&quot; +
+                        &quot;WHERE level = 'PROFESSIONAL'&quot;
+        );
+
+<span class="nc" id="L78">        course_kpi_queries.put(</span>
+                &quot;Global: Course Enrollments&quot;,
+                &quot;SELECT COUNT(DISTINCT user_id || '-' || course_id) AS total_course_enrollments\n&quot; +
+                        &quot;FROM course_full_progress&quot;
+        );
+
+<span class="nc" id="L84">        course_kpi_queries.put(</span>
+                &quot;Global: Enrolled Courses Completed&quot;,
+                &quot;SELECT COUNT(*) AS total_completed_courses\n&quot; +
+                        &quot;FROM (\n&quot; +
+                        &quot;    SELECT user_id, course_id, MAX(course_completion_percentage) AS course_completion_percentage\n&quot; +
+                        &quot;    FROM course_full_progress\n&quot; +
+                        &quot;    GROUP BY user_id, course_id\n&quot; +
+                        &quot;) x\n&quot; +
+                        &quot;WHERE course_completion_percentage &gt;= 95&quot;
+        );
+        
+<span class="nc" id="L95">        course_kpi_queries.put(</span>
+                &quot;Global: Enrolled Courses In-Progress&quot;,
+                &quot;SELECT COUNT(*) AS total_in_progress_courses\n&quot; +
+                        &quot;FROM (\n&quot; +
+                        &quot;    SELECT user_id, course_id, MAX(course_completion_percentage) AS course_completion_percentage,\n&quot; +
+                        &quot;           MIN(deadline) AS deadline\n&quot; +
+                        &quot;    FROM course_full_progress\n&quot; +
+                        &quot;    GROUP BY user_id, course_id\n&quot; +
+                        &quot;) x\n&quot; +
+                        &quot;WHERE course_completion_percentage BETWEEN 0.01 AND 94.99\n&quot; +
+                        &quot;  AND CURRENT_DATE &lt;= deadline&quot;
+        );
+        
+<span class="nc" id="L108">        course_kpi_queries.put(</span>
+                &quot;Global: Enrolled Courses Not Started&quot;,
+                &quot;SELECT COUNT(*) AS total_not_started_courses\n&quot; +
+                        &quot;FROM (\n&quot; +
+                        &quot;    SELECT user_id, course_id, MAX(course_completion_percentage) AS course_completion_percentage,\n&quot; +
+                        &quot;           MIN(deadline) AS deadline\n&quot; +
+                        &quot;    FROM course_full_progress\n&quot; +
+                        &quot;    GROUP BY user_id, course_id\n&quot; +
+                        &quot;) x\n&quot; +
+                        &quot;WHERE (course_completion_percentage = 0 or course_completion_percentage is null)\n&quot; +
+                        &quot;  AND CURRENT_DATE &lt;= deadline&quot;
+        );
+
+<span class="nc" id="L121">        course_kpi_queries.put(</span>
+                &quot;Global: Enrolled Courses Completed on Time&quot;,
+                &quot;SELECT COUNT(*) AS completed_on_time\n&quot; +
+                        &quot;FROM (\n&quot; +
+                        &quot;    SELECT user_id, course_id, MAX(course_completion_percentage) AS course_completion_percentage,\n&quot; +
+                        &quot;           MIN(first_completed_at) AS first_completed_at,\n&quot; +
+                        &quot;           MIN(deadline) AS deadline\n&quot; +
+                        &quot;    FROM course_full_progress\n&quot; +
+                        &quot;    GROUP BY user_id, course_id\n&quot; +
+                        &quot;) x\n&quot; +
+                        &quot;WHERE course_completion_percentage &gt;= 95\n&quot; +
+                        &quot;  AND first_completed_at &lt;= deadline&quot;
+        );
+
+<span class="nc" id="L135">        course_kpi_queries.put(</span>
+                &quot;Global: Enrolled Courses Completed Late&quot;,
+                &quot;SELECT COUNT(*) AS completed_late\n&quot; +
+                        &quot;FROM (\n&quot; +
+                        &quot;    SELECT user_id, course_id, MAX(course_completion_percentage) AS course_completion_percentage,\n&quot; +
+                        &quot;           MIN(first_completed_at) AS first_completed_at,\n&quot; +
+                        &quot;           MIN(deadline) AS deadline\n&quot; +
+                        &quot;    FROM course_full_progress\n&quot; +
+                        &quot;    GROUP BY user_id, course_id\n&quot; +
+                        &quot;) x\n&quot; +
+                        &quot;WHERE course_completion_percentage &gt;= 95\n&quot; +
+                        &quot;  AND first_completed_at &gt; deadline&quot;
+        );
+
+<span class="nc" id="L149">        course_kpi_queries.put(</span>
+                &quot;Global: Enrolled Courses on Track&quot;,
+                &quot;SELECT COUNT(*) AS in_progress_on_time\n&quot; +
+                        &quot;FROM (\n&quot; +
+                        &quot;    SELECT user_id, course_id, MAX(course_completion_percentage) AS course_completion_percentage,\n&quot; +
+                        &quot;           MIN(deadline) AS deadline\n&quot; +
+                        &quot;    FROM course_full_progress\n&quot; +
+                        &quot;    GROUP BY user_id, course_id\n&quot; +
+                        &quot;) x\n&quot; +
+                        &quot;WHERE course_completion_percentage BETWEEN 0.01 AND 94.99\n&quot; +
+                        &quot;  AND CURRENT_DATE &lt;= deadline&quot;
+        );
+
+<span class="nc" id="L162">        course_kpi_queries.put(</span>
+                &quot;Global: Enrolled Courses Not on Track&quot;,
+                &quot;SELECT COUNT(*) AS in_progress_late\n&quot; +
+                        &quot;FROM (\n&quot; +
+                        &quot;    SELECT user_id, course_id, MAX(course_completion_percentage) AS course_completion_percentage,\n&quot; +
+                        &quot;           MIN(deadline) AS deadline\n&quot; +
+                        &quot;    FROM course_full_progress\n&quot; +
+                        &quot;    GROUP BY user_id, course_id\n&quot; +
+                        &quot;) x\n&quot; +
+                        &quot;WHERE course_completion_percentage BETWEEN 0.01 AND 94.99\n&quot; +
+                        &quot;  AND CURRENT_DATE &gt; deadline&quot;
+        );
+
+<span class="nc" id="L175">        course_kpi_queries.put(</span>
+                &quot;Global: Enrolled Courses Yet to be Started (On Time)&quot;,
+                &quot;SELECT COUNT(*) AS not_started_on_time\n&quot; +
+                        &quot;FROM (\n&quot; +
+                        &quot;    SELECT user_id, course_id, MAX(course_completion_percentage) AS course_completion_percentage,\n&quot; +
+                        &quot;           MIN(deadline) AS deadline\n&quot; +
+                        &quot;    FROM course_full_progress\n&quot; +
+                        &quot;    GROUP BY user_id, course_id\n&quot; +
+                        &quot;) x\n&quot; +
+                        &quot;WHERE (course_completion_percentage = 0 or course_completion_percentage is null)\n&quot; +
+                        &quot;  AND CURRENT_DATE &lt;= deadline&quot;
+        );
+
+<span class="nc" id="L188">        course_kpi_queries.put(</span>
+                &quot;Global: Enrolled Courses Yet to be Started (Deadline Missed)&quot;,
+                &quot;SELECT COUNT(*) AS not_started_late\n&quot; +
+                        &quot;FROM (\n&quot; +
+                        &quot;    SELECT user_id, course_id, MAX(course_completion_percentage) AS course_completion_percentage,\n&quot; +
+                        &quot;           MIN(deadline) AS deadline\n&quot; +
+                        &quot;    FROM course_full_progress\n&quot; +
+                        &quot;    GROUP BY user_id, course_id\n&quot; +
+                        &quot;) x\n&quot; +
+                        &quot;WHERE (course_completion_percentage = 0 or course_completion_percentage is null)\n&quot; +
+                        &quot;  AND CURRENT_DATE &gt; deadline&quot;
+        );
+
+        //per course
+
+<span class="nc" id="L203">        course_kpi_queries.put(</span>
+                &quot;Course: Total Enrolled Users&quot;,
+                &quot;SELECT COUNT(DISTINCT user_id) AS total_enrolled_users &quot; +
+                        &quot;FROM course_full_progress &quot; +
+                        &quot;WHERE course_id = ?&quot;
+        );
+
+<span class="nc" id="L210">        course_kpi_queries.put(</span>
+                &quot;Course: Avg Completion %&quot;,
+                &quot;SELECT \n&quot; +
+                        &quot;  ROUND(AVG(COALESCE(course_completion_percentage, 0))::numeric, 2) AS average_completion_percentage\n&quot; +
+                        &quot;FROM (\n&quot; +
+                        &quot;  SELECT course_id, user_id, MAX(course_completion_percentage) AS course_completion_percentage\n&quot; +
+                        &quot;  FROM course_full_progress\n&quot; +
+                        &quot;  WHERE course_id = ?\n&quot; +
+                        &quot;  GROUP BY course_id, user_id\n&quot; +
+                        &quot;) x&quot;
+        );
+
+<span class="nc" id="L222">        course_kpi_queries.put(</span>
+                &quot;Course: Highest Completion %&quot;,
+                &quot;SELECT \n&quot; +
+                        &quot;  MAX(COALESCE(course_completion_percentage, 0)) AS highest_completion_percentage\n&quot; +
+                        &quot;FROM (\n&quot; +
+                        &quot;  SELECT user_id, MAX(course_completion_percentage) AS course_completion_percentage\n&quot; +
+                        &quot;  FROM course_full_progress\n&quot; +
+                        &quot;  WHERE course_id = ?\n&quot; +
+                        &quot;  GROUP BY user_id\n&quot; +
+                        &quot;) x&quot;
+        );
+
+<span class="nc" id="L234">        course_kpi_queries.put(</span>
+                &quot;Course: Lowest Completion %&quot;,
+                &quot;SELECT \n&quot; +
+                        &quot;  MIN(COALESCE(course_completion_percentage, 0)) AS lowest_completion_percentage\n&quot; +
+                        &quot;FROM (\n&quot; +
+                        &quot;  SELECT user_id, MAX(course_completion_percentage) AS course_completion_percentage\n&quot; +
+                        &quot;  FROM course_full_progress\n&quot; +
+                        &quot;  WHERE course_id = ?\n&quot; +
+                        &quot;  GROUP BY user_id\n&quot; +
+                        &quot;) x&quot;
+        );
+
+<span class="nc" id="L246">        course_kpi_queries.put(</span>
+                &quot;Course: Users Completed the Course&quot;,
+                &quot;SELECT \n&quot; +
+                        &quot;  COALESCE(SUM(CASE WHEN course_completion_percentage &gt;= 95 THEN 1 ELSE 0 END), 0) AS users_completed_course\n&quot; +
+                        &quot;FROM (\n&quot; +
+                        &quot;  SELECT course_id, user_id, MAX(course_completion_percentage) AS course_completion_percentage\n&quot; +
+                        &quot;  FROM course_full_progress\n&quot; +
+                        &quot;  WHERE course_id = ?\n&quot; +
+                        &quot;  GROUP BY course_id, user_id\n&quot; +
+                        &quot;) x&quot;
+        );
+
+<span class="nc" id="L258">        course_kpi_queries.put(</span>
+                &quot;Course: Users In Progress&quot;,
+                &quot;SELECT \n&quot; +
+                        &quot;  COALESCE(SUM(CASE \n&quot; +
+                        &quot;                 WHEN course_completion_percentage BETWEEN 0.01 AND 94.99 \n&quot; +
+                        &quot;                 THEN 1 ELSE 0 \n&quot; +
+                        &quot;               END), 0) AS users_in_progress\n&quot; +
+                        &quot;FROM (\n&quot; +
+                        &quot;  SELECT course_id, user_id, MAX(course_completion_percentage) AS course_completion_percentage\n&quot; +
+                        &quot;  FROM course_full_progress\n&quot; +
+                        &quot;  WHERE course_id = ?\n&quot; +
+                        &quot;  GROUP BY course_id, user_id\n&quot; +
+                        &quot;) x&quot;
+        );
+
+<span class="nc" id="L273">        course_kpi_queries.put(</span>
+                &quot;Course: Users Not Started&quot;,
+                &quot;SELECT \n&quot; +
+                        &quot;  COALESCE(SUM(CASE \n&quot; +
+                        &quot;                 WHEN (course_completion_percentage = 0 OR course_completion_percentage IS NULL)\n&quot; +
+                        &quot;                 THEN 1 ELSE 0 \n&quot; +
+                        &quot;               END), 0) AS users_not_started\n&quot; +
+                        &quot;FROM (\n&quot; +
+                        &quot;  SELECT course_id, user_id, MAX(course_completion_percentage) AS course_completion_percentage\n&quot; +
+                        &quot;  FROM course_full_progress\n&quot; +
+                        &quot;  WHERE course_id = ?\n&quot; +
+                        &quot;  GROUP BY course_id, user_id\n&quot; +
+                        &quot;) x&quot;
+        );
+
+<span class="nc" id="L288">        course_kpi_queries.put(</span>
+                &quot;Course: Users Completed on Time&quot;,
+                &quot;SELECT \n&quot; +
+                        &quot;  SUM(CASE WHEN course_completion_percentage &gt;= 95 \n&quot; +
+                        &quot;            AND first_completed_at &lt;= deadline\n&quot; +
+                        &quot;           THEN 1 ELSE 0 END) AS users_completed_on_time\n&quot; +
+                        &quot;FROM (\n&quot; +
+                        &quot;  SELECT user_id, MAX(course_completion_percentage) AS course_completion_percentage,\n&quot; +
+                        &quot;         MIN(first_completed_at) AS first_completed_at,\n&quot; +
+                        &quot;         MIN(deadline) AS deadline\n&quot; +
+                        &quot;  FROM course_full_progress\n&quot; +
+                        &quot;  WHERE course_id = ?\n&quot; +
+                        &quot;  GROUP BY user_id\n&quot; +
+                        &quot;) x&quot;
+        );
+
+<span class="nc" id="L304">        course_kpi_queries.put(</span>
+                &quot;Course: Users Completed Late&quot;,
+                &quot;SELECT \n&quot; +
+                        &quot;  SUM(CASE WHEN course_completion_percentage &gt;= 95 \n&quot; +
+                        &quot;            AND first_completed_at &gt; deadline\n&quot; +
+                        &quot;           THEN 1 ELSE 0 END) AS users_completed_late\n&quot; +
+                        &quot;FROM (\n&quot; +
+                        &quot;  SELECT user_id, MAX(course_completion_percentage) AS course_completion_percentage,\n&quot; +
+                        &quot;         MIN(first_completed_at) AS first_completed_at,\n&quot; +
+                        &quot;         MIN(deadline) AS deadline\n&quot; +
+                        &quot;  FROM course_full_progress\n&quot; +
+                        &quot;  WHERE course_id = ?\n&quot; +
+                        &quot;  GROUP BY user_id\n&quot; +
+                        &quot;) x&quot;
+        );
+
+<span class="nc" id="L320">        course_kpi_queries.put(</span>
+                &quot;Course: Users In Progress &amp; On Time&quot;,
+                &quot;SELECT \n&quot; +
+                        &quot;  SUM(CASE WHEN (course_completion_percentage BETWEEN 0.01 AND 94.99) \n&quot; +
+                        &quot;            AND CURRENT_DATE &lt;= deadline\n&quot; +
+                        &quot;           THEN 1 ELSE 0 END) AS users_in_progress_on_time\n&quot; +
+                        &quot;FROM (\n&quot; +
+                        &quot;  SELECT user_id, MAX(course_completion_percentage) AS course_completion_percentage,\n&quot; +
+                        &quot;         MIN(deadline) AS deadline\n&quot; +
+                        &quot;  FROM course_full_progress\n&quot; +
+                        &quot;  WHERE course_id = ?\n&quot; +
+                        &quot;  GROUP BY user_id\n&quot; +
+                        &quot;) x&quot;
+        );
+
+<span class="nc" id="L335">        course_kpi_queries.put(</span>
+                &quot;Course: Users In Progress &amp; Late&quot;,
+                &quot;SELECT \n&quot; +
+                        &quot;  SUM(CASE WHEN (course_completion_percentage BETWEEN 0.01 AND 94.99) \n&quot; +
+                        &quot;            AND CURRENT_DATE &gt; deadline\n&quot; +
+                        &quot;           THEN 1 ELSE 0 END) AS users_in_progress_late\n&quot; +
+                        &quot;FROM (\n&quot; +
+                        &quot;  SELECT user_id, MAX(course_completion_percentage) AS course_completion_percentage,\n&quot; +
+                        &quot;         MIN(deadline) AS deadline\n&quot; +
+                        &quot;  FROM course_full_progress\n&quot; +
+                        &quot;  WHERE course_id = ?\n&quot; +
+                        &quot;  GROUP BY user_id\n&quot; +
+                        &quot;) x&quot;
+        );
+
+<span class="nc" id="L350">        course_kpi_queries.put(</span>
+                &quot;Course: Users Not Started &amp; On Time&quot;,
+                &quot;SELECT \n&quot; +
+                        &quot;  SUM(CASE WHEN (course_completion_percentage = 0 OR course_completion_percentage IS NULL)\n&quot; +
+                        &quot;            AND CURRENT_DATE &lt;= deadline\n&quot; +
+                        &quot;           THEN 1 ELSE 0 END) AS users_not_started_on_time\n&quot; +
+                        &quot;FROM (\n&quot; +
+                        &quot;  SELECT user_id, MAX(course_completion_percentage) AS course_completion_percentage,\n&quot; +
+                        &quot;         MIN(deadline) AS deadline\n&quot; +
+                        &quot;  FROM course_full_progress\n&quot; +
+                        &quot;  WHERE course_id = ?\n&quot; +
+                        &quot;  GROUP BY user_id\n&quot; +
+                        &quot;) x&quot;
+        );
+
+<span class="nc" id="L365">        course_kpi_queries.put(</span>
+                &quot;Course: Users Not Started &amp; Late&quot;,
+                &quot;SELECT \n&quot; +
+                        &quot;  SUM(CASE WHEN (course_completion_percentage = 0 OR course_completion_percentage IS NULL)\n&quot; +
+                        &quot;            AND CURRENT_DATE &gt; deadline\n&quot; +
+                        &quot;           THEN 1 ELSE 0 END) AS users_not_started_late\n&quot; +
+                        &quot;FROM (\n&quot; +
+                        &quot;  SELECT user_id, MAX(course_completion_percentage) AS course_completion_percentage,\n&quot; +
+                        &quot;         MIN(deadline) AS deadline\n&quot; +
+                        &quot;  FROM course_full_progress\n&quot; +
+                        &quot;  WHERE course_id = ?\n&quot; +
+                        &quot;  GROUP BY user_id\n&quot; +
+                        &quot;) x&quot;
+        );
+
+<span class="nc" id="L380">        course_kpi_queries.put(</span>
+                &quot;Course Details&quot;,
+                &quot;SELECT DISTINCT course_id, course_name, course_description, level, is_active\n&quot; +
+                        &quot;FROM course_full_progress\n&quot; +
+                        &quot;WHERE course_id = ?\n&quot;
+        );
+
+<span class="nc" id="L387">        course_kpi_queries.put(</span>
+                &quot;Course Content Details&quot;,
+                &quot;SELECT DISTINCT course_content_id, content_title, content_description, \n&quot; +
+                        &quot;       COALESCE(MAX(content_completion_percentage), 0) AS content_completion_percentage\n&quot; +
+                        &quot;FROM course_full_progress\n&quot; +
+                        &quot;WHERE course_id = ?\n&quot; +
+                        &quot;GROUP BY course_content_id, content_title, content_description\n&quot;
+        );
+
+<span class="nc" id="L396">        course_kpi_queries.put(</span>
+                &quot;Course-User Enrollment Details&quot;,
+                &quot;SELECT user_enrolled, \n&quot; +
+                        &quot;       MAX(course_completion_percentage) AS course_completion_percentage,\n&quot; +
+                        &quot;       MIN(deadline) AS deadline,\n&quot; +
+                        &quot;       CASE \n&quot; +
+                        &quot;         WHEN MAX(course_completion_percentage) &gt;= 95 THEN 'Completed'\n&quot; +
+                        &quot;         WHEN MAX(course_completion_percentage) BETWEEN 0.01 AND 94.99 THEN 'In Progress'\n&quot; +
+                        &quot;         ELSE 'Not Started'\n&quot; +
+                        &quot;       END AS status,\n&quot; +
+                        &quot;       CASE \n&quot; +
+                        &quot;         WHEN MAX(course_completion_percentage) &gt;= 95 AND MIN(first_completed_at) &lt;= MIN(deadline) THEN 'On Time'\n&quot; +
+                        &quot;         WHEN MAX(course_completion_percentage) &gt;= 95 AND MIN(first_completed_at) &gt; MIN(deadline) THEN 'Late'\n&quot; +
+                        &quot;         WHEN MAX(course_completion_percentage) BETWEEN 0.01 AND 94.99 AND CURRENT_DATE &lt;= MIN(deadline) THEN 'On Track'\n&quot; +
+                        &quot;         WHEN MAX(course_completion_percentage) BETWEEN 0.01 AND 94.99 AND CURRENT_DATE &gt; MIN(deadline) THEN 'Behind Schedule'\n&quot; +
+                        &quot;         WHEN (MAX(course_completion_percentage) = 0 OR MAX(course_completion_percentage) IS NULL) AND CURRENT_DATE &lt;= MIN(deadline) THEN 'Not Due Yet'\n&quot; +
+                        &quot;         ELSE 'Overdue'\n&quot; +
+                        &quot;       END AS adherence\n&quot; +
+                        &quot;FROM course_full_progress\n&quot; +
+                        &quot;WHERE course_id = ?\n&quot; +
+                        &quot;GROUP BY user_enrolled\n&quot;
+        );
+<span class="nc" id="L418">    }</span>
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.11.202310140853</span></div></body></html>

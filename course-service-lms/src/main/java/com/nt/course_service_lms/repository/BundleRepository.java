@@ -47,4 +47,7 @@ public interface BundleRepository extends JpaRepository<Bundle, Long> {
     List<Long> findExistingIds(@Param("bundleIds") List<Long> bundleIds);
 
 
+    List<Bundle> findByBundleIdIn(List<Long> bundleIds);
+
+
 }

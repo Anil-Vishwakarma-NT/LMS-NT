@@ -1,7 +1,7 @@
 package com.nt.user_service_lms.service;
 
 import com.nt.user_service_lms.dto.RegisterDto;
-import com.nt.user_service_lms.dto.outDTO.MessageOutDto;
+import com.nt.user_service_lms.dto.outDTO.MessageOutDTO;
 import com.nt.user_service_lms.dto.outDTO.StandardResponseOutDTO;
 import com.nt.user_service_lms.dto.outDTO.UserOutDTO;
 
@@ -18,7 +18,7 @@ public interface AdminService {
      * @param registerDto the registration details
      * @return a message response
      */
-    StandardResponseOutDTO<MessageOutDto> register(RegisterDto registerDto);
+    StandardResponseOutDTO<MessageOutDTO> register(RegisterDto registerDto);
 
     /**
      * Deletes an employee by their ID.
@@ -26,7 +26,7 @@ public interface AdminService {
      * @param id the employee ID
      * @return a message response
      */
-    StandardResponseOutDTO<MessageOutDto> employeeDeletion(long id);
+    StandardResponseOutDTO<MessageOutDTO> employeeDeletion(long id);
 
     /**
      * Gets a list of all users.
@@ -49,7 +49,7 @@ public interface AdminService {
      * @param newRoleName the new role name
      * @return a message response
      */
-    StandardResponseOutDTO<MessageOutDto> changeUserRole(long userId, String newRoleName);
+    StandardResponseOutDTO<MessageOutDTO> changeUserRole(long userId, String newRoleName);
 
     /**
      * Gets employees under a specific manager.
@@ -60,6 +60,9 @@ public interface AdminService {
     StandardResponseOutDTO<List<UserOutDTO>> getManagerEmployee(long userId);
 
 
+    StandardResponseOutDTO<MessageOutDTO> deleteBundle(long bundleId);
 
 
-}
+    StandardResponseOutDTO<MessageOutDTO> removeCourseFromBundle(Long bundleId, Long courseId);
+
+   }

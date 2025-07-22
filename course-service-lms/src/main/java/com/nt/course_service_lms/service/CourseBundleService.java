@@ -1,11 +1,10 @@
 package com.nt.course_service_lms.service;
 
+import com.nt.course_service_lms.dto.inDTO.AddCourseToBundleInDTO;
+import com.nt.course_service_lms.dto.outDTO.*;
 import com.nt.course_service_lms.entity.CourseBundle;
 import com.nt.course_service_lms.dto.inDTO.CourseBundleInDTO;
 import com.nt.course_service_lms.dto.inDTO.UpdateCourseBundleInDTO;
-import com.nt.course_service_lms.dto.outDTO.BundleInfoOutDTO;
-import com.nt.course_service_lms.dto.outDTO.BundleSummaryOutDTO;
-import com.nt.course_service_lms.dto.outDTO.CourseBundleOutDTO;
 
 import java.util.List;
 
@@ -39,7 +38,7 @@ public interface CourseBundleService {
      * @param bundleId the ID of the bundle
      * @return a list of {@link CourseBundle} entities linked to the specified bundle
      */
-    List<CourseBundle> getAllCoursesByBundle(Long bundleId);
+    List<CourseInfoOutDTO> getAllCoursesByBundle(Long bundleId);
 
     /**
      * Deletes a course-bundle association by its ID.
@@ -69,4 +68,12 @@ public interface CourseBundleService {
     List<BundleSummaryOutDTO> getRecentBundleSummaries();
 
     List<Long> findCourseIdsByBundleId(Long bundleId);
+
+    List<CourseInfoOutDTO> getCoursesToAdd(Long bundleId);
+
+    StandardResponseOutDTO<MessageOutDTO> addCourseToBundle(AddCourseToBundleInDTO addCourseToBundleInDTO);
+
+    StandardResponseOutDTO<MessageOutDTO> removeCourse(Long bundleId, Long courseId);
+
+    StandardResponseOutDTO<List<CourseInfoOutDTO>> getBundleCourses(Long bundleId);
 }

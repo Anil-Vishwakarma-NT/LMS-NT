@@ -1,5 +1,6 @@
 package com.nt.course_service_lms.dto.inDTO;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Pattern;
@@ -52,6 +53,7 @@ public class BundleInDTO {
     private String bundleName;
 
     @NotNull(message = "Is Active field is required")
+    @JsonProperty("isActive")
     private boolean isActive;
 
     public BundleInDTO(String bundleName, boolean isActive) {

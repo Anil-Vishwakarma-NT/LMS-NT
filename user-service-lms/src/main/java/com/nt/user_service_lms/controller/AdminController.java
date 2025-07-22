@@ -3,7 +3,7 @@ package com.nt.user_service_lms.controller;
 import com.nt.user_service_lms.dto.RegisterDto;
 import com.nt.user_service_lms.dto.UsersDetailsViewDTO;
 import com.nt.user_service_lms.dto.inDTO.UserInDTO;
-import com.nt.user_service_lms.dto.outDTO.MessageOutDto;
+import com.nt.user_service_lms.dto.outDTO.MessageOutDTO;
 import com.nt.user_service_lms.dto.outDTO.StandardResponseOutDTO;
 import com.nt.user_service_lms.dto.outDTO.UserOutDTO;
 import com.nt.user_service_lms.service.serviceImpl.GroupServiceImpl;
@@ -15,14 +15,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.web.bind.annotation.DeleteMapping;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PatchMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
@@ -79,7 +72,7 @@ public final class AdminController {
      * @return ResponseEntity containing the success message with HTTP 200 status
      */
     @DeleteMapping("/remove-user/{userId}")
-    public ResponseEntity<StandardResponseOutDTO<MessageOutDto>> deleteEmployee(@PathVariable final long userId) {
+    public ResponseEntity<StandardResponseOutDTO<MessageOutDTO>> deleteEmployee(@PathVariable final long userId) {
         log.info("Received request to delete user with ID: {}", userId);
 
         StandardResponseOutDTO response = adminService.employeeDeletion(userId);
@@ -151,7 +144,7 @@ public final class AdminController {
      * @return ResponseEntity containing the success message with HTTP 200 status
      */
     @PostMapping("/change-role")
-    public ResponseEntity<StandardResponseOutDTO<MessageOutDto>> changeRole(@RequestBody @Valid final UserInDTO userDto) {
+    public ResponseEntity<StandardResponseOutDTO<MessageOutDTO>> changeRole(@RequestBody @Valid final UserInDTO userDto) {
         log.info("Received request to change role for user with ID: {}", userDto.getUserId());
         StandardResponseOutDTO standardResponseOutDTO = adminService.changeUserRole(userDto.getUserId(), userDto.getRole());
         return new ResponseEntity<>(standardResponseOutDTO, HttpStatus.OK);
@@ -167,7 +160,7 @@ public final class AdminController {
      */
     @PatchMapping("/update-user/{userId}")
     @PreAuthorize("hasAuthority('admin')")
-    public ResponseEntity<MessageOutDto> updateUser(@PathVariable final long userId, @RequestBody final UserInDTO userInDTO) {
+    public ResponseEntity<MessageOutDTO> updateUser(@PathVariable final long userId, @RequestBody final UserInDTO userInDTO) {
         log.info("Received request to update user details");
         return new ResponseEntity<>(
                 adminService.updateUserDetails(userInDTO, userId),
@@ -204,5 +197,21 @@ public final class AdminController {
                 .success(usersDetailsViewDTOS, "Fetched Recent Users");
         return ResponseEntity.ok(standardResponseOutDTO);
     }
+
+    @DeleteMapping("/bundle")
+    public ResponseEntity<StandardResponseOutDTO<MessageOutDTO>> deleteBundle(@RequestParam Long bundleId){
+         StandardResponseOutDTO<MessageOutDTO> response = adminService.deleteBundle(bundleId);
+         return  new ResponseEntity<>(response,HttpStatus.OK);
+    }
+
+
+    @DeleteMapping("/bundle/removecourse")
+    public ResponseEntity<StandardResponseOutDTO<MessageOutDTO>> removeCourseFromBundle(@RequestParam Long bundleId , @RequestParam Long courseId){
+        StandardResponseOutDTO<MessageOutDTO> message = adminService.removeCourseFromBundle(bundleId, courseId);
+        return new ResponseEntity<>(message , HttpStatus.OK);
+    }
+
+
+
 
 }

@@ -1,0 +1,672 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>GroupServiceImpl.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">user-service-lms</a> &gt; <a href="index.source.html" class="el_package">com.nt.user_service_lms.service.serviceImpl</a> &gt; <span class="el_source">GroupServiceImpl.java</span></div><h1>GroupServiceImpl.java</h1><pre class="source lang-java linenums">package com.nt.user_service_lms.service.serviceImpl;
+
+import com.nt.user_service_lms.constants.UserConstants;
+import com.nt.user_service_lms.converter.GroupDTOConverter;
+import com.nt.user_service_lms.converter.UserDTOConverter;
+import com.nt.user_service_lms.dto.inDTO.GroupInDTO;
+import com.nt.user_service_lms.dto.outDTO.*;
+import com.nt.user_service_lms.entities.Enrollment;
+import com.nt.user_service_lms.entities.Group;
+import com.nt.user_service_lms.entities.User;
+import com.nt.user_service_lms.entities.UserGroup;
+import com.nt.user_service_lms.exception.ResourceNotFoundException;
+import com.nt.user_service_lms.exception.UnauthorizedAccessException;
+import com.nt.user_service_lms.feignClient.CourseMicroserviceClient;
+import com.nt.user_service_lms.repository.EnrollmentRepository;
+import com.nt.user_service_lms.repository.GroupRepository;
+import com.nt.user_service_lms.repository.UserGroupRepository;
+import com.nt.user_service_lms.repository.UserRepository;
+import com.nt.user_service_lms.service.GroupService;
+import jakarta.transaction.Transactional;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
+import java.util.*;
+import java.util.stream.Collectors;
+
+import static com.nt.user_service_lms.constants.CommonConstants.*;
+import static com.nt.user_service_lms.constants.GroupConstants.GROUP_CREATED;
+import static com.nt.user_service_lms.constants.GroupConstants.GROUP_DELETED;
+import static com.nt.user_service_lms.constants.GroupConstants.GROUP_FAILURE;
+import static com.nt.user_service_lms.constants.GroupConstants.GROUP_NOT_FOUND;
+import static com.nt.user_service_lms.constants.GroupConstants.USER_ADDED_TO_GROUP;
+import static com.nt.user_service_lms.constants.UserConstants.USER_NOT_FOUND;
+import static com.nt.user_service_lms.constants.GroupConstants.USER_NOT_FOUND_IN_GROUP;
+import static com.nt.user_service_lms.constants.GroupConstants.USER_REMOVED_SUCCESSFULLY;
+
+/**
+ * Implementation of the GroupService interface for managing user groups.
+ */
+@Service
+<span class="fc" id="L42">@Slf4j</span>
+<span class="fc" id="L43">public class GroupServiceImpl implements GroupService {</span>
+
+    /**
+     * To use group services.
+     */
+    @Autowired
+    private GroupRepository groupRepository;
+
+    /**
+     * To use user services.
+     */
+    @Autowired
+    private UserRepository userRepository;
+
+
+    /**
+     * To convert user to dto.
+     */
+    @Autowired
+    private UserDTOConverter userDTOConverter;
+
+    /**
+     * To use repo services.
+     */
+    @Autowired
+    private UserGroupRepository userGroupRepository;
+
+    @Autowired
+    private EnrollmentRepository enrollmentRepository;
+
+    @Autowired
+    private CourseMicroserviceClient courseMicroserviceClient;
+
+    /**
+     * To convert group to dto.
+     */
+    @Autowired
+    private GroupDTOConverter groupDTOConverter;
+
+    /**
+     * Creates a new group.
+     *
+     * @param groupName the name of the group
+     * @param username  the creator's email
+     * @return a success message
+     */
+    @Override
+    public StandardResponseOutDTO&lt;MessageOutDto&gt; createGroup(final String groupName, final String username , final List&lt;Long&gt; employeeId) {
+        try {
+<span class="fc" id="L92">            log.info(&quot;checking if the group with same name already available.&quot;);</span>
+<span class="fc bfc" id="L93" title="All 2 branches covered.">            if(groupRepository.existsByGroupName(groupName)){</span>
+<span class="fc" id="L94">               return  StandardResponseOutDTO.error(&quot;Group with same name already exists.&quot;);</span>
+            }
+<span class="fc" id="L96">            log.info(&quot;Attempting to create a group with name: {} by user: {}&quot;, groupName, username);</span>
+<span class="fc" id="L97">            User user = userRepository.findByEmailIgnoreCase(username)</span>
+<span class="fc" id="L98">                    .orElseThrow(() -&gt; new UnauthorizedAccessException(USER_NOT_FOUND));</span>
+<span class="fc" id="L99">            Group group = new Group(groupName, user.getUserId());</span>
+<span class="fc" id="L100">            group = groupRepository.save(group);</span>
+<span class="fc" id="L101">            Long groupId = group.getGroupId();</span>
+<span class="fc" id="L102">            log.info(&quot;Group '{}' created successfully by '{}'&quot;, groupName, username);</span>
+<span class="fc bfc" id="L103" title="All 2 branches covered.">           if(!employeeId.isEmpty()){</span>
+<span class="pc bpc" id="L104" title="1 of 2 branches missed.">              for(Long employee :employeeId){</span>
+<span class="pc bpc" id="L105" title="1 of 2 branches missed.">                  if(userRepository.existsById(employee)){</span>
+<span class="nc" id="L106">                      UserGroup userGroup = new UserGroup();</span>
+<span class="nc" id="L107">                      userGroup.setUserId(employee);</span>
+<span class="nc" id="L108">                      userGroup.setGroupId(groupId);</span>
+<span class="nc" id="L109">                      userGroupRepository.save(userGroup);</span>
+<span class="nc" id="L110">                  }</span>
+                  else{
+<span class="fc" id="L112">                      throw new ResourceNotFoundException(USER_NOT_FOUND);</span>
+                  }
+<span class="nc" id="L114">              }</span>
+           }
+<span class="fc" id="L116">            MessageOutDto messageOutDto = new MessageOutDto(GROUP_CREATED);</span>
+<span class="fc" id="L117">            return StandardResponseOutDTO.success(messageOutDto,GROUP_CREATED);</span>
+<span class="fc" id="L118">        } catch (Exception e) {</span>
+<span class="fc" id="L119">            log.error(&quot;Error while creating group '{}' by '{}'&quot;, groupName, username, e);</span>
+<span class="fc" id="L120">            throw new RuntimeException(e);</span>
+        }
+    }
+
+    /**
+     * Deletes a group by its ID.
+     *
+     * @param groupId the group ID
+     * @return a success message
+     */
+    @Override
+    @Transactional
+    public StandardResponseOutDTO&lt;MessageOutDto&gt; deleteGroup(final long groupId) {
+        try {
+<span class="nc" id="L134">            log.info(&quot;Attempting to delete group with ID: {}&quot;, groupId);</span>
+<span class="nc" id="L135">            Group group = groupRepository.findById(groupId)</span>
+<span class="nc" id="L136">                    .orElseThrow(() -&gt; new ResourceNotFoundException(GROUP_NOT_FOUND));</span>
+<span class="nc" id="L137">            enrollmentRepository.softDeleteByGroupId(groupId);</span>
+<span class="nc" id="L138">            userGroupRepository.softDeleteByGroupId(groupId);</span>
+<span class="nc" id="L139">            groupRepository.softDeleteByGroupId(groupId);</span>
+<span class="nc" id="L140">            log.info(&quot;Group with ID: {} deleted successfully&quot;, groupId);</span>
+<span class="nc" id="L141">            MessageOutDto messageOutDto = new MessageOutDto(GROUP_DELETED);</span>
+<span class="nc" id="L142">            return StandardResponseOutDTO.success(messageOutDto,null);</span>
+<span class="nc" id="L143">        } catch (Exception e) {</span>
+<span class="nc" id="L144">            log.error(&quot;Error while deleting group with ID: {}&quot;, groupId, e);</span>
+<span class="nc" id="L145">            throw new RuntimeException(GROUP_FAILURE, e);</span>
+        }
+    }
+
+    /**
+     * Adds a user to a group.
+     *
+     * @return a success or failure message
+     */
+    @Override
+    public StandardResponseOutDTO&lt;MessageOutDto&gt; addUserToGroup(final GroupInDTO groupInDTO ,String username) {
+        try {
+<span class="nc" id="L157">            log.info(&quot;Adding user ID: to group ID: {}&quot;, groupInDTO.getGroupId());</span>
+
+<span class="nc" id="L159">            User user = userRepository.findByEmailIgnoreCase(username)</span>
+<span class="nc" id="L160">                    .orElseThrow(() -&gt; new UnauthorizedAccessException(USER_NOT_FOUND));</span>
+
+<span class="nc bnc" id="L162" title="All 2 branches missed.">            if (groupRepository.findById(groupInDTO.getGroupId()).isEmpty()) {</span>
+<span class="nc" id="L163">                throw new ResourceNotFoundException(GROUP_NOT_FOUND);</span>
+            }
+
+<span class="nc bnc" id="L166" title="All 2 branches missed.">            for(Long id :groupInDTO.getEmployees()) {</span>
+<span class="nc bnc" id="L167" title="All 2 branches missed.">                if (userRepository.findById(id).isEmpty()) {</span>
+<span class="nc" id="L168">                    throw new ResourceNotFoundException(USER_NOT_FOUND);</span>
+                }
+<span class="nc" id="L170">                Optional&lt;UserGroup&gt; usergroup = userGroupRepository.findByUserIdAndGroupId(id,groupInDTO.getGroupId());</span>
+<span class="nc bnc" id="L171" title="All 2 branches missed.">                if(usergroup.isPresent()){</span>
+<span class="nc" id="L172">                    usergroup.get().setActive(true);</span>
+<span class="nc" id="L173">                    userGroupRepository.save(usergroup.get());</span>
+                }
+                else {
+<span class="nc" id="L176">                    UserGroup userGroup = new UserGroup(id, groupInDTO.getGroupId());</span>
+<span class="nc" id="L177">                    userGroupRepository.save(userGroup);</span>
+                }
+<span class="nc" id="L179">            }</span>
+
+<span class="nc bnc" id="L181" title="All 2 branches missed.">            if(!groupInDTO.getCourses().isEmpty()){</span>
+<span class="nc bnc" id="L182" title="All 2 branches missed.">                for(Long courseId : groupInDTO.getCourses()) {</span>
+<span class="nc bnc" id="L183" title="All 2 branches missed.">                    for(Long userId:groupInDTO.getEmployees()) {</span>
+<span class="nc" id="L184">                        Optional&lt;Enrollment&gt; existing = enrollmentRepository.findByGroupIdAndUserIdAndCourseId(groupInDTO.getGroupId(), userId, courseId);</span>
+<span class="nc bnc" id="L185" title="All 2 branches missed.">                        if (existing.isPresent()) {</span>
+<span class="nc" id="L186">                            existing.get().setActive(true);</span>
+<span class="nc" id="L187">                            enrollmentRepository.save(existing.get());</span>
+                        } else {
+<span class="nc" id="L189">                            Enrollment enrol = new Enrollment();</span>
+<span class="nc" id="L190">                            enrol.setGroupId(groupInDTO.getGroupId());</span>
+<span class="nc" id="L191">                            enrol.setUserId(userId);</span>
+<span class="nc" id="L192">                            enrol.setCourseId(courseId);</span>
+<span class="nc" id="L193">                            enrol.setAssignedBy(user.getUserId());</span>
+<span class="nc" id="L194">                            enrol.setAssignedAt(groupInDTO.getAssignedAt());</span>
+<span class="nc" id="L195">                            enrol.setDeadline(groupInDTO.getDeadline());</span>
+<span class="nc" id="L196">                            enrol.setStatus(STATUS_ACTIVE);</span>
+<span class="nc" id="L197">                            enrol.setEnrollmentSource(GROUP_ENROL);</span>
+<span class="nc" id="L198">                            enrol.setCreatedAt(groupInDTO.getAssignedAt());</span>
+<span class="nc" id="L199">                            enrol.setUpdatedAt(groupInDTO.getAssignedAt());</span>
+<span class="nc" id="L200">                            enrollmentRepository.save(enrol);</span>
+                        }
+<span class="nc" id="L202">                    }</span>
+<span class="nc" id="L203">                }</span>
+            }
+
+
+<span class="nc bnc" id="L207" title="All 2 branches missed.">            if(!groupInDTO.getBundles().isEmpty()){</span>
+<span class="nc bnc" id="L208" title="All 2 branches missed.">                for(Long bundleId : groupInDTO.getBundles()) {</span>
+<span class="nc bnc" id="L209" title="All 2 branches missed.">                    for(Long userId:groupInDTO.getEmployees()) {</span>
+<span class="nc" id="L210">                        Optional&lt;List&lt;Enrollment&gt;&gt; existing = enrollmentRepository.findByGroupIdAndUserIdAndBundleId(groupInDTO.getGroupId(), userId, bundleId);</span>
+<span class="nc bnc" id="L211" title="All 4 branches missed.">                        if (existing.isPresent() &amp;&amp; !existing.get().isEmpty()) {</span>
+<span class="nc bnc" id="L212" title="All 2 branches missed.">                          for(Enrollment enrol : existing.get()){</span>
+<span class="nc" id="L213">                              enrol.setActive(true);</span>
+<span class="nc" id="L214">                              enrollmentRepository.save(enrol);</span>
+<span class="nc" id="L215">                          }</span>
+                        } else {
+<span class="nc" id="L217">                            List&lt;CourseInfoOutDTO&gt; courses = courseMicroserviceClient.getAllCoursesByBundleId(bundleId).getBody().getData();</span>
+<span class="nc bnc" id="L218" title="All 2 branches missed.">                            for (CourseInfoOutDTO course : courses) {</span>
+<span class="nc bnc" id="L219" title="All 2 branches missed.">                                if (course.isActive()) {</span>
+<span class="nc" id="L220">                                    Enrollment enrol = new Enrollment();</span>
+<span class="nc" id="L221">                                    enrol.setGroupId(groupInDTO.getGroupId());</span>
+<span class="nc" id="L222">                                    enrol.setUserId(userId);</span>
+<span class="nc" id="L223">                                    enrol.setCourseId(course.getCourseId());</span>
+<span class="nc" id="L224">                                    enrol.setBundleId(bundleId);</span>
+<span class="nc" id="L225">                                    enrol.setAssignedBy(user.getUserId());</span>
+<span class="nc" id="L226">                                    enrol.setAssignedAt(groupInDTO.getAssignedAt());</span>
+<span class="nc" id="L227">                                    enrol.setDeadline(groupInDTO.getDeadline());</span>
+<span class="nc" id="L228">                                    enrol.setStatus(STATUS_ACTIVE);</span>
+<span class="nc" id="L229">                                    enrol.setEnrollmentSource(GROUP_BUNDLE_ENROL);</span>
+<span class="nc" id="L230">                                    enrol.setCreatedAt(groupInDTO.getAssignedAt());</span>
+<span class="nc" id="L231">                                    enrol.setUpdatedAt(groupInDTO.getAssignedAt());</span>
+<span class="nc" id="L232">                                    System.out.println(&quot;ENROLLED&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&quot; + enrol);</span>
+<span class="nc" id="L233">                                    enrollmentRepository.save(enrol);</span>
+                                }
+<span class="nc" id="L235">                            }</span>
+                        }
+<span class="nc" id="L237">                    }</span>
+<span class="nc" id="L238">                }</span>
+            }
+
+<span class="nc" id="L241">            MessageOutDto messageOutDto =  new MessageOutDto(USER_ADDED_TO_GROUP);</span>
+<span class="nc" id="L242">            return StandardResponseOutDTO.success(messageOutDto,USER_ADDED_TO_GROUP);</span>
+<span class="nc" id="L243">        } catch (Exception e) {</span>
+<span class="nc" id="L244">            log.error(&quot;Error adding user ID: to group ID: {}&quot;, groupInDTO.getGroupId(), e);</span>
+<span class="nc" id="L245">            throw new RuntimeException(GROUP_FAILURE, e);</span>
+        }
+    }
+
+    @Override
+    public StandardResponseOutDTO&lt;MessageOutDto&gt; updateGroup(long groupId, String groupName) {
+         try{
+<span class="nc" id="L252">             Optional&lt;Group&gt; group = groupRepository.findById(groupId);</span>
+<span class="nc bnc" id="L253" title="All 2 branches missed.">             if(group.isPresent()){</span>
+<span class="nc" id="L254">                 group.get().setGroupName(groupName);</span>
+<span class="nc" id="L255">                 groupRepository.save(group.get());</span>
+             }
+             else {
+<span class="nc" id="L258">                throw new ResourceNotFoundException(&quot;Group Not found&quot;);</span>
+             }
+<span class="nc" id="L260">             MessageOutDto messageOutDto =  new MessageOutDto(&quot;Group updated&quot;);</span>
+<span class="nc" id="L261">             return StandardResponseOutDTO.success(messageOutDto,null);</span>
+         }
+<span class="nc" id="L263">         catch (Exception e){</span>
+<span class="nc" id="L264">             log.error(&quot;Error in updating group&quot;);</span>
+<span class="nc" id="L265">             throw new RuntimeException(&quot;Group not updated&quot;,e);</span>
+         }
+
+
+    }
+
+    /**
+     * Removes a user from a group.
+     *
+     * @param userId  the user ID
+     * @param groupId the group ID
+     * @return a success message
+     */
+    @Override
+    public StandardResponseOutDTO&lt;MessageOutDto&gt; removeUserFromGroup(final long userId, final long groupId) {
+        try {
+<span class="nc" id="L281">            UserGroup userGroup = userGroupRepository.findByUserIdAndGroupId(userId, groupId)</span>
+<span class="nc" id="L282">                    .orElseThrow(() -&gt; new ResourceNotFoundException(USER_NOT_FOUND_IN_GROUP));</span>
+
+<span class="nc" id="L284">            userGroupRepository.softDeleteByGroupIdAndUserId(userGroup.getGroupId(),userGroup.getUserId());</span>
+<span class="nc" id="L285">            enrollmentRepository.softDeleteByGroupIdAndUserId(userGroup.getGroupId(),userGroup.getUserId());</span>
+<span class="nc" id="L286">            MessageOutDto messageOutDto = new MessageOutDto(USER_REMOVED_SUCCESSFULLY);</span>
+<span class="nc" id="L287">            return StandardResponseOutDTO.success(messageOutDto,null);</span>
+<span class="nc" id="L288">        } catch (Exception e) {</span>
+<span class="nc" id="L289">            log.error(&quot;Error removing user ID: {} from group ID: {}&quot;, userId, groupId, e);</span>
+<span class="nc" id="L290">            throw new RuntimeException(GROUP_FAILURE, e);</span>
+        }
+    }
+
+    @Override
+    public StandardResponseOutDTO&lt;List&lt;CourseInfoOutDTO&gt;&gt; getUserCourses(final long groupId, final long userId ){
+        try{
+<span class="nc" id="L297">            log.info(&quot;courses fetching for group&quot;);</span>
+<span class="nc" id="L298">            List&lt;Enrollment&gt; groupcourses = enrollmentRepository.findByGroupId(groupId);</span>
+<span class="nc bnc" id="L299" title="All 2 branches missed.">            if(groupcourses.isEmpty()){</span>
+<span class="nc" id="L300">                return StandardResponseOutDTO.success(List.of() ,&quot;No Course Allocated to the group&quot; );</span>
+            }
+<span class="nc bnc" id="L302" title="All 2 branches missed.">            Set&lt;Long&gt; enrolledCourseIds = groupcourses.stream().filter(enrol -&gt; enrol.getUserId() == userId)</span>
+<span class="nc" id="L303">                    .map(Enrollment::getCourseId).collect(Collectors.toSet());</span>
+<span class="nc" id="L304">            log.info(&quot;enrolled courses  fetched&quot;);</span>
+
+<span class="nc bnc" id="L306" title="All 4 branches missed.">            List&lt;Long&gt; nonenrols = groupcourses.stream().filter(course -&gt; !enrolledCourseIds.contains(course.getCourseId()) &amp;&amp; course.getBundleId() == null)</span>
+<span class="nc" id="L307">                    .map(Enrollment::getCourseId).collect(Collectors.toList());</span>
+<span class="nc" id="L308">            List&lt;CourseInfoOutDTO&gt; notEnrolledCourses = courseMicroserviceClient.getCoursesByIds(nonenrols).getBody().getData();</span>
+<span class="nc bnc" id="L309" title="All 2 branches missed.">            if(notEnrolledCourses.isEmpty()){</span>
+<span class="nc" id="L310">                return StandardResponseOutDTO.success(notEnrolledCourses , &quot;User is already enrolled in all the courses assigned to the group&quot;);</span>
+            }
+<span class="nc" id="L312">            return  StandardResponseOutDTO.success(notEnrolledCourses , null);</span>
+
+<span class="nc" id="L314">        }catch (Exception e) {</span>
+<span class="nc" id="L315">            log.error(&quot;Error collecting courses for  user ID: {} from group ID: {}&quot;, userId, groupId, e);</span>
+<span class="nc" id="L316">            throw new RuntimeException(GROUP_FAILURE, e);</span>
+        }
+    }
+
+
+
+    @Override
+    public StandardResponseOutDTO&lt;List&lt;BundleOutDTO&gt;&gt; getUserBundles(final long groupId, final long userId){
+        try{
+<span class="nc" id="L325">            log.info(&quot;bundles fetching for group&quot;);</span>
+<span class="nc" id="L326">            List&lt;Enrollment&gt; groupbundles = enrollmentRepository.findByGroupId(groupId);</span>
+<span class="nc bnc" id="L327" title="All 2 branches missed.">          if(groupbundles.isEmpty()){</span>
+<span class="nc" id="L328">                return StandardResponseOutDTO.success(List.of() ,&quot;No Bundle Allocated to the group&quot; );</span>
+            }
+
+<span class="nc bnc" id="L331" title="All 4 branches missed.">            Set&lt;Long&gt; enrols = groupbundles.stream().filter(bundle -&gt; bundle.getUserId() == userId &amp;&amp; bundle.getBundleId()!=null).map(Enrollment::getBundleId)</span>
+<span class="nc" id="L332">                            .collect(Collectors.toSet());</span>
+
+<span class="nc" id="L334">            log.info(&quot;enrolled bundles  fetched&quot;);</span>
+<span class="nc" id="L335">            List&lt;Long&gt; notEnrolledBundles = groupbundles.stream()</span>
+<span class="nc bnc" id="L336" title="All 2 branches missed.">                    .filter(bundle -&gt; !enrols.contains(bundle.getBundleId())).map(Enrollment::getBundleId)</span>
+<span class="nc" id="L337">                    .collect(Collectors.toList());</span>
+<span class="nc bnc" id="L338" title="All 2 branches missed.">            if(notEnrolledBundles.isEmpty()){</span>
+<span class="nc" id="L339">                return StandardResponseOutDTO.success(List.of() , &quot;User is already enrolled in all the courses assigned to the group&quot;);</span>
+            }
+<span class="nc" id="L341">            List&lt;BundleOutDTO&gt; bundles = courseMicroserviceClient.getBundlesByIds(notEnrolledBundles).getBody().getData();</span>
+
+<span class="nc" id="L343">            return  StandardResponseOutDTO.success(bundles , &quot;Bundles info retrieved.&quot;);</span>
+
+<span class="nc" id="L345">        }catch (Exception e) {</span>
+<span class="nc" id="L346">            log.error(&quot;Error collecting bundles for  user ID: {} from group ID: {}&quot;, userId, groupId, e);</span>
+<span class="nc" id="L347">            throw new RuntimeException(GROUP_FAILURE, e);</span>
+        }
+    }
+
+
+
+
+
+    /**
+     * Gets groups created by a user or assigned by admin.
+     *
+     * @param email the user's email
+     * @return list of groups
+     */
+    @Override
+    public StandardResponseOutDTO&lt;List&lt;GroupOutDTO&gt;&gt; getGroups(final String email) {
+        try {
+<span class="nc" id="L364">            User user = userRepository.findByEmailIgnoreCase(email)</span>
+<span class="nc" id="L365">                    .orElseThrow(() -&gt; new ResourceNotFoundException(USER_NOT_FOUND));</span>
+
+<span class="nc" id="L367">            List&lt;GroupOutDTO&gt; groupOutList = new ArrayList&lt;&gt;();</span>
+<span class="nc bnc" id="L368" title="All 2 branches missed.">            if (user.getUserId() == UserConstants.getAdminId()) {</span>
+<span class="nc" id="L369">                List&lt;Group&gt; adminGroups = groupRepository.findAll();</span>
+<span class="nc bnc" id="L370" title="All 2 branches missed.">                for (Group group : adminGroups) {</span>
+<span class="nc bnc" id="L371" title="All 2 branches missed.">                    if (group.isActive()) {</span>
+<span class="nc" id="L372">                        GroupOutDTO gout = groupDTOConverter.groupToOutDto(group,</span>
+<span class="nc" id="L373">                                user.getFirstName() + &quot; &quot; + user.getLastName());</span>
+<span class="nc" id="L374">                        groupOutList.add(gout);</span>
+                    }
+<span class="nc" id="L376">                }</span>
+<span class="nc" id="L377">            }</span>
+            else {
+<span class="nc" id="L379">                List&lt;Group&gt; userGroups = groupRepository.findByCreatorId(user.getUserId());</span>
+
+<span class="nc bnc" id="L381" title="All 2 branches missed.">                for (Group group : userGroups) {</span>
+<span class="nc bnc" id="L382" title="All 2 branches missed.">                    if (group.isActive()) {</span>
+<span class="nc" id="L383">                        GroupOutDTO gout = groupDTOConverter.groupToOutDto(group,</span>
+<span class="nc" id="L384">                                user.getFirstName() + &quot; &quot; + user.getLastName());</span>
+<span class="nc" id="L385">                        groupOutList.add(gout);</span>
+                    }
+<span class="nc" id="L387">                }</span>
+            }
+<span class="nc" id="L389">            return StandardResponseOutDTO.success(groupOutList,&quot;Group fetched Successfully&quot;);</span>
+<span class="nc" id="L390">        } catch (Exception e) {</span>
+<span class="nc" id="L391">            log.error(&quot;Error fetching groups for user with email: {}&quot;, email, e);</span>
+<span class="nc" id="L392">            throw new RuntimeException(e);</span>
+        }
+    }
+
+    /**
+     * Gets all groups in the system.
+     *
+     * @return list of all groups
+     */
+    @Override
+    public StandardResponseOutDTO&lt;List&lt;GroupOutDTO&gt;&gt; getAllGroups() {
+        try {
+<span class="nc" id="L404">            List&lt;Group&gt; groups = groupRepository.findAll();</span>
+<span class="nc" id="L405">            List&lt;GroupOutDTO&gt; groupOutList = new ArrayList&lt;&gt;();</span>
+
+<span class="nc bnc" id="L407" title="All 2 branches missed.">            for (Group group : groups) {</span>
+<span class="nc" id="L408">                User creator = userRepository.findById(group.getCreatorId())</span>
+<span class="nc" id="L409">                        .orElseThrow(() -&gt; new ResourceNotFoundException(USER_NOT_FOUND));</span>
+<span class="nc" id="L410">                GroupOutDTO gout = groupDTOConverter.groupToOutDto(group,</span>
+<span class="nc" id="L411">                        creator.getFirstName() + &quot; &quot; + creator.getLastName());</span>
+<span class="nc" id="L412">                groupOutList.add(gout);</span>
+<span class="nc" id="L413">            }</span>
+
+<span class="nc" id="L415">            return StandardResponseOutDTO.success(groupOutList,&quot;All Groups fetched successfully&quot;);</span>
+<span class="nc" id="L416">        } catch (Exception e) {</span>
+<span class="nc" id="L417">            log.error(&quot;Error fetching all groups&quot;, e);</span>
+<span class="nc" id="L418">            throw new RuntimeException(e);</span>
+        }
+    }
+    @Override
+    public long countGroups() {
+
+<span class="nc" id="L424">        return groupRepository.count();</span>
+    }
+
+    @Override
+    public StandardResponseOutDTO&lt;List&lt;GroupOutDTO&gt;&gt; getAllActiveGroups() {
+<span class="nc" id="L429">            List&lt;Group&gt; groups = groupRepository.findByIsActiveTrue();</span>
+<span class="nc bnc" id="L430" title="All 2 branches missed.">            if(groups.isEmpty()) {</span>
+<span class="nc" id="L431">                return StandardResponseOutDTO.success(null, &quot;No Groups Found&quot;);</span>
+            }
+<span class="nc" id="L433">            List&lt;GroupOutDTO&gt; groupOutDTOS = new ArrayList&lt;&gt;();</span>
+<span class="nc bnc" id="L434" title="All 2 branches missed.">            for (Group group : groups) {</span>
+<span class="nc" id="L435">                User creator = userRepository.findById(group.getCreatorId())</span>
+<span class="nc" id="L436">                        .orElseThrow(() -&gt; new ResourceNotFoundException(USER_NOT_FOUND));</span>
+<span class="nc" id="L437">                GroupOutDTO gout = groupDTOConverter.groupToOutDto(group,</span>
+<span class="nc" id="L438">                        creator.getFirstName() + &quot; &quot; + creator.getLastName());</span>
+<span class="nc" id="L439">                groupOutDTOS.add(gout);</span>
+<span class="nc" id="L440">            }</span>
+
+<span class="nc" id="L442">            return StandardResponseOutDTO.success(groupOutDTOS,&quot;All Groups fetched successfully&quot;);</span>
+    }
+
+
+    @Override
+    public StandardResponseOutDTO&lt;List&lt;GroupSummaryOutDTO&gt;&gt; getRecentGroupSummaries() {
+        // Get the 5 most recent groups
+<span class="nc" id="L449">        List&lt;Group&gt; recentGroups = groupRepository.findTop5ByOrderByGroupIdDesc();</span>
+<span class="nc" id="L450">        List&lt;GroupSummaryOutDTO&gt; groupSummary =  convertToGroupSummaries(recentGroups);</span>
+<span class="nc" id="L451">        return StandardResponseOutDTO.success(groupSummary, &quot;Group summary fetched successfully&quot;);</span>
+    }
+
+    /**
+     * Converts a list of Group entities to GroupSummaryDTOs with member counts using streams.
+     *
+     * @param groups the list of groups to convert
+     * @return a list of GroupSummaryDTOs
+     */
+    private List&lt;GroupSummaryOutDTO&gt; convertToGroupSummaries(List&lt;Group&gt; groups) {
+<span class="nc" id="L461">        return groups.stream()</span>
+<span class="nc" id="L462">                .map(group -&gt; {</span>
+                    // Get member count
+<span class="nc" id="L464">                    long memberCount = userGroupRepository.findAllByGroupId(group.getGroupId()).size();</span>
+
+                    // Get creator name - assuming you have a method to get user by ID
+<span class="nc" id="L467">                    String creatorName = userRepository.findById(group.getCreatorId())</span>
+<span class="nc" id="L468">                            .map(user -&gt; user.getFirstName() + &quot; &quot; + user.getLastName())</span>
+<span class="nc" id="L469">                            .orElseThrow(() -&gt; new ResourceNotFoundException(&quot;Creator not found&quot;));</span>
+
+<span class="nc" id="L471">                    return new GroupSummaryOutDTO(</span>
+<span class="nc" id="L472">                            group.getGroupId(),</span>
+<span class="nc" id="L473">                            group.getGroupName(),</span>
+                            creatorName,
+<span class="nc" id="L475">                            memberCount</span>
+                    );
+                })
+<span class="nc" id="L478">                .collect(Collectors.toList());</span>
+    }
+
+
+
+    @Override
+    public StandardResponseOutDTO&lt;List&lt;GroupCourseOutDTO&gt;&gt; getCourseDetail(long groupId) {
+
+<span class="nc" id="L486">        List&lt;Enrollment&gt; enrols = enrollmentRepository.findByGroupIdAndBundleIdIsNull(groupId);</span>
+
+
+<span class="nc" id="L489">        Map&lt;Long , GroupCourseOutDTO &gt; mp = new HashMap&lt;&gt;();</span>
+
+<span class="nc bnc" id="L491" title="All 2 branches missed.">        for (Enrollment en : enrols) {</span>
+<span class="nc bnc" id="L492" title="All 2 branches missed.">            if (en.getIsActive()) {</span>
+<span class="nc" id="L493">                String courseName = courseMicroserviceClient.getCourseNameById(en.getCourseId()).getBody();</span>
+<span class="nc" id="L494">                GroupCourseOutDTO gc = mp.getOrDefault(en.getCourseId(), new GroupCourseOutDTO());</span>
+<span class="nc" id="L495">                long totalenrols = gc.getEnrols() + 1;</span>
+<span class="nc" id="L496">                double userprogress = courseMicroserviceClient.getCourseProgressWithMeta(en.getUserId(), en.getCourseId()).getCourseCompletionPercentage();</span>
+<span class="nc" id="L497">                double progress = ((gc.getProgress() * gc.getEnrols()) + userprogress) / totalenrols;</span>
+<span class="nc" id="L498">                gc.setCourseName(courseName);</span>
+<span class="nc" id="L499">                gc.setCourseId(en.getCourseId());</span>
+<span class="nc" id="L500">                gc.setEnrols(totalenrols);</span>
+<span class="nc" id="L501">                gc.setProgress(progress);</span>
+<span class="nc" id="L502">                mp.put(en.getCourseId(), gc);</span>
+            }
+<span class="nc" id="L504">        }</span>
+
+
+
+<span class="nc" id="L508">        return StandardResponseOutDTO.success( new ArrayList&lt;&gt;(mp.values()),&quot;Successfully fetched course details.&quot;);</span>
+    }
+
+
+    @Override
+    public StandardResponseOutDTO&lt;List&lt;GroupCourseOutDTO&gt;&gt; getCourseEmpDetail(long groupId) {
+
+<span class="nc" id="L515">        List&lt;Enrollment&gt; enrols = enrollmentRepository.findByGroupId(groupId);</span>
+
+<span class="nc" id="L517">        Map&lt;Long , GroupCourseOutDTO &gt; mp = new HashMap&lt;&gt;();</span>
+
+<span class="nc bnc" id="L519" title="All 2 branches missed.">        for (Enrollment en : enrols) {</span>
+<span class="nc bnc" id="L520" title="All 2 branches missed.">            if (en.getIsActive()) {</span>
+<span class="nc" id="L521">                String courseName = courseMicroserviceClient.getCourseNameById(en.getCourseId()).getBody();</span>
+<span class="nc" id="L522">                GroupCourseOutDTO gc = mp.getOrDefault(en.getCourseId(), new GroupCourseOutDTO());</span>
+<span class="nc" id="L523">                gc.setCourseName(courseName);</span>
+<span class="nc" id="L524">                gc.setCourseId(en.getCourseId());</span>
+<span class="nc" id="L525">                mp.put(en.getCourseId(), gc);</span>
+            }
+<span class="nc" id="L527">        }</span>
+
+
+
+<span class="nc" id="L531">        return StandardResponseOutDTO.success( new ArrayList&lt;&gt;(mp.values()),&quot;Successfully fetched course details.&quot;);</span>
+    }
+
+    @Override
+    public StandardResponseOutDTO&lt;List&lt;GroupUserOutDTO&gt;&gt; getUserDetail(long groupId) {
+
+<span class="nc" id="L537">        List&lt;Enrollment&gt; enrols = enrollmentRepository.findByGroupId(groupId);</span>
+<span class="nc" id="L538">        List&lt;UserGroup&gt; usrgrp = userGroupRepository.findAllByGroupId(groupId);</span>
+
+<span class="nc" id="L540">        Map&lt;Long , GroupUserOutDTO &gt; mp = new HashMap&lt;&gt;();</span>
+
+<span class="nc bnc" id="L542" title="All 2 branches missed.">        for (Enrollment en : enrols) {</span>
+<span class="nc bnc" id="L543" title="All 2 branches missed.">            if (en.getIsActive()) {</span>
+<span class="nc" id="L544">                Optional&lt;User&gt; usr = userRepository.findById(en.getUserId());</span>
+<span class="nc" id="L545">                GroupUserOutDTO uc = mp.getOrDefault(en.getUserId(), new GroupUserOutDTO());</span>
+<span class="nc" id="L546">                long totalenrols = uc.getEnrols() + 1;</span>
+<span class="nc" id="L547">                double userprogress = courseMicroserviceClient.getCourseProgressWithMeta(en.getUserId(), en.getCourseId()).getCourseCompletionPercentage();</span>
+<span class="nc" id="L548">                double progress = ((uc.getProgress() * uc.getEnrols()) + userprogress) / totalenrols;</span>
+<span class="nc" id="L549">                uc.setFirstName(usr.get().getFirstName());</span>
+<span class="nc" id="L550">                uc.setLastName(usr.get().getLastName());</span>
+<span class="nc" id="L551">                uc.setUserId(en.getUserId());</span>
+<span class="nc" id="L552">                uc.setEnrols(totalenrols);</span>
+<span class="nc" id="L553">                uc.setProgress(progress);</span>
+<span class="nc" id="L554">                System.out.println(uc.getUserId() + &quot; Enrols&quot; + uc.getEnrols());</span>
+<span class="nc" id="L555">                mp.put(en.getUserId(), uc);</span>
+            }
+<span class="nc" id="L557">        }</span>
+
+<span class="nc bnc" id="L559" title="All 2 branches missed.">        for(UserGroup user : usrgrp){</span>
+<span class="nc bnc" id="L560" title="All 4 branches missed.">            if(!mp.containsKey(user.getUserId()) &amp;&amp; user.isActive()){</span>
+<span class="nc" id="L561">                Optional&lt;User&gt; usr = userRepository.findById(user.getUserId());</span>
+<span class="nc" id="L562">                GroupUserOutDTO uc = new GroupUserOutDTO();</span>
+<span class="nc" id="L563">                long totalenrols = 0;</span>
+<span class="nc" id="L564">                double progress = 0;</span>
+<span class="nc" id="L565">                uc.setFirstName(usr.get().getFirstName());</span>
+<span class="nc" id="L566">                uc.setLastName(usr.get().getLastName());</span>
+<span class="nc" id="L567">                uc.setUserId(usr.get().getUserId());</span>
+<span class="nc" id="L568">                uc.setEnrols(totalenrols);</span>
+<span class="nc" id="L569">                uc.setProgress(progress);</span>
+
+<span class="nc" id="L571">                mp.put(user.getUserId(),uc);</span>
+
+            }
+<span class="nc" id="L574">        }</span>
+<span class="nc" id="L575">        return StandardResponseOutDTO.success( new ArrayList&lt;&gt;(mp.values()),&quot;Successfully fetched course details.&quot;);</span>
+    }
+
+    @Override
+    public StandardResponseOutDTO&lt;List&lt;GroupUserOutDTO&gt;&gt; getUserDetailEmp(long groupId) {
+<span class="nc" id="L580">        List&lt;UserGroup&gt; usrgrp = userGroupRepository.findAllByGroupId(groupId);</span>
+
+<span class="nc" id="L582">        Map&lt;Long , GroupUserOutDTO &gt; mp = new HashMap&lt;&gt;();</span>
+
+<span class="nc bnc" id="L584" title="All 2 branches missed.">        for(UserGroup user : usrgrp){</span>
+<span class="nc bnc" id="L585" title="All 4 branches missed.">            if(!mp.containsKey(user.getUserId()) &amp;&amp; user.isActive()){</span>
+<span class="nc" id="L586">                Optional&lt;User&gt; usr = userRepository.findById(user.getUserId());</span>
+<span class="nc" id="L587">                GroupUserOutDTO uc = new GroupUserOutDTO();</span>
+<span class="nc" id="L588">                uc.setFirstName(usr.get().getFirstName());</span>
+<span class="nc" id="L589">                uc.setLastName(usr.get().getLastName());</span>
+<span class="nc" id="L590">                uc.setUserId(usr.get().getUserId());</span>
+<span class="nc" id="L591">                mp.put(user.getUserId(),uc);</span>
+
+            }
+<span class="nc" id="L594">        }</span>
+<span class="nc" id="L595">        return StandardResponseOutDTO.success( new ArrayList&lt;&gt;(mp.values()),&quot;Successfully fetched course details.&quot;);</span>
+    }
+
+    @Override
+    public StandardResponseOutDTO&lt;List&lt;UserGroupOutDTO&gt;&gt; getUserGroupDetail(String email) {
+
+<span class="nc" id="L601">        User user = userRepository.findByEmailIgnoreCase(email)</span>
+<span class="nc" id="L602">                .orElseThrow(() -&gt; new ResourceNotFoundException(USER_NOT_FOUND));</span>
+
+<span class="nc" id="L604">        List&lt;Enrollment&gt; enrols = enrollmentRepository.findByUserId(user.getUserId());</span>
+
+<span class="nc" id="L606">        Map&lt;Long , UserGroupOutDTO &gt; mp = new HashMap&lt;&gt;();</span>
+
+<span class="nc bnc" id="L608" title="All 2 branches missed.">        for (Enrollment en : enrols) {</span>
+<span class="nc bnc" id="L609" title="All 4 branches missed.">            if (en.getIsActive() &amp;&amp; en.getGroupId()!=null) {</span>
+<span class="nc" id="L610">                Optional&lt;Group&gt; group = groupRepository.findByGroupId(en.getGroupId());</span>
+<span class="nc bnc" id="L611" title="All 2 branches missed.">                if (group.isPresent()) {</span>
+<span class="nc" id="L612">                    String groupName = group.get().getGroupName();</span>
+<span class="nc" id="L613">                    UserGroupOutDTO gc = mp.getOrDefault(en.getGroupId(), new UserGroupOutDTO());</span>
+<span class="nc" id="L614">                    long totalenrols = gc.getEnrols() + 1;</span>
+<span class="nc" id="L615">                    double userprogress = courseMicroserviceClient.getCourseProgressWithMeta(en.getUserId().longValue(), en.getCourseId().longValue()).getCourseCompletionPercentage();</span>
+<span class="nc" id="L616">                    double progress = ((gc.getProgress() * gc.getEnrols()) + userprogress) / totalenrols;</span>
+<span class="nc" id="L617">                    gc.setGroupName(groupName);</span>
+<span class="nc" id="L618">                    gc.setGroupId(group.get().getGroupId());</span>
+<span class="nc" id="L619">                    mp.put(en.getCourseId(), gc);</span>
+<span class="nc" id="L620">                }</span>
+                else{
+<span class="nc" id="L622">                    throw new ResourceNotFoundException(GROUP_NOT_FOUND);</span>
+                }
+            }
+<span class="nc" id="L625">        }</span>
+<span class="nc" id="L626">        return StandardResponseOutDTO.success( new ArrayList&lt;&gt;(mp.values()),&quot;Successfully fetched course details.&quot;);</span>
+    }
+
+
+    @Override
+    public StandardResponseOutDTO&lt;List&lt;GroupBundleOutDTO&gt;&gt; getGroupBundles(Long groupId){
+        try {
+<span class="nc" id="L633">            List&lt;Enrollment&gt; enrols = enrollmentRepository.findByGroupIdAndBundleIdIsNotNull(groupId);</span>
+<span class="nc" id="L634">            Map&lt;Long , GroupBundleOutDTO&gt; response = new HashMap&lt;&gt;();</span>
+<span class="nc bnc" id="L635" title="All 2 branches missed.">            for(Enrollment enrol :enrols) {</span>
+<span class="nc bnc" id="L636" title="All 2 branches missed.">                if (enrol.getActive()) {</span>
+<span class="nc bnc" id="L637" title="All 2 branches missed.">                    if(!response.containsKey(enrol.getBundleId())) {</span>
+<span class="nc" id="L638">                        BundleOutDTO bundleOutDTO = courseMicroserviceClient.getBundleById(enrol.getBundleId()).getBody().getData();</span>
+<span class="nc" id="L639">                        GroupBundleOutDTO groupBundleOutDTO = new GroupBundleOutDTO();</span>
+<span class="nc" id="L640">                        groupBundleOutDTO.setBundleName(bundleOutDTO.getBundleName());</span>
+<span class="nc" id="L641">                        groupBundleOutDTO.setBundleId(bundleOutDTO.getBundleId());</span>
+<span class="nc" id="L642">                        groupBundleOutDTO.setActive(true);</span>
+<span class="nc" id="L643">                        long totalenrols =  1;</span>
+<span class="nc" id="L644">                    double userprogress = courseMicroserviceClient.getCourseProgressWithMeta(enrol.getUserId(), enrol.getCourseId()).getCourseCompletionPercentage();</span>
+<span class="nc" id="L645">                    groupBundleOutDTO.setProgress(userprogress);</span>
+<span class="nc" id="L646">                    groupBundleOutDTO.setEnrols(totalenrols);</span>
+
+<span class="nc" id="L648">                    response.put(enrol.getBundleId(),groupBundleOutDTO);</span>
+<span class="nc" id="L649">                    }else{</span>
+<span class="nc" id="L650">                          GroupBundleOutDTO groupBundleOutDTO = response.get(enrol.getBundleId());</span>
+<span class="nc" id="L651">                        long totalenrols = groupBundleOutDTO.getEnrols() + 1;</span>
+<span class="nc" id="L652">                    double userprogress = courseMicroserviceClient.getCourseProgressWithMeta(enrol.getUserId(), enrol.getCourseId()).getCourseCompletionPercentage();</span>
+<span class="nc" id="L653">                    double progress = ((groupBundleOutDTO.getProgress() * groupBundleOutDTO.getEnrols()) + userprogress) / totalenrols;</span>
+<span class="nc" id="L654">                        groupBundleOutDTO.setEnrols(totalenrols);</span>
+<span class="nc" id="L655">                        groupBundleOutDTO.setProgress(progress);</span>
+<span class="nc" id="L656">                        response.put(enrol.getBundleId() , groupBundleOutDTO);</span>
+                    }
+                }
+<span class="nc" id="L659">            }</span>
+
+<span class="nc" id="L661">            return StandardResponseOutDTO.success(new ArrayList&lt;&gt;(response.values()) , &quot;Bundles fetched successfully.&quot;);</span>
+<span class="nc" id="L662">        } catch (RuntimeException e) {</span>
+<span class="nc" id="L663">            throw new RuntimeException(e);</span>
+        }
+
+
+    }
+
+
+
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.11.202310140853</span></div></body></html>

@@ -5,6 +5,7 @@ import com.nt.course_service_lms.dto.outDTO.CourseOutDTO;
 import com.nt.course_service_lms.dto.outDTO.CourseSummaryOutDTO;
 import com.nt.course_service_lms.dto.outDTO.CourseInfoOutDTO;
 import com.nt.course_service_lms.dto.inDTO.UpdateCourseInDTO;
+import com.nt.course_service_lms.dto.outDTO.StandardResponseOutDTO;
 import com.nt.course_service_lms.entity.Course;
 
 import java.util.List;
@@ -72,4 +73,6 @@ public interface CourseService {
     List<CourseSummaryOutDTO> getRecentCourseSummaries();
     List<CourseInfoOutDTO> getCoursesInfo();
     List<Long> findExistingIds(List<Long> courseIds);
+
+    StandardResponseOutDTO<List<CourseInfoOutDTO>> getCoursesByIds(List<Long> courseIds);
 }

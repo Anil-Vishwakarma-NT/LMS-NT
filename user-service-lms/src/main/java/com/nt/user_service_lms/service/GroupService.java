@@ -18,7 +18,7 @@ public interface GroupService {
      * @param employeeId the list of employee IDs to be added to the group
      * @return a StandardResponseOutDTO containing a MessageOutDto indicating the result
      */
-    StandardResponseOutDTO<MessageOutDto> createGroup(String groupName, String username, List<Long> employeeId);
+    StandardResponseOutDTO<MessageOutDTO> createGroup(String groupName, String username, List<Long> employeeId);
 
     /**
      * Deletes a group.
@@ -26,7 +26,7 @@ public interface GroupService {
      * @param groupId the ID of the group to be deleted
      * @return a StandardResponseOutDTO containing a MessageOutDto indicating the result
      */
-    StandardResponseOutDTO<MessageOutDto> deleteGroup(long groupId);
+    StandardResponseOutDTO<MessageOutDTO> deleteGroup(long groupId);
 
     /**
      * Adds a user to a group.
@@ -35,7 +35,7 @@ public interface GroupService {
      * @param username the username of the user to be added
      * @return a StandardResponseOutDTO containing a MessageOutDto indicating the result
      */
-    StandardResponseOutDTO<MessageOutDto> addUserToGroup(GroupInDTO groupInDTO, String username);
+    StandardResponseOutDTO<MessageOutDTO> addUserToGroup(GroupInDTO groupInDTO, String username);
 
     /**
      * Updates the name of a group.
@@ -44,7 +44,7 @@ public interface GroupService {
      * @param groupName the new name for the group
      * @return a StandardResponseOutDTO containing a MessageOutDto indicating the result
      */
-    StandardResponseOutDTO<MessageOutDto> updateGroup(long groupId, String groupName);
+    StandardResponseOutDTO<MessageOutDTO> updateGroup(long groupId, String groupName);
 
     /**
      * Removes a user from a group.
@@ -53,7 +53,9 @@ public interface GroupService {
      * @param groupId the ID of the group to remove the user from
      * @return a StandardResponseOutDTO containing a MessageOutDto indicating the result
      */
-    StandardResponseOutDTO<MessageOutDto> removeUserFromGroup(long userId, long groupId);
+    StandardResponseOutDTO<MessageOutDTO> removeUserFromGroup(long userId, long groupId);
+
+    StandardResponseOutDTO<List<BundleOutDTO>> getUserBundles(long groupId, long userId);
 
     /**
      * Retrieves all groups associated with a specific email.
@@ -121,4 +123,6 @@ public interface GroupService {
     public StandardResponseOutDTO<List<GroupUserOutDTO>> getUserDetailEmp(long groupId);
 
     public StandardResponseOutDTO<List<GroupCourseOutDTO>> getCourseEmpDetail(long groupId);
+
+    StandardResponseOutDTO<List<GroupBundleOutDTO>> getGroupBundles(Long groupId);
 }

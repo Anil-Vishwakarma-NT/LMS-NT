@@ -1,0 +1,376 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>ServiceAuthenticationFilter.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">user-service-lms</a> &gt; <a href="index.source.html" class="el_package">com.nt.user_service_lms.config</a> &gt; <span class="el_source">ServiceAuthenticationFilter.java</span></div><h1>ServiceAuthenticationFilter.java</h1><pre class="source lang-java linenums">package com.nt.user_service_lms.config;
+
+import jakarta.servlet.FilterChain;
+import jakarta.servlet.ServletException;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.HttpHeaders;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.stereotype.Component;
+import org.springframework.web.filter.OncePerRequestFilter;
+
+import java.io.IOException;
+import java.util.List;
+import java.util.stream.Collectors;
+
+import static com.nt.user_service_lms.constants.SecurityConstant.BEARER_PREFIX;
+import static com.nt.user_service_lms.constants.SecurityConstant.ERROR_FORBIDDEN;
+import static com.nt.user_service_lms.constants.SecurityConstant.ERROR_UNAUTHORIZED;
+import static com.nt.user_service_lms.constants.SecurityConstant.HEADER_X_GATEWAY_NONCE;
+import static com.nt.user_service_lms.constants.SecurityConstant.HEADER_X_GATEWAY_TIMESTAMP;
+import static com.nt.user_service_lms.constants.SecurityConstant.HEADER_X_ORIGINAL_TOKEN_TYPE;
+import static com.nt.user_service_lms.constants.SecurityConstant.HEADER_X_SERVICE_TOKEN;
+import static com.nt.user_service_lms.constants.SecurityConstant.MAX_REQUEST_TIME_DIFF_MS;
+import static com.nt.user_service_lms.constants.SecurityConstant.TOKEN_TYPE_SERVICE;
+
+/**
+ * Filter to authenticate internal service-to-service communication using JWT tokens
+ * and gateway/direct secret headers. Validates requests from API Gateway and
+ * direct service calls based on headers and configuration.
+ */
+@Component
+<span class="nc" id="L38">public class ServiceAuthenticationFilter extends OncePerRequestFilter {</span>
+
+    /**
+     * Logger for logging filter activities.
+     */
+<span class="nc" id="L43">    private final Logger logger = LoggerFactory.getLogger(ServiceAuthenticationFilter.class);</span>
+
+    /**
+     * Utility for working with JWT tokens, including validation and claims extraction.
+     */
+    @Autowired
+    private JwtUtil jwtUtil;
+
+    /**
+     * Flag to enable or disable gateway validation. Defaults to true.
+     */
+    @Value(&quot;${gateway.validation.enabled:true}&quot;)
+    private boolean gatewayValidationEnabled;
+
+    /**
+     * Header name for the gateway secret.
+     */
+    @Value(&quot;${gateway.secret.header:X-Gateway-Secret}&quot;)
+    private String gatewaySecretHeader;
+
+    /**
+     * Expected secret value for gateway validation.
+     */
+    @Value(&quot;${gateway.secret.value:your-super-secret-gateway-key}&quot;)
+    private String gatewaySecretValue;
+
+    /**
+     * Header name for the gateway request signature.
+     */
+    @Value(&quot;${gateway.signature.header:X-Gateway-Signature}&quot;)
+    private String gatewaySignatureHeader;
+
+    /**
+     * The expected audience claim (application name) for JWT validation.
+     */
+    @Value(&quot;${spring.application.name}&quot;)
+    private String expectedAudience;
+
+    /**
+     * Header name for direct service call secret.
+     */
+    @Value(&quot;${direct.secret.header:X-Direct-Secret}&quot;)
+    private String directSecretHeader;
+
+    /**
+     * Expected secret value for direct access.
+     */
+    @Value(&quot;${direct.secret.value:your-direct-secret}&quot;)
+    private String directSecretValue;
+
+    /**
+     * Performs filtering on every request, checking JWT tokens and headers to
+     * determine authentication and validity for gateway or direct service calls.
+     *
+     * @param request     incoming HTTP request
+     * @param response    HTTP response
+     * @param filterChain chain of filters to continue processing
+     * @throws ServletException in case of filter error
+     * @throws IOException      in case of I/O error
+     */
+    @Override
+    protected void doFilterInternal(final HttpServletRequest request,
+                                    final HttpServletResponse response,
+                                    final FilterChain filterChain) throws ServletException, IOException {
+
+        try {
+<span class="nc" id="L109">            String serviceToken = request.getHeader(HEADER_X_SERVICE_TOKEN);</span>
+<span class="nc" id="L110">            String clientId = null;</span>
+<span class="nc bnc" id="L111" title="All 2 branches missed.">            if (serviceToken != null) {</span>
+                try {
+<span class="nc" id="L113">                    clientId = jwtUtil.extractClientId(serviceToken);</span>
+<span class="nc" id="L114">                } catch (Exception e) {</span>
+<span class="nc" id="L115">                    logger.warn(&quot;Failed to extract subject from token: {}&quot;, e.getMessage());</span>
+<span class="nc" id="L116">                    handleUnauthorized(response, &quot;failed to fetch the clientId from the token, jwt token is expired&quot;);</span>
+<span class="nc" id="L117">                    return;</span>
+<span class="nc" id="L118">                }</span>
+            }
+
+<span class="nc bnc" id="L121" title="All 2 branches missed.">            boolean isGatewayRequest = !&quot;NA&quot;.equals(clientId);</span>
+
+<span class="nc" id="L123">            logger.debug(&quot;Token subject: {}, isGatewayRequest: {}&quot;, clientId, isGatewayRequest);</span>
+
+<span class="nc bnc" id="L125" title="All 2 branches missed.">            if (isGatewayRequest) {</span>
+<span class="nc bnc" id="L126" title="All 2 branches missed.">                if (!handleGatewayRequest(request, response)) {</span>
+<span class="nc" id="L127">                    return;</span>
+                }
+            } else {
+<span class="nc bnc" id="L130" title="All 2 branches missed.">                if (!gatewayValidationEnabled) {</span>
+<span class="nc bnc" id="L131" title="All 2 branches missed.">                    if (!handleDirectRequest(request, response)) {</span>
+<span class="nc" id="L132">                        return;</span>
+                    }
+                } else {
+<span class="nc" id="L135">                    handleForbidden(response, &quot;Direct access not allowed. Please route via API Gateway.&quot;);</span>
+<span class="nc" id="L136">                    return;</span>
+                }
+            }
+
+<span class="nc" id="L140">            filterChain.doFilter(request, response);</span>
+
+        } finally {
+<span class="nc" id="L143">            ServiceTokenContext.clear();</span>
+<span class="nc" id="L144">            logger.debug(&quot;Cleared service token context after request processing&quot;);</span>
+        }
+<span class="nc" id="L146">    }</span>
+
+    /**
+     * Handles service-to-service authentication for requests routed via API Gateway.
+     *
+     * @param request  HTTP request
+     * @param response HTTP response
+     * @return true if valid and authenticated, false otherwise
+     * @throws IOException in case of I/O error
+     */
+    private boolean handleGatewayRequest(final HttpServletRequest request, final HttpServletResponse response)
+            throws IOException {
+
+<span class="nc" id="L159">        logger.debug(&quot;Processing Gateway Request&quot;);</span>
+
+<span class="nc bnc" id="L161" title="All 2 branches missed.">        if (!validateGatewayRequest(request)) {</span>
+<span class="nc" id="L162">            handleForbidden(response, &quot;Gateway request header validation failed.&quot;);</span>
+<span class="nc" id="L163">            return false;</span>
+        }
+
+<span class="nc" id="L166">        String serviceToken = request.getHeader(HEADER_X_SERVICE_TOKEN);</span>
+<span class="nc" id="L167">        String originalTokenType = request.getHeader(HEADER_X_ORIGINAL_TOKEN_TYPE);</span>
+
+<span class="nc bnc" id="L169" title="All 2 branches missed.">        if (serviceToken == null) {</span>
+<span class="nc" id="L170">            String authHeader = request.getHeader(HttpHeaders.AUTHORIZATION);</span>
+<span class="nc bnc" id="L171" title="All 4 branches missed.">            if (authHeader != null &amp;&amp; authHeader.startsWith(BEARER_PREFIX)) {</span>
+<span class="nc" id="L172">                serviceToken = authHeader.substring(BEARER_PREFIX.length());</span>
+<span class="nc" id="L173">                originalTokenType = TOKEN_TYPE_SERVICE;</span>
+            }
+        }
+
+<span class="nc bnc" id="L177" title="All 4 branches missed.">        if (serviceToken != null &amp;&amp; jwtUtil.validateServiceToken(serviceToken, expectedAudience)) {</span>
+<span class="nc" id="L178">            ServiceTokenContext.setCurrentToken(serviceToken);</span>
+<span class="nc" id="L179">            ServiceTokenContext.setOriginalTokenType(originalTokenType);</span>
+<span class="nc" id="L180">            setServiceAuthentication(serviceToken, originalTokenType);</span>
+<span class="nc" id="L181">            logger.debug(&quot;Gateway service token stored in context and authentication set&quot;);</span>
+<span class="nc" id="L182">            return true;</span>
+        } else {
+<span class="nc" id="L184">            handleUnauthorized(response, &quot;Invalid or missing service token for gateway request&quot;);</span>
+<span class="nc" id="L185">            return false;</span>
+        }
+    }
+
+    /**
+     * Validates headers in a gateway request.
+     *
+     * @param request HTTP request
+     * @return true if valid, false otherwise
+     */
+    private boolean validateGatewayRequest(final HttpServletRequest request) {
+<span class="nc" id="L196">        String gatewaySecret = request.getHeader(gatewaySecretHeader);</span>
+<span class="nc" id="L197">        String signature = request.getHeader(gatewaySignatureHeader);</span>
+<span class="nc" id="L198">        String timestamp = request.getHeader(HEADER_X_GATEWAY_TIMESTAMP);</span>
+<span class="nc" id="L199">        String nonce = request.getHeader(HEADER_X_GATEWAY_NONCE);</span>
+
+<span class="nc bnc" id="L201" title="All 2 branches missed.">        return validateSecret(gatewaySecret, gatewaySecretValue)</span>
+<span class="nc bnc" id="L202" title="All 2 branches missed.">                &amp;&amp; validateSignature(signature, timestamp, nonce);</span>
+    }
+
+    /**
+     * Validates a header-based secret.
+     *
+     * @param secretHeader the incoming secret
+     * @param secretValue  the expected secret
+     * @return true if they match, false otherwise
+     */
+    private boolean validateSecret(final String secretHeader, final String secretValue) {
+<span class="nc" id="L213">        return secretValue.equals(secretHeader);</span>
+    }
+
+    /**
+     * Validates the request signature using timestamp and nonce.
+     *
+     * @param signature the provided signature
+     * @param timestamp the request timestamp
+     * @param nonce     a unique request identifier
+     * @return true if valid, false otherwise
+     */
+    private boolean validateSignature(final String signature, final String timestamp, final String nonce) {
+<span class="nc bnc" id="L225" title="All 6 branches missed.">        if (signature == null || timestamp == null || nonce == null) {</span>
+<span class="nc" id="L226">            return false;</span>
+        }
+
+        try {
+<span class="nc" id="L230">            long requestTime = Long.parseLong(timestamp);</span>
+<span class="nc" id="L231">            long currentTime = System.currentTimeMillis();</span>
+<span class="nc" id="L232">            long timeDiff = Math.abs(currentTime - requestTime);</span>
+
+<span class="nc bnc" id="L234" title="All 2 branches missed.">            if (timeDiff &gt; MAX_REQUEST_TIME_DIFF_MS) {</span>
+<span class="nc" id="L235">                logger.warn(&quot;Request timestamp too old: {}&quot;, timeDiff);</span>
+<span class="nc" id="L236">                return false;</span>
+            }
+
+<span class="nc" id="L239">            String expectedSignature = generateSignature(timestamp, nonce, gatewaySecretValue);</span>
+<span class="nc" id="L240">            return signature.equals(expectedSignature);</span>
+<span class="nc" id="L241">        } catch (Exception e) {</span>
+<span class="nc" id="L242">            logger.warn(&quot;Gateway signature validation error: {}&quot;, e.getMessage());</span>
+<span class="nc" id="L243">            return false;</span>
+        }
+    }
+
+    /**
+     * Generates a signature string from components.
+     *
+     * @param timestamp timestamp string
+     * @param nonce     nonce string
+     * @param secret    shared secret
+     * @return hash-based signature string
+     */
+    private String generateSignature(final String timestamp, final String nonce, final String secret) {
+<span class="nc" id="L256">        String data = timestamp + &quot;:&quot; + nonce + &quot;:&quot; + secret;</span>
+<span class="nc" id="L257">        return Integer.toString(data.hashCode());</span>
+    }
+
+    /**
+     * Handles validation and authentication for direct (non-gateway) service requests.
+     *
+     * @param request  HTTP request
+     * @param response HTTP response
+     * @return true if authenticated, false otherwise
+     * @throws IOException in case of error writing response
+     */
+    private boolean handleDirectRequest(final HttpServletRequest request, final HttpServletResponse response)
+            throws IOException {
+
+<span class="nc" id="L271">        logger.debug(&quot;Processing Direct Request&quot;);</span>
+<span class="nc" id="L272">        String directSecret = request.getHeader(directSecretHeader);</span>
+
+<span class="nc bnc" id="L274" title="All 2 branches missed.">        if (directSecret == null) {</span>
+<span class="nc" id="L275">            handleUnauthorized(response, &quot;Direct secret header is required for direct access&quot;);</span>
+<span class="nc" id="L276">            return false;</span>
+        }
+
+<span class="nc bnc" id="L279" title="All 2 branches missed.">        if (!validateSecret(directSecret, directSecretValue)) {</span>
+<span class="nc" id="L280">            handleForbidden(response, &quot;Invalid Direct Secret Header&quot;);</span>
+<span class="nc" id="L281">            return false;</span>
+        }
+
+<span class="nc" id="L284">        String authHeader = request.getHeader(HttpHeaders.AUTHORIZATION);</span>
+<span class="nc bnc" id="L285" title="All 4 branches missed.">        if (authHeader != null &amp;&amp; authHeader.startsWith(BEARER_PREFIX)) {</span>
+<span class="nc" id="L286">            String serviceToken = authHeader.substring(BEARER_PREFIX.length());</span>
+            try {
+<span class="nc bnc" id="L288" title="All 2 branches missed.">                if (jwtUtil.validateServiceToken(serviceToken, expectedAudience)) {</span>
+<span class="nc" id="L289">                    ServiceTokenContext.setCurrentToken(serviceToken);</span>
+<span class="nc" id="L290">                    ServiceTokenContext.setOriginalTokenType(TOKEN_TYPE_SERVICE);</span>
+<span class="nc" id="L291">                    setServiceAuthentication(serviceToken, TOKEN_TYPE_SERVICE);</span>
+<span class="nc" id="L292">                    logger.debug(&quot;Direct service token stored in context and authentication set&quot;);</span>
+<span class="nc" id="L293">                    return true;</span>
+                } else {
+<span class="nc" id="L295">                    handleUnauthorized(response, &quot;Invalid service token for direct access&quot;);</span>
+<span class="nc" id="L296">                    return false;</span>
+                }
+<span class="nc" id="L298">            } catch (Exception e) {</span>
+<span class="nc" id="L299">                logger.warn(&quot;Direct service token validation failed: {}&quot;, e.getMessage());</span>
+<span class="nc" id="L300">                handleUnauthorized(response, &quot;Service token validation failed&quot;);</span>
+<span class="nc" id="L301">                return false;</span>
+            }
+        } else {
+<span class="nc" id="L304">            handleUnauthorized(response, &quot;Missing service token in Authorization header for direct access&quot;);</span>
+<span class="nc" id="L305">            return false;</span>
+        }
+    }
+
+    /**
+     * Sets the authentication object in the Spring SecurityContext based on token data.
+     *
+     * @param token             the JWT service token
+     * @param originalTokenType the original token type (e.g., SERVICE)
+     */
+    private void setServiceAuthentication(final String token, final String originalTokenType) {
+<span class="nc" id="L316">        List&lt;String&gt; roles = jwtUtil.extractRoles(token);</span>
+<span class="nc" id="L317">        String userId = jwtUtil.extractUserId(token);</span>
+<span class="nc" id="L318">        String userEmail = jwtUtil.extractUserEmail(token);</span>
+<span class="nc" id="L319">        String userFullName = jwtUtil.extractUserFullName(token);</span>
+<span class="nc" id="L320">        List&lt;String&gt; userRoles = jwtUtil.extractUserRoles(token);</span>
+
+<span class="nc" id="L322">        List&lt;SimpleGrantedAuthority&gt; authorities = roles.stream()</span>
+<span class="nc" id="L323">                .map(SimpleGrantedAuthority::new)</span>
+<span class="nc" id="L324">                .collect(Collectors.toList());</span>
+
+<span class="nc bnc" id="L326" title="All 2 branches missed.">        if (userRoles != null) {</span>
+<span class="nc" id="L327">            userRoles.stream()</span>
+<span class="nc bnc" id="L328" title="All 2 branches missed.">                    .map(role -&gt; role.startsWith(&quot;ROLE_&quot;) ? role : &quot;ROLE_&quot; + role)</span>
+<span class="nc" id="L329">                    .map(SimpleGrantedAuthority::new)</span>
+<span class="nc" id="L330">                    .forEach(authorities::add);</span>
+        }
+
+<span class="nc" id="L333">        ServicePrincipal principal = new ServicePrincipal.Builder()</span>
+<span class="nc" id="L334">                .serviceId(jwtUtil.extractClientId(token))</span>
+<span class="nc" id="L335">                .userId(userId)</span>
+<span class="nc" id="L336">                .userEmail(userEmail)</span>
+<span class="nc" id="L337">                .userFullName(userFullName)</span>
+<span class="nc" id="L338">                .originalTokenType(originalTokenType)</span>
+<span class="nc" id="L339">                .build();</span>
+
+<span class="nc" id="L341">        UsernamePasswordAuthenticationToken authentication =</span>
+                new UsernamePasswordAuthenticationToken(principal, null, authorities);
+
+<span class="nc" id="L344">        SecurityContextHolder.getContext().setAuthentication(authentication);</span>
+
+<span class="nc" id="L346">        logger.debug(&quot;Service authentication set for user: {}, service: {}, authorities: {}&quot;,</span>
+<span class="nc" id="L347">                userEmail, principal.getServiceId(), authorities);</span>
+<span class="nc" id="L348">    }</span>
+
+    /**
+     * Sends an unauthorized (401) response with a JSON error message.
+     *
+     * @param response HTTP response
+     * @param message  the error message to send
+     * @throws IOException in case of write failure
+     */
+    private void handleUnauthorized(final HttpServletResponse response, final String message) throws IOException {
+<span class="nc" id="L358">        response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);</span>
+<span class="nc" id="L359">        response.setContentType(&quot;application/json&quot;);</span>
+<span class="nc" id="L360">        response.getWriter().write(String.format(ERROR_UNAUTHORIZED, message));</span>
+<span class="nc" id="L361">    }</span>
+
+    /**
+     * Sends a forbidden (403) response with a JSON error message.
+     *
+     * @param response HTTP response
+     * @param message  the error message to send
+     * @throws IOException in case of write failure
+     */
+    private void handleForbidden(final HttpServletResponse response, final String message) throws IOException {
+<span class="nc" id="L371">        response.setStatus(HttpServletResponse.SC_FORBIDDEN);</span>
+<span class="nc" id="L372">        response.setContentType(&quot;application/json&quot;);</span>
+<span class="nc" id="L373">        response.getWriter().write(String.format(ERROR_FORBIDDEN, message));</span>
+<span class="nc" id="L374">    }</span>
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.11.202310140853</span></div></body></html>

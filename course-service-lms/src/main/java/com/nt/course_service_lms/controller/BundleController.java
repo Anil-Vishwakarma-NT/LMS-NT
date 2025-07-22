@@ -3,6 +3,7 @@ package com.nt.course_service_lms.controller;
 import com.nt.course_service_lms.dto.inDTO.BundleInDTO;
 import com.nt.course_service_lms.dto.outDTO.BundleOutDTO;
 import com.nt.course_service_lms.dto.inDTO.UpdateBundleInDTO;
+import com.nt.course_service_lms.dto.outDTO.MessageOutDTO;
 import com.nt.course_service_lms.dto.outDTO.StandardResponseOutDTO;
 import com.nt.course_service_lms.service.BundleService;
 import jakarta.validation.Valid;
@@ -68,6 +69,20 @@ public class BundleController {
         return ResponseEntity.ok(StandardResponseOutDTO.success(bundle, "Bundle retrieved successfully"));
     }
 
+
+    /**
+     * Retrieves a specific bundle by its ID.
+     *
+     * @param bundleIds The ID of the bundle to retrieve.
+     * @return ResponseEntity containing StandardResponseOutDTO with the BundleOutDTO if found.
+     */
+    @PostMapping("/meta-bundles")
+    public ResponseEntity<StandardResponseOutDTO<List<BundleOutDTO>>> getBundlesByIds(@RequestBody final List<Long> bundleIds) {
+        log.info("Received request to fetch bundle with IDs");
+        StandardResponseOutDTO<List<BundleOutDTO>> bundle = bundleService.getBundlesByIds(bundleIds);
+        return  new ResponseEntity<>(bundle , HttpStatus.OK);
+    }
+
     /**
      * Updates an existing bundle with the given ID.
      *
@@ -75,7 +90,7 @@ public class BundleController {
      * @param updateBundleInDTO DTO containing updated details of the bundle.
      * @return ResponseEntity containing StandardResponseOutDTO with update confirmation.
      */
-    @PutMapping("/{id}")
+    @PatchMapping("/{id}")
     public ResponseEntity<StandardResponseOutDTO<BundleOutDTO>> updateBundle(@PathVariable final Long id,
                                                                              @Valid @RequestBody final UpdateBundleInDTO updateBundleInDTO) {
         log.info("Received request to update bundle with ID: {}", id);
@@ -93,7 +108,7 @@ public class BundleController {
     public ResponseEntity<StandardResponseOutDTO<Void>> deleteBundle(@PathVariable final Long id) {
         log.info("Received request to delete bundle with ID: {}", id);
         bundleService.deleteBundle(id);
-        String message = "Bundle with ID " + id + " deleted successfully.";
+        String message ="Bundle with ID " + id + " deleted successfully.";
         return ResponseEntity.ok(StandardResponseOutDTO.success(null, "Bundle deleted successfully"));
     }
 
@@ -144,4 +159,7 @@ public class BundleController {
         List<Long> existingIds = bundleService.findExistingIds(bundleIds);
         return ResponseEntity.ok(existingIds);
     }
+
+
+
 }

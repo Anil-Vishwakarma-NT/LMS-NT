@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>GroupUserOutDTO.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">user-service-lms</a> &gt; <a href="index.source.html" class="el_package">com.nt.user_service_lms.dto.outDTO</a> &gt; <span class="el_source">GroupUserOutDTO.java</span></div><h1>GroupUserOutDTO.java</h1><pre class="source lang-java linenums">package com.nt.user_service_lms.dto.outDTO;
+
+
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+
+/**
+ * DTO representing a user in a group with progress and enrolment details.
+ */
+<span class="nc bnc" id="L11" title="All 28 branches missed.">@Data</span>
+<span class="nc" id="L12">@AllArgsConstructor</span>
+<span class="nc" id="L13">@NoArgsConstructor</span>
+public class GroupUserOutDTO {
+
+    /**
+     * The unique identifier of the user.
+     */
+<span class="nc" id="L19">    private long userId;</span>
+
+    /**
+     * The first name of the user.
+     */
+<span class="nc" id="L24">    private String firstName;</span>
+
+    /**
+     * The last name of the user.
+     */
+<span class="nc" id="L29">    private String lastName;</span>
+
+    /**
+     * The progress of the user in the group.
+     */
+<span class="nc" id="L34">    private double progress;</span>
+
+    /**
+     * The number of enrolments of the user.
+     */
+<span class="nc" id="L39">    private long enrols;</span>
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.11.202310140853</span></div></body></html>

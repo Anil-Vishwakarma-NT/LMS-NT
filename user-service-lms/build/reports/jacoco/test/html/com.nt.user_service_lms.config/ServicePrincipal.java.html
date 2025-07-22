@@ -1,0 +1,207 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>ServicePrincipal.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">user-service-lms</a> &gt; <a href="index.source.html" class="el_package">com.nt.user_service_lms.config</a> &gt; <span class="el_source">ServicePrincipal.java</span></div><h1>ServicePrincipal.java</h1><pre class="source lang-java linenums">package com.nt.user_service_lms.config;
+
+import java.security.Principal;
+
+/**
+ * Represents the authenticated principal of a service-to-service request.
+ * Contains identity and user-related information extracted from a JWT token.
+ */
+public final class ServicePrincipal implements Principal {
+
+    /**
+     * Unique identifier for the service (client ID).
+     */
+    private final String serviceId;
+
+    /**
+     * Unique identifier for the user.
+     */
+    private final String userId;
+
+    /**
+     * Email of the user.
+     */
+    private final String userEmail;
+
+    /**
+     * Full name of the user.
+     */
+    private final String userFullName;
+
+    /**
+     * Type of token originally used (e.g., SERVICE, USER).
+     */
+    private final String originalTokenType;
+
+    /**
+     * Private constructor to enforce usage of the builder pattern.
+     *
+     * @param builder the builder instance containing the values to set
+     */
+<span class="nc" id="L41">    private ServicePrincipal(final Builder builder) {</span>
+<span class="nc" id="L42">        this.serviceId = builder.serviceId;</span>
+<span class="nc" id="L43">        this.userId = builder.userId;</span>
+<span class="nc" id="L44">        this.userEmail = builder.userEmail;</span>
+<span class="nc" id="L45">        this.userFullName = builder.userFullName;</span>
+<span class="nc" id="L46">        this.originalTokenType = builder.originalTokenType;</span>
+<span class="nc" id="L47">    }</span>
+
+    /**
+     * Returns the service name, falling back to &quot;unknown-service&quot; if unavailable.
+     *
+     * @return the service identifier or a default value
+     */
+    @Override
+    public String getName() {
+<span class="nc bnc" id="L56" title="All 2 branches missed.">        return serviceId != null ? serviceId : &quot;unknown-service&quot;;</span>
+    }
+
+    /**
+     * @return the service ID
+     */
+    public String getServiceId() {
+<span class="nc" id="L63">        return serviceId;</span>
+    }
+
+    /**
+     * @return the user ID
+     */
+    public String getUserId() {
+<span class="nc" id="L70">        return userId;</span>
+    }
+
+    /**
+     * @return the user's email
+     */
+    public String getUserEmail() {
+<span class="nc" id="L77">        return userEmail;</span>
+    }
+
+    /**
+     * @return the user's full name
+     */
+    public String getUserFullName() {
+<span class="nc" id="L84">        return userFullName;</span>
+    }
+
+    /**
+     * @return the original token type
+     */
+    public String getOriginalTokenType() {
+<span class="nc" id="L91">        return originalTokenType;</span>
+    }
+
+    /**
+     * Builder class for constructing {@link ServicePrincipal} instances.
+     * Uses the builder pattern to provide a fluent API for creating ServicePrincipal objects.
+     */
+<span class="nc" id="L98">    public static class Builder {</span>
+
+        /**
+         * Unique identifier for the service (client ID).
+         */
+        private String serviceId;
+
+        /**
+         * Unique identifier for the user.
+         */
+        private String userId;
+
+        /**
+         * Email of the user.
+         */
+        private String userEmail;
+
+        /**
+         * Full name of the user.
+         */
+        private String userFullName;
+
+        /**
+         * Type of token originally used (e.g., SERVICE, USER).
+         */
+        private String originalTokenType;
+
+
+        /**
+         * Sets the service ID.
+         *
+         * @param serviceIdValue the client ID of the service
+         * @return the builder instance
+         */
+        public Builder serviceId(final String serviceIdValue) {
+<span class="nc" id="L133">            this.serviceId = serviceIdValue;</span>
+<span class="nc" id="L134">            return this;</span>
+        }
+
+        /**
+         * Sets the user ID.
+         *
+         * @param userIdValue the unique user identifier
+         * @return the builder instance
+         */
+        public Builder userId(final String userIdValue) {
+<span class="nc" id="L144">            this.userId = userIdValue;</span>
+<span class="nc" id="L145">            return this;</span>
+        }
+
+        /**
+         * Sets the user email.
+         *
+         * @param userEmailValue the user's email address
+         * @return the builder instance
+         */
+        public Builder userEmail(final String userEmailValue) {
+<span class="nc" id="L155">            this.userEmail = userEmailValue;</span>
+<span class="nc" id="L156">            return this;</span>
+        }
+
+        /**
+         * Sets the user's full name.
+         *
+         * @param userFullNameValue the user's full name
+         * @return the builder instance
+         */
+        public Builder userFullName(final String userFullNameValue) {
+<span class="nc" id="L166">            this.userFullName = userFullNameValue;</span>
+<span class="nc" id="L167">            return this;</span>
+        }
+
+        /**
+         * Sets the original token type.
+         *
+         * @param originalTokenTypeValue the original token type (e.g., &quot;SERVICE&quot;, &quot;USER&quot;)
+         * @return the builder instance
+         */
+        public Builder originalTokenType(final String originalTokenTypeValue) {
+<span class="nc" id="L177">            this.originalTokenType = originalTokenTypeValue;</span>
+<span class="nc" id="L178">            return this;</span>
+        }
+
+        /**
+         * Builds the {@link ServicePrincipal} instance.
+         *
+         * @return a new ServicePrincipal object
+         */
+        public ServicePrincipal build() {
+<span class="nc" id="L187">            return new ServicePrincipal(this);</span>
+        }
+    }
+
+    /**
+     * Returns a string representation of the service principal.
+     *
+     * @return string describing the principal
+     */
+    @Override
+    public String toString() {
+<span class="nc" id="L198">        return &quot;ServicePrincipal{&quot;</span>
+                + &quot;serviceId='&quot; + serviceId + '\''
+                + &quot;, userId='&quot; + userId + '\''
+                + &quot;, userEmail='&quot; + userEmail + '\''
+                + &quot;, userFullName='&quot; + userFullName + '\''
+                + &quot;, originalTokenType='&quot; + originalTokenType + '\''
+                + '}';
+    }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.11.202310140853</span></div></body></html>

@@ -1,0 +1,1402 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>EnrollmentServiceImpl.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">user-service-lms</a> &gt; <a href="index.source.html" class="el_package">com.nt.user_service_lms.service.serviceImpl</a> &gt; <span class="el_source">EnrollmentServiceImpl.java</span></div><h1>EnrollmentServiceImpl.java</h1><pre class="source lang-java linenums">package com.nt.user_service_lms.service.serviceImpl;
+
+import com.nt.user_service_lms.dto.inDTO.EnrollmentRequestInDTO;
+import com.nt.user_service_lms.dto.outDTO.BundleInfoOutDTO;
+import com.nt.user_service_lms.dto.outDTO.CourseInfoOutDTO;
+import com.nt.user_service_lms.dto.outDTO.CourseProgressWithMetaDTO;
+import com.nt.user_service_lms.dto.outDTO.EnrolledBundlesOutDTO;
+import com.nt.user_service_lms.dto.outDTO.EnrolledCoursesOutDTO;
+import com.nt.user_service_lms.dto.outDTO.EnrolledUserOutDTO;
+import com.nt.user_service_lms.dto.outDTO.EnrollmentDashBoardStatsOutDTO;
+import com.nt.user_service_lms.dto.outDTO.EnrollmentOutDTO;
+import com.nt.user_service_lms.dto.outDTO.StandardResponseOutDTO;
+import com.nt.user_service_lms.dto.outDTO.UserBundleEnrollmentOutDTO;
+import com.nt.user_service_lms.dto.outDTO.UserCourseEnrollDetails;
+import com.nt.user_service_lms.dto.outDTO.UserCourseEnrollmentOutDTO;
+import com.nt.user_service_lms.dto.outDTO.UserEnrollmentsOutDTO;
+import com.nt.user_service_lms.entities.Enrollment;
+import com.nt.user_service_lms.entities.User;
+import com.nt.user_service_lms.exception.ResourceAlreadyExistsException;
+import com.nt.user_service_lms.exception.ResourceNotFoundException;
+import com.nt.user_service_lms.exception.ResourceNotValidException;
+import com.nt.user_service_lms.feignClient.CourseMicroserviceClient;
+import com.nt.user_service_lms.repository.EnrollmentRepository;
+import com.nt.user_service_lms.repository.GroupRepository;
+import com.nt.user_service_lms.repository.UserGroupRepository;
+import com.nt.user_service_lms.repository.UserRepository;
+import com.nt.user_service_lms.service.EnrollmentService;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
+import java.math.BigDecimal;
+import java.math.RoundingMode;
+import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Objects;
+import java.util.Set;
+import java.util.function.Function;
+import java.util.stream.Collectors;
+
+@Service
+@Transactional
+<span class="nc" id="L47">public class EnrollmentServiceImpl implements EnrollmentService {</span>
+
+    /**
+     * Repository for managing Enrollment entities.
+     */
+    @Autowired
+    private EnrollmentRepository enrollmentRepository;
+
+    /**
+     * Repository for managing User entities.
+     */
+    @Autowired
+    private UserRepository userRepository;
+
+    /**
+     * Repository for managing Group entities.
+     */
+    @Autowired
+    private GroupRepository groupRepository;
+
+    /**
+     * Feign client for communicating with the Course microservice.
+     */
+    @Autowired
+    private CourseMicroserviceClient courseMicroserviceClient;
+    /**
+     * Repository for managing User-Group relationships.
+     */
+    @Autowired
+    private UserGroupRepository userGroupRepository;
+
+    /**
+     * Enrollment source constant for individual enrollments.
+     */
+    private static final String ENROLLMENT_SOURCE_INDIVIDUAL = &quot;INDIVIDUAL&quot;;
+    /**
+     * Enrollment source constant for group enrollments.
+     */
+    private static final String ENROLLMENT_SOURCE_GROUP = &quot;GROUP&quot;;
+    /**
+     * Enrollment source constant for bundle enrollments.
+     */
+    private static final String ENROLLMENT_SOURCE_BUNDLE = &quot;BUNDLE&quot;;
+    /**
+     * Enrollment source constant for group-bundle enrollments.
+     */
+    private static final String ENROLLMENT_SOURCE_GROUP_BUNDLE = &quot;GROUP_BUNDLE&quot;;
+
+    @Override
+    public List&lt;EnrollmentOutDTO&gt; enroll(EnrollmentRequestInDTO requestDTO) {
+        // Validate request
+<span class="nc" id="L98">        validateEnrollmentRequest(requestDTO);</span>
+
+<span class="nc" id="L100">        List&lt;Enrollment&gt; createdEnrollments = new ArrayList&lt;&gt;();</span>
+
+        try {
+<span class="nc bnc" id="L103" title="All 2 branches missed.">            if (requestDTO.hasUsers()) {</span>
+<span class="nc bnc" id="L104" title="All 2 branches missed.">                if (requestDTO.hasCourses()) {</span>
+                    // User to Course enrollment - INDIVIDUAL
+<span class="nc" id="L106">                    createdEnrollments.addAll(enrollUsersToCourses(requestDTO));</span>
+<span class="nc bnc" id="L107" title="All 2 branches missed.">                } else if (requestDTO.hasBundles()) {</span>
+                    // User to Bundle enrollment - BUNDLE (create rows for each course in bundle)
+<span class="nc" id="L109">                    createdEnrollments.addAll(enrollUsersToBundles(requestDTO));</span>
+                }
+<span class="nc bnc" id="L111" title="All 2 branches missed.">            } else if (requestDTO.hasGroups()) {</span>
+<span class="nc bnc" id="L112" title="All 2 branches missed.">                if (requestDTO.hasCourses()) {</span>
+                    // Group to Course enrollment - GROUP (create rows for each user in group)
+<span class="nc" id="L114">                    createdEnrollments.addAll(enrollGroupsToCourses(requestDTO));</span>
+<span class="nc bnc" id="L115" title="All 2 branches missed.">                } else if (requestDTO.hasBundles()) {</span>
+                    // Group to Bundle enrollment - GROUP_BUNDLE (create rows for each user-course combination)
+<span class="nc" id="L117">                    createdEnrollments.addAll(enrollGroupsToBundles(requestDTO));</span>
+                }
+            }
+
+<span class="nc" id="L121">            return createdEnrollments.stream()</span>
+<span class="nc" id="L122">                    .map(this::convertToEnrollmentOutDTO)</span>
+<span class="nc" id="L123">                    .collect(Collectors.toList());</span>
+
+<span class="nc" id="L125">        } catch (Exception e) {</span>
+<span class="nc" id="L126">            throw new ResourceNotValidException(&quot;Enrollment failed: &quot; + e.getMessage());</span>
+        }
+    }
+
+    @Override
+    public EnrollmentDashBoardStatsOutDTO getEnrollmentStats() {
+        try {
+            // Get all enrollments
+<span class="nc" id="L134">            List&lt;Enrollment&gt; allEnrollments = enrollmentRepository.findAll();</span>
+
+<span class="nc bnc" id="L136" title="All 2 branches missed.">            if (allEnrollments.isEmpty()) {</span>
+<span class="nc" id="L137">                return createEmptyStats();</span>
+            }
+
+            // Calculate basic counts
+<span class="nc" id="L141">            long totalEnrollments = allEnrollments.size();</span>
+<span class="nc" id="L142">            long activeEnrollments = allEnrollments.stream()</span>
+<span class="nc bnc" id="L143" title="All 2 branches missed.">                    .mapToLong(e -&gt; Boolean.TRUE.equals(e.getIsActive()) ? 1 : 0)</span>
+<span class="nc" id="L144">                    .sum();</span>
+<span class="nc" id="L145">            long inactiveEnrollments = totalEnrollments - activeEnrollments;</span>
+
+            // Calculate status-based counts
+<span class="nc" id="L148">            Map&lt;String, Long&gt; statusCounts = allEnrollments.stream()</span>
+<span class="nc" id="L149">                    .collect(Collectors.groupingBy(</span>
+                            Enrollment::getStatus,
+<span class="nc" id="L151">                            Collectors.counting()</span>
+                    ));
+
+<span class="nc" id="L154">            long pendingEnrollments = statusCounts.getOrDefault(&quot;PENDING&quot;, 0L);</span>
+<span class="nc" id="L155">            long inProgressEnrollments = statusCounts.getOrDefault(&quot;IN_PROGRESS&quot;, 0L);</span>
+<span class="nc" id="L156">            long completedEnrollments = statusCounts.getOrDefault(&quot;COMPLETED&quot;, 0L);</span>
+<span class="nc" id="L157">            long expiredEnrollments = statusCounts.getOrDefault(&quot;EXPIRED&quot;, 0L);</span>
+
+            // Calculate source-based counts
+<span class="nc" id="L160">            Map&lt;String, Long&gt; sourceCounts = allEnrollments.stream()</span>
+<span class="nc" id="L161">                    .collect(Collectors.groupingBy(</span>
+                            Enrollment::getEnrollmentSource,
+<span class="nc" id="L163">                            Collectors.counting()</span>
+                    ));
+
+<span class="nc" id="L166">            long individualEnrollments = sourceCounts.getOrDefault(ENROLLMENT_SOURCE_INDIVIDUAL, 0L);</span>
+<span class="nc" id="L167">            long groupEnrollments = sourceCounts.getOrDefault(ENROLLMENT_SOURCE_GROUP, 0L);</span>
+<span class="nc" id="L168">            long bundleEnrollments = sourceCounts.getOrDefault(ENROLLMENT_SOURCE_BUNDLE, 0L);</span>
+<span class="nc" id="L169">            long groupBundleEnrollments = sourceCounts.getOrDefault(ENROLLMENT_SOURCE_GROUP_BUNDLE, 0L);</span>
+
+            // Calculate unique counts
+<span class="nc" id="L172">            long totalUniqueUsers = allEnrollments.stream()</span>
+<span class="nc bnc" id="L173" title="All 2 branches missed.">                    .filter(e -&gt; e.getUserId() != null)</span>
+<span class="nc" id="L174">                    .mapToLong(Enrollment::getUserId)</span>
+<span class="nc" id="L175">                    .distinct()</span>
+<span class="nc" id="L176">                    .count();</span>
+
+<span class="nc" id="L178">            long totalUniqueCourses = allEnrollments.stream()</span>
+<span class="nc bnc" id="L179" title="All 2 branches missed.">                    .filter(e -&gt; e.getCourseId() != null)</span>
+<span class="nc" id="L180">                    .mapToLong(Enrollment::getCourseId)</span>
+<span class="nc" id="L181">                    .distinct()</span>
+<span class="nc" id="L182">                    .count();</span>
+
+<span class="nc" id="L184">            long totalUniqueBundles = allEnrollments.stream()</span>
+<span class="nc bnc" id="L185" title="All 2 branches missed.">                    .filter(e -&gt; e.getBundleId() != null)</span>
+<span class="nc" id="L186">                    .mapToLong(Enrollment::getBundleId)</span>
+<span class="nc" id="L187">                    .distinct()</span>
+<span class="nc" id="L188">                    .count();</span>
+
+<span class="nc" id="L190">            long totalUniqueGroups = allEnrollments.stream()</span>
+<span class="nc bnc" id="L191" title="All 2 branches missed.">                    .filter(e -&gt; e.getGroupId() != null)</span>
+<span class="nc" id="L192">                    .mapToLong(Enrollment::getGroupId)</span>
+<span class="nc" id="L193">                    .distinct()</span>
+<span class="nc" id="L194">                    .count();</span>
+
+            // Calculate completion rates
+<span class="nc" id="L197">            BigDecimal overallCompletionRate = calculateCompletionRate(completedEnrollments, totalEnrollments);</span>
+
+<span class="nc" id="L199">            List&lt;Enrollment&gt; individualEnrollmentsList = allEnrollments.stream()</span>
+<span class="nc" id="L200">                    .filter(e -&gt; ENROLLMENT_SOURCE_INDIVIDUAL.equals(e.getEnrollmentSource()))</span>
+<span class="nc" id="L201">                    .collect(Collectors.toList());</span>
+<span class="nc" id="L202">            BigDecimal individualCompletionRate = calculateCompletionRateForList(individualEnrollmentsList);</span>
+
+<span class="nc" id="L204">            List&lt;Enrollment&gt; groupEnrollmentsList = allEnrollments.stream()</span>
+<span class="nc" id="L205">                    .filter(e -&gt; ENROLLMENT_SOURCE_GROUP.equals(e.getEnrollmentSource()))</span>
+<span class="nc" id="L206">                    .collect(Collectors.toList());</span>
+<span class="nc" id="L207">            BigDecimal groupCompletionRate = calculateCompletionRateForList(groupEnrollmentsList);</span>
+
+<span class="nc" id="L209">            List&lt;Enrollment&gt; bundleEnrollmentsList = allEnrollments.stream()</span>
+<span class="nc bnc" id="L210" title="All 2 branches missed.">                    .filter(e -&gt; ENROLLMENT_SOURCE_BUNDLE.equals(e.getEnrollmentSource()) ||</span>
+<span class="nc bnc" id="L211" title="All 2 branches missed.">                            ENROLLMENT_SOURCE_GROUP_BUNDLE.equals(e.getEnrollmentSource()))</span>
+<span class="nc" id="L212">                    .collect(Collectors.toList());</span>
+<span class="nc" id="L213">            BigDecimal bundleCompletionRate = calculateCompletionRateForList(bundleEnrollmentsList);</span>
+
+            // Calculate recent activity (last 30 days)
+<span class="nc" id="L216">            LocalDateTime thirtyDaysAgo = LocalDateTime.now().minusDays(30);</span>
+
+<span class="nc" id="L218">            long recentEnrollments = allEnrollments.stream()</span>
+<span class="nc bnc" id="L219" title="All 2 branches missed.">                    .mapToLong(e -&gt; e.getCreatedAt().isAfter(thirtyDaysAgo) ? 1 : 0)</span>
+<span class="nc" id="L220">                    .sum();</span>
+
+<span class="nc" id="L222">            long recentCompletions = allEnrollments.stream()</span>
+<span class="nc bnc" id="L223" title="All 4 branches missed.">                    .mapToLong(e -&gt; e.getCompletedAt() != null &amp;&amp; e.getCompletedAt().isAfter(thirtyDaysAgo) ? 1 : 0)</span>
+<span class="nc" id="L224">                    .sum();</span>
+
+            // Calculate status distribution percentages
+<span class="nc" id="L227">            Map&lt;String, BigDecimal&gt; statusDistribution = calculatePercentageDistribution(statusCounts, totalEnrollments);</span>
+
+            // Calculate source distribution percentages
+<span class="nc" id="L230">            Map&lt;String, BigDecimal&gt; sourceDistribution = calculatePercentageDistribution(sourceCounts, totalEnrollments);</span>
+
+            // Build and return the stats DTO
+<span class="nc" id="L233">            return EnrollmentDashBoardStatsOutDTO.builder()</span>
+<span class="nc" id="L234">                    .totalEnrollments(totalEnrollments)</span>
+<span class="nc" id="L235">                    .activeEnrollments(activeEnrollments)</span>
+<span class="nc" id="L236">                    .inactiveEnrollments(inactiveEnrollments)</span>
+<span class="nc" id="L237">                    .pendingEnrollments(pendingEnrollments)</span>
+<span class="nc" id="L238">                    .inProgressEnrollments(inProgressEnrollments)</span>
+<span class="nc" id="L239">                    .completedEnrollments(completedEnrollments)</span>
+<span class="nc" id="L240">                    .expiredEnrollments(expiredEnrollments)</span>
+<span class="nc" id="L241">                    .individualEnrollments(individualEnrollments)</span>
+<span class="nc" id="L242">                    .groupEnrollments(groupEnrollments)</span>
+<span class="nc" id="L243">                    .bundleEnrollments(bundleEnrollments)</span>
+<span class="nc" id="L244">                    .groupBundleEnrollments(groupBundleEnrollments)</span>
+<span class="nc" id="L245">                    .totalUniqueUsers(totalUniqueUsers)</span>
+<span class="nc" id="L246">                    .totalUniqueCourses(totalUniqueCourses)</span>
+<span class="nc" id="L247">                    .totalUniqueBundles(totalUniqueBundles)</span>
+<span class="nc" id="L248">                    .totalUniqueGroups(totalUniqueGroups)</span>
+<span class="nc" id="L249">                    .overallCompletionRate(overallCompletionRate)</span>
+<span class="nc" id="L250">                    .individualCompletionRate(individualCompletionRate)</span>
+<span class="nc" id="L251">                    .groupCompletionRate(groupCompletionRate)</span>
+<span class="nc" id="L252">                    .bundleCompletionRate(bundleCompletionRate)</span>
+<span class="nc" id="L253">                    .recentEnrollments(recentEnrollments)</span>
+<span class="nc" id="L254">                    .recentCompletions(recentCompletions)</span>
+<span class="nc" id="L255">                    .statusDistribution(statusDistribution)</span>
+<span class="nc" id="L256">                    .sourceDistribution(sourceDistribution)</span>
+<span class="nc" id="L257">                    .build();</span>
+
+<span class="nc" id="L259">        } catch (Exception e) {</span>
+<span class="nc" id="L260">            throw new ResourceNotValidException(&quot;Failed to calculate enrollment statistics: &quot; + e.getMessage());</span>
+        }
+    }
+
+    // Helper method to create empty stats when no enrollments exist
+    private EnrollmentDashBoardStatsOutDTO createEmptyStats() {
+<span class="nc" id="L266">        return EnrollmentDashBoardStatsOutDTO.builder()</span>
+<span class="nc" id="L267">                .totalEnrollments(0L)</span>
+<span class="nc" id="L268">                .activeEnrollments(0L)</span>
+<span class="nc" id="L269">                .inactiveEnrollments(0L)</span>
+<span class="nc" id="L270">                .pendingEnrollments(0L)</span>
+<span class="nc" id="L271">                .inProgressEnrollments(0L)</span>
+<span class="nc" id="L272">                .completedEnrollments(0L)</span>
+<span class="nc" id="L273">                .expiredEnrollments(0L)</span>
+<span class="nc" id="L274">                .individualEnrollments(0L)</span>
+<span class="nc" id="L275">                .groupEnrollments(0L)</span>
+<span class="nc" id="L276">                .bundleEnrollments(0L)</span>
+<span class="nc" id="L277">                .groupBundleEnrollments(0L)</span>
+<span class="nc" id="L278">                .totalUniqueUsers(0L)</span>
+<span class="nc" id="L279">                .totalUniqueCourses(0L)</span>
+<span class="nc" id="L280">                .totalUniqueBundles(0L)</span>
+<span class="nc" id="L281">                .totalUniqueGroups(0L)</span>
+<span class="nc" id="L282">                .overallCompletionRate(BigDecimal.ZERO)</span>
+<span class="nc" id="L283">                .individualCompletionRate(BigDecimal.ZERO)</span>
+<span class="nc" id="L284">                .groupCompletionRate(BigDecimal.ZERO)</span>
+<span class="nc" id="L285">                .bundleCompletionRate(BigDecimal.ZERO)</span>
+<span class="nc" id="L286">                .recentEnrollments(0L)</span>
+<span class="nc" id="L287">                .recentCompletions(0L)</span>
+<span class="nc" id="L288">                .statusDistribution(new HashMap&lt;&gt;())</span>
+<span class="nc" id="L289">                .sourceDistribution(new HashMap&lt;&gt;())</span>
+<span class="nc" id="L290">                .build();</span>
+    }
+
+    // Helper method to calculate completion rate
+    private BigDecimal calculateCompletionRate(long completed, long total) {
+<span class="nc bnc" id="L295" title="All 2 branches missed.">        if (total == 0) {</span>
+<span class="nc" id="L296">            return BigDecimal.ZERO;</span>
+        }
+<span class="nc" id="L298">        return BigDecimal.valueOf(completed)</span>
+<span class="nc" id="L299">                .multiply(BigDecimal.valueOf(100))</span>
+<span class="nc" id="L300">                .divide(BigDecimal.valueOf(total), 2, RoundingMode.HALF_UP);</span>
+    }
+
+    // Helper method to calculate completion rate for a list of enrollments
+    private BigDecimal calculateCompletionRateForList(List&lt;Enrollment&gt; enrollments) {
+<span class="nc bnc" id="L305" title="All 2 branches missed.">        if (enrollments.isEmpty()) {</span>
+<span class="nc" id="L306">            return BigDecimal.ZERO;</span>
+        }
+
+<span class="nc" id="L309">        long completed = enrollments.stream()</span>
+<span class="nc bnc" id="L310" title="All 2 branches missed.">                .mapToLong(e -&gt; &quot;COMPLETED&quot;.equals(e.getStatus()) ? 1 : 0)</span>
+<span class="nc" id="L311">                .sum();</span>
+
+<span class="nc" id="L313">        return calculateCompletionRate(completed, enrollments.size());</span>
+    }
+
+    // Helper method to calculate percentage distribution
+    private Map&lt;String, BigDecimal&gt; calculatePercentageDistribution(Map&lt;String, Long&gt; counts, long total) {
+<span class="nc bnc" id="L318" title="All 2 branches missed.">        if (total == 0) {</span>
+<span class="nc" id="L319">            return new HashMap&lt;&gt;();</span>
+        }
+
+<span class="nc" id="L322">        Map&lt;String, BigDecimal&gt; distribution = new HashMap&lt;&gt;();</span>
+<span class="nc bnc" id="L323" title="All 2 branches missed.">        for (Map.Entry&lt;String, Long&gt; entry : counts.entrySet()) {</span>
+<span class="nc" id="L324">            BigDecimal percentage = BigDecimal.valueOf(entry.getValue())</span>
+<span class="nc" id="L325">                    .multiply(BigDecimal.valueOf(100))</span>
+<span class="nc" id="L326">                    .divide(BigDecimal.valueOf(total), 2, RoundingMode.HALF_UP);</span>
+<span class="nc" id="L327">            distribution.put(entry.getKey(), percentage);</span>
+<span class="nc" id="L328">        }</span>
+
+<span class="nc" id="L330">        return distribution;</span>
+    }
+
+    @Override
+    public UserEnrollmentsOutDTO getUserEnrollmentsByUserID(Long userId) {
+        // Check if user exists
+<span class="nc" id="L336">        User user = userRepository.findById(userId)</span>
+<span class="nc" id="L337">                .orElseThrow(() -&gt; new RuntimeException(&quot;User not found with id: &quot; + userId));</span>
+
+        // Get all active enrollments for the user
+<span class="nc" id="L340">        List&lt;Enrollment&gt; userEnrollments = enrollmentRepository.findByUserIdAndIsActiveTrue(userId);</span>
+
+<span class="nc bnc" id="L342" title="All 2 branches missed.">        if (userEnrollments.isEmpty()) {</span>
+<span class="nc" id="L343">            return createEmptyUserEnrollmentsDTO(userId, user.getUserName());</span>
+        }
+
+        // Separate course and bundle enrollments
+<span class="nc" id="L347">        List&lt;Enrollment&gt; courseEnrollments = userEnrollments.stream()</span>
+<span class="nc bnc" id="L348" title="All 4 branches missed.">                .filter(e -&gt; e.getCourseId() != null &amp;&amp; e.getBundleId() == null)</span>
+<span class="nc" id="L349">                .collect(Collectors.toList());</span>
+
+<span class="nc" id="L351">        List&lt;Enrollment&gt; bundleEnrollments = userEnrollments.stream()</span>
+<span class="nc bnc" id="L352" title="All 2 branches missed.">                .filter(e -&gt; e.getBundleId() != null)</span>
+<span class="nc" id="L353">                .collect(Collectors.toList());</span>
+
+        // Process course enrollments
+<span class="nc" id="L356">        List&lt;EnrolledCoursesOutDTO&gt; enrolledCoursesList = processCourseEnrollments(courseEnrollments);</span>
+
+        // Process bundle enrollments
+<span class="nc" id="L359">        List&lt;EnrolledBundlesOutDTO&gt; enrolledBundlesList = processBundleEnrollments(bundleEnrollments);</span>
+
+        // Calculate statistics
+<span class="nc" id="L362">        long totalCourses = calculateTotalCourses(enrolledCoursesList, enrolledBundlesList);</span>
+<span class="nc" id="L363">        float averageCompletion = calculateAverageCompletion(enrolledCoursesList, enrolledBundlesList);</span>
+<span class="nc" id="L364">        int upcomingDeadlines = calculateUpcomingDeadlines(userEnrollments);</span>
+<span class="nc" id="L365">        boolean status = determineUserStatus(userEnrollments);</span>
+
+        // Build and return DTO
+<span class="nc" id="L368">        UserEnrollmentsOutDTO result = new UserEnrollmentsOutDTO();</span>
+<span class="nc" id="L369">        result.setUserId(userId);</span>
+<span class="nc" id="L370">        result.setUserName(user.getFirstName() + &quot; &quot; + user.getLastName());</span>
+<span class="nc" id="L371">        result.setCourseEnrollments((long) courseEnrollments.size());</span>
+<span class="nc" id="L372">        result.setBundleEnrollments((long) bundleEnrollments.size());</span>
+<span class="nc" id="L373">        result.setTotalCourses(totalCourses);</span>
+<span class="nc" id="L374">        result.setAverageCompletion(averageCompletion);</span>
+<span class="nc" id="L375">        result.setUpcomingDeadlines(upcomingDeadlines);</span>
+<span class="nc" id="L376">        result.setStatus(status);</span>
+<span class="nc" id="L377">        result.setEnrolledCoursesList(enrolledCoursesList);</span>
+<span class="nc" id="L378">        result.setEnrolledBundlesList(enrolledBundlesList);</span>
+
+<span class="nc" id="L380">        return result;</span>
+    }
+
+    private UserEnrollmentsOutDTO createEmptyUserEnrollmentsDTO(Long userId, String userName) {
+<span class="nc" id="L384">        UserEnrollmentsOutDTO result = new UserEnrollmentsOutDTO();</span>
+<span class="nc" id="L385">        result.setUserId(userId);</span>
+<span class="nc" id="L386">        result.setUserName(userName);</span>
+<span class="nc" id="L387">        result.setCourseEnrollments(0L);</span>
+<span class="nc" id="L388">        result.setBundleEnrollments(0L);</span>
+<span class="nc" id="L389">        result.setTotalCourses(0L);</span>
+<span class="nc" id="L390">        result.setAverageCompletion(0.0f);</span>
+<span class="nc" id="L391">        result.setUpcomingDeadlines(0);</span>
+<span class="nc" id="L392">        result.setStatus(true);</span>
+<span class="nc" id="L393">        result.setEnrolledCoursesList(new ArrayList&lt;&gt;());</span>
+<span class="nc" id="L394">        result.setEnrolledBundlesList(new ArrayList&lt;&gt;());</span>
+<span class="nc" id="L395">        return result;</span>
+    }
+
+    private List&lt;EnrolledCoursesOutDTO&gt; processCourseEnrollments(List&lt;Enrollment&gt; courseEnrollments) {
+<span class="nc" id="L399">        return courseEnrollments.stream().map(enrollment -&gt; {</span>
+<span class="nc" id="L400">            EnrolledCoursesOutDTO courseDTO = new EnrolledCoursesOutDTO();</span>
+<span class="nc" id="L401">            courseDTO.setCourseId(enrollment.getCourseId());</span>
+
+            // Get course name
+            try {
+<span class="nc" id="L405">                ResponseEntity&lt;String&gt; courseNameResponse = courseMicroserviceClient.getCourseNameById(enrollment.getCourseId());</span>
+<span class="nc" id="L406">                courseDTO.setCourseName(courseNameResponse.getBody());</span>
+<span class="nc" id="L407">            } catch (Exception e) {</span>
+<span class="nc" id="L408">                courseDTO.setCourseName(&quot;Unknown Course&quot;);</span>
+<span class="nc" id="L409">            }</span>
+
+            // Get course progress
+            try {
+<span class="nc" id="L413">                CourseProgressWithMetaDTO progressData = courseMicroserviceClient.getCourseProgressWithMeta(</span>
+<span class="nc" id="L414">                        enrollment.getUserId(),</span>
+<span class="nc" id="L415">                        enrollment.getCourseId()</span>
+                );
+<span class="nc" id="L417">                courseDTO.setProgress((float) progressData.getCourseCompletionPercentage());</span>
+<span class="nc" id="L418">            } catch (Exception e) {</span>
+<span class="nc" id="L419">                courseDTO.setProgress(0.0f);</span>
+<span class="nc" id="L420">            }</span>
+
+<span class="nc" id="L422">            courseDTO.setEnrollmentDate(enrollment.getAssignedAt());</span>
+<span class="nc" id="L423">            courseDTO.setDeadline(enrollment.getDeadline());</span>
+
+<span class="nc" id="L425">            return courseDTO;</span>
+<span class="nc" id="L426">        }).collect(Collectors.toList());</span>
+    }
+
+    private List&lt;EnrolledBundlesOutDTO&gt; processBundleEnrollments(List&lt;Enrollment&gt; bundleEnrollments) {
+<span class="nc" id="L430">        return bundleEnrollments.stream()</span>
+<span class="nc" id="L431">                .collect(Collectors.groupingBy(Enrollment::getBundleId))</span>
+<span class="nc" id="L432">                .entrySet().stream()</span>
+<span class="nc" id="L433">                .map(entry -&gt; {</span>
+<span class="nc" id="L434">                    Long bundleId = entry.getKey();</span>
+<span class="nc" id="L435">                    List&lt;Enrollment&gt; bundleEnrollmentsList = entry.getValue();</span>
+<span class="nc" id="L436">                    Enrollment primaryEnrollment = bundleEnrollmentsList.get(0);</span>
+
+<span class="nc" id="L438">                    EnrolledBundlesOutDTO bundleDTO = new EnrolledBundlesOutDTO();</span>
+<span class="nc" id="L439">                    bundleDTO.setBundleId(bundleId);</span>
+
+                    // Get bundle name
+                    try {
+<span class="nc" id="L443">                        ResponseEntity&lt;StandardResponseOutDTO&lt;String&gt;&gt; bundleNameResponse =</span>
+<span class="nc" id="L444">                                courseMicroserviceClient.getBundleNameById(bundleId);</span>
+<span class="nc" id="L445">                        bundleDTO.setBundleName(bundleNameResponse.getBody().getData());</span>
+<span class="nc" id="L446">                    } catch (Exception e) {</span>
+<span class="nc" id="L447">                        bundleDTO.setBundleName(&quot;Unknown Bundle&quot;);</span>
+<span class="nc" id="L448">                    }</span>
+
+<span class="nc" id="L450">                    bundleDTO.setEnrollmentDate(primaryEnrollment.getAssignedAt());</span>
+<span class="nc" id="L451">                    bundleDTO.setDeadline(primaryEnrollment.getDeadline());</span>
+
+                    // Get courses in this bundle and calculate progress
+<span class="nc" id="L454">                    List&lt;EnrolledCoursesOutDTO&gt; bundleCourses = processBundleCourses(bundleId, primaryEnrollment.getUserId());</span>
+<span class="nc" id="L455">                    bundleDTO.setEnrolledCoursesList(bundleCourses);</span>
+
+                    // Calculate bundle progress
+<span class="nc bnc" id="L458" title="All 2 branches missed.">                    float bundleProgress = bundleCourses.isEmpty() ? 0.0f :</span>
+<span class="nc" id="L459">                            (float) bundleCourses.stream()</span>
+<span class="nc" id="L460">                                    .mapToDouble(EnrolledCoursesOutDTO::getProgress)</span>
+<span class="nc" id="L461">                                    .average()</span>
+<span class="nc" id="L462">                                    .orElse(0.0);</span>
+<span class="nc" id="L463">                    bundleDTO.setProgress(bundleProgress);</span>
+
+<span class="nc" id="L465">                    return bundleDTO;</span>
+                })
+<span class="nc" id="L467">                .collect(Collectors.toList());</span>
+    }
+
+    private List&lt;EnrolledCoursesOutDTO&gt; processBundleCourses(Long bundleId, Long userId) {
+        try {
+            // Get course IDs for this bundle
+<span class="nc" id="L473">            ResponseEntity&lt;List&lt;Long&gt;&gt; courseIdsResponse = courseMicroserviceClient.findCourseIdsByBundleId(bundleId);</span>
+<span class="nc" id="L474">            List&lt;Long&gt; courseIds = courseIdsResponse.getBody();</span>
+
+<span class="nc bnc" id="L476" title="All 4 branches missed.">            if (courseIds == null || courseIds.isEmpty()) {</span>
+<span class="nc" id="L477">                return new ArrayList&lt;&gt;();</span>
+            }
+
+<span class="nc" id="L480">            return courseIds.stream().map(courseId -&gt; {</span>
+<span class="nc" id="L481">                EnrolledCoursesOutDTO courseDTO = new EnrolledCoursesOutDTO();</span>
+<span class="nc" id="L482">                courseDTO.setCourseId(courseId);</span>
+
+                // Get course name
+                try {
+<span class="nc" id="L486">                    ResponseEntity&lt;String&gt; courseNameResponse = courseMicroserviceClient.getCourseNameById(courseId);</span>
+<span class="nc" id="L487">                    courseDTO.setCourseName(courseNameResponse.getBody());</span>
+<span class="nc" id="L488">                } catch (Exception e) {</span>
+<span class="nc" id="L489">                    courseDTO.setCourseName(&quot;Unknown Course&quot;);</span>
+<span class="nc" id="L490">                }</span>
+
+                // Get course progress
+                try {
+<span class="nc" id="L494">                    CourseProgressWithMetaDTO progressData = courseMicroserviceClient.getCourseProgressWithMeta(</span>
+                            userId,
+                            courseId
+                    );
+<span class="nc" id="L498">                    courseDTO.setProgress((float) progressData.getCourseCompletionPercentage());</span>
+<span class="nc" id="L499">                } catch (Exception e) {</span>
+<span class="nc" id="L500">                    courseDTO.setProgress(0.0f);</span>
+<span class="nc" id="L501">                }</span>
+
+                // For bundle courses, we don't set enrollment date and deadline at course level
+<span class="nc" id="L504">                courseDTO.setEnrollmentDate(null);</span>
+<span class="nc" id="L505">                courseDTO.setDeadline(null);</span>
+
+<span class="nc" id="L507">                return courseDTO;</span>
+<span class="nc" id="L508">            }).collect(Collectors.toList());</span>
+
+<span class="nc" id="L510">        } catch (Exception e) {</span>
+<span class="nc" id="L511">            return new ArrayList&lt;&gt;();</span>
+        }
+    }
+
+    private long calculateTotalCourses(List&lt;EnrolledCoursesOutDTO&gt; enrolledCourses,
+                                       List&lt;EnrolledBundlesOutDTO&gt; enrolledBundles) {
+<span class="nc" id="L517">        long directCourses = enrolledCourses.size();</span>
+<span class="nc" id="L518">        long bundleCourses = enrolledBundles.stream()</span>
+<span class="nc" id="L519">                .mapToLong(bundle -&gt; bundle.getEnrolledCoursesList().size())</span>
+<span class="nc" id="L520">                .sum();</span>
+<span class="nc" id="L521">        return directCourses + bundleCourses;</span>
+    }
+
+    private float calculateAverageCompletion(List&lt;EnrolledCoursesOutDTO&gt; enrolledCourses,
+                                             List&lt;EnrolledBundlesOutDTO&gt; enrolledBundles) {
+<span class="nc" id="L526">        List&lt;Float&gt; allProgresses = new ArrayList&lt;&gt;();</span>
+
+        // Add direct course progresses
+<span class="nc" id="L529">        enrolledCourses.forEach(course -&gt; allProgresses.add(course.getProgress()));</span>
+
+        // Add bundle course progresses
+<span class="nc" id="L532">        enrolledBundles.forEach(bundle -&gt;</span>
+<span class="nc" id="L533">                bundle.getEnrolledCoursesList().forEach(course -&gt;</span>
+<span class="nc" id="L534">                        allProgresses.add(course.getProgress())));</span>
+
+<span class="nc bnc" id="L536" title="All 2 branches missed.">        return allProgresses.isEmpty() ? 0.0f :</span>
+<span class="nc" id="L537">                (float) allProgresses.stream()</span>
+<span class="nc" id="L538">                        .mapToDouble(Float::doubleValue)</span>
+<span class="nc" id="L539">                        .average()</span>
+<span class="nc" id="L540">                        .orElse(0.0);</span>
+    }
+
+    private int calculateUpcomingDeadlines(List&lt;Enrollment&gt; enrollments) {
+<span class="nc" id="L544">        LocalDateTime now = LocalDateTime.now();</span>
+<span class="nc" id="L545">        LocalDateTime nextWeek = now.plusDays(7);</span>
+
+<span class="nc" id="L547">        return (int) enrollments.stream()</span>
+<span class="nc bnc" id="L548" title="All 2 branches missed.">                .filter(e -&gt; e.getDeadline() != null)</span>
+<span class="nc bnc" id="L549" title="All 4 branches missed.">                .filter(e -&gt; e.getDeadline().isAfter(now) &amp;&amp; e.getDeadline().isBefore(nextWeek))</span>
+<span class="nc" id="L550">                .count();</span>
+    }
+
+    private boolean determineUserStatus(List&lt;Enrollment&gt; enrollments) {
+        // User is considered active if they have at least one active enrollment
+<span class="nc" id="L555">        return enrollments.stream().anyMatch(Enrollment::getIsActive);</span>
+    }
+
+    @Override
+    public List&lt;UserEnrollmentsOutDTO&gt; getAllUsersEnrollments() {
+        // Get all active enrollments grouped by user
+<span class="nc" id="L561">        List&lt;Enrollment&gt; allEnrollments = enrollmentRepository.findByIsActiveTrue();</span>
+
+<span class="nc bnc" id="L563" title="All 2 branches missed.">        if (allEnrollments.isEmpty()) {</span>
+<span class="nc" id="L564">            return new ArrayList&lt;&gt;();</span>
+        }
+
+        // Group enrollments by user ID
+<span class="nc" id="L568">        Map&lt;Long, List&lt;Enrollment&gt;&gt; enrollmentsByUser = allEnrollments.stream()</span>
+<span class="nc" id="L569">                .collect(Collectors.groupingBy(Enrollment::getUserId));</span>
+
+        // Get all unique user IDs
+<span class="nc" id="L572">        Set&lt;Long&gt; userIds = enrollmentsByUser.keySet();</span>
+
+        // Fetch all users at once
+<span class="nc" id="L575">        List&lt;User&gt; users = userRepository.findAllById(userIds);</span>
+<span class="nc" id="L576">        Map&lt;Long, User&gt; userMap = users.stream()</span>
+<span class="nc" id="L577">                .collect(Collectors.toMap(User::getUserId, Function.identity()));</span>
+
+        // Get all unique course IDs and bundle IDs for batch processing
+<span class="nc" id="L580">        Set&lt;Long&gt; allCourseIds = allEnrollments.stream()</span>
+<span class="nc bnc" id="L581" title="All 2 branches missed.">                .filter(e -&gt; e.getCourseId() != null)</span>
+<span class="nc" id="L582">                .map(Enrollment::getCourseId)</span>
+<span class="nc" id="L583">                .collect(Collectors.toSet());</span>
+
+<span class="nc" id="L585">        Set&lt;Long&gt; allBundleIds = allEnrollments.stream()</span>
+<span class="nc bnc" id="L586" title="All 2 branches missed.">                .filter(e -&gt; e.getBundleId() != null)</span>
+<span class="nc" id="L587">                .map(Enrollment::getBundleId)</span>
+<span class="nc" id="L588">                .collect(Collectors.toSet());</span>
+
+        // Fetch course names in batch
+<span class="nc" id="L591">        Map&lt;Long, String&gt; courseNamesMap = fetchCourseNamesBatch(new ArrayList&lt;&gt;(allCourseIds));</span>
+
+        // Fetch bundle names in batch
+<span class="nc" id="L594">        Map&lt;Long, String&gt; bundleNamesMap = fetchBundleNamesBatch(new ArrayList&lt;&gt;(allBundleIds));</span>
+
+        // Fetch bundle course mappings
+<span class="nc" id="L597">        Map&lt;Long, List&lt;Long&gt;&gt; bundleCourseMappings = fetchBundleCourseMappings(new ArrayList&lt;&gt;(allBundleIds));</span>
+
+        // Process each user's enrollments
+<span class="nc" id="L600">        return enrollmentsByUser.entrySet().stream()</span>
+<span class="nc" id="L601">                .map(entry -&gt; processUserEnrollmentsOptimized(</span>
+<span class="nc" id="L602">                        entry.getKey(),</span>
+<span class="nc" id="L603">                        entry.getValue(),</span>
+                        userMap,
+                        courseNamesMap,
+                        bundleNamesMap,
+                        bundleCourseMappings))
+<span class="nc" id="L608">                .filter(Objects::nonNull)</span>
+<span class="nc" id="L609">                .collect(Collectors.toList());</span>
+    }
+
+    private UserEnrollmentsOutDTO processUserEnrollmentsOptimized(
+            Long userId,
+            List&lt;Enrollment&gt; userEnrollments,
+            Map&lt;Long, User&gt; userMap,
+            Map&lt;Long, String&gt; courseNamesMap,
+            Map&lt;Long, String&gt; bundleNamesMap,
+            Map&lt;Long, List&lt;Long&gt;&gt; bundleCourseMappings) {
+
+<span class="nc" id="L620">        User user = userMap.get(userId);</span>
+<span class="nc bnc" id="L621" title="All 2 branches missed.">        if (user == null) {</span>
+<span class="nc" id="L622">            return null;</span>
+        }
+
+        // Separate course and bundle enrollments
+<span class="nc" id="L626">        List&lt;Enrollment&gt; courseEnrollments = userEnrollments.stream()</span>
+<span class="nc bnc" id="L627" title="All 4 branches missed.">                .filter(e -&gt; e.getCourseId() != null &amp;&amp; e.getBundleId() == null)</span>
+<span class="nc" id="L628">                .collect(Collectors.toList());</span>
+
+<span class="nc" id="L630">        List&lt;Enrollment&gt; bundleEnrollments = userEnrollments.stream()</span>
+<span class="nc bnc" id="L631" title="All 2 branches missed.">                .filter(e -&gt; e.getBundleId() != null)</span>
+<span class="nc" id="L632">                .collect(Collectors.toList());</span>
+
+        // Process course enrollments with cached data
+<span class="nc" id="L635">        List&lt;EnrolledCoursesOutDTO&gt; enrolledCoursesList = processCourseEnrollmentsOptimized(</span>
+                courseEnrollments, courseNamesMap, userId);
+
+        // Process bundle enrollments with cached data
+<span class="nc" id="L639">        List&lt;EnrolledBundlesOutDTO&gt; enrolledBundlesList = processBundleEnrollmentsOptimized(</span>
+                bundleEnrollments, bundleNamesMap, bundleCourseMappings, courseNamesMap, userId);
+
+        // Calculate statistics
+<span class="nc" id="L643">        long totalCourses = calculateTotalCourses(enrolledCoursesList, enrolledBundlesList);</span>
+<span class="nc" id="L644">        float averageCompletion = calculateAverageCompletion(enrolledCoursesList, enrolledBundlesList);</span>
+<span class="nc" id="L645">        int upcomingDeadlines = calculateUpcomingDeadlines(userEnrollments);</span>
+<span class="nc" id="L646">        boolean status = determineUserStatus(userEnrollments);</span>
+
+        // Build and return DTO
+<span class="nc" id="L649">        UserEnrollmentsOutDTO result = new UserEnrollmentsOutDTO();</span>
+<span class="nc" id="L650">        result.setUserId(userId);</span>
+<span class="nc" id="L651">        result.setUserName(user.getFirstName() + &quot; &quot; + user.getLastName());</span>
+<span class="nc" id="L652">        result.setCourseEnrollments((long) courseEnrollments.size());</span>
+<span class="nc" id="L653">        result.setBundleEnrollments((long) bundleEnrollments.size());</span>
+<span class="nc" id="L654">        result.setTotalCourses(totalCourses);</span>
+<span class="nc" id="L655">        result.setAverageCompletion(averageCompletion);</span>
+<span class="nc" id="L656">        result.setUpcomingDeadlines(upcomingDeadlines);</span>
+<span class="nc" id="L657">        result.setStatus(status);</span>
+<span class="nc" id="L658">        result.setEnrolledCoursesList(enrolledCoursesList);</span>
+<span class="nc" id="L659">        result.setEnrolledBundlesList(enrolledBundlesList);</span>
+
+<span class="nc" id="L661">        return result;</span>
+    }
+
+    private List&lt;EnrolledCoursesOutDTO&gt; processCourseEnrollmentsOptimized(
+            List&lt;Enrollment&gt; courseEnrollments,
+            Map&lt;Long, String&gt; courseNamesMap,
+            Long userId) {
+
+<span class="nc" id="L669">        return courseEnrollments.stream().map(enrollment -&gt; {</span>
+<span class="nc" id="L670">            EnrolledCoursesOutDTO courseDTO = new EnrolledCoursesOutDTO();</span>
+<span class="nc" id="L671">            courseDTO.setCourseId(enrollment.getCourseId());</span>
+<span class="nc" id="L672">            courseDTO.setCourseName(courseNamesMap.getOrDefault(enrollment.getCourseId(), &quot;Unknown Course&quot;));</span>
+
+            // Get course progress
+            try {
+<span class="nc" id="L676">                CourseProgressWithMetaDTO progressData = courseMicroserviceClient.getCourseProgressWithMeta(</span>
+                        userId,
+<span class="nc" id="L678">                        enrollment.getCourseId()</span>
+                );
+<span class="nc" id="L680">                courseDTO.setProgress((float) progressData.getCourseCompletionPercentage());</span>
+<span class="nc" id="L681">            } catch (Exception e) {</span>
+<span class="nc" id="L682">                courseDTO.setProgress(0.0f);</span>
+<span class="nc" id="L683">            }</span>
+
+<span class="nc" id="L685">            courseDTO.setEnrollmentDate(enrollment.getAssignedAt());</span>
+<span class="nc" id="L686">            courseDTO.setDeadline(enrollment.getDeadline());</span>
+
+<span class="nc" id="L688">            return courseDTO;</span>
+<span class="nc" id="L689">        }).collect(Collectors.toList());</span>
+    }
+
+    private List&lt;EnrolledBundlesOutDTO&gt; processBundleEnrollmentsOptimized(
+            List&lt;Enrollment&gt; bundleEnrollments,
+            Map&lt;Long, String&gt; bundleNamesMap,
+            Map&lt;Long, List&lt;Long&gt;&gt; bundleCourseMappings,
+            Map&lt;Long, String&gt; courseNamesMap,
+            Long userId) {
+
+<span class="nc" id="L699">        return bundleEnrollments.stream()</span>
+<span class="nc" id="L700">                .collect(Collectors.groupingBy(Enrollment::getBundleId))</span>
+<span class="nc" id="L701">                .entrySet().stream()</span>
+<span class="nc" id="L702">                .map(entry -&gt; {</span>
+<span class="nc" id="L703">                    Long bundleId = entry.getKey();</span>
+<span class="nc" id="L704">                    List&lt;Enrollment&gt; bundleEnrollmentsList = entry.getValue();</span>
+<span class="nc" id="L705">                    Enrollment primaryEnrollment = bundleEnrollmentsList.get(0);</span>
+
+<span class="nc" id="L707">                    EnrolledBundlesOutDTO bundleDTO = new EnrolledBundlesOutDTO();</span>
+<span class="nc" id="L708">                    bundleDTO.setBundleId(bundleId);</span>
+<span class="nc" id="L709">                    bundleDTO.setBundleName(bundleNamesMap.getOrDefault(bundleId, &quot;Unknown Bundle&quot;));</span>
+<span class="nc" id="L710">                    bundleDTO.setEnrollmentDate(primaryEnrollment.getAssignedAt());</span>
+<span class="nc" id="L711">                    bundleDTO.setDeadline(primaryEnrollment.getDeadline());</span>
+
+                    // Get courses in this bundle using cached data
+<span class="nc" id="L714">                    List&lt;EnrolledCoursesOutDTO&gt; bundleCourses = processBundleCoursesOptimized(</span>
+                            bundleId, userId, bundleCourseMappings, courseNamesMap);
+<span class="nc" id="L716">                    bundleDTO.setEnrolledCoursesList(bundleCourses);</span>
+
+                    // Calculate bundle progress
+<span class="nc bnc" id="L719" title="All 2 branches missed.">                    float bundleProgress = bundleCourses.isEmpty() ? 0.0f :</span>
+<span class="nc" id="L720">                            (float) bundleCourses.stream()</span>
+<span class="nc" id="L721">                                    .mapToDouble(EnrolledCoursesOutDTO::getProgress)</span>
+<span class="nc" id="L722">                                    .average()</span>
+<span class="nc" id="L723">                                    .orElse(0.0);</span>
+<span class="nc" id="L724">                    bundleDTO.setProgress(bundleProgress);</span>
+
+<span class="nc" id="L726">                    return bundleDTO;</span>
+                })
+<span class="nc" id="L728">                .collect(Collectors.toList());</span>
+    }
+
+    private List&lt;EnrolledCoursesOutDTO&gt; processBundleCoursesOptimized(
+            Long bundleId,
+            Long userId,
+            Map&lt;Long, List&lt;Long&gt;&gt; bundleCourseMappings,
+            Map&lt;Long, String&gt; courseNamesMap) {
+
+<span class="nc" id="L737">        List&lt;Long&gt; courseIds = bundleCourseMappings.getOrDefault(bundleId, new ArrayList&lt;&gt;());</span>
+
+<span class="nc" id="L739">        return courseIds.stream().map(courseId -&gt; {</span>
+<span class="nc" id="L740">            EnrolledCoursesOutDTO courseDTO = new EnrolledCoursesOutDTO();</span>
+<span class="nc" id="L741">            courseDTO.setCourseId(courseId);</span>
+<span class="nc" id="L742">            courseDTO.setCourseName(courseNamesMap.getOrDefault(courseId, &quot;Unknown Course&quot;));</span>
+
+            // Get course progress
+            try {
+<span class="nc" id="L746">                CourseProgressWithMetaDTO progressData = courseMicroserviceClient.getCourseProgressWithMeta(</span>
+                        userId,
+                        courseId
+                );
+<span class="nc" id="L750">                courseDTO.setProgress((float) progressData.getCourseCompletionPercentage());</span>
+<span class="nc" id="L751">            } catch (Exception e) {</span>
+<span class="nc" id="L752">                courseDTO.setProgress(0.0f);</span>
+<span class="nc" id="L753">            }</span>
+
+<span class="nc" id="L755">            courseDTO.setEnrollmentDate(null);</span>
+<span class="nc" id="L756">            courseDTO.setDeadline(null);</span>
+
+<span class="nc" id="L758">            return courseDTO;</span>
+<span class="nc" id="L759">        }).collect(Collectors.toList());</span>
+    }
+
+    private Map&lt;Long, String&gt; fetchCourseNamesBatch(List&lt;Long&gt; courseIds) {
+<span class="nc" id="L763">        Map&lt;Long, String&gt; courseNamesMap = new HashMap&lt;&gt;();</span>
+
+<span class="nc bnc" id="L765" title="All 2 branches missed.">        if (courseIds.isEmpty()) {</span>
+<span class="nc" id="L766">            return courseNamesMap;</span>
+        }
+
+        try {
+            // Filter existing course IDs first
+<span class="nc" id="L771">            ResponseEntity&lt;List&lt;Long&gt;&gt; existingIdsResponse = courseMicroserviceClient.getExistingCourseIds(courseIds);</span>
+<span class="nc" id="L772">            List&lt;Long&gt; existingCourseIds = existingIdsResponse.getBody();</span>
+
+<span class="nc bnc" id="L774" title="All 2 branches missed.">            if (existingCourseIds != null) {</span>
+<span class="nc bnc" id="L775" title="All 2 branches missed.">                for (Long courseId : existingCourseIds) {</span>
+                    try {
+<span class="nc" id="L777">                        ResponseEntity&lt;String&gt; nameResponse = courseMicroserviceClient.getCourseNameById(courseId);</span>
+<span class="nc" id="L778">                        courseNamesMap.put(courseId, nameResponse.getBody());</span>
+<span class="nc" id="L779">                    } catch (Exception e) {</span>
+<span class="nc" id="L780">                        courseNamesMap.put(courseId, &quot;Unknown Course&quot;);</span>
+<span class="nc" id="L781">                    }</span>
+<span class="nc" id="L782">                }</span>
+            }
+<span class="nc" id="L784">        } catch (Exception e) {</span>
+            // Fallback to individual calls if batch fails
+<span class="nc bnc" id="L786" title="All 2 branches missed.">            for (Long courseId : courseIds) {</span>
+                try {
+<span class="nc" id="L788">                    ResponseEntity&lt;String&gt; nameResponse = courseMicroserviceClient.getCourseNameById(courseId);</span>
+<span class="nc" id="L789">                    courseNamesMap.put(courseId, nameResponse.getBody());</span>
+<span class="nc" id="L790">                } catch (Exception ex) {</span>
+<span class="nc" id="L791">                    courseNamesMap.put(courseId, &quot;Unknown Course&quot;);</span>
+<span class="nc" id="L792">                }</span>
+<span class="nc" id="L793">            }</span>
+<span class="nc" id="L794">        }</span>
+
+<span class="nc" id="L796">        return courseNamesMap;</span>
+    }
+
+    private Map&lt;Long, String&gt; fetchBundleNamesBatch(List&lt;Long&gt; bundleIds) {
+<span class="nc" id="L800">        Map&lt;Long, String&gt; bundleNamesMap = new HashMap&lt;&gt;();</span>
+
+<span class="nc bnc" id="L802" title="All 2 branches missed.">        if (bundleIds.isEmpty()) {</span>
+<span class="nc" id="L803">            return bundleNamesMap;</span>
+        }
+
+        try {
+            // Filter existing bundle IDs first
+<span class="nc" id="L808">            ResponseEntity&lt;List&lt;Long&gt;&gt; existingIdsResponse = courseMicroserviceClient.getExistingBundleIds(bundleIds);</span>
+<span class="nc" id="L809">            List&lt;Long&gt; existingBundleIds = existingIdsResponse.getBody();</span>
+
+<span class="nc bnc" id="L811" title="All 2 branches missed.">            if (existingBundleIds != null) {</span>
+<span class="nc bnc" id="L812" title="All 2 branches missed.">                for (Long bundleId : existingBundleIds) {</span>
+                    try {
+<span class="nc" id="L814">                        ResponseEntity&lt;StandardResponseOutDTO&lt;String&gt;&gt; nameResponse =</span>
+<span class="nc" id="L815">                                courseMicroserviceClient.getBundleNameById(bundleId);</span>
+<span class="nc" id="L816">                        bundleNamesMap.put(bundleId, nameResponse.getBody().getData());</span>
+<span class="nc" id="L817">                    } catch (Exception e) {</span>
+<span class="nc" id="L818">                        bundleNamesMap.put(bundleId, &quot;Unknown Bundle&quot;);</span>
+<span class="nc" id="L819">                    }</span>
+<span class="nc" id="L820">                }</span>
+            }
+<span class="nc" id="L822">        } catch (Exception e) {</span>
+            // Fallback to individual calls if batch fails
+<span class="nc bnc" id="L824" title="All 2 branches missed.">            for (Long bundleId : bundleIds) {</span>
+                try {
+<span class="nc" id="L826">                    ResponseEntity&lt;StandardResponseOutDTO&lt;String&gt;&gt; nameResponse =</span>
+<span class="nc" id="L827">                            courseMicroserviceClient.getBundleNameById(bundleId);</span>
+<span class="nc" id="L828">                    bundleNamesMap.put(bundleId, nameResponse.getBody().getData());</span>
+<span class="nc" id="L829">                } catch (Exception ex) {</span>
+<span class="nc" id="L830">                    bundleNamesMap.put(bundleId, &quot;Unknown Bundle&quot;);</span>
+<span class="nc" id="L831">                }</span>
+<span class="nc" id="L832">            }</span>
+<span class="nc" id="L833">        }</span>
+
+<span class="nc" id="L835">        return bundleNamesMap;</span>
+    }
+
+    private Map&lt;Long, List&lt;Long&gt;&gt; fetchBundleCourseMappings(List&lt;Long&gt; bundleIds) {
+<span class="nc" id="L839">        Map&lt;Long, List&lt;Long&gt;&gt; bundleCourseMappings = new HashMap&lt;&gt;();</span>
+
+<span class="nc bnc" id="L841" title="All 2 branches missed.">        for (Long bundleId : bundleIds) {</span>
+            try {
+<span class="nc" id="L843">                ResponseEntity&lt;List&lt;Long&gt;&gt; courseIdsResponse = courseMicroserviceClient.findCourseIdsByBundleId(bundleId);</span>
+<span class="nc bnc" id="L844" title="All 2 branches missed.">                bundleCourseMappings.put(bundleId, courseIdsResponse.getBody() != null ?</span>
+<span class="nc" id="L845">                        courseIdsResponse.getBody() : new ArrayList&lt;&gt;());</span>
+<span class="nc" id="L846">            } catch (Exception e) {</span>
+<span class="nc" id="L847">                bundleCourseMappings.put(bundleId, new ArrayList&lt;&gt;());</span>
+<span class="nc" id="L848">            }</span>
+<span class="nc" id="L849">        }</span>
+
+<span class="nc" id="L851">        return bundleCourseMappings;</span>
+    }
+
+    @Override
+    public List&lt;UserCourseEnrollmentOutDTO&gt; getIndividualCourseEnrollments() {
+        try {
+            // Get all individual course enrollments (excluding bundle enrollments)
+<span class="nc" id="L858">            List&lt;Enrollment&gt; individualCourseEnrollments = enrollmentRepository</span>
+<span class="nc" id="L859">                    .findByEnrollmentSourceAndIsActiveTrueAndBundleIdIsNull(ENROLLMENT_SOURCE_INDIVIDUAL);</span>
+
+<span class="nc bnc" id="L861" title="All 2 branches missed.">            if (individualCourseEnrollments.isEmpty()) {</span>
+<span class="nc" id="L862">                return new ArrayList&lt;&gt;();</span>
+            }
+
+            // Group by course ID
+<span class="nc" id="L866">            Map&lt;Long, List&lt;Enrollment&gt;&gt; enrollmentsByCourse = individualCourseEnrollments.stream()</span>
+<span class="nc" id="L867">                    .collect(Collectors.groupingBy(Enrollment::getCourseId));</span>
+
+            // Get unique course IDs
+<span class="nc" id="L870">            Set&lt;Long&gt; courseIds = enrollmentsByCourse.keySet();</span>
+
+            // Fetch course information in batch
+<span class="nc" id="L873">            Map&lt;Long, String&gt; courseNamesMap = fetchCourseNamesBatch(new ArrayList&lt;&gt;(courseIds));</span>
+<span class="nc" id="L874">            Map&lt;Long, CourseInfoOutDTO&gt; courseInfoMap = fetchCourseInfoBatch(new ArrayList&lt;&gt;(courseIds));</span>
+
+            // Get all unique user IDs for batch processing
+<span class="nc" id="L877">            Set&lt;Long&gt; allUserIds = individualCourseEnrollments.stream()</span>
+<span class="nc" id="L878">                    .map(Enrollment::getUserId)</span>
+<span class="nc" id="L879">                    .collect(Collectors.toSet());</span>
+<span class="nc" id="L880">            allUserIds.addAll(individualCourseEnrollments.stream()</span>
+<span class="nc" id="L881">                    .map(Enrollment::getAssignedBy)</span>
+<span class="nc" id="L882">                    .collect(Collectors.toSet()));</span>
+
+            // Fetch user information in batch
+<span class="nc" id="L885">            Map&lt;Long, User&gt; userMap = fetchUsersBatch(new ArrayList&lt;&gt;(allUserIds));</span>
+
+            // Process each course
+<span class="nc" id="L888">            return enrollmentsByCourse.entrySet().stream()</span>
+<span class="nc" id="L889">                    .map(entry -&gt; {</span>
+<span class="nc" id="L890">                        Long courseId = entry.getKey();</span>
+<span class="nc" id="L891">                        List&lt;Enrollment&gt; courseEnrollments = entry.getValue();</span>
+
+<span class="nc" id="L893">                        UserCourseEnrollmentOutDTO courseDTO = new UserCourseEnrollmentOutDTO();</span>
+<span class="nc" id="L894">                        courseDTO.setCourseId(courseId);</span>
+<span class="nc" id="L895">                        courseDTO.setCourseName(courseNamesMap.getOrDefault(courseId, &quot;Unknown Course&quot;));</span>
+<span class="nc" id="L896">                        courseDTO.setIndividualEnrollments((long) courseEnrollments.size());</span>
+
+                        // Set owner information from course info
+<span class="nc" id="L899">                        CourseInfoOutDTO courseInfo = courseInfoMap.get(courseId);</span>
+<span class="nc bnc" id="L900" title="All 2 branches missed.">                        if (courseInfo != null) {</span>
+<span class="nc" id="L901">                            courseDTO.setOwnerId(courseInfo.getOwnerId());</span>
+<span class="nc" id="L902">                            courseDTO.setActive(courseInfo.isActive());</span>
+<span class="nc" id="L903">                            User owner = userMap.get(courseInfo.getOwnerId());</span>
+<span class="nc bnc" id="L904" title="All 2 branches missed.">                            courseDTO.setOwnerName(owner != null ? owner.getUserName() : &quot;Unknown Owner&quot;);</span>
+<span class="nc" id="L905">                        } else {</span>
+<span class="nc" id="L906">                            courseDTO.setOwnerId(null);</span>
+<span class="nc" id="L907">                            courseDTO.setActive(true);</span>
+<span class="nc" id="L908">                            courseDTO.setOwnerName(&quot;Unknown Owner&quot;);</span>
+                        }
+
+                        // Process enrolled users
+<span class="nc" id="L912">                        List&lt;EnrolledUserOutDTO&gt; enrolledUsers = courseEnrollments.stream()</span>
+<span class="nc" id="L913">                                .map(enrollment -&gt; {</span>
+<span class="nc" id="L914">                                    EnrolledUserOutDTO userDTO = new EnrolledUserOutDTO();</span>
+<span class="nc" id="L915">                                    userDTO.setUserId(enrollment.getUserId());</span>
+<span class="nc" id="L916">                                    userDTO.setEnrollmentDate(enrollment.getAssignedAt());</span>
+<span class="nc" id="L917">                                    userDTO.setDeadline(enrollment.getDeadline());</span>
+
+                                    // Set user name
+<span class="nc" id="L920">                                    User user = userMap.get(enrollment.getUserId());</span>
+<span class="nc bnc" id="L921" title="All 2 branches missed.">                                    userDTO.setUserName(user != null ? user.getUserName() : &quot;Unknown User&quot;);</span>
+
+                                    // Set assigned by name
+<span class="nc" id="L924">                                    User assignedByUser = userMap.get(enrollment.getAssignedBy());</span>
+<span class="nc bnc" id="L925" title="All 2 branches missed.">                                    userDTO.setAssignedByName(assignedByUser != null ? assignedByUser.getUserName() : &quot;Unknown&quot;);</span>
+
+                                    // Get progress
+                                    try {
+<span class="nc" id="L929">                                        CourseProgressWithMetaDTO progressData = courseMicroserviceClient</span>
+<span class="nc" id="L930">                                                .getCourseProgressWithMeta(</span>
+<span class="nc" id="L931">                                                        enrollment.getUserId(),</span>
+                                                        courseId
+                                                );
+<span class="nc" id="L934">                                        userDTO.setProgress(progressData.getCourseCompletionPercentage());</span>
+<span class="nc" id="L935">                                    } catch (Exception e) {</span>
+<span class="nc" id="L936">                                        userDTO.setProgress(0.0);</span>
+<span class="nc" id="L937">                                    }</span>
+
+<span class="nc" id="L939">                                    return userDTO;</span>
+                                })
+<span class="nc" id="L941">                                .collect(Collectors.toList());</span>
+
+<span class="nc" id="L943">                        courseDTO.setEnrolledUserOutDTOList(enrolledUsers);</span>
+<span class="nc" id="L944">                        return courseDTO;</span>
+                    })
+<span class="nc" id="L946">                    .collect(Collectors.toList());</span>
+
+<span class="nc" id="L948">        } catch (Exception e) {</span>
+<span class="nc" id="L949">            throw new ResourceNotValidException(&quot;Failed to fetch individual course enrollments: &quot; + e.getMessage());</span>
+        }
+    }
+
+    @Override
+    public List&lt;UserBundleEnrollmentOutDTO&gt; getIndividualBundleEnrollments() {
+        try {
+            // Get all individual bundle enrollments
+<span class="nc" id="L957">            List&lt;Enrollment&gt; individualBundleEnrollments = enrollmentRepository</span>
+<span class="nc" id="L958">                    .findByEnrollmentSourceAndIsActiveTrueAndBundleIdIsNotNull(ENROLLMENT_SOURCE_BUNDLE);</span>
+
+<span class="nc bnc" id="L960" title="All 2 branches missed.">            if (individualBundleEnrollments.isEmpty()) {</span>
+<span class="nc" id="L961">                return new ArrayList&lt;&gt;();</span>
+            }
+
+            // Group by bundle ID
+<span class="nc" id="L965">            Map&lt;Long, List&lt;Enrollment&gt;&gt; enrollmentsByBundle = individualBundleEnrollments.stream()</span>
+<span class="nc" id="L966">                    .collect(Collectors.groupingBy(Enrollment::getBundleId));</span>
+
+            // Get unique bundle IDs
+<span class="nc" id="L969">            Set&lt;Long&gt; bundleIds = enrollmentsByBundle.keySet();</span>
+
+            // Fetch bundle information in batch
+<span class="nc" id="L972">            Map&lt;Long, String&gt; bundleNamesMap = fetchBundleNamesBatch(new ArrayList&lt;&gt;(bundleIds));</span>
+<span class="nc" id="L973">            Map&lt;Long, BundleInfoOutDTO&gt; bundleInfoMap = fetchBundleInfoBatch(new ArrayList&lt;&gt;(bundleIds));</span>
+<span class="nc" id="L974">            Map&lt;Long, List&lt;Long&gt;&gt; bundleCourseMappings = fetchBundleCourseMappings(new ArrayList&lt;&gt;(bundleIds));</span>
+
+            // Get all unique user IDs for batch processing
+<span class="nc" id="L977">            Set&lt;Long&gt; allUserIds = individualBundleEnrollments.stream()</span>
+<span class="nc" id="L978">                    .map(Enrollment::getUserId)</span>
+<span class="nc" id="L979">                    .collect(Collectors.toSet());</span>
+<span class="nc" id="L980">            allUserIds.addAll(individualBundleEnrollments.stream()</span>
+<span class="nc" id="L981">                    .map(Enrollment::getAssignedBy)</span>
+<span class="nc" id="L982">                    .collect(Collectors.toSet()));</span>
+
+            // Fetch user information in batch
+<span class="nc" id="L985">            Map&lt;Long, User&gt; userMap = fetchUsersBatch(new ArrayList&lt;&gt;(allUserIds));</span>
+
+            // Process each bundle
+<span class="nc" id="L988">            return enrollmentsByBundle.entrySet().stream()</span>
+<span class="nc" id="L989">                    .map(entry -&gt; {</span>
+<span class="nc" id="L990">                        Long bundleId = entry.getKey();</span>
+<span class="nc" id="L991">                        List&lt;Enrollment&gt; bundleEnrollments = entry.getValue();</span>
+
+<span class="nc" id="L993">                        UserBundleEnrollmentOutDTO bundleDTO = new UserBundleEnrollmentOutDTO();</span>
+<span class="nc" id="L994">                        bundleDTO.setBundleId(bundleId);</span>
+<span class="nc" id="L995">                        bundleDTO.setBundleName(bundleNamesMap.getOrDefault(bundleId, &quot;Unknown Bundle&quot;));</span>
+
+                        // Set bundle information
+<span class="nc" id="L998">                        BundleInfoOutDTO bundleInfo = bundleInfoMap.get(bundleId);</span>
+<span class="nc bnc" id="L999" title="All 2 branches missed.">                        if (bundleInfo != null) {</span>
+<span class="nc" id="L1000">                            bundleDTO.setTotalCourses(bundleInfo.getTotalCourses());</span>
+<span class="nc" id="L1001">                            bundleDTO.setActive(bundleInfo.isActive());</span>
+                        } else {
+<span class="nc" id="L1003">                            List&lt;Long&gt; courseIds = bundleCourseMappings.getOrDefault(bundleId, new ArrayList&lt;&gt;());</span>
+<span class="nc" id="L1004">                            bundleDTO.setTotalCourses((long) courseIds.size());</span>
+<span class="nc" id="L1005">                            bundleDTO.setActive(true);</span>
+                        }
+
+                        // Get unique users enrolled in this bundle
+<span class="nc" id="L1009">                        Map&lt;Long, List&lt;Enrollment&gt;&gt; enrollmentsByUser = bundleEnrollments.stream()</span>
+<span class="nc" id="L1010">                                .collect(Collectors.groupingBy(Enrollment::getUserId));</span>
+
+<span class="nc" id="L1012">                        bundleDTO.setIndividualEnrollments((long) enrollmentsByUser.size());</span>
+
+                        // Calculate average completion across all users and courses in bundle
+<span class="nc" id="L1015">                        List&lt;Double&gt; allProgressValues = new ArrayList&lt;&gt;();</span>
+
+                        // Process enrolled users
+<span class="nc" id="L1018">                        List&lt;EnrolledUserOutDTO&gt; enrolledUsers = enrollmentsByUser.entrySet().stream()</span>
+<span class="nc" id="L1019">                                .map(userEntry -&gt; {</span>
+<span class="nc" id="L1020">                                    Long userId = userEntry.getKey();</span>
+<span class="nc" id="L1021">                                    List&lt;Enrollment&gt; userBundleEnrollments = userEntry.getValue();</span>
+
+                                    // Use the first enrollment for basic info (they should all have same assignment details)
+<span class="nc" id="L1024">                                    Enrollment primaryEnrollment = userBundleEnrollments.get(0);</span>
+
+<span class="nc" id="L1026">                                    EnrolledUserOutDTO userDTO = new EnrolledUserOutDTO();</span>
+<span class="nc" id="L1027">                                    userDTO.setUserId(userId);</span>
+<span class="nc" id="L1028">                                    userDTO.setEnrollmentDate(primaryEnrollment.getAssignedAt());</span>
+<span class="nc" id="L1029">                                    userDTO.setDeadline(primaryEnrollment.getDeadline());</span>
+
+                                    // Set user name
+<span class="nc" id="L1032">                                    User user = userMap.get(userId);</span>
+<span class="nc bnc" id="L1033" title="All 2 branches missed.">                                    userDTO.setUserName(user != null ? user.getUserName() : &quot;Unknown User&quot;);</span>
+
+                                    // Set assigned by name
+<span class="nc" id="L1036">                                    User assignedByUser = userMap.get(primaryEnrollment.getAssignedBy());</span>
+<span class="nc bnc" id="L1037" title="All 2 branches missed.">                                    userDTO.setAssignedByName(assignedByUser != null ? assignedByUser.getUserName() : &quot;Unknown&quot;);</span>
+
+                                    // Calculate average progress for this user across all courses in bundle
+<span class="nc" id="L1040">                                    List&lt;Double&gt; userProgressValues = userBundleEnrollments.stream()</span>
+<span class="nc" id="L1041">                                            .map(enrollment -&gt; {</span>
+                                                try {
+<span class="nc" id="L1043">                                                    CourseProgressWithMetaDTO progressData = courseMicroserviceClient</span>
+<span class="nc" id="L1044">                                                            .getCourseProgressWithMeta(</span>
+                                                                    userId,
+<span class="nc" id="L1046">                                                                    enrollment.getCourseId()</span>
+                                                            );
+<span class="nc" id="L1048">                                                    return progressData.getCourseCompletionPercentage();</span>
+<span class="nc" id="L1049">                                                } catch (Exception e) {</span>
+<span class="nc" id="L1050">                                                    return 0.0;</span>
+                                                }
+                                            })
+<span class="nc" id="L1053">                                            .toList();</span>
+
+<span class="nc" id="L1055">                                    double userAverageProgress = userProgressValues.stream()</span>
+<span class="nc" id="L1056">                                            .mapToDouble(Double::doubleValue)</span>
+<span class="nc" id="L1057">                                            .average()</span>
+<span class="nc" id="L1058">                                            .orElse(0.0);</span>
+
+<span class="nc" id="L1060">                                    userDTO.setProgress(userAverageProgress);</span>
+
+                                    // Add to overall progress calculation
+<span class="nc" id="L1063">                                    allProgressValues.addAll(userProgressValues);</span>
+
+<span class="nc" id="L1065">                                    return userDTO;</span>
+                                })
+<span class="nc" id="L1067">                                .collect(Collectors.toList());</span>
+
+<span class="nc" id="L1069">                        bundleDTO.setEnrolledUserOutDTOList(enrolledUsers);</span>
+
+                        // Calculate overall average completion for the bundle
+<span class="nc bnc" id="L1072" title="All 2 branches missed.">                        float averageCompletion = allProgressValues.isEmpty() ? 0.0f :</span>
+<span class="nc" id="L1073">                                (float) allProgressValues.stream()</span>
+<span class="nc" id="L1074">                                        .mapToDouble(Double::doubleValue)</span>
+<span class="nc" id="L1075">                                        .average()</span>
+<span class="nc" id="L1076">                                        .orElse(0.0);</span>
+
+<span class="nc" id="L1078">                        bundleDTO.setAverageCompletion(averageCompletion);</span>
+
+<span class="nc" id="L1080">                        return bundleDTO;</span>
+                    })
+<span class="nc" id="L1082">                    .collect(Collectors.toList());</span>
+
+<span class="nc" id="L1084">        } catch (Exception e) {</span>
+<span class="nc" id="L1085">            throw new ResourceNotValidException(&quot;Failed to fetch individual bundle enrollments: &quot; + e.getMessage());</span>
+        }
+    }
+
+// Helper methods for batch processing
+
+    private Map&lt;Long, CourseInfoOutDTO&gt; fetchCourseInfoBatch(List&lt;Long&gt; courseIds) {
+<span class="nc" id="L1092">        Map&lt;Long, CourseInfoOutDTO&gt; courseInfoMap = new HashMap&lt;&gt;();</span>
+
+        try {
+<span class="nc" id="L1095">            ResponseEntity&lt;StandardResponseOutDTO&lt;List&lt;CourseInfoOutDTO&gt;&gt;&gt; response =</span>
+<span class="nc" id="L1096">                    courseMicroserviceClient.getCourseInfo();</span>
+
+<span class="nc bnc" id="L1098" title="All 4 branches missed.">            if (response.getBody() != null &amp;&amp; response.getBody().getData() != null) {</span>
+<span class="nc" id="L1099">                List&lt;CourseInfoOutDTO&gt; allCourses = response.getBody().getData();</span>
+<span class="nc" id="L1100">                courseInfoMap = allCourses.stream()</span>
+<span class="nc" id="L1101">                        .filter(course -&gt; courseIds.contains(course.getCourseId()))</span>
+<span class="nc" id="L1102">                        .collect(Collectors.toMap(CourseInfoOutDTO::getCourseId, Function.identity()));</span>
+            }
+<span class="nc" id="L1104">        } catch (Exception e) {</span>
+            // If batch fetch fails, return empty map
+<span class="nc" id="L1106">        }</span>
+
+<span class="nc" id="L1108">        return courseInfoMap;</span>
+    }
+
+    private Map&lt;Long, BundleInfoOutDTO&gt; fetchBundleInfoBatch(List&lt;Long&gt; bundleIds) {
+<span class="nc" id="L1112">        Map&lt;Long, BundleInfoOutDTO&gt; bundleInfoMap = new HashMap&lt;&gt;();</span>
+
+        try {
+<span class="nc" id="L1115">            ResponseEntity&lt;StandardResponseOutDTO&lt;List&lt;BundleInfoOutDTO&gt;&gt;&gt; response =</span>
+<span class="nc" id="L1116">                    courseMicroserviceClient.getBundleInfo();</span>
+
+<span class="nc bnc" id="L1118" title="All 4 branches missed.">            if (response.getBody() != null &amp;&amp; response.getBody().getData() != null) {</span>
+<span class="nc" id="L1119">                List&lt;BundleInfoOutDTO&gt; allBundles = response.getBody().getData();</span>
+<span class="nc" id="L1120">                bundleInfoMap = allBundles.stream()</span>
+<span class="nc" id="L1121">                        .filter(bundle -&gt; bundleIds.contains(bundle.getBundleId()))</span>
+<span class="nc" id="L1122">                        .collect(Collectors.toMap(BundleInfoOutDTO::getBundleId, Function.identity()));</span>
+            }
+<span class="nc" id="L1124">        } catch (Exception e) {</span>
+            // If batch fetch fails, return empty map
+<span class="nc" id="L1126">        }</span>
+
+<span class="nc" id="L1128">        return bundleInfoMap;</span>
+    }
+
+    private Map&lt;Long, User&gt; fetchUsersBatch(List&lt;Long&gt; userIds) {
+<span class="nc bnc" id="L1132" title="All 2 branches missed.">        if (userIds.isEmpty()) {</span>
+<span class="nc" id="L1133">            return new HashMap&lt;&gt;();</span>
+        }
+
+        try {
+<span class="nc" id="L1137">            List&lt;User&gt; users = userRepository.findAllById(userIds);</span>
+<span class="nc" id="L1138">            return users.stream()</span>
+<span class="nc" id="L1139">                    .collect(Collectors.toMap(User::getUserId, Function.identity()));</span>
+<span class="nc" id="L1140">        } catch (Exception e) {</span>
+<span class="nc" id="L1141">            return new HashMap&lt;&gt;();</span>
+        }
+    }
+
+    @Override
+    public List&lt;UserCourseEnrollDetails&gt; getUserEnrolledCourses(Long userId) {
+<span class="nc" id="L1147">        List&lt;Enrollment&gt; enrollments = enrollmentRepository.findByUserIdAndIsActiveTrue(userId);</span>
+
+<span class="nc" id="L1149">        Map&lt;Long, Enrollment&gt; earliestCourseEnrollments = new HashMap&lt;&gt;();</span>
+
+<span class="nc bnc" id="L1151" title="All 2 branches missed.">        for (Enrollment e : enrollments) {</span>
+<span class="nc" id="L1152">            Long courseId = e.getCourseId();</span>
+<span class="nc bnc" id="L1153" title="All 2 branches missed.">            if (courseId == null) continue;</span>
+
+<span class="nc bnc" id="L1155" title="All 2 branches missed.">            if (!earliestCourseEnrollments.containsKey(courseId) ||</span>
+<span class="nc bnc" id="L1156" title="All 2 branches missed.">                    e.getAssignedAt().isBefore(earliestCourseEnrollments.get(courseId).getAssignedAt())) {</span>
+<span class="nc" id="L1157">                earliestCourseEnrollments.put(courseId, e);</span>
+            }
+<span class="nc" id="L1159">        }</span>
+
+<span class="nc" id="L1161">        return earliestCourseEnrollments.values().stream()</span>
+<span class="nc" id="L1162">                .map(e -&gt; {</span>
+<span class="nc" id="L1163">                    UserCourseEnrollDetails dto = new UserCourseEnrollDetails();</span>
+<span class="nc" id="L1164">                    dto.setCourseId(e.getCourseId());</span>
+<span class="nc" id="L1165">                    dto.setAssignedById(e.getAssignedBy()); // assuming it's Long</span>
+<span class="nc" id="L1166">                    dto.setEnrollmentDate(e.getAssignedAt());</span>
+<span class="nc" id="L1167">                    dto.setDeadline(e.getDeadline());</span>
+<span class="nc" id="L1168">                    return dto;</span>
+                })
+<span class="nc" id="L1170">                .collect(Collectors.toList());</span>
+    }
+
+    // Add this method to your EnrollmentServiceImpl class
+    private boolean enrollmentExists(Long userId, Long groupId, Long courseId, Long bundleId, String enrollmentSource) {
+<span class="nc" id="L1175">        return enrollmentRepository.existsByUserIdAndGroupIdAndCourseIdAndBundleIdAndEnrollmentSourceAndIsActive(</span>
+<span class="nc" id="L1176">                userId, groupId, courseId, bundleId, enrollmentSource, true);</span>
+    }
+
+    // Updated enrollUsersToCourses method
+    private List&lt;Enrollment&gt; enrollUsersToCourses(EnrollmentRequestInDTO requestDTO) {
+<span class="nc" id="L1181">        List&lt;Enrollment&gt; enrollments = new ArrayList&lt;&gt;();</span>
+
+<span class="nc bnc" id="L1183" title="All 2 branches missed.">        for (Long userId : requestDTO.getUserIds()) {</span>
+<span class="nc bnc" id="L1184" title="All 2 branches missed.">            for (Long courseId : requestDTO.getCourseIds()) {</span>
+                // Check if enrollment already exists for this user-course combination with INDIVIDUAL source
+<span class="nc bnc" id="L1186" title="All 2 branches missed.">                if (enrollmentExists(userId, null, courseId, null, ENROLLMENT_SOURCE_INDIVIDUAL)) {</span>
+<span class="nc" id="L1187">                    throw new ResourceAlreadyExistsException(</span>
+                            &quot;User with ID &quot; + userId + &quot; is already individually enrolled in course with ID &quot; + courseId);
+                }
+
+<span class="nc" id="L1191">                Enrollment enrollment = createEnrollment(</span>
+                        userId, null, courseId, null,
+                        ENROLLMENT_SOURCE_INDIVIDUAL, requestDTO
+                );
+<span class="nc" id="L1195">                enrollments.add(enrollment);</span>
+<span class="nc" id="L1196">            }</span>
+<span class="nc" id="L1197">        }</span>
+
+<span class="nc" id="L1199">        return enrollments;</span>
+    }
+
+    // Updated enrollUsersToBundles method
+    private List&lt;Enrollment&gt; enrollUsersToBundles(EnrollmentRequestInDTO requestDTO) {
+<span class="nc" id="L1204">        List&lt;Enrollment&gt; enrollments = new ArrayList&lt;&gt;();</span>
+
+<span class="nc bnc" id="L1206" title="All 2 branches missed.">        for (Long userId : requestDTO.getUserIds()) {</span>
+<span class="nc bnc" id="L1207" title="All 2 branches missed.">            for (Long bundleId : requestDTO.getBundleIds()) {</span>
+                // Get all courses in the bundle
+<span class="nc" id="L1209">                List&lt;Long&gt; courseIds = courseMicroserviceClient.findCourseIdsByBundleId(bundleId).getBody();</span>
+
+<span class="nc bnc" id="L1211" title="All 4 branches missed.">                if (courseIds != null &amp;&amp; !courseIds.isEmpty()) {</span>
+                    // Check if any course in the bundle is already enrolled for this user with BUNDLE source
+<span class="nc bnc" id="L1213" title="All 2 branches missed.">                    for (Long courseId : courseIds) {</span>
+<span class="nc bnc" id="L1214" title="All 2 branches missed.">                        if (enrollmentExists(userId, null, courseId, bundleId, ENROLLMENT_SOURCE_BUNDLE)) {</span>
+<span class="nc" id="L1215">                            throw new ResourceAlreadyExistsException(</span>
+                                    &quot;User with ID &quot; + userId + &quot; is already enrolled in bundle with ID &quot; + bundleId +
+                                            &quot; (course &quot; + courseId + &quot; already exists)&quot;);
+                        }
+<span class="nc" id="L1219">                    }</span>
+
+                    // Create enrollment for each course in the bundle
+<span class="nc bnc" id="L1222" title="All 2 branches missed.">                    for (Long courseId : courseIds) {</span>
+<span class="nc" id="L1223">                        Enrollment enrollment = createEnrollment(</span>
+                                userId, null, courseId, bundleId,
+                                ENROLLMENT_SOURCE_BUNDLE, requestDTO
+                        );
+<span class="nc" id="L1227">                        enrollments.add(enrollment);</span>
+<span class="nc" id="L1228">                    }</span>
+                }
+<span class="nc" id="L1230">            }</span>
+<span class="nc" id="L1231">        }</span>
+
+<span class="nc" id="L1233">        return enrollments;</span>
+    }
+
+    // Updated enrollGroupsToCourses method
+    private List&lt;Enrollment&gt; enrollGroupsToCourses(EnrollmentRequestInDTO requestDTO) {
+<span class="nc" id="L1238">        List&lt;Enrollment&gt; enrollments = new ArrayList&lt;&gt;();</span>
+
+<span class="nc bnc" id="L1240" title="All 2 branches missed.">        for (Long groupId : requestDTO.getGroupIds()) {</span>
+            // Get all users in the group
+<span class="nc" id="L1242">            List&lt;Long&gt; userIds = userGroupRepository.findUserIdsByGroupId(groupId);</span>
+
+<span class="nc bnc" id="L1244" title="All 2 branches missed.">            for (Long courseId : requestDTO.getCourseIds()) {</span>
+                // Check if any user in the group is already enrolled in this course through this group
+<span class="nc bnc" id="L1246" title="All 2 branches missed.">                for (Long userId : userIds) {</span>
+<span class="nc bnc" id="L1247" title="All 2 branches missed.">                    if (enrollmentExists(userId, groupId, courseId, null, ENROLLMENT_SOURCE_GROUP)) {</span>
+<span class="nc" id="L1248">                        throw new ResourceAlreadyExistsException(</span>
+                                &quot;Group with ID &quot; + groupId + &quot; is already enrolled in course with ID &quot; + courseId +
+                                        &quot; (user &quot; + userId + &quot; already enrolled through this group)&quot;);
+                    }
+<span class="nc" id="L1252">                }</span>
+
+                // Create enrollment for each user in the group
+<span class="nc bnc" id="L1255" title="All 2 branches missed.">                for (Long userId : userIds) {</span>
+<span class="nc" id="L1256">                    Enrollment enrollment = createEnrollment(</span>
+                            userId, groupId, courseId, null,
+                            ENROLLMENT_SOURCE_GROUP, requestDTO
+                    );
+<span class="nc" id="L1260">                    enrollments.add(enrollment);</span>
+<span class="nc" id="L1261">                }</span>
+<span class="nc" id="L1262">            }</span>
+<span class="nc" id="L1263">        }</span>
+
+<span class="nc" id="L1265">        return enrollments;</span>
+    }
+
+    // Updated enrollGroupsToBundles method
+    private List&lt;Enrollment&gt; enrollGroupsToBundles(EnrollmentRequestInDTO requestDTO) {
+<span class="nc" id="L1270">        List&lt;Enrollment&gt; enrollments = new ArrayList&lt;&gt;();</span>
+
+<span class="nc bnc" id="L1272" title="All 2 branches missed.">        for (Long groupId : requestDTO.getGroupIds()) {</span>
+            // Get all users in the group
+<span class="nc" id="L1274">            List&lt;Long&gt; userIds = userGroupRepository.findUserIdsByGroupId(groupId);</span>
+
+<span class="nc bnc" id="L1276" title="All 2 branches missed.">            for (Long bundleId : requestDTO.getBundleIds()) {</span>
+                // Get all courses in the bundle
+<span class="nc" id="L1278">                List&lt;Long&gt; courseIds = courseMicroserviceClient.findCourseIdsByBundleId(bundleId).getBody();</span>
+
+<span class="nc bnc" id="L1280" title="All 4 branches missed.">                if (courseIds != null &amp;&amp; !courseIds.isEmpty()) {</span>
+                    // Check if any user-course combination already exists for this group-bundle
+<span class="nc bnc" id="L1282" title="All 2 branches missed.">                    for (Long userId : userIds) {</span>
+<span class="nc bnc" id="L1283" title="All 2 branches missed.">                        for (Long courseId : courseIds) {</span>
+<span class="nc bnc" id="L1284" title="All 2 branches missed.">                            if (enrollmentExists(userId, groupId, courseId, bundleId, ENROLLMENT_SOURCE_GROUP_BUNDLE)) {</span>
+<span class="nc" id="L1285">                                throw new ResourceAlreadyExistsException(</span>
+                                        &quot;Group with ID &quot; + groupId + &quot; is already enrolled in bundle with ID &quot; + bundleId +
+                                                &quot; (user &quot; + userId + &quot; already enrolled in course &quot; + courseId + &quot; through this group-bundle combination)&quot;);
+                            }
+<span class="nc" id="L1289">                        }</span>
+<span class="nc" id="L1290">                    }</span>
+
+                    // Create enrollment for each user-course combination
+<span class="nc bnc" id="L1293" title="All 2 branches missed.">                    for (Long userId : userIds) {</span>
+<span class="nc bnc" id="L1294" title="All 2 branches missed.">                        for (Long courseId : courseIds) {</span>
+<span class="nc" id="L1295">                            Enrollment enrollment = createEnrollment(</span>
+                                    userId, groupId, courseId, bundleId,
+                                    ENROLLMENT_SOURCE_GROUP_BUNDLE, requestDTO
+                            );
+<span class="nc" id="L1299">                            enrollments.add(enrollment);</span>
+<span class="nc" id="L1300">                        }</span>
+<span class="nc" id="L1301">                    }</span>
+                }
+<span class="nc" id="L1303">            }</span>
+<span class="nc" id="L1304">        }</span>
+
+<span class="nc" id="L1306">        return enrollments;</span>
+    }
+
+    private Enrollment createEnrollment(Long userId, Long groupId, Long courseId, Long bundleId,
+                                        String enrollmentSource, EnrollmentRequestInDTO requestDTO) {
+<span class="nc" id="L1311">        Enrollment enrollment = new Enrollment();</span>
+<span class="nc" id="L1312">        enrollment.setUserId(userId);</span>
+<span class="nc" id="L1313">        enrollment.setGroupId(groupId);</span>
+<span class="nc" id="L1314">        enrollment.setCourseId(courseId);</span>
+<span class="nc" id="L1315">        enrollment.setBundleId(bundleId);</span>
+<span class="nc" id="L1316">        enrollment.setAssignedBy(requestDTO.getAssignedBy());</span>
+<span class="nc" id="L1317">        enrollment.setAssignedAt(LocalDateTime.now());</span>
+<span class="nc" id="L1318">        enrollment.setDeadline(requestDTO.getDeadline());</span>
+<span class="nc" id="L1319">        enrollment.setStatus(requestDTO.getStatus());</span>
+<span class="nc" id="L1320">        enrollment.setEnrollmentSource(enrollmentSource);</span>
+<span class="nc" id="L1321">        enrollment.setCreatedAt(LocalDateTime.now());</span>
+<span class="nc" id="L1322">        enrollment.setUpdatedAt(LocalDateTime.now());</span>
+<span class="nc" id="L1323">        enrollment.setActive(true);</span>
+
+<span class="nc" id="L1325">        return enrollmentRepository.save(enrollment);</span>
+    }
+
+    // Updated conversion method (removed parentEnrollmentId and progressPercentage)
+    private EnrollmentOutDTO convertToEnrollmentOutDTO(Enrollment enrollment) {
+<span class="nc" id="L1330">        EnrollmentOutDTO dto = new EnrollmentOutDTO();</span>
+
+<span class="nc" id="L1332">        dto.setEnrollmentId(enrollment.getEnrollmentId());</span>
+<span class="nc" id="L1333">        dto.setUserId(enrollment.getUserId());</span>
+<span class="nc" id="L1334">        dto.setGroupId(enrollment.getGroupId());</span>
+<span class="nc" id="L1335">        dto.setCourseId(enrollment.getCourseId());</span>
+<span class="nc" id="L1336">        dto.setBundleId(enrollment.getBundleId());</span>
+<span class="nc" id="L1337">        dto.setAssignedBy(enrollment.getAssignedBy());</span>
+<span class="nc" id="L1338">        dto.setAssignedAt(enrollment.getAssignedAt());</span>
+<span class="nc" id="L1339">        dto.setDeadline(enrollment.getDeadline());</span>
+<span class="nc" id="L1340">        dto.setStatus(enrollment.getStatus());</span>
+<span class="nc" id="L1341">        dto.setEnrollmentSource(enrollment.getEnrollmentSource());</span>
+<span class="nc" id="L1342">        dto.setStartedAt(enrollment.getStartedAt());</span>
+<span class="nc" id="L1343">        dto.setCompletedAt(enrollment.getCompletedAt());</span>
+<span class="nc" id="L1344">        dto.setCreatedAt(enrollment.getCreatedAt());</span>
+<span class="nc" id="L1345">        dto.setUpdatedAt(enrollment.getUpdatedAt());</span>
+<span class="nc" id="L1346">        dto.setIsActive(enrollment.getIsActive());</span>
+
+<span class="nc" id="L1348">        return dto;</span>
+    }
+
+    private void validateEnrollmentRequest(EnrollmentRequestInDTO requestDTO) {
+<span class="nc bnc" id="L1352" title="All 2 branches missed.">        if (!requestDTO.isValid()) {</span>
+<span class="nc" id="L1353">            throw new ResourceNotValidException(&quot;Invalid enrollment request. Must provide either users or groups (not both) and either courses or bundles (not both).&quot;);</span>
+        }
+
+        // Verify assigned by user exists
+<span class="nc bnc" id="L1357" title="All 2 branches missed.">        if (!userRepository.existsById(requestDTO.getAssignedBy())) {</span>
+<span class="nc" id="L1358">            throw new ResourceNotFoundException(&quot;Assigned by user not found with ID: &quot; + requestDTO.getAssignedBy());</span>
+        }
+
+        // Validate users exist
+<span class="nc bnc" id="L1362" title="All 2 branches missed.">        if (requestDTO.hasUsers()) {</span>
+<span class="nc" id="L1363">            List&lt;Long&gt; existingUserIds = userRepository.findExistingIds(requestDTO.getUserIds());</span>
+<span class="nc bnc" id="L1364" title="All 2 branches missed.">            if (existingUserIds.size() != requestDTO.getUserIds().size()) {</span>
+<span class="nc" id="L1365">                List&lt;Long&gt; missing = new ArrayList&lt;&gt;(requestDTO.getUserIds());</span>
+<span class="nc" id="L1366">                missing.removeAll(existingUserIds);</span>
+<span class="nc" id="L1367">                throw new ResourceNotFoundException(&quot;Users not found with IDs: &quot; + missing);</span>
+            }
+        }
+
+        // Validate groups exist
+<span class="nc bnc" id="L1372" title="All 2 branches missed.">        if (requestDTO.hasGroups()) {</span>
+<span class="nc" id="L1373">            List&lt;Long&gt; existingGroupIds = groupRepository.findExistingIds(requestDTO.getGroupIds());</span>
+<span class="nc bnc" id="L1374" title="All 2 branches missed.">            if (existingGroupIds.size() != requestDTO.getGroupIds().size()) {</span>
+<span class="nc" id="L1375">                List&lt;Long&gt; missing = new ArrayList&lt;&gt;(requestDTO.getGroupIds());</span>
+<span class="nc" id="L1376">                missing.removeAll(existingGroupIds);</span>
+<span class="nc" id="L1377">                throw new ResourceNotFoundException(&quot;Groups not found with IDs: &quot; + missing);</span>
+            }
+        }
+
+        // Validate courses exist
+<span class="nc bnc" id="L1382" title="All 2 branches missed.">        if (requestDTO.hasCourses()) {</span>
+<span class="nc" id="L1383">            List&lt;Long&gt; existingCourseIds = courseMicroserviceClient.getExistingCourseIds(requestDTO.getCourseIds()).getBody();</span>
+<span class="nc bnc" id="L1384" title="All 2 branches missed.">            if (existingCourseIds.size() != requestDTO.getCourseIds().size()) {</span>
+<span class="nc" id="L1385">                List&lt;Long&gt; missing = new ArrayList&lt;&gt;(requestDTO.getCourseIds());</span>
+<span class="nc" id="L1386">                missing.removeAll(existingCourseIds);</span>
+<span class="nc" id="L1387">                throw new ResourceNotFoundException(&quot;Courses not found with IDs: &quot; + missing);</span>
+            }
+        }
+
+        // Validate bundles exist
+<span class="nc bnc" id="L1392" title="All 2 branches missed.">        if (requestDTO.hasBundles()) {</span>
+<span class="nc" id="L1393">            List&lt;Long&gt; existingBundleIds = courseMicroserviceClient.getExistingBundleIds(requestDTO.getBundleIds()).getBody();</span>
+<span class="nc bnc" id="L1394" title="All 2 branches missed.">            if (existingBundleIds.size() != requestDTO.getBundleIds().size()) {</span>
+<span class="nc" id="L1395">                List&lt;Long&gt; missing = new ArrayList&lt;&gt;(requestDTO.getBundleIds());</span>
+<span class="nc" id="L1396">                missing.removeAll(existingBundleIds);</span>
+<span class="nc" id="L1397">                throw new ResourceNotFoundException(&quot;Bundles not found with IDs: &quot; + missing);</span>
+            }
+        }
+<span class="nc" id="L1400">    }</span>
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.11.202310140853</span></div></body></html>

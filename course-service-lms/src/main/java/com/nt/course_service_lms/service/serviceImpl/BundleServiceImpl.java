@@ -4,10 +4,13 @@ import com.nt.course_service_lms.converters.BundleConverter;
 import com.nt.course_service_lms.dto.inDTO.BundleInDTO;
 import com.nt.course_service_lms.dto.outDTO.BundleOutDTO;
 import com.nt.course_service_lms.dto.inDTO.UpdateBundleInDTO;
+import com.nt.course_service_lms.dto.outDTO.StandardResponseOutDTO;
 import com.nt.course_service_lms.entity.Bundle;
+import com.nt.course_service_lms.entity.CourseBundle;
 import com.nt.course_service_lms.exception.ResourceAlreadyExistsException;
 import com.nt.course_service_lms.exception.ResourceNotFoundException;
 import com.nt.course_service_lms.repository.BundleRepository;
+import com.nt.course_service_lms.repository.CourseBundleRepository;
 import com.nt.course_service_lms.service.BundleService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -37,6 +40,13 @@ public class BundleServiceImpl implements BundleService {
      */
     @Autowired
     private BundleRepository bundleRepository;
+
+
+    /**
+     * The repository responsible for performing CRUD operations on the {@link CourseBundle} entity.
+     */
+    @Autowired
+    private CourseBundleRepository courseBundleRepository;
 
     /**
      * Converter for handling Bundle entity and DTO conversions.
@@ -103,7 +113,7 @@ public class BundleServiceImpl implements BundleService {
         log.info("Successfully retrieved {} bundles", bundles.size());
 
         // Convert entities to output DTOs
-        return bundles.stream()
+        return bundles.stream().filter(Bundle::isActive)
                 .map(bundleConverter::toOutDTO)
                 .collect(Collectors.toList());
     }
@@ -204,9 +214,14 @@ public class BundleServiceImpl implements BundleService {
                 log.error("Bundle with ID {} not found", id);
                 return new ResourceNotFoundException(String.format(BUNDLE_NOT_FOUND_BY_ID, id));
             });
-
+            List<CourseBundle> courseBundles = courseBundleRepository.findByBundleId(id);
+            for(CourseBundle courseBundle : courseBundles){
+                courseBundle.setActive(false);
+                courseBundleRepository.save(courseBundle);
+            }
             // Delete the bundle
-            bundleRepository.delete(existingBundle);
+            existingBundle.setActive(false);
+            bundleRepository.save(existingBundle);
             log.info("Successfully deleted bundle with ID: {}", id);
 
         } catch (ResourceNotFoundException e) {
@@ -293,5 +308,15 @@ public class BundleServiceImpl implements BundleService {
         } catch (Exception e) {
             throw new RuntimeException("SERVER ERROR");
         }
+    }
+
+
+    @Override
+    public StandardResponseOutDTO<List<BundleOutDTO>> getBundlesByIds(List<Long> bundleIds){
+        List <Bundle> bundles = bundleRepository.findByBundleIdIn(bundleIds);
+        BundleConverter bundleConverter = new BundleConverter();
+        List<BundleOutDTO> bundleInfo = bundles.stream().map(bundleConverter::toOutDTO).collect(Collectors.toList());
+        return StandardResponseOutDTO.success(bundleInfo,"Bundle info retrieved.");
+
     }
 }

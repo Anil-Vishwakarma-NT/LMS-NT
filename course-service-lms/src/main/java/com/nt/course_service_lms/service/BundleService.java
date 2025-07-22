@@ -3,6 +3,7 @@ package com.nt.course_service_lms.service;
 import com.nt.course_service_lms.dto.inDTO.BundleInDTO;
 import com.nt.course_service_lms.dto.outDTO.BundleOutDTO;
 import com.nt.course_service_lms.dto.inDTO.UpdateBundleInDTO;
+import com.nt.course_service_lms.dto.outDTO.StandardResponseOutDTO;
 import com.nt.course_service_lms.exception.ResourceNotFoundException;
 
 import java.util.List;
@@ -80,4 +81,6 @@ public interface BundleService {
     String getBundleNameById(Long bundleId);
 
     List<Long> findExistingIds(List<Long> bundleIds);
+
+    StandardResponseOutDTO<List<BundleOutDTO>> getBundlesByIds(List<Long> bundleIds);
 }

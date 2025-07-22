@@ -1,0 +1,248 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>EnrollmentRequestInDTO.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">user-service-lms</a> &gt; <a href="index.source.html" class="el_package">com.nt.user_service_lms.dto.inDTO</a> &gt; <span class="el_source">EnrollmentRequestInDTO.java</span></div><h1>EnrollmentRequestInDTO.java</h1><pre class="source lang-java linenums">package com.nt.user_service_lms.dto.inDTO;
+
+
+import jakarta.validation.constraints.NotNull;
+
+import java.time.LocalDateTime;
+import java.util.List;
+
+/**
+ * Data Transfer Object for enrollment request input.
+ * Represents the request data for enrolling users or groups in courses or bundles.
+ * Provides validation logic to ensure proper enrollment request structure.
+ *
+ * @author Generated
+ * @version 1.0
+ * @since 1.0
+ */
+public class EnrollmentRequestInDTO {
+
+    /**
+     * The unique identifier of the user who is assigning this enrollment.
+     * This field is required and cannot be null.
+     */
+    @NotNull(message = &quot;Assigned by user ID is required&quot;)
+    private Long assignedBy;
+
+    /**
+     * List of user IDs to be enrolled.
+     * Either userIds or groupIds should be provided, but not both.
+     */
+    private List&lt;Long&gt; userIds;
+
+    /**
+     * List of group IDs to be enrolled.
+     * Either userIds or groupIds should be provided, but not both.
+     */
+    private List&lt;Long&gt; groupIds;
+
+    /**
+     * List of course IDs for enrollment.
+     * Either courseIds or bundleIds should be provided, but not both.
+     */
+    private List&lt;Long&gt; courseIds;
+
+    /**
+     * List of bundle IDs for enrollment.
+     * Either courseIds or bundleIds should be provided, but not both.
+     */
+    private List&lt;Long&gt; bundleIds;
+
+    /**
+     * The deadline for completing the enrollment.
+     * This field is required and cannot be null.
+     */
+    @NotNull(message = &quot;Deadline is required&quot;)
+    private LocalDateTime deadline;
+
+    /**
+     * The status of the enrollment request.
+     * Defaults to &quot;ACTIVE&quot; if not specified.
+     */
+<span class="nc" id="L62">    private String status = &quot;ACTIVE&quot;;</span>
+
+    /**
+     * Default constructor for EnrollmentRequestInDTO.
+     */
+<span class="nc" id="L67">    public EnrollmentRequestInDTO() {</span>
+
+<span class="nc" id="L69">    }</span>
+
+    /**
+     * Gets the user ID who assigned this enrollment.
+     *
+     * @return the assigned by user ID
+     */
+    public Long getAssignedBy() {
+<span class="nc" id="L77">        return assignedBy;</span>
+    }
+
+    /**
+     * Sets the user ID who assigned this enrollment.
+     *
+     * @param assignedBy the assigned by user ID to set
+     */
+    public void setAssignedBy(final Long assignedBy) {
+<span class="nc" id="L86">        this.assignedBy = assignedBy;</span>
+<span class="nc" id="L87">    }</span>
+
+    /**
+     * Gets the list of user IDs to be enrolled.
+     *
+     * @return the list of user IDs
+     */
+    public List&lt;Long&gt; getUserIds() {
+<span class="nc" id="L95">        return userIds;</span>
+    }
+
+    /**
+     * Sets the list of user IDs to be enrolled.
+     *
+     * @param userIds the list of user IDs to set
+     */
+    public void setUserIds(final List&lt;Long&gt; userIds) {
+<span class="nc" id="L104">        this.userIds = userIds;</span>
+<span class="nc" id="L105">    }</span>
+
+    /**
+     * Gets the list of group IDs to be enrolled.
+     *
+     * @return the list of group IDs
+     */
+    public List&lt;Long&gt; getGroupIds() {
+<span class="nc" id="L113">        return groupIds;</span>
+    }
+
+    /**
+     * Sets the list of group IDs to be enrolled.
+     *
+     * @param groupIds the list of group IDs to set
+     */
+    public void setGroupIds(final List&lt;Long&gt; groupIds) {
+<span class="nc" id="L122">        this.groupIds = groupIds;</span>
+<span class="nc" id="L123">    }</span>
+
+    /**
+     * Gets the list of course IDs for enrollment.
+     *
+     * @return the list of course IDs
+     */
+    public List&lt;Long&gt; getCourseIds() {
+<span class="nc" id="L131">        return courseIds;</span>
+    }
+
+    /**
+     * Sets the list of course IDs for enrollment.
+     *
+     * @param courseIds the list of course IDs to set
+     */
+    public void setCourseIds(final List&lt;Long&gt; courseIds) {
+<span class="nc" id="L140">        this.courseIds = courseIds;</span>
+<span class="nc" id="L141">    }</span>
+
+    /**
+     * Gets the list of bundle IDs for enrollment.
+     *
+     * @return the list of bundle IDs
+     */
+    public List&lt;Long&gt; getBundleIds() {
+<span class="nc" id="L149">        return bundleIds;</span>
+    }
+
+    /**
+     * Sets the list of bundle IDs for enrollment.
+     *
+     * @param bundleIds the list of bundle IDs to set
+     */
+    public void setBundleIds(final List&lt;Long&gt; bundleIds) {
+<span class="nc" id="L158">        this.bundleIds = bundleIds;</span>
+<span class="nc" id="L159">    }</span>
+
+    /**
+     * Gets the deadline for completing the enrollment.
+     *
+     * @return the deadline
+     */
+    public LocalDateTime getDeadline() {
+<span class="nc" id="L167">        return deadline;</span>
+    }
+
+    /**
+     * Sets the deadline for completing the enrollment.
+     *
+     * @param deadline the deadline to set
+     */
+    public void setDeadline(final LocalDateTime deadline) {
+<span class="nc" id="L176">        this.deadline = deadline;</span>
+<span class="nc" id="L177">    }</span>
+
+    /**
+     * Gets the status of the enrollment request.
+     *
+     * @return the status
+     */
+    public String getStatus() {
+<span class="nc" id="L185">        return status;</span>
+    }
+
+    /**
+     * Sets the status of the enrollment request.
+     *
+     * @param status the status to set
+     */
+    public void setStatus(final String status) {
+<span class="nc" id="L194">        this.status = status;</span>
+<span class="nc" id="L195">    }</span>
+
+    /**
+     * Checks if the request contains user IDs.
+     *
+     * @return true if userIds list is not null and not empty, false otherwise
+     */
+    public boolean hasUsers() {
+<span class="nc bnc" id="L203" title="All 4 branches missed.">        return userIds != null &amp;&amp; !userIds.isEmpty();</span>
+    }
+
+    /**
+     * Checks if the request contains group IDs.
+     *
+     * @return true if groupIds list is not null and not empty, false otherwise
+     */
+    public boolean hasGroups() {
+<span class="nc bnc" id="L212" title="All 4 branches missed.">        return groupIds != null &amp;&amp; !groupIds.isEmpty();</span>
+    }
+
+    /**
+     * Checks if the request contains course IDs.
+     *
+     * @return true if courseIds list is not null and not empty, false otherwise
+     */
+    public boolean hasCourses() {
+<span class="nc bnc" id="L221" title="All 4 branches missed.">        return courseIds != null &amp;&amp; !courseIds.isEmpty();</span>
+    }
+
+    /**
+     * Checks if the request contains bundle IDs.
+     *
+     * @return true if bundleIds list is not null and not empty, false otherwise
+     */
+    public boolean hasBundles() {
+<span class="nc bnc" id="L230" title="All 4 branches missed.">        return bundleIds != null &amp;&amp; !bundleIds.isEmpty();</span>
+    }
+
+    /**
+     * Validates the enrollment request structure.
+     * Ensures that either users or groups are provided (but not both),
+     * and either courses or bundles are provided (but not both).
+     *
+     * @return true if the request is valid, false otherwise
+     */
+    public boolean isValid() {
+<span class="nc bnc" id="L241" title="All 4 branches missed.">        final boolean hasTargets = hasUsers() || hasGroups();</span>
+<span class="nc bnc" id="L242" title="All 4 branches missed.">        final boolean hasContent = hasCourses() || hasBundles();</span>
+<span class="nc bnc" id="L243" title="All 8 branches missed.">        final boolean noConflicts = !(hasUsers() &amp;&amp; hasGroups()) &amp;&amp; !(hasCourses() &amp;&amp; hasBundles());</span>
+
+<span class="nc bnc" id="L245" title="All 6 branches missed.">        return hasTargets &amp;&amp; hasContent &amp;&amp; noConflicts;</span>
+    }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.11.202310140853</span></div></body></html>

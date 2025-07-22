@@ -1,0 +1,171 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>Enrollment.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">user-service-lms</a> &gt; <a href="index.source.html" class="el_package">com.nt.user_service_lms.entities</a> &gt; <span class="el_source">Enrollment.java</span></div><h1>Enrollment.java</h1><pre class="source lang-java linenums">package com.nt.user_service_lms.entities;
+
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.Table;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+
+import java.time.LocalDateTime;
+
+/**
+ * Entity representing an enrollment record in the learning management system.
+ * This class tracks user enrollments in courses, bundles, or groups, including
+ * assignment details, deadlines, and completion status.
+ *
+ * @author System Generated
+ * @version 1.0
+ * @since 1.0
+ */
+@Entity
+@Table(name = &quot;enrollments&quot;)
+<span class="nc bnc" id="L27" title="All 126 branches missed.">@Data</span>
+<span class="nc" id="L28">@NoArgsConstructor</span>
+<span class="nc" id="L29">@AllArgsConstructor</span>
+<span class="nc" id="L30">@Builder</span>
+public class Enrollment {
+
+    /**
+     * Unique identifier for the enrollment record.
+     * Auto-generated using database identity strategy.
+     */
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = &quot;enrollment_id&quot;)
+<span class="nc" id="L40">    private Long enrollmentId;</span>
+
+    /**
+     * Foreign key reference to the user who is enrolled.
+     * Links to the user table's primary key.
+     */
+    @Column(name = &quot;user_id&quot;)
+<span class="nc" id="L47">    private Long userId;</span>
+
+    /**
+     * Foreign key reference to the group (if applicable).
+     * Used when enrollment is for a group-based learning activity.
+     * Can be null for individual enrollments.
+     */
+    @Column(name = &quot;group_id&quot;)
+<span class="nc" id="L55">    private Long groupId;</span>
+
+    /**
+     * Foreign key reference to the course.
+     * Used when enrollment is for a specific course.
+     * Can be null if enrollment is for a bundle or group activity.
+     */
+    @Column(name = &quot;course_id&quot;)
+<span class="nc" id="L63">    private Long courseId;</span>
+
+    /**
+     * Foreign key reference to the bundle.
+     * Used when enrollment is for a course bundle/package.
+     * Can be null for individual course enrollments.
+     */
+    @Column(name = &quot;bundle_id&quot;)
+<span class="nc" id="L71">    private Long bundleId;</span>
+
+    /**
+     * Foreign key reference to the user who assigned this enrollment.
+     * Typically an administrator, instructor, or manager.
+     * Cannot be null - every enrollment must have an assigner.
+     */
+    @Column(name = &quot;assigned_by&quot;, nullable = false)
+<span class="nc" id="L79">    private Long assignedBy;</span>
+
+    /**
+     * Timestamp when the enrollment was assigned.
+     * Automatically set to current time when enrollment is created.
+     * Cannot be null.
+     */
+<span class="nc" id="L86">    @Column(name = &quot;assigned_at&quot;, nullable = false)</span>
+<span class="nc" id="L87">    private LocalDateTime assignedAt = LocalDateTime.now();</span>
+
+    /**
+     * Optional deadline for completing the enrollment.
+     * Can be null if there's no specific deadline.
+     */
+    @Column(name = &quot;deadline&quot;)
+<span class="nc" id="L94">    private LocalDateTime deadline;</span>
+
+    /**
+     * Current status of the enrollment.
+     * Common values: &quot;active&quot;, &quot;completed&quot;, &quot;cancelled&quot;, &quot;expired&quot;
+     * Defaults to &quot;active&quot; for new enrollments.
+     * Cannot be null.
+     */
+<span class="nc" id="L102">    @Column(name = &quot;status&quot;, nullable = false)</span>
+<span class="nc" id="L103">    private String status = &quot;active&quot;;</span>
+
+    /**
+     * Source or method of enrollment creation.
+     * Examples: &quot;manual&quot;, &quot;bulk_import&quot;, &quot;self_enrollment&quot;, &quot;api&quot;
+     * Cannot be null - tracks how the enrollment was created.
+     */
+    @Column(name = &quot;enrollment_source&quot;, nullable = false)
+<span class="nc" id="L111">    private String enrollmentSource;</span>
+
+    /**
+     * Timestamp when the user actually started the enrolled content.
+     * Can be null if the user hasn't started yet.
+     */
+    @Column(name = &quot;started_at&quot;)
+<span class="nc" id="L118">    private LocalDateTime startedAt;</span>
+
+    /**
+     * Timestamp when the user completed the enrolled content.
+     * Can be null if not yet completed.
+     */
+    @Column(name = &quot;completed_at&quot;)
+<span class="nc" id="L125">    private LocalDateTime completedAt;</span>
+
+    /**
+     * Timestamp when the enrollment record was created in the database.
+     * Automatically set to current time when record is created.
+     * Cannot be null.
+     */
+<span class="nc" id="L132">    @Column(name = &quot;created_at&quot;, nullable = false)</span>
+<span class="nc" id="L133">    private LocalDateTime createdAt = LocalDateTime.now();</span>
+
+    /**
+     * Timestamp when the enrollment record was last updated.
+     * Can be null if never updated after creation.
+     */
+    @Column(name = &quot;updated_at&quot;, nullable = true)
+<span class="nc" id="L140">    private LocalDateTime updatedAt;</span>
+
+    /**
+     * Soft delete flag indicating if the enrollment is active.
+     * True means the enrollment is active and visible.
+     * False means the enrollment is soft-deleted/archived.
+     * Defaults to true for new enrollments.
+     * Cannot be null.
+     */
+<span class="nc" id="L149">    @Column(name = &quot;is_active&quot;, nullable = false)</span>
+<span class="nc" id="L150">    private Boolean isActive = true;</span>
+
+    /**
+     * Gets the active status of the enrollment.
+     *
+     * @return true if the enrollment is active, false if soft-deleted
+     */
+    public Boolean getActive() {
+<span class="nc" id="L158">        return isActive;</span>
+    }
+
+    /**
+     * Sets the active status of the enrollment.
+     * Used for soft delete operations.
+     *
+     * @param active true to activate the enrollment, false to soft-delete it
+     */
+    public void setActive(final Boolean active) {
+<span class="nc" id="L168">        isActive = active;</span>
+<span class="nc" id="L169">    }</span>
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.11.202310140853</span></div></body></html>

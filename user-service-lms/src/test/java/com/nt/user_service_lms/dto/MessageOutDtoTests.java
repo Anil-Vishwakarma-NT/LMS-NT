@@ -1,17 +1,17 @@
 package com.nt.user_service_lms.dto;
 
-import com.nt.user_service_lms.dto.outDTO.MessageOutDto;
+import com.nt.user_service_lms.dto.outDTO.MessageOutDTO;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.*;
 public class MessageOutDtoTests {
 
-    private MessageOutDto messageOutDto;
+    private MessageOutDTO messageOutDto;
 
     @BeforeEach
     void setUp() {
-        messageOutDto = new MessageOutDto();
+        messageOutDto = new MessageOutDTO();
         messageOutDto.setMessage("Successful");
     }
 
@@ -34,9 +34,9 @@ public class MessageOutDtoTests {
 
     @Test
     void testEqualsAndHashCode() {
-        MessageOutDto dto1 = new MessageOutDto("Successful");
-        MessageOutDto dto2 = new MessageOutDto("Successful");
-        MessageOutDto dto3 = new MessageOutDto("Something went wrong");
+        MessageOutDTO dto1 = new MessageOutDTO("Successful");
+        MessageOutDTO dto2 = new MessageOutDTO("Successful");
+        MessageOutDTO dto3 = new MessageOutDTO("Something went wrong");
 
         assertEquals(dto1, dto2);
         assertEquals(dto1.hashCode(), dto2.hashCode());
@@ -47,13 +47,13 @@ public class MessageOutDtoTests {
 
     @Test
     void testNoArgsConstructor() {
-        MessageOutDto dto = new MessageOutDto();
+        MessageOutDTO dto = new MessageOutDTO();
         assertNotNull(dto);
     }
 
     @Test
     void testAllArgsConstructor() {
-        MessageOutDto dto = new MessageOutDto("Successful");
+        MessageOutDTO dto = new MessageOutDTO("Successful");
         assertEquals("Successful", dto.getMessage());
     }
 }

@@ -10,6 +10,7 @@ import com.nt.course_service_lms.service.CourseService;
 import jakarta.validation.Valid;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -148,5 +149,12 @@ public class CourseController {
     public ResponseEntity<List<Long>> getExistingCourseIds(@RequestBody List<Long> courseIds) {
         List<Long> existingIds = courseService.findExistingIds(courseIds);
         return ResponseEntity.ok(existingIds);
+    }
+
+
+    @PostMapping("/courses")
+    public ResponseEntity<StandardResponseOutDTO<List<CourseInfoOutDTO>>> getCoursesByIds(@RequestBody List<Long> courseIds){
+          StandardResponseOutDTO<List<CourseInfoOutDTO>>  response = courseService.getCoursesByIds(courseIds);
+          return new ResponseEntity<>(response , HttpStatus.OK);
     }
 }

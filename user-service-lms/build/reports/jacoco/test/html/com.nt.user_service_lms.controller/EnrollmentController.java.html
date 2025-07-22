@@ -1,0 +1,292 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>EnrollmentController.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">user-service-lms</a> &gt; <a href="index.source.html" class="el_package">com.nt.user_service_lms.controller</a> &gt; <span class="el_source">EnrollmentController.java</span></div><h1>EnrollmentController.java</h1><pre class="source lang-java linenums">package com.nt.user_service_lms.controller;
+
+import com.nt.user_service_lms.dto.inDTO.EnrollmentRequestInDTO;
+import com.nt.user_service_lms.dto.outDTO.EnrollmentDashBoardStatsOutDTO;
+import com.nt.user_service_lms.dto.outDTO.EnrollmentOutDTO;
+import com.nt.user_service_lms.dto.outDTO.StandardResponseOutDTO;
+import com.nt.user_service_lms.dto.outDTO.UserBundleEnrollmentOutDTO;
+import com.nt.user_service_lms.dto.outDTO.UserCourseEnrollDetails;
+import com.nt.user_service_lms.dto.outDTO.UserCourseEnrollmentOutDTO;
+import com.nt.user_service_lms.dto.outDTO.UserEnrollmentsOutDTO;
+import com.nt.user_service_lms.service.EnrollmentService;
+import jakarta.validation.Valid;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
+
+import java.util.List;
+
+/**
+ * REST Controller for managing enrollments in the Learning Management System.
+ *
+ * &lt;p&gt;This controller provides comprehensive endpoints for user enrollment operations,
+ * including enrollment creation, statistics retrieval, and various enrollment data
+ * queries. It handles both individual course enrollments and bundle enrollments,
+ * supporting the complete enrollment lifecycle in the LMS.&lt;/p&gt;
+ *
+ * &lt;p&gt;All endpoints return standardized responses wrapped in {@link StandardResponseOutDTO}
+ * for consistent API response structure across the application.&lt;/p&gt;
+ *
+ * @author Your Name
+ * @version 1.0
+ * @since 1.0
+ */
+<span class="nc" id="L40">@Slf4j</span>
+@RestController
+@RequestMapping(&quot;/api/service-api/enrollment&quot;)
+<span class="nc" id="L43">public class EnrollmentController {</span>
+
+    /**
+     * Service layer dependency for handling enrollment business logic.
+     *
+     * &lt;p&gt;This service is responsible for all enrollment-related operations including
+     * enrollment creation, data retrieval, and statistics computation.&lt;/p&gt;
+     */
+    @Autowired
+    private EnrollmentService enrollmentService;
+
+    /**
+     * Creates new enrollments for users in the Learning Management System.
+     *
+     * &lt;p&gt;This endpoint processes enrollment requests and creates enrollments
+     * based on the provided enrollment data. It supports both individual course
+     * enrollments and bundle enrollments.&lt;/p&gt;
+     *
+     * @param enrollmentRequestInDTO the enrollment request data containing user and course/bundle information
+     * @return ResponseEntity containing a standardized response with the list of created enrollments
+     *
+     * @since 1.0
+     */
+    @PostMapping(&quot;/enroll&quot;)
+    public ResponseEntity&lt;StandardResponseOutDTO&lt;List&lt;EnrollmentOutDTO&gt;&gt;&gt; enroll(
+            @Valid @RequestBody final EnrollmentRequestInDTO enrollmentRequestInDTO) {
+
+<span class="nc" id="L70">        log.info(&quot;Processing enrollment request for user: {}&quot;, enrollmentRequestInDTO.getUserIds());</span>
+
+        try {
+<span class="nc" id="L73">            List&lt;EnrollmentOutDTO&gt; enrollments = enrollmentService.enroll(enrollmentRequestInDTO);</span>
+
+<span class="nc" id="L75">            log.info(&quot;Successfully created {} enrollments for user: {}&quot;,</span>
+<span class="nc" id="L76">                    enrollments.size(), enrollmentRequestInDTO.getUserIds());</span>
+
+<span class="nc" id="L78">            StandardResponseOutDTO&lt;List&lt;EnrollmentOutDTO&gt;&gt; standardResponseOutDTO =</span>
+<span class="nc" id="L79">                    StandardResponseOutDTO.success(enrollments, &quot;Enrollment Successful&quot;);</span>
+
+<span class="nc" id="L81">            return ResponseEntity.ok(standardResponseOutDTO);</span>
+
+<span class="nc" id="L83">        } catch (Exception e) {</span>
+<span class="nc" id="L84">            log.error(&quot;Failed to process enrollment request for user: {}&quot;,</span>
+<span class="nc" id="L85">                    enrollmentRequestInDTO.getUserIds(), e);</span>
+<span class="nc" id="L86">            throw e;</span>
+        }
+    }
+
+    /**
+     * Retrieves comprehensive enrollment statistics for the dashboard.
+     *
+     * &lt;p&gt;This endpoint provides aggregated enrollment data including total enrollments,
+     * active enrollments, completion rates, and other key metrics used for
+     * administrative dashboard displays.&lt;/p&gt;
+     *
+     * @return ResponseEntity containing standardized response with enrollment statistics
+     *
+     * @since 1.0
+     */
+    @GetMapping(&quot;/statistics&quot;)
+    public ResponseEntity&lt;StandardResponseOutDTO&lt;EnrollmentDashBoardStatsOutDTO&gt;&gt; getEnrollmentStatistics() {
+
+<span class="nc" id="L104">        log.info(&quot;Fetching enrollment statistics for dashboard&quot;);</span>
+
+        try {
+<span class="nc" id="L107">            EnrollmentDashBoardStatsOutDTO stats = enrollmentService.getEnrollmentStats();</span>
+
+<span class="nc" id="L109">            log.info(&quot;Successfully retrieved enrollment statistics&quot;);</span>
+
+<span class="nc" id="L111">            StandardResponseOutDTO&lt;EnrollmentDashBoardStatsOutDTO&gt; standardResponseOutDTO =</span>
+<span class="nc" id="L112">                    StandardResponseOutDTO.success(stats, &quot;Fetched Enrollment Statistics&quot;);</span>
+
+<span class="nc" id="L114">            return ResponseEntity.ok(standardResponseOutDTO);</span>
+
+<span class="nc" id="L116">        } catch (Exception e) {</span>
+<span class="nc" id="L117">            log.error(&quot;Failed to fetch enrollment statistics&quot;, e);</span>
+<span class="nc" id="L118">            throw e;</span>
+        }
+    }
+
+    /**
+     * Retrieves all enrollments for a specific user by their user ID.
+     *
+     * &lt;p&gt;This endpoint returns comprehensive enrollment information for a single user,
+     * including both course and bundle enrollments, along with their current status
+     * and progress information.&lt;/p&gt;
+     *
+     * @param userId the unique identifier of the user whose enrollments are to be retrieved
+     * @return ResponseEntity containing standardized response with user's enrollment data
+     *
+     * @since 1.0
+     */
+    @GetMapping(&quot;/user-enrollments/{id}&quot;)
+    public ResponseEntity&lt;StandardResponseOutDTO&lt;UserEnrollmentsOutDTO&gt;&gt; getUserEnrollmentsByUserId(
+            @PathVariable(&quot;id&quot;) final Long userId) {
+
+<span class="nc" id="L138">        log.info(&quot;Fetching enrollments for user ID: {}&quot;, userId);</span>
+
+        try {
+<span class="nc" id="L141">            UserEnrollmentsOutDTO userEnrollmentsOutDTO = enrollmentService.getUserEnrollmentsByUserID(userId);</span>
+
+<span class="nc" id="L143">            log.info(&quot;Successfully retrieved enrollments for user ID: {}&quot;, userId);</span>
+
+<span class="nc" id="L145">            StandardResponseOutDTO&lt;UserEnrollmentsOutDTO&gt; standardResponseOutDTO =</span>
+<span class="nc" id="L146">                    StandardResponseOutDTO.success(userEnrollmentsOutDTO, &quot;User Enrollment Fetched&quot;);</span>
+
+<span class="nc" id="L148">            return ResponseEntity.ok(standardResponseOutDTO);</span>
+
+<span class="nc" id="L150">        } catch (Exception e) {</span>
+<span class="nc" id="L151">            log.error(&quot;Failed to fetch enrollments for user ID: {}&quot;, userId, e);</span>
+<span class="nc" id="L152">            throw e;</span>
+        }
+    }
+
+    /**
+     * Retrieves enrollment information for all users in the system.
+     *
+     * &lt;p&gt;This endpoint returns a comprehensive list of all user enrollments,
+     * typically used for administrative purposes and reporting. The response
+     * includes enrollment data for all users with their respective course and
+     * bundle enrollments.&lt;/p&gt;
+     *
+     * @return ResponseEntity containing standardized response with all users' enrollment data
+     *
+     * @since 1.0
+     */
+    @GetMapping(&quot;/user-enrollments&quot;)
+    public ResponseEntity&lt;StandardResponseOutDTO&lt;List&lt;UserEnrollmentsOutDTO&gt;&gt;&gt; getUserEnrollments() {
+
+<span class="nc" id="L171">        log.info(&quot;Fetching enrollments for all users&quot;);</span>
+
+        try {
+<span class="nc" id="L174">            List&lt;UserEnrollmentsOutDTO&gt; userEnrollmentsOutDTOs = enrollmentService.getAllUsersEnrollments();</span>
+
+<span class="nc" id="L176">            log.info(&quot;Successfully retrieved enrollments for {} users&quot;, userEnrollmentsOutDTOs.size());</span>
+
+<span class="nc" id="L178">            StandardResponseOutDTO&lt;List&lt;UserEnrollmentsOutDTO&gt;&gt; standardResponseOutDTO =</span>
+<span class="nc" id="L179">                    StandardResponseOutDTO.success(userEnrollmentsOutDTOs, &quot;User Enrollment Fetched&quot;);</span>
+
+<span class="nc" id="L181">            return ResponseEntity.ok(standardResponseOutDTO);</span>
+
+<span class="nc" id="L183">        } catch (Exception e) {</span>
+<span class="nc" id="L184">            log.error(&quot;Failed to fetch enrollments for all users&quot;, e);</span>
+<span class="nc" id="L185">            throw e;</span>
+        }
+    }
+
+    /**
+     * Retrieves individual course enrollment details for all users.
+     *
+     * &lt;p&gt;This endpoint specifically returns course-only enrollments, excluding
+     * bundle enrollments. It provides detailed information about each user's
+     * individual course enrollments including progress, completion status,
+     * and enrollment dates.&lt;/p&gt;
+     *
+     * @return ResponseEntity containing standardized response with individual course enrollment data
+     *
+     * @since 1.0
+     */
+    @GetMapping(&quot;/user-course-enrollments&quot;)
+    public ResponseEntity&lt;StandardResponseOutDTO&lt;List&lt;UserCourseEnrollmentOutDTO&gt;&gt;&gt; getUserCourseEnrollments() {
+
+<span class="nc" id="L204">        log.info(&quot;Fetching individual course enrollments for all users&quot;);</span>
+
+        try {
+<span class="nc" id="L207">            List&lt;UserCourseEnrollmentOutDTO&gt; userCourseEnrollmentOutDTOS =</span>
+<span class="nc" id="L208">                    enrollmentService.getIndividualCourseEnrollments();</span>
+
+<span class="nc" id="L210">            log.info(&quot;Successfully retrieved {} individual course enrollments&quot;,</span>
+<span class="nc" id="L211">                    userCourseEnrollmentOutDTOS.size());</span>
+
+<span class="nc" id="L213">            StandardResponseOutDTO&lt;List&lt;UserCourseEnrollmentOutDTO&gt;&gt; standardResponseOutDTO =</span>
+<span class="nc" id="L214">                    StandardResponseOutDTO.success(userCourseEnrollmentOutDTOS, &quot;Fetched Course Enrollments for User&quot;);</span>
+
+<span class="nc" id="L216">            return ResponseEntity.ok(standardResponseOutDTO);</span>
+
+<span class="nc" id="L218">        } catch (Exception e) {</span>
+<span class="nc" id="L219">            log.error(&quot;Failed to fetch individual course enrollments&quot;, e);</span>
+<span class="nc" id="L220">            throw e;</span>
+        }
+    }
+
+    /**
+     * Retrieves individual bundle enrollment details for all users.
+     *
+     * &lt;p&gt;This endpoint specifically returns bundle-only enrollments, excluding
+     * individual course enrollments. It provides detailed information about
+     * each user's bundle enrollments including the courses within bundles,
+     * progress tracking, and completion status.&lt;/p&gt;
+     *
+     * @return ResponseEntity containing standardized response with individual bundle enrollment data
+     *
+     * @since 1.0
+     */
+    @GetMapping(&quot;/user-bundle-enrollments&quot;)
+    public ResponseEntity&lt;StandardResponseOutDTO&lt;List&lt;UserBundleEnrollmentOutDTO&gt;&gt;&gt; getUserBundleEnrollments() {
+
+<span class="nc" id="L239">        log.info(&quot;Fetching individual bundle enrollments for all users&quot;);</span>
+
+        try {
+<span class="nc" id="L242">            List&lt;UserBundleEnrollmentOutDTO&gt; userBundleEnrollmentOutDTOS =</span>
+<span class="nc" id="L243">                    enrollmentService.getIndividualBundleEnrollments();</span>
+
+<span class="nc" id="L245">            log.info(&quot;Successfully retrieved {} individual bundle enrollments&quot;,</span>
+<span class="nc" id="L246">                    userBundleEnrollmentOutDTOS.size());</span>
+
+<span class="nc" id="L248">            StandardResponseOutDTO&lt;List&lt;UserBundleEnrollmentOutDTO&gt;&gt; standardResponseOutDTO =</span>
+<span class="nc" id="L249">                    StandardResponseOutDTO.success(userBundleEnrollmentOutDTOS, &quot;Fetched Bundle Enrollments for User&quot;);</span>
+
+<span class="nc" id="L251">            return ResponseEntity.ok(standardResponseOutDTO);</span>
+
+<span class="nc" id="L253">        } catch (Exception e) {</span>
+<span class="nc" id="L254">            log.error(&quot;Failed to fetch individual bundle enrollments&quot;, e);</span>
+<span class="nc" id="L255">            throw e;</span>
+        }
+    }
+
+    /**
+     * Retrieves detailed enrollment information for all courses enrolled by a specific user.
+     *
+     * &lt;p&gt;This endpoint provides comprehensive course enrollment details for a specific user,
+     * including course information, enrollment dates, progress tracking, completion status,
+     * and any additional metadata associated with the user's course enrollments.&lt;/p&gt;
+     *
+     * @param userId the unique identifier of the user whose enrolled courses are to be retrieved
+     * @return ResponseEntity containing standardized response with detailed course enrollment information
+     *
+     * @since 1.0
+     */
+    @GetMapping(&quot;/userCourses/{userId}&quot;)
+    public ResponseEntity&lt;StandardResponseOutDTO&lt;List&lt;UserCourseEnrollDetails&gt;&gt;&gt; getEnrolledCoursesByUserId(
+            @PathVariable final Long userId) {
+
+<span class="nc" id="L275">        log.info(&quot;Fetching enrolled courses for user ID: {}&quot;, userId);</span>
+
+        try {
+<span class="nc" id="L278">            List&lt;UserCourseEnrollDetails&gt; enrolledCourses = enrollmentService.getUserEnrolledCourses(userId);</span>
+
+<span class="nc" id="L280">            log.info(&quot;Successfully retrieved {} enrolled courses for user ID: {}&quot;,</span>
+<span class="nc" id="L281">                    enrolledCourses.size(), userId);</span>
+
+<span class="nc" id="L283">            return ResponseEntity.ok(StandardResponseOutDTO.success(enrolledCourses,</span>
+                    &quot;Fetched enrolled courses successfully&quot;));
+
+<span class="nc" id="L286">        } catch (Exception e) {</span>
+<span class="nc" id="L287">            log.error(&quot;Failed to fetch enrolled courses for user ID: {}&quot;, userId, e);</span>
+<span class="nc" id="L288">            throw e;</span>
+        }
+    }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.11.202310140853</span></div></body></html>

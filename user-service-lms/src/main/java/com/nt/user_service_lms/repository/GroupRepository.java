@@ -77,4 +77,12 @@ public interface GroupRepository extends JpaRepository<Group, Long> {
      */
     List<Group> findByIsActiveTrue();
 
+
+    /**
+     * Finds if group  with given name exists.
+     *
+     * @return true if active group available
+     */
+    boolean existsByGroupName(String groupName);
+
 }

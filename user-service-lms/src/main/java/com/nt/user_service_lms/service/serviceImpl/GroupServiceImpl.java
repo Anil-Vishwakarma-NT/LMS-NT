@@ -25,8 +25,7 @@ import org.springframework.stereotype.Service;
 import java.util.*;
 import java.util.stream.Collectors;
 
-import static com.nt.user_service_lms.constants.CommonConstants.GROUP_ENROL;
-import static com.nt.user_service_lms.constants.CommonConstants.STATUS_ACTIVE;
+import static com.nt.user_service_lms.constants.CommonConstants.*;
 import static com.nt.user_service_lms.constants.GroupConstants.GROUP_CREATED;
 import static com.nt.user_service_lms.constants.GroupConstants.GROUP_DELETED;
 import static com.nt.user_service_lms.constants.GroupConstants.GROUP_FAILURE;
@@ -88,23 +87,33 @@ public class GroupServiceImpl implements GroupService {
      * @return a success message
      */
     @Override
-    public StandardResponseOutDTO<MessageOutDto> createGroup(final String groupName, final String username , final List<Long> employeeId) {
+    public StandardResponseOutDTO<MessageOutDTO> createGroup(final String groupName, final String username , final List<Long> employeeId) {
         try {
+            log.info("checking if the group with same name already available.");
+            if(groupRepository.existsByGroupName(groupName)){
+               return  StandardResponseOutDTO.error("Group with same name already exists.");
+            }
             log.info("Attempting to create a group with name: {} by user: {}", groupName, username);
             User user = userRepository.findByEmailIgnoreCase(username)
                     .orElseThrow(() -> new UnauthorizedAccessException(USER_NOT_FOUND));
-
             Group group = new Group(groupName, user.getUserId());
             group = groupRepository.save(group);
-                    log.info("Group '{}' created successfully by '{}'", groupName, username);
+            Long groupId = group.getGroupId();
+            log.info("Group '{}' created successfully by '{}'", groupName, username);
            if(!employeeId.isEmpty()){
-               Group finalGroup = group;
-               employeeId.forEach(employee -> {
-                   UserGroup userGroup= new UserGroup(employee,finalGroup.getGroupId());
-                   userGroupRepository.save(userGroup);
-               });
+              for(Long employee :employeeId){
+                  if(userRepository.existsById(employee)){
+                      UserGroup userGroup = new UserGroup();
+                      userGroup.setUserId(employee);
+                      userGroup.setGroupId(groupId);
+                      userGroupRepository.save(userGroup);
+                  }
+                  else{
+                      throw new ResourceNotFoundException(USER_NOT_FOUND);
+                  }
+              }
            }
-            MessageOutDto messageOutDto = new MessageOutDto(GROUP_CREATED);
+            MessageOutDTO messageOutDto = new MessageOutDTO(GROUP_CREATED);
             return StandardResponseOutDTO.success(messageOutDto,GROUP_CREATED);
         } catch (Exception e) {
             log.error("Error while creating group '{}' by '{}'", groupName, username, e);
@@ -120,7 +129,7 @@ public class GroupServiceImpl implements GroupService {
      */
     @Override
     @Transactional
-    public StandardResponseOutDTO<MessageOutDto> deleteGroup(final long groupId) {
+    public StandardResponseOutDTO<MessageOutDTO> deleteGroup(final long groupId) {
         try {
             log.info("Attempting to delete group with ID: {}", groupId);
             Group group = groupRepository.findById(groupId)
@@ -129,7 +138,7 @@ public class GroupServiceImpl implements GroupService {
             userGroupRepository.softDeleteByGroupId(groupId);
             groupRepository.softDeleteByGroupId(groupId);
             log.info("Group with ID: {} deleted successfully", groupId);
-            MessageOutDto messageOutDto = new MessageOutDto(GROUP_DELETED);
+            MessageOutDTO messageOutDto = new MessageOutDTO(GROUP_DELETED);
             return StandardResponseOutDTO.success(messageOutDto,null);
         } catch (Exception e) {
             log.error("Error while deleting group with ID: {}", groupId, e);
@@ -143,7 +152,7 @@ public class GroupServiceImpl implements GroupService {
      * @return a success or failure message
      */
     @Override
-    public StandardResponseOutDTO<MessageOutDto> addUserToGroup(final GroupInDTO groupInDTO ,String username) {
+    public StandardResponseOutDTO<MessageOutDTO> addUserToGroup(final GroupInDTO groupInDTO , String username) {
         try {
             log.info("Adding user ID: to group ID: {}", groupInDTO.getGroupId());
 
@@ -194,7 +203,42 @@ public class GroupServiceImpl implements GroupService {
                 }
             }
 
-            MessageOutDto messageOutDto =  new MessageOutDto(USER_ADDED_TO_GROUP);
+
+            if(!groupInDTO.getBundles().isEmpty()){
+                for(Long bundleId : groupInDTO.getBundles()) {
+                    for(Long userId:groupInDTO.getEmployees()) {
+                        Optional<List<Enrollment>> existing = enrollmentRepository.findByGroupIdAndUserIdAndBundleId(groupInDTO.getGroupId(), userId, bundleId);
+                        if (existing.isPresent() && !existing.get().isEmpty()) {
+                          for(Enrollment enrol : existing.get()){
+                              enrol.setActive(true);
+                              enrollmentRepository.save(enrol);
+                          }
+                        } else {
+                            List<CourseInfoOutDTO> courses = courseMicroserviceClient.getAllCoursesByBundleId(bundleId).getBody().getData();
+                            for (CourseInfoOutDTO course : courses) {
+                                if (course.isActive()) {
+                                    Enrollment enrol = new Enrollment();
+                                    enrol.setGroupId(groupInDTO.getGroupId());
+                                    enrol.setUserId(userId);
+                                    enrol.setCourseId(course.getCourseId());
+                                    enrol.setBundleId(bundleId);
+                                    enrol.setAssignedBy(user.getUserId());
+                                    enrol.setAssignedAt(groupInDTO.getAssignedAt());
+                                    enrol.setDeadline(groupInDTO.getDeadline());
+                                    enrol.setStatus(STATUS_ACTIVE);
+                                    enrol.setEnrollmentSource(GROUP_BUNDLE_ENROL);
+                                    enrol.setCreatedAt(groupInDTO.getAssignedAt());
+                                    enrol.setUpdatedAt(groupInDTO.getAssignedAt());
+                                    System.out.println("ENROLLED>>>>>>>>>>>>>>>>>>>>>>" + enrol);
+                                    enrollmentRepository.save(enrol);
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+
+            MessageOutDTO messageOutDto =  new MessageOutDTO(USER_ADDED_TO_GROUP);
             return StandardResponseOutDTO.success(messageOutDto,USER_ADDED_TO_GROUP);
         } catch (Exception e) {
             log.error("Error adding user ID: to group ID: {}", groupInDTO.getGroupId(), e);
@@ -203,7 +247,7 @@ public class GroupServiceImpl implements GroupService {
     }
 
     @Override
-    public StandardResponseOutDTO<MessageOutDto> updateGroup(long groupId, String groupName) {
+    public StandardResponseOutDTO<MessageOutDTO> updateGroup(long groupId, String groupName) {
          try{
              Optional<Group> group = groupRepository.findById(groupId);
              if(group.isPresent()){
@@ -213,7 +257,7 @@ public class GroupServiceImpl implements GroupService {
              else {
                 throw new ResourceNotFoundException("Group Not found");
              }
-             MessageOutDto messageOutDto =  new MessageOutDto("Group updated");
+             MessageOutDTO messageOutDto =  new MessageOutDTO("Group updated");
              return StandardResponseOutDTO.success(messageOutDto,null);
          }
          catch (Exception e){
@@ -232,14 +276,14 @@ public class GroupServiceImpl implements GroupService {
      * @return a success message
      */
     @Override
-    public StandardResponseOutDTO<MessageOutDto> removeUserFromGroup(final long userId, final long groupId) {
+    public StandardResponseOutDTO<MessageOutDTO> removeUserFromGroup(final long userId, final long groupId) {
         try {
             UserGroup userGroup = userGroupRepository.findByUserIdAndGroupId(userId, groupId)
                     .orElseThrow(() -> new ResourceNotFoundException(USER_NOT_FOUND_IN_GROUP));
 
             userGroupRepository.softDeleteByGroupIdAndUserId(userGroup.getGroupId(),userGroup.getUserId());
             enrollmentRepository.softDeleteByGroupIdAndUserId(userGroup.getGroupId(),userGroup.getUserId());
-            MessageOutDto messageOutDto = new MessageOutDto(USER_REMOVED_SUCCESSFULLY);
+            MessageOutDTO messageOutDto = new MessageOutDTO(USER_REMOVED_SUCCESSFULLY);
             return StandardResponseOutDTO.success(messageOutDto,null);
         } catch (Exception e) {
             log.error("Error removing user ID: {} from group ID: {}", userId, groupId, e);
@@ -252,26 +296,16 @@ public class GroupServiceImpl implements GroupService {
         try{
             log.info("courses fetching for group");
             List<Enrollment> groupcourses = enrollmentRepository.findByGroupId(groupId);
-            Set<Long> enrolledGroupCourseIds = groupcourses.stream()
-                    .map(Enrollment::getCourseId)
-                    .collect(Collectors.toSet());
-
-            if(enrolledGroupCourseIds.isEmpty()){
+            if(groupcourses.isEmpty()){
                 return StandardResponseOutDTO.success(List.of() ,"No Course Allocated to the group" );
             }
-
-            List<Enrollment> enrols = enrollmentRepository.findByGroupIdAndUserId(groupId,userId);
-            System.out.println("Enrols has values  " + enrols.isEmpty() + " " + groupId + "  " + userId);
-            log.info("enrols fetched");
-            List<CourseInfoOutDTO> courses = courseMicroserviceClient.getCourseInfo().getBody().getData();
-            Set<Long> enrolledCourseIds = enrols.stream()
-                    .map(Enrollment::getCourseId)
-                    .collect(Collectors.toSet());
+            Set<Long> enrolledCourseIds = groupcourses.stream().filter(enrol -> enrol.getUserId() == userId)
+                    .map(Enrollment::getCourseId).collect(Collectors.toSet());
             log.info("enrolled courses  fetched");
-            List<CourseInfoOutDTO> notEnrolledCourses = courses.stream()
-                    .filter(course -> !enrolledCourseIds.contains(course.getCourseId()) && enrolledGroupCourseIds.contains(course.getCourseId()))
-                    .collect(Collectors.toList());
 
+            List<Long> nonenrols = groupcourses.stream().filter(course -> !enrolledCourseIds.contains(course.getCourseId()) && course.getBundleId() == null)
+                    .map(Enrollment::getCourseId).collect(Collectors.toList());
+            List<CourseInfoOutDTO> notEnrolledCourses = courseMicroserviceClient.getCoursesByIds(nonenrols).getBody().getData();
             if(notEnrolledCourses.isEmpty()){
                 return StandardResponseOutDTO.success(notEnrolledCourses , "User is already enrolled in all the courses assigned to the group");
             }
@@ -279,6 +313,37 @@ public class GroupServiceImpl implements GroupService {
 
         }catch (Exception e) {
             log.error("Error collecting courses for  user ID: {} from group ID: {}", userId, groupId, e);
+            throw new RuntimeException(GROUP_FAILURE, e);
+        }
+    }
+
+
+
+    @Override
+    public StandardResponseOutDTO<List<BundleOutDTO>> getUserBundles(final long groupId, final long userId){
+        try{
+            log.info("bundles fetching for group");
+            List<Enrollment> groupbundles = enrollmentRepository.findByGroupId(groupId);
+          if(groupbundles.isEmpty()){
+                return StandardResponseOutDTO.success(List.of() ,"No Bundle Allocated to the group" );
+            }
+
+            Set<Long> enrols = groupbundles.stream().filter(bundle -> bundle.getUserId() == userId && bundle.getBundleId()!=null).map(Enrollment::getBundleId)
+                            .collect(Collectors.toSet());
+
+            log.info("enrolled bundles  fetched");
+            List<Long> notEnrolledBundles = groupbundles.stream()
+                    .filter(bundle -> !enrols.contains(bundle.getBundleId())).map(Enrollment::getBundleId)
+                    .collect(Collectors.toList());
+            if(notEnrolledBundles.isEmpty()){
+                return StandardResponseOutDTO.success(List.of() , "User is already enrolled in all the courses assigned to the group");
+            }
+            List<BundleOutDTO> bundles = courseMicroserviceClient.getBundlesByIds(notEnrolledBundles).getBody().getData();
+
+            return  StandardResponseOutDTO.success(bundles , "Bundles info retrieved.");
+
+        }catch (Exception e) {
+            log.error("Error collecting bundles for  user ID: {} from group ID: {}", userId, groupId, e);
             throw new RuntimeException(GROUP_FAILURE, e);
         }
     }
@@ -418,7 +483,7 @@ public class GroupServiceImpl implements GroupService {
     @Override
     public StandardResponseOutDTO<List<GroupCourseOutDTO>> getCourseDetail(long groupId) {
 
-        List<Enrollment> enrols = enrollmentRepository.findByGroupId(groupId);
+        List<Enrollment> enrols = enrollmentRepository.findByGroupIdAndBundleIdIsNull(groupId);
 
 
         Map<Long , GroupCourseOutDTO > mp = new HashMap<>();
@@ -486,6 +551,7 @@ public class GroupServiceImpl implements GroupService {
                 uc.setUserId(en.getUserId());
                 uc.setEnrols(totalenrols);
                 uc.setProgress(progress);
+                System.out.println(uc.getUserId() + " Enrols" + uc.getEnrols());
                 mp.put(en.getUserId(), uc);
             }
         }
@@ -558,6 +624,46 @@ public class GroupServiceImpl implements GroupService {
             }
         }
         return StandardResponseOutDTO.success( new ArrayList<>(mp.values()),"Successfully fetched course details.");
+    }
+
+
+    @Override
+    public StandardResponseOutDTO<List<GroupBundleOutDTO>> getGroupBundles(Long groupId){
+        try {
+            List<Enrollment> enrols = enrollmentRepository.findByGroupIdAndBundleIdIsNotNull(groupId);
+            Map<Long , GroupBundleOutDTO> response = new HashMap<>();
+            for(Enrollment enrol :enrols) {
+                if (enrol.getActive()) {
+                    if(!response.containsKey(enrol.getBundleId())) {
+                        BundleOutDTO bundleOutDTO = courseMicroserviceClient.getBundleById(enrol.getBundleId()).getBody().getData();
+                        GroupBundleOutDTO groupBundleOutDTO = new GroupBundleOutDTO();
+                        groupBundleOutDTO.setBundleName(bundleOutDTO.getBundleName());
+                        groupBundleOutDTO.setBundleId(bundleOutDTO.getBundleId());
+                        groupBundleOutDTO.setActive(true);
+                        long totalenrols =  1;
+                    double userprogress = courseMicroserviceClient.getCourseProgressWithMeta(enrol.getUserId(), enrol.getCourseId()).getCourseCompletionPercentage();
+                    groupBundleOutDTO.setProgress(userprogress);
+                    groupBundleOutDTO.setEnrols(totalenrols);
+
+                    response.put(enrol.getBundleId(),groupBundleOutDTO);
+                    }else{
+                          GroupBundleOutDTO groupBundleOutDTO = response.get(enrol.getBundleId());
+                        long totalenrols = groupBundleOutDTO.getEnrols() + 1;
+                    double userprogress = courseMicroserviceClient.getCourseProgressWithMeta(enrol.getUserId(), enrol.getCourseId()).getCourseCompletionPercentage();
+                    double progress = ((groupBundleOutDTO.getProgress() * groupBundleOutDTO.getEnrols()) + userprogress) / totalenrols;
+                        groupBundleOutDTO.setEnrols(totalenrols);
+                        groupBundleOutDTO.setProgress(progress);
+                        response.put(enrol.getBundleId() , groupBundleOutDTO);
+                    }
+                }
+            }
+
+            return StandardResponseOutDTO.success(new ArrayList<>(response.values()) , "Bundles fetched successfully.");
+        } catch (RuntimeException e) {
+            throw new RuntimeException(e);
+        }
+
+
     }
 
 
