@@ -2,7 +2,7 @@ package com.nt.user_service_lms.service.serviceImpl;
 
 import com.nt.user_service_lms.constants.UserConstants;
 import com.nt.user_service_lms.converter.UserDTOConverter;
-import com.nt.user_service_lms.dto.RegisterDto;
+import com.nt.user_service_lms.dto.inDTO.RegisterDto;
 import com.nt.user_service_lms.dto.inDTO.UserInDTO;
 import com.nt.user_service_lms.dto.outDTO.MessageOutDto;
 import com.nt.user_service_lms.dto.outDTO.StandardResponseOutDTO;

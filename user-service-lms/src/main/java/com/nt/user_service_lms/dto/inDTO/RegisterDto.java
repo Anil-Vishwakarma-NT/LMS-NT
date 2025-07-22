@@ -1,11 +1,16 @@
-package com.nt.user_service_lms.dto;
+package com.nt.user_service_lms.dto.inDTO;
 
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Pattern;
 import jakarta.validation.constraints.Size;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
+import lombok.NoArgsConstructor;
+
+import java.util.Objects;
 
 import static com.nt.user_service_lms.constants.RegisterDtoConstants.MINIMUM_PASSWORD_LENGTH;
 import static com.nt.user_service_lms.constants.RegisterDtoConstants.USERNAME_MIN_LENGTH;
@@ -14,6 +19,9 @@ import static com.nt.user_service_lms.constants.RegisterDtoConstants.USERNAME_MI
  * Data Transfer Object (DTO) for user registration.
  */
 @Data
+@NoArgsConstructor
+@AllArgsConstructor
+@Builder
 public class RegisterDto {
 
     /**
@@ -78,4 +86,16 @@ public class RegisterDto {
      */
     @NotNull(message = "Role is required")
     private Long roleId;
+
+    @Override
+    public boolean equals(Object o) {
+        if (o == null || getClass() != o.getClass()) return false;
+        RegisterDto that = (RegisterDto) o;
+        return Objects.equals(firstName, that.firstName) && Objects.equals(lastName, that.lastName) && Objects.equals(userName, that.userName) && Objects.equals(email, that.email) && Objects.equals(password, that.password) && Objects.equals(roleId, that.roleId);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(firstName, lastName, userName, email, password, roleId);
+    }
 }

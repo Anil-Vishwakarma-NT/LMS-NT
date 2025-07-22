@@ -1,6 +1,6 @@
 package com.nt.user_service_lms.service;
 
-import com.nt.user_service_lms.dto.RegisterDto;
+import com.nt.user_service_lms.dto.inDTO.RegisterDto;
 import com.nt.user_service_lms.dto.outDTO.MessageOutDto;
 import com.nt.user_service_lms.dto.outDTO.StandardResponseOutDTO;
 import com.nt.user_service_lms.dto.outDTO.UserOutDTO;
