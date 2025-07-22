@@ -1,13 +1,13 @@
-package com.nt.user_service_lms.controllerTest;
+package com.nt.user_service_lms.controller;
 
-import com.nt.user_service_lms.dtoTest.inDTO.EnrollmentRequestInDTO;
-import com.nt.user_service_lms.dtoTest.outDTO.EnrollmentDashBoardStatsOutDTO;
-import com.nt.user_service_lms.dtoTest.outDTO.EnrollmentOutDTO;
-import com.nt.user_service_lms.dtoTest.outDTO.StandardResponseOutDTO;
-import com.nt.user_service_lms.dtoTest.outDTO.UserBundleEnrollmentOutDTO;
-import com.nt.user_service_lms.dtoTest.outDTO.UserCourseEnrollDetails;
-import com.nt.user_service_lms.dtoTest.outDTO.UserCourseEnrollmentOutDTO;
-import com.nt.user_service_lms.dtoTest.outDTO.UserEnrollmentsOutDTO;
+import com.nt.user_service_lms.dto.inDTO.EnrollmentRequestInDTO;
+import com.nt.user_service_lms.dto.outDTO.EnrollmentDashBoardStatsOutDTO;
+import com.nt.user_service_lms.dto.outDTO.EnrollmentOutDTO;
+import com.nt.user_service_lms.dto.outDTO.StandardResponseOutDTO;
+import com.nt.user_service_lms.dto.outDTO.UserBundleEnrollmentOutDTO;
+import com.nt.user_service_lms.dto.outDTO.UserCourseEnrollDetails;
+import com.nt.user_service_lms.dto.outDTO.UserCourseEnrollmentOutDTO;
+import com.nt.user_service_lms.dto.outDTO.UserEnrollmentsOutDTO;
 import com.nt.user_service_lms.service.EnrollmentService;
 import jakarta.validation.Valid;
 import lombok.extern.slf4j.Slf4j;

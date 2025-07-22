@@ -1,4 +1,4 @@
-package com.nt.user_service_lms.dtoTest.inDTO;
+package com.nt.user_service_lms.dto.inDTO;
 
 import com.nt.user_service_lms.validation.ValidateEnrollmentDTO;
 import jakarta.validation.constraints.NotNull;

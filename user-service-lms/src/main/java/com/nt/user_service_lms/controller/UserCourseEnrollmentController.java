@@ -1,6 +1,6 @@
-package com.nt.user_service_lms.controllerTest;
+package com.nt.user_service_lms.controller;
 
-import com.nt.user_service_lms.dtoTest.outDTO.StandardResponseOutDTO;
+import com.nt.user_service_lms.dto.outDTO.StandardResponseOutDTO;
 import com.nt.user_service_lms.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;

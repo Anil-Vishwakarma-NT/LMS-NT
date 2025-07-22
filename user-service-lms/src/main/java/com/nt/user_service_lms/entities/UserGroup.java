@@ -7,8 +7,11 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+
+import java.util.Objects;
 
 /**
  * Entity representing the relationship between a user and a group.
@@ -18,6 +21,7 @@ import lombok.NoArgsConstructor;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
+@Builder
 public class UserGroup {
 
     /**
@@ -54,5 +58,17 @@ public class UserGroup {
     public UserGroup(final Long userId, final Long groupId) {
         this.userId = userId;
         this.groupId = groupId;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (o == null || getClass() != o.getClass()) return false;
+        UserGroup userGroup = (UserGroup) o;
+        return isActive == userGroup.isActive && Objects.equals(id, userGroup.id) && Objects.equals(userId, userGroup.userId) && Objects.equals(groupId, userGroup.groupId);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(id, userId, groupId, isActive);
     }
 }

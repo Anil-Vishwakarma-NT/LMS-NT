@@ -1,6 +1,6 @@
-package com.nt.user_service_lms.dtoTest;
+package com.nt.user_service_lms.dto;
 
-import com.nt.user_service_lms.dtoTest.inDTO.UserInDTO;
+import com.nt.user_service_lms.dto.inDTO.UserInDTO;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 

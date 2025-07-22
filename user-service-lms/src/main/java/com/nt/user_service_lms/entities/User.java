@@ -10,9 +10,12 @@ import jakarta.persistence.Table;
 import jakarta.persistence.Temporal;
 import jakarta.persistence.TemporalType;
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 import java.util.Date;
+import java.util.Objects;
 
 /**
  * Represents a user in the system. This entity contains the user's details,
@@ -22,6 +25,8 @@ import java.util.Date;
 @Table(name = "users")
 @Data
 @AllArgsConstructor
+@NoArgsConstructor
+@Builder
 public class User {
 
     /**
@@ -95,10 +100,16 @@ public class User {
     @Column(name = "is_active", nullable = false, columnDefinition = "Boolean Default True")
     private boolean active = true;
 
-    /**
-     * Default constructor. Sets the managerId to ADMIN_ID.
-     */
-    public User() {
-        this.managerId = UserConstants.getAdminId();
+
+    @Override
+    public boolean equals(Object o) {
+        if (o == null || getClass() != o.getClass()) return false;
+        User user = (User) o;
+        return userId == user.userId && active == user.active && Objects.equals(userName, user.userName) && Objects.equals(firstName, user.firstName) && Objects.equals(lastName, user.lastName) && Objects.equals(email, user.email) && Objects.equals(password, user.password) && Objects.equals(managerId, user.managerId) && Objects.equals(roleId, user.roleId) && Objects.equals(createdAt, user.createdAt) && Objects.equals(updatedAt, user.updatedAt);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(userId, userName, firstName, lastName, email, password, managerId, roleId, createdAt, updatedAt, active);
     }
 }

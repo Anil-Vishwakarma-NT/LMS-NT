@@ -1,11 +1,11 @@
-package com.nt.user_service_lms.controllerTest;
+package com.nt.user_service_lms.controller;
 
 
 import com.nt.user_service_lms.config.ServicePrincipal;
-import com.nt.user_service_lms.dtoTest.outDTO.CourseDeadlinesDTO;
-import com.nt.user_service_lms.dtoTest.outDTO.StandardResponseOutDTO;
-import com.nt.user_service_lms.dtoTest.outDTO.UserCourseEnrollDetails;
-import com.nt.user_service_lms.dtoTest.outDTO.UserOutDTO;
+import com.nt.user_service_lms.dto.outDTO.CourseDeadlinesDTO;
+import com.nt.user_service_lms.dto.outDTO.StandardResponseOutDTO;
+import com.nt.user_service_lms.dto.outDTO.UserCourseEnrollDetails;
+import com.nt.user_service_lms.dto.outDTO.UserOutDTO;
 import com.nt.user_service_lms.entities.User;
 import com.nt.user_service_lms.exception.UnauthorizedAccessException;
 import com.nt.user_service_lms.repository.UserRepository;
