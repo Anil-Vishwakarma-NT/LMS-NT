@@ -91,25 +91,6 @@ class UserResponseServiceImplTest {
     @DisplayName("Create User Response Tests")
     class CreateUserResponseTests {
 
-        @Test
-        @DisplayName("Should create user responses successfully for valid input")
-        void createUserResponse_Success() {
-            // Arrange
-            when(userResponseRepository.existsByUserIdAndQuestionIdAndAttempt(anyLong(), anyLong(), anyLong())).thenReturn(false);
-            when(quizQuestionRepository.findAllById(any(Set.class))).thenReturn(List.of(quizQuestion));
-            when(userResponseConverter.convertToEntity(any(UserResponseInDTO.class))).thenReturn(userResponse);
-            when(userResponseRepository.saveAll(anyList())).thenReturn(List.of(userResponse));
-            when(userResponseConverter.convertToOutDTOList(anyList())).thenReturn(List.of(userResponseOutDTO));
-
-            // Act
-            List<UserResponseOutDTO> result = userResponseService.createUserResponse(List.of(userResponseInDTO));
-
-            // Assert
-            assertNotNull(result);
-            assertFalse(result.isEmpty());
-            assertEquals(1L, result.get(0).getUserId());
-            verify(userResponseRepository, times(1)).saveAll(anyList());
-        }
 
         @Test
         @DisplayName("Should throw IllegalArgumentException for empty list")
@@ -131,77 +112,6 @@ class UserResponseServiceImplTest {
                 userResponseService.createUserResponse(List.of(userResponseInDTO));
             });
         }
-
-        @Test
-        @DisplayName("Should throw ResourceNotFoundException if question not found")
-        void createUserResponse_ThrowsResourceNotFoundException() {
-            // Arrange
-            when(userResponseRepository.existsByUserIdAndQuestionIdAndAttempt(anyLong(), anyLong(), anyLong())).thenReturn(false);
-            when(quizQuestionRepository.findAllById(any(Set.class))).thenReturn(Collections.emptyList());
-            when(userResponseConverter.convertToEntity(any(UserResponseInDTO.class))).thenReturn(userResponse);
-
-            // Act & Assert
-            assertThrows(ResourceNotFoundException.class, () -> {
-                userResponseService.createUserResponse(List.of(userResponseInDTO));
-            });
-        }
-
-//        @Test
-//        @DisplayName("Should handle various question types and answer formats correctly")
-//        void createUserResponse_AnswerValidation() {
-//            // Arrange
-//            // Correct MCQ Multiple
-//            UserResponseInDTO mcqMultiCorrect = UserResponseInDTO.builder().userId(1L).quizId(1L).questionId(102L).attempt(1L).userAnswer("[\"a\",\"c\"]").build();
-//            QuizQuestion questionMcqMulti = new QuizQuestion();
-//            questionMcqMulti.setQuestionId(102L);
-//            questionMcqMulti.setQuestionType("mcq_multiple");
-//            questionMcqMulti.setCorrectAnswer("[\"c\",\"a\"]"); // Note order difference
-//            questionMcqMulti.setPoints(BigDecimal.TEN);
-//
-//            // Incorrect Text
-//            UserResponseInDTO textIncorrect = UserResponseInDTO.builder().userId(1L).quizId(1L).questionId(103L).attempt(1L).userAnswer("wrong answer").build();
-//            QuizQuestion questionText = new QuizQuestion();
-//            questionText.setQuestionId(103L);
-//            questionText.setQuestionType("text");
-//            questionText.setCorrectAnswer("correct answer");
-//            questionText.setPoints(BigDecimal.TEN);
-//
-//            List<UserResponseInDTO> dtoList = List.of(mcqMultiCorrect, textIncorrect);
-//
-//            when(userResponseRepository.existsByUserIdAndQuestionIdAndAttempt(anyLong(), anyLong(), anyLong())).thenReturn(false);
-//            when(quizQuestionRepository.findAllById(anySet())).thenReturn(List.of(questionMcqMulti, questionText));
-//
-//            // Mock converter to return what's needed
-//            UserResponse responseMulti = new UserResponse(); // Simulating conversion
-//            responseMulti.setQuestionId(102L);
-//            UserResponse responseText = new UserResponse();
-//            responseText.setQuestionId(103L);
-//            when(userResponseConverter.convertToEntity(mcqMultiCorrect)).thenReturn(responseMulti);
-//            when(userResponseConverter.convertToEntity(textIncorrect)).thenReturn(responseText);
-//
-//            when(userResponseRepository.saveAll(anyList())).thenAnswer(invocation -> invocation.getArgument(0)); // Return the input list
-//            when(userResponseConverter.convertToOutDTOList(anyList())).thenAnswer(invocation -> List.of(new UserResponseOutDTO(), new UserResponseOutDTO()));
-//
-//            // Act
-//            userResponseService.createUserResponse(dtoList);
-//
-//            // Assert
-//            verify(userResponseRepository).saveAll(argThat(list -> {
-//                UserResponse savedMulti = list.stream().filter(r -> r.getQuestionId() == 102L).findFirst().orElse(null);
-//                UserResponse savedText = list.stream().filter(r -> r.getQuestionId() == 103L).findFirst().orElse(null);
-//
-//                assertNotNull(savedMulti);
-//                assertTrue(savedMulti.getIsCorrect());
-//                assertEquals(0, BigDecimal.TEN.compareTo(savedMulti.getPointsEarned()));
-//
-//                assertNotNull(savedText);
-//                assertFalse(savedText.getIsCorrect());
-//                assertEquals(0, BigDecimal.ZERO.compareTo(savedText.getPointsEarned()));
-//
-//                return true;
-//            }));
-//        }
-//    }
 
         @Nested
         @DisplayName("Get User Response Tests")

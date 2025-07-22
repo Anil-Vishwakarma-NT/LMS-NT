@@ -35,31 +35,6 @@ public class QuizSubmissionController {
     private QuizSubmissionService quizSubmissionService;
 
     /**
-     * Handles manual quiz submission by a user.
-     * This endpoint is used when a user explicitly submits their quiz responses.
-     *
-     * @param quizAttemptId The unique identifier of the quiz attempt being submitted
-     * @param submissionDTO The data transfer object containing user responses and submission details
-     * @return ResponseEntity containing the quiz submission result wrapped in a standard response format
-     * @throws jakarta.validation.ConstraintViolationException if the submission data is invalid
-     */
-    @PostMapping("/manual/{quizAttemptId}")
-    public ResponseEntity<StandardResponseOutDTO<QuizSubmissionResultOutDTO>> submitQuizManually(
-            @PathVariable final Long quizAttemptId,
-            @Valid @RequestBody final QuizSubmissionInDTO submissionDTO) {
-
-        log.info("Manual quiz submission request for attempt: {}", quizAttemptId);
-
-        QuizSubmissionResultOutDTO result = quizSubmissionService.submitQuizManually(
-                quizAttemptId, submissionDTO.getUserResponses());
-
-        StandardResponseOutDTO<QuizSubmissionResultOutDTO> response =
-                StandardResponseOutDTO.success(result, "Quiz submitted manually successfully");
-
-        return new ResponseEntity<>(response, HttpStatus.OK);
-    }
-
-    /**
      * Handles automatic quiz submission when the quiz timer expires.
      * This endpoint is triggered when a quiz attempt times out and needs to be auto-submitted.
      *

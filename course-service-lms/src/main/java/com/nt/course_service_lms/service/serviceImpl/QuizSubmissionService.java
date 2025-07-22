@@ -237,42 +237,6 @@ public class QuizSubmissionService {
     }
 
     /**
-     * Handles manual quiz submission initiated by the user.
-     * <p>
-     * This method processes quiz submissions when users explicitly choose to
-     * submit their quiz before the time limit expires. It saves all provided
-     * responses and completes the submission with a "COMPLETED" status.
-     * </p>
-     *
-     * @param quizAttemptId the unique identifier of the quiz attempt to submit manually
-     * @param userResponses list of user responses to submit (can be null or empty for partial submissions)
-     * @return QuizSubmissionResultOutDTO containing the manual submission results
-     * @throws ResourceNotFoundException if the quiz attempt is not found
-     * @throws ResourceNotValidException if the quiz attempt is not in a valid state for manual submission
-     * @throws RuntimeException          if any unexpected error occurs during manual submission processing
-     */
-    @Transactional
-    public QuizSubmissionResultOutDTO submitQuizManually(final Long quizAttemptId,
-                                                         final List<UserResponseInDTO> userResponses) {
-        log.info("Manually submitting quiz attempt {}", quizAttemptId);
-        try {
-            return submitQuiz(quizAttemptId, userResponses, "MANUAL");
-        } catch (ResourceNotFoundException e) {
-            log.error("Resource not found during manual submission for attempt {}: {}", quizAttemptId, e.getMessage());
-            throw e;
-        } catch (ResourceNotValidException e) {
-            log.error("Invalid resource during manual submission for attempt {}: {}", quizAttemptId, e.getMessage());
-            throw e;
-        } catch (RuntimeException e) {
-            log.error("Runtime exception during manual submission for attempt {}", quizAttemptId, e);
-            throw new RuntimeException("Failed to submit quiz manually", e);
-        } catch (Exception e) {
-            log.error("Unexpected exception during manual submission for attempt {}", quizAttemptId, e);
-            throw new RuntimeException("Unexpected error during manual submission", e);
-        }
-    }
-
-    /**
      * Validates and retrieves a quiz attempt for submission processing.
      * <p>
      * This method performs comprehensive validation to ensure the quiz attempt
@@ -566,14 +530,11 @@ public class QuizSubmissionService {
      */
     private String getCompletionStatus(final String submissionType) {
         try {
-            switch (submissionType) {
-                case "AUTO_TIMEOUT":
-                    return "TIMED_OUT";
-                case "MANUAL":
-                    return "COMPLETED";
-                default:
-                    return "COMPLETED";
-            }
+            return switch (submissionType) {
+                case "AUTO_TIMEOUT" -> "TIMED_OUT";
+                case "MANUAL" -> "COMPLETED";
+                default -> "COMPLETED";
+            };
         } catch (RuntimeException e) {
             log.error("Runtime exception while getting completion status for submission type {}", submissionType, e);
             throw new RuntimeException("Failed to determine completion status", e);
