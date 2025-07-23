@@ -46,7 +46,7 @@ public interface CourseContentService {
     /**
      * Updates an existing course content.
      *
-     * @param courseContentId the course content ID to update
+     * @param courseContentId          the course content ID to update
      * @param updateCourseContentInDTO the updated course content data
      * @return the updated course content as DTO
      */

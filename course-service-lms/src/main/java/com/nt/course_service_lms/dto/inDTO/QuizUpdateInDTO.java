@@ -1,13 +1,25 @@
 package com.nt.course_service_lms.dto.inDTO;
 
-import jakarta.validation.constraints.*;
+import jakarta.validation.constraints.DecimalMin;
+import jakarta.validation.constraints.Digits;
+import jakarta.validation.constraints.Max;
+import jakarta.validation.constraints.Min;
+import jakarta.validation.constraints.Size;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
+import lombok.NoArgsConstructor;
+
 import java.math.BigDecimal;
+import java.util.Objects;
 
 /**
  * DTO for updating an existing quiz.
  */
 @Data
+@NoArgsConstructor
+@AllArgsConstructor
+@Builder
 public class QuizUpdateInDTO {
 
     @Size(max = 255, message = "Title must not exceed 255 characters")
@@ -33,4 +45,18 @@ public class QuizUpdateInDTO {
     private Boolean showResults;
 
     private Boolean isActive;
+
+    @Override
+    public boolean equals(Object o) {
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
+        QuizUpdateInDTO that = (QuizUpdateInDTO) o;
+        return Objects.equals(title, that.title) && Objects.equals(description, that.description) && Objects.equals(timeLimit, that.timeLimit) && Objects.equals(attemptsAllowed, that.attemptsAllowed) && Objects.equals(passingScore, that.passingScore) && Objects.equals(randomizeQuestions, that.randomizeQuestions) && Objects.equals(showResults, that.showResults) && Objects.equals(isActive, that.isActive);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(title, description, timeLimit, attemptsAllowed, passingScore, randomizeQuestions, showResults, isActive);
+    }
 }

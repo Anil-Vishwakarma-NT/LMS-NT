@@ -1,14 +1,28 @@
 package com.nt.course_service_lms.dto.inDTO;
 
-import jakarta.validation.constraints.*;
+import jakarta.validation.constraints.DecimalMax;
+import jakarta.validation.constraints.DecimalMin;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Pattern;
+import jakarta.validation.constraints.Positive;
+import jakarta.validation.constraints.Size;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
+import lombok.NoArgsConstructor;
+
 import java.math.BigDecimal;
+import java.util.Objects;
 
 /**
  * Data Transfer Object for incoming quiz question data.
  * Used for creating and updating quiz questions.
  */
 @Data
+@NoArgsConstructor
+@AllArgsConstructor
+@Builder
 public class QuizQuestionInDTO {
 
     @NotNull(message = "Quiz ID is required")
@@ -43,5 +57,17 @@ public class QuizQuestionInDTO {
     @NotNull(message = "Required field must be specified")
     private Boolean required = true;
 
+    @Override
+    public boolean equals(Object o) {
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
+        QuizQuestionInDTO that = (QuizQuestionInDTO) o;
+        return Objects.equals(quizId, that.quizId) && Objects.equals(questionText, that.questionText) && Objects.equals(questionType, that.questionType) && Objects.equals(options, that.options) && Objects.equals(correctAnswer, that.correctAnswer) && Objects.equals(points, that.points) && Objects.equals(explanation, that.explanation) && Objects.equals(required, that.required);
+    }
 
+    @Override
+    public int hashCode() {
+        return Objects.hash(quizId, questionText, questionType, options, correctAnswer, points, explanation, required);
+    }
 }

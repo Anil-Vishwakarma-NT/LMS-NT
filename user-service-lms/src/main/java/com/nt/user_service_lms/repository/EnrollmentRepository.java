@@ -20,12 +20,12 @@ public interface EnrollmentRepository extends JpaRepository<Enrollment, Long> {
     /**
      * Checks if an enrollment exists for the given parameters.
      *
-     * @param userId the user ID
-     * @param groupId the group ID
-     * @param courseId the course ID
-     * @param bundleId the bundle ID
+     * @param userId           the user ID
+     * @param groupId          the group ID
+     * @param courseId         the course ID
+     * @param bundleId         the bundle ID
      * @param enrollmentSource the enrollment source
-     * @param isActive the active status
+     * @param isActive         the active status
      * @return true if such enrollment exists, false otherwise
      */
     boolean existsByUserIdAndGroupIdAndCourseIdAndBundleIdAndEnrollmentSourceAndIsActive(
@@ -73,7 +73,7 @@ public interface EnrollmentRepository extends JpaRepository<Enrollment, Long> {
     /**
      * Finds all enrollments by group ID and course ID.
      *
-     * @param groupId the group ID
+     * @param groupId  the group ID
      * @param courseId the course ID
      * @return list of enrollments
      */
@@ -83,7 +83,7 @@ public interface EnrollmentRepository extends JpaRepository<Enrollment, Long> {
      * Finds all enrollments by group ID and user ID.
      *
      * @param groupId the group ID
-     * @param userId the user ID
+     * @param userId  the user ID
      * @return list of enrollments
      */
     List<Enrollment> findByGroupIdAndUserId(Long groupId, Long userId);
@@ -112,14 +112,14 @@ public interface EnrollmentRepository extends JpaRepository<Enrollment, Long> {
      * @param userId the user ID
      * @return total number of enrollments
      */
-@Query("SELECT Count(DISTINCT ug.courseId) FROM Enrollment ug WHERE ug.userId = :userId AND ug.isActive = TRUE")
-Long getUserTotalEnrollments(Long userId);
+    @Query("SELECT Count(DISTINCT ug.courseId) FROM Enrollment ug WHERE ug.userId = :userId AND ug.isActive = TRUE")
+    Long getUserTotalEnrollments(Long userId);
 
     /**
      * Soft deletes an enrollment by group ID and user ID.
      *
      * @param groupId the group ID
-     * @param userId the user ID
+     * @param userId  the user ID
      */
     @Modifying
     @Transactional
@@ -129,8 +129,8 @@ Long getUserTotalEnrollments(Long userId);
     /**
      * Finds an enrollment by group ID, user ID, and course ID.
      *
-     * @param groupId the group ID
-     * @param userId the user ID
+     * @param groupId  the group ID
+     * @param userId   the user ID
      * @param courseId the course ID
      * @return optional enrollment
      */

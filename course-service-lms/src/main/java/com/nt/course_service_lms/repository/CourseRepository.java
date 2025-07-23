@@ -23,7 +23,7 @@ public interface CourseRepository extends JpaRepository<Course, Long> {
     /**
      * Finds a course by its title (case-insensitive) and the owner's ID.
      *
-     * @param title the title of the course
+     * @param title   the title of the course
      * @param ownerId the ID of the course owner
      * @return an {@link Optional} containing the matching {@link Course}, or empty if none found
      */
@@ -37,8 +37,19 @@ public interface CourseRepository extends JpaRepository<Course, Long> {
      */
     boolean existsById(Long id);
 
+    /**
+     * Checks whether a course exists with the given title.
+     *
+     * @return {@code true} if a course with the title exists, {@code false} otherwise
+     */
     List<Course> findTop5ByOrderByCreatedAtDesc();
 
+    /**
+     * Retrieves a list of course IDs that exist in the database.
+     *
+     * @param courseIds the list of course IDs to check
+     * @return a list of existing course IDs
+     */
     @Query("SELECT c.courseId FROM Course c WHERE c.courseId IN :courseIds")
     List<Long> findExistingIds(@Param("courseIds") List<Long> courseIds);
 

@@ -1,7 +1,7 @@
 package com.nt.user_service_lms.service.serviceImpl;
 
 import com.nt.user_service_lms.constants.CommonConstants;
-import com.nt.user_service_lms.dto.UsersDetailsViewDTO;
+import com.nt.user_service_lms.dto.outDTO.UsersDetailsViewDTO;
 import com.nt.user_service_lms.dto.outDTO.CourseDeadlinesDTO;
 import com.nt.user_service_lms.dto.outDTO.CourseInfoOutDTO;
 import com.nt.user_service_lms.dto.outDTO.StandardResponseOutDTO;
@@ -21,6 +21,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
+
 import java.sql.Timestamp;
 import java.time.LocalDate;
 import java.util.ArrayList;
@@ -30,8 +31,8 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
-import static com.nt.user_service_lms.constants.UserConstants.USER_NOT_FOUND;
 import static com.nt.user_service_lms.constants.CommonConstants.NUMBER_FIVE;
+import static com.nt.user_service_lms.constants.UserConstants.USER_NOT_FOUND;
 
 
 /**
@@ -40,7 +41,7 @@ import static com.nt.user_service_lms.constants.CommonConstants.NUMBER_FIVE;
  */
 @Slf4j
 @Service
-public final class UserServiceImpl implements UserService {
+public class UserServiceImpl implements UserService {
 
     /**
      * Repository for accessing user data.

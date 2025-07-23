@@ -302,7 +302,7 @@ public class UserReportKPIQueries {
         //per user
         user_kpi_queries.put(
                 "User: Total Enrolled Courses",
-                        "SELECT \n" +
+                "SELECT \n" +
                         "  COUNT(DISTINCT enrolled_course_id) AS total_courses_enrolled\n" +
                         "FROM final_user_report\n" +
                         "WHERE user_id = ?"
@@ -326,7 +326,7 @@ public class UserReportKPIQueries {
 
         user_kpi_queries.put(
                 "User: Highest Completion %",
-                        "SELECT highest_course_completion\n" +
+                "SELECT highest_course_completion\n" +
                         "FROM (\n" +
                         "  SELECT \n" +
                         "    enrolled_course,\n" +
@@ -342,7 +342,7 @@ public class UserReportKPIQueries {
 
         user_kpi_queries.put(
                 "User: Lowest Completion %",
-                        "SELECT lowest_course_completion\n" +
+                "SELECT lowest_course_completion\n" +
                         "FROM (\n" +
                         "  SELECT \n" +
                         "    enrolled_course,\n" +
@@ -398,7 +398,7 @@ public class UserReportKPIQueries {
 
         user_kpi_queries.put(
                 "User: Courses Completed on Time",
-                        "SELECT\n" +
+                "SELECT\n" +
                         "    COUNT(*) AS completed_on_time\n" +
                         "FROM (\n" +
                         "    SELECT DISTINCT user_id, enrolled_course_id\n" +
@@ -474,7 +474,7 @@ public class UserReportKPIQueries {
 
         user_kpi_queries.put(
                 "User: Courses Yet to be Started (Deadline Missed)",
-                        "SELECT\n" +
+                "SELECT\n" +
                         "    COUNT(*) AS not_started_late\n" +
                         "FROM (\n" +
                         "    SELECT DISTINCT user_id, enrolled_course_id\n" +

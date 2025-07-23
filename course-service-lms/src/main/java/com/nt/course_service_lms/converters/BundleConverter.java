@@ -1,8 +1,8 @@
 package com.nt.course_service_lms.converters;
 
 import com.nt.course_service_lms.dto.inDTO.BundleInDTO;
-import com.nt.course_service_lms.dto.outDTO.BundleOutDTO;
 import com.nt.course_service_lms.dto.inDTO.UpdateBundleInDTO;
+import com.nt.course_service_lms.dto.outDTO.BundleOutDTO;
 import com.nt.course_service_lms.entity.Bundle;
 import org.springframework.stereotype.Component;
 
@@ -21,7 +21,7 @@ public class BundleConverter {
      * @param bundleInDTO the DTO to convert
      * @return new Bundle entity
      */
-    public Bundle toEntity(BundleInDTO bundleInDTO) {
+    public Bundle toEntity(final BundleInDTO bundleInDTO) {
         if (bundleInDTO == null) {
             return null;
         }
@@ -38,11 +38,11 @@ public class BundleConverter {
     /**
      * Updates existing Bundle entity with UpdateBundleDTO data.
      *
-     * @param existingBundle the bundle to update
+     * @param existingBundle    the bundle to update
      * @param updateBundleInDTO the update data
      * @return updated Bundle entity
      */
-    public Bundle updateEntity(Bundle existingBundle, UpdateBundleInDTO updateBundleInDTO) {
+    public Bundle updateEntity(final Bundle existingBundle, final UpdateBundleInDTO updateBundleInDTO) {
         if (existingBundle == null || updateBundleInDTO == null) {
             return existingBundle;
         }
@@ -60,7 +60,7 @@ public class BundleConverter {
      * @param bundle the entity to convert
      * @return BundleDTO
      */
-    public BundleInDTO toDTO(Bundle bundle) {
+    public BundleInDTO toDTO(final Bundle bundle) {
         if (bundle == null) {
             return null;
         }
@@ -74,7 +74,7 @@ public class BundleConverter {
      * @param bundle the Bundle entity to convert
      * @return the converted BundleOutDTO
      */
-    public BundleOutDTO toOutDTO(Bundle bundle) {
+    public BundleOutDTO toOutDTO(final Bundle bundle) {
         if (bundle == null) {
             return null;
         }
@@ -88,7 +88,4 @@ public class BundleConverter {
 
         return bundleOutDTO;
     }
-
-
-
 }

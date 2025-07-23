@@ -91,7 +91,7 @@ public class CourseReportKPIQueries {
                         ") x\n" +
                         "WHERE course_completion_percentage >= 95"
         );
-        
+
         course_kpi_queries.put(
                 "Global: Enrolled Courses In-Progress",
                 "SELECT COUNT(*) AS total_in_progress_courses\n" +
@@ -104,7 +104,7 @@ public class CourseReportKPIQueries {
                         "WHERE course_completion_percentage BETWEEN 0.01 AND 94.99\n" +
                         "  AND CURRENT_DATE <= deadline"
         );
-        
+
         course_kpi_queries.put(
                 "Global: Enrolled Courses Not Started",
                 "SELECT COUNT(*) AS total_not_started_courses\n" +

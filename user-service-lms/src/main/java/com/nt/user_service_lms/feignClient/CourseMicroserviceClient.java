@@ -79,7 +79,7 @@ public interface CourseMicroserviceClient {
     /**
      * Retrieves the progress of a user in a course.
      *
-     * @param userId the user ID
+     * @param userId   the user ID
      * @param courseId the course ID
      * @return a response entity containing the course progress as a double
      */
@@ -116,7 +116,7 @@ public interface CourseMicroserviceClient {
     /**
      * Retrieves course progress with meta information for a user and course.
      *
-     * @param userId the user ID
+     * @param userId   the user ID
      * @param courseId the course ID
      * @return a DTO containing course progress with meta information
      */

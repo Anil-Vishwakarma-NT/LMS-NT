@@ -1,7 +1,6 @@
 package com.nt.user_service_lms.controller;
 
 import com.nt.user_service_lms.dto.outDTO.StandardResponseOutDTO;
-import com.nt.user_service_lms.dto.outDTO.UserCourseEnrollmentOutDTO;
 import com.nt.user_service_lms.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -10,7 +9,6 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import java.util.List;
 import java.util.Map;
 
 /**
@@ -40,7 +38,7 @@ public class UserCourseEnrollmentController {
      *
      * @param userId the unique identifier of the user whose statistics are to be retrieved
      * @return ResponseEntity containing StandardResponseOutDTO with a Map of statistics
-     *         where keys are statistic names (String) and values are counts (Long)
+     * where keys are statistic names (String) and values are counts (Long)
      */
     @GetMapping("/{userId}/statistics")
     public ResponseEntity<StandardResponseOutDTO<Map<String, Long>>> getUserEnrollments(@PathVariable final Long userId) {
@@ -49,7 +47,6 @@ public class UserCourseEnrollmentController {
                 .success(stats, "Fetched Users Enrolled");
         return ResponseEntity.ok(standardResponseOutDTO);
     }
-
 
 
 }

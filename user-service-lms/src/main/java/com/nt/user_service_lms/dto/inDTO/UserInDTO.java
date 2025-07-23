@@ -2,8 +2,11 @@ package com.nt.user_service_lms.dto.inDTO;
 
 import jakarta.validation.constraints.Pattern;
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+
+import java.util.Objects;
 
 /**
  * DTO representing user input data including user details and role.
@@ -11,6 +14,7 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 @Data
+@Builder
 public class UserInDTO {
 
     /**
@@ -52,4 +56,16 @@ public class UserInDTO {
             message = "Role name must contain only alphabets."
     )
     private String role;
+
+    @Override
+    public boolean equals(Object o) {
+        if (o == null || getClass() != o.getClass()) return false;
+        UserInDTO userInDTO = (UserInDTO) o;
+        return userId == userInDTO.userId && Objects.equals(email, userInDTO.email) && Objects.equals(firstName, userInDTO.firstName) && Objects.equals(lastName, userInDTO.lastName) && Objects.equals(userName, userInDTO.userName) && Objects.equals(role, userInDTO.role);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(userId, email, firstName, lastName, userName, role);
+    }
 }

@@ -4,16 +4,26 @@ import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.util.Objects;
 
 import static com.nt.course_service_lms.constants.BundleConstants.INT_VALUE_3;
-import static com.nt.course_service_lms.constants.CourseConstants.*;
+import static com.nt.course_service_lms.constants.CourseConstants.COURSE_LEVEL_REQUIRED;
+import static com.nt.course_service_lms.constants.CourseConstants.DESCRIPTION_BLANK;
+import static com.nt.course_service_lms.constants.CourseConstants.DESCRIPTION_MIN_LENGTH;
+import static com.nt.course_service_lms.constants.CourseConstants.OWNER_ID_BLANK;
+import static com.nt.course_service_lms.constants.CourseConstants.OWNER_ID_INVALID;
+import static com.nt.course_service_lms.constants.CourseConstants.TITLE_BLANK;
+import static com.nt.course_service_lms.constants.CourseConstants.TITLE_MIN_LENGTH;
 
 @Data
 @NoArgsConstructor
+@AllArgsConstructor
+@Builder
 public class UpdateCourseInDTO {
 
     /**
@@ -50,18 +60,14 @@ public class UpdateCourseInDTO {
     @NotNull(message = "Is Active field is required")
     private boolean Active;
 
-    public UpdateCourseInDTO(String title, Long ownerId, String description, String courseLevel, boolean Active) {
-        this.title = title;
-        this.ownerId = ownerId;
-        this.description = description;
-        this.courseLevel = courseLevel;
-        this.Active = Active;
-    }
-
     @Override
     public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
+        if (this == o) {
+            return true;
+        }
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
         UpdateCourseInDTO that = (UpdateCourseInDTO) o;
         return Active == that.Active && Objects.equals(title, that.title) && Objects.equals(ownerId, that.ownerId) && Objects.equals(description, that.description) && Objects.equals(courseLevel, that.courseLevel);
     }

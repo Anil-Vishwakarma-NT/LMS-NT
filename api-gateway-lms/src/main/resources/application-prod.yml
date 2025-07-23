@@ -1,0 +1,81 @@
+server:
+  port: 8091
+
+spring:
+  application:
+    name: api-gateway-auth-service
+
+  datasource:
+    driver-class-name: org.postgresql.Driver
+
+  jpa:
+    database-platform: org.hibernate.dialect.PostgreSQLDialect
+    hibernate:
+      ddl-auto: validate
+
+  cloud:
+    gateway:
+      routes:
+        - id: user-service-client-api
+          uri: http://user-service-lms:8081  # Update with production service DNS if needed
+          predicates:
+            - Path=/lms/user/api/client-api/**
+          filters:
+            - RewritePath=/lms/user/api/client-api/(?<segment>.*), /api/service-api/${segment}
+            - AddRequestHeader=X-Gateway-Service, user-service
+
+        - id: course-service-client-api
+          uri: http://course-service-lms:8080  # Update with production service DNS if needed
+          predicates:
+            - Path=/lms/course/api/client-api/**
+          filters:
+            - RewritePath=/lms/course/api/client-api/(?<segment>.*), /api/service-api/${segment}
+            - AddRequestHeader=X-Gateway-Service, course-service
+
+        - id: course-service-static-files
+          uri: http://course-service-lms:8080
+          predicates:
+            - Path=/lms/course/static/**
+          filters:
+            - StripPrefix=3
+
+      httpclient:
+        connect-timeout: 10000
+        response-timeout: 60s
+
+aws:
+  s3:
+    bucket-name: your-bucket-name
+  secretsmanager:
+    region: ap-south-1
+    secretName: /prod/lms/db/credentials  # Use a separate prod secret
+
+jwt:
+  secret: ${JWT_SECRET}
+  issuer: https://auth.nucleusteq.com  # Update to actual production domain
+  access-token:
+    expiration: 300000  # 5 mins
+  refresh-token:
+    expiration: 604800000  # 7 days
+  service-token:
+    expiration: 3600000  # 1 hour
+
+gateway:
+  security:
+    enabled: true
+  secret:
+    value: ${GATEWAY_SECRET}
+
+logging:
+  level:
+    root: WARN  # Reduce logging level in prod
+    org.springframework.cloud.gateway: ERROR
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info,metrics
+  endpoint:
+    health:
+      show-details: never  # Avoid exposing internal info in prod

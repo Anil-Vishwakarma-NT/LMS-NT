@@ -21,7 +21,7 @@ public class QuizConverter {
      * @param quizCreateInDTO the DTO to convert
      * @return new Quiz entity
      */
-    public Quiz toEntity(QuizCreateInDTO quizCreateInDTO) {
+    public Quiz toEntity(final QuizCreateInDTO quizCreateInDTO) {
         if (quizCreateInDTO == null) {
             return null;
         }
@@ -34,10 +34,12 @@ public class QuizConverter {
         quiz.setTimeLimit(quizCreateInDTO.getTimeLimit());
         quiz.setAttemptsAllowed(quizCreateInDTO.getAttemptsAllowed());
         quiz.setPassingScore(quizCreateInDTO.getPassingScore());
-        if(quizCreateInDTO.getRandomizeQuestions() != null)
+        if (quizCreateInDTO.getRandomizeQuestions() != null) {
             quiz.setRandomizeQuestions(quizCreateInDTO.getRandomizeQuestions());
-        if(quizCreateInDTO.getShowResults() != null)
+        }
+        if (quizCreateInDTO.getShowResults() != null) {
             quiz.setShowResults(quizCreateInDTO.getShowResults());
+        }
         quiz.setIsActive(quizCreateInDTO.getIsActive());
         quiz.setCreatedBy(quizCreateInDTO.getCreatedBy());
         quiz.setCreatedAt(LocalDateTime.now());
@@ -49,11 +51,11 @@ public class QuizConverter {
     /**
      * Updates existing Quiz entity with QuizUpdateInDTO data.
      *
-     * @param existingQuiz the quiz to update
+     * @param existingQuiz    the quiz to update
      * @param quizUpdateInDTO the update data
      * @return updated Quiz entity
      */
-    public Quiz updateEntity(Quiz existingQuiz, QuizUpdateInDTO quizUpdateInDTO) {
+    public Quiz updateEntity(final Quiz existingQuiz, final QuizUpdateInDTO quizUpdateInDTO) {
         if (existingQuiz == null || quizUpdateInDTO == null) {
             return existingQuiz;
         }
@@ -94,7 +96,7 @@ public class QuizConverter {
      * @param quiz the Quiz entity to convert
      * @return the converted QuizOutDTO
      */
-    public QuizOutDTO toOutDTO(Quiz quiz) {
+    public QuizOutDTO toOutDTO(final Quiz quiz) {
         if (quiz == null) {
             return null;
         }

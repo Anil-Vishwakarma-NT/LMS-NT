@@ -1,7 +1,9 @@
 package com.nt.lms.api_gateway_lms.controller;
 
 import com.nt.lms.api_gateway_lms.Controller.AuthController;
-import com.nt.lms.api_gateway_lms.dto.*;
+import com.nt.lms.api_gateway_lms.dto.AuthRequest;
+import com.nt.lms.api_gateway_lms.dto.AuthResponse;
+import com.nt.lms.api_gateway_lms.dto.RefreshTokenRequest;
 import com.nt.lms.api_gateway_lms.service.serviceImp.AuthServiceImp;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -14,7 +16,9 @@ import reactor.test.StepVerifier;
 import java.util.Collections;
 import java.util.Map;
 
-import static org.mockito.Mockito.*;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 import static org.mockito.MockitoAnnotations.openMocks;
 
 class AuthControllerTest {

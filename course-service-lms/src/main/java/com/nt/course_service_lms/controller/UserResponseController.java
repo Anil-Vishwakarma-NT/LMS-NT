@@ -12,14 +12,25 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 
 import java.math.BigDecimal;
 import java.util.List;
 
 /**
- * REST Controller for managing user responses to quiz questions.
- * Provides endpoints for CRUD operations and various query operations.
+ * REST Controller for managing user responses to quiz questions in the Learning Management System.
+ * Provides comprehensive CRUD operations and various query capabilities for user quiz responses.
+ *
+ * @author NT Course Service Team
+ * @version 1.0
+ * @since 1.0
  */
 @RestController
 @RequestMapping("/api/service-api/v1/user-responses")
@@ -27,10 +38,18 @@ import java.util.List;
 @Slf4j
 public class UserResponseController {
 
+    /**
+     * Service layer dependency for handling user response business logic operations.
+     */
     private final UserResponseService userResponseService;
 
     /**
-     * Create a new user response
+     * Creates new user responses for multiple quiz questions in a single request.
+     * Validates input data and ensures the response list is not empty before processing.
+     *
+     * @param userResponseInDTOList List of user response input DTOs containing quiz answers
+     * @return ResponseEntity containing the created user responses with HTTP 201 status
+     * @throws IllegalArgumentException if the user response list is empty
      */
     @PostMapping
     public ResponseEntity<StandardResponseOutDTO<List<UserResponseOutDTO>>> createUserResponse(
@@ -56,7 +75,10 @@ public class UserResponseController {
     }
 
     /**
-     * Get user response by ID
+     * Retrieves a specific user response by its unique identifier.
+     *
+     * @param responseId The unique identifier of the user response to retrieve
+     * @return ResponseEntity containing the user response data with HTTP 200 status
      */
     @GetMapping("/{responseId}")
     public ResponseEntity<StandardResponseOutDTO<UserResponseOutDTO>> getUserResponseById(
@@ -70,7 +92,12 @@ public class UserResponseController {
     }
 
     /**
-     * Update user response
+     * Updates an existing user response with new information.
+     * Only allows modification of user's selected answer and related fields.
+     *
+     * @param responseId              The unique identifier of the user response to update
+     * @param userResponseUpdateInDTO DTO containing the updated user response data
+     * @return ResponseEntity containing the updated user response with HTTP 200 status
      */
     @PutMapping("/{responseId}")
     public ResponseEntity<StandardResponseOutDTO<UserResponseOutDTO>> updateUserResponse(
@@ -85,7 +112,11 @@ public class UserResponseController {
     }
 
     /**
-     * Delete user response
+     * Deletes a user response from the system permanently.
+     * This operation cannot be undone and will remove all associated data.
+     *
+     * @param responseId The unique identifier of the user response to delete
+     * @return ResponseEntity with HTTP 200 status confirming successful deletion
      */
     @DeleteMapping("/{responseId}")
     public ResponseEntity<StandardResponseOutDTO<Void>> deleteUserResponse(
@@ -99,11 +130,15 @@ public class UserResponseController {
     }
 
     /**
-     * Get all user responses with pagination
+     * Retrieves all user responses in the system with pagination support.
+     * Supports sorting and filtering through Spring Data pagination parameters.
+     *
+     * @param pageable Pagination and sorting parameters (page number, size, sort criteria)
+     * @return ResponseEntity containing a paginated list of user responses
      */
     @GetMapping
     public ResponseEntity<StandardResponseOutDTO<Page<UserResponseOutDTO>>> getAllUserResponses(
-            Pageable pageable) {
+            final Pageable pageable) {
         log.info("Received request to get all user responses with pagination - page: {}, size: {}",
                 pageable.getPageNumber(), pageable.getPageSize());
 
@@ -114,7 +149,11 @@ public class UserResponseController {
     }
 
     /**
-     * Get user responses by user ID (List version)
+     * Retrieves all user responses for a specific user as a complete list.
+     * Returns all quiz responses submitted by the specified user across all quizzes.
+     *
+     * @param userId The unique identifier of the user whose responses to retrieve
+     * @return ResponseEntity containing a list of user responses for the specified user
      */
     @GetMapping("/user/{userId}")
     public ResponseEntity<StandardResponseOutDTO<List<UserResponseOutDTO>>> getUserResponsesByUserId(
@@ -128,12 +167,17 @@ public class UserResponseController {
     }
 
     /**
-     * Get user responses by user ID with pagination
+     * Retrieves user responses for a specific user with pagination support.
+     * Provides paginated access to all quiz responses submitted by the specified user.
+     *
+     * @param userId   The unique identifier of the user whose responses to retrieve
+     * @param pageable Pagination and sorting parameters
+     * @return ResponseEntity containing a paginated list of user responses
      */
     @GetMapping("/user/{userId}/paginated")
     public ResponseEntity<StandardResponseOutDTO<Page<UserResponseOutDTO>>> getUserResponsesByUserIdPaginated(
             @PathVariable final Long userId,
-            Pageable pageable) {
+            final Pageable pageable) {
         log.info("Received request to get user responses for user ID: {} with pagination", userId);
 
         Page<UserResponseOutDTO> userResponses = userResponseService.getUserResponsesByUserId(userId, pageable);
@@ -143,7 +187,11 @@ public class UserResponseController {
     }
 
     /**
-     * Get user responses by quiz ID (List version)
+     * Retrieves all user responses for a specific quiz as a complete list.
+     * Returns all responses submitted by various users for the specified quiz.
+     *
+     * @param quizId The unique identifier of the quiz whose responses to retrieve
+     * @return ResponseEntity containing a list of user responses for the specified quiz
      */
     @GetMapping("/quiz/{quizId}")
     public ResponseEntity<StandardResponseOutDTO<List<UserResponseOutDTO>>> getUserResponsesByQuizId(
@@ -157,12 +205,17 @@ public class UserResponseController {
     }
 
     /**
-     * Get user responses by quiz ID with pagination
+     * Retrieves user responses for a specific quiz with pagination support.
+     * Provides paginated access to all responses submitted for the specified quiz.
+     *
+     * @param quizId   The unique identifier of the quiz whose responses to retrieve
+     * @param pageable Pagination and sorting parameters
+     * @return ResponseEntity containing a paginated list of user responses for the quiz
      */
     @GetMapping("/quiz/{quizId}/paginated")
     public ResponseEntity<StandardResponseOutDTO<Page<UserResponseOutDTO>>> getUserResponsesByQuizIdPaginated(
             @PathVariable final Long quizId,
-            Pageable pageable) {
+            final Pageable pageable) {
         log.info("Received request to get user responses for quiz ID: {} with pagination", quizId);
 
         Page<UserResponseOutDTO> userResponses = userResponseService.getUserResponsesByQuizId(quizId, pageable);
@@ -172,7 +225,12 @@ public class UserResponseController {
     }
 
     /**
-     * Get user responses by user ID and quiz ID
+     * Retrieves user responses for a specific user and quiz combination.
+     * Returns all responses submitted by the specified user for the specified quiz across all attempts.
+     *
+     * @param userId The unique identifier of the user
+     * @param quizId The unique identifier of the quiz
+     * @return ResponseEntity containing a list of user responses for the user-quiz combination
      */
     @GetMapping("/user/{userId}/quiz/{quizId}")
     public ResponseEntity<StandardResponseOutDTO<List<UserResponseOutDTO>>> getUserResponsesByUserIdAndQuizId(
@@ -187,7 +245,13 @@ public class UserResponseController {
     }
 
     /**
-     * Get user responses by user ID, quiz ID, and attempt
+     * Retrieves user responses for a specific user, quiz, and attempt combination.
+     * Returns responses submitted by the specified user for a particular quiz attempt.
+     *
+     * @param userId  The unique identifier of the user
+     * @param quizId  The unique identifier of the quiz
+     * @param attempt The attempt number for the quiz (1-based indexing)
+     * @return ResponseEntity containing a list of user responses for the specific attempt
      */
     @GetMapping("/user/{userId}/quiz/{quizId}/attempt/{attempt}")
     public ResponseEntity<StandardResponseOutDTO<List<UserResponseOutDTO>>> getUserResponsesByUserIdQuizIdAndAttempt(
@@ -196,14 +260,23 @@ public class UserResponseController {
             @PathVariable final Long attempt) {
         log.info("Received request to get user responses for user ID: {}, quiz ID: {}, attempt: {}", userId, quizId, attempt);
 
-        List<UserResponseOutDTO> userResponses = userResponseService.getUserResponsesByUserIdAndQuizIdAndAttempt(userId, quizId, attempt);
+        List<UserResponseOutDTO> userResponses = userResponseService.getUserResponsesByUserIdAndQuizIdAndAttempt(
+                userId, quizId, attempt
+        );
 
-        log.info("Retrieved {} user responses for user ID: {}, quiz ID: {}, attempt: {}", userResponses.size(), userId, quizId, attempt);
+        log.info("Retrieved {} user responses for user ID: {}, quiz ID: {}, attempt: {}",
+                userResponses.size(), userId, quizId, attempt);
         return ResponseEntity.ok(StandardResponseOutDTO.success(userResponses, "User responses retrieved successfully"));
     }
 
     /**
-     * Get total score for a user in a specific quiz attempt
+     * Calculates and retrieves the total score achieved by a user in a specific quiz attempt.
+     * Aggregates scores from all questions answered in the specified attempt.
+     *
+     * @param userId  The unique identifier of the user
+     * @param quizId  The unique identifier of the quiz
+     * @param attempt The attempt number for the quiz (1-based indexing)
+     * @return ResponseEntity containing the total score as a BigDecimal value
      */
     @GetMapping("/user/{userId}/quiz/{quizId}/attempt/{attempt}/total-score")
     public ResponseEntity<StandardResponseOutDTO<BigDecimal>> getTotalScore(
@@ -219,23 +292,36 @@ public class UserResponseController {
     }
 
     /**
-     * Count correct answers for a user in a specific quiz attempt
+     * Counts the number of correct answers provided by a user in a specific quiz attempt.
+     * Evaluates all responses for the specified attempt and returns the count of correct answers.
+     *
+     * @param userId  The unique identifier of the user
+     * @param quizId  The unique identifier of the quiz
+     * @param attempt The attempt number for the quiz (1-based indexing)
+     * @return ResponseEntity containing the count of correct answers as a Long value
      */
     @GetMapping("/user/{userId}/quiz/{quizId}/attempt/{attempt}/correct-count")
     public ResponseEntity<StandardResponseOutDTO<Long>> countCorrectAnswers(
             @PathVariable final Long userId,
             @PathVariable final Long quizId,
             @PathVariable final Long attempt) {
-        log.info("Received request to count correct answers for user ID: {}, quiz ID: {}, attempt: {}", userId, quizId, attempt);
+        log.info("Received request to count correct answers for user ID: {}, quiz ID: {}, attempt: {}",
+                userId, quizId, attempt);
 
         Long correctCount = userResponseService.countCorrectAnswers(userId, quizId, attempt);
 
-        log.info("Retrieved correct answers count: {} for user ID: {}, quiz ID: {}, attempt: {}", correctCount, userId, quizId, attempt);
+        log.info("Retrieved correct answers count: {} for user ID: {}, quiz ID: {}, attempt: {}",
+                correctCount, userId, quizId, attempt);
         return ResponseEntity.ok(StandardResponseOutDTO.success(correctCount, "Correct answers count retrieved successfully"));
     }
 
     /**
-     * Get maximum attempt number for a user in a specific quiz
+     * Retrieves the maximum attempt number for a specific user and quiz combination.
+     * Determines the highest attempt number the user has made for the specified quiz.
+     *
+     * @param userId The unique identifier of the user
+     * @param quizId The unique identifier of the quiz
+     * @return ResponseEntity containing the maximum attempt number as a Long value
      */
     @GetMapping("/user/{userId}/quiz/{quizId}/max-attempt")
     public ResponseEntity<StandardResponseOutDTO<Long>> getMaxAttemptNumber(

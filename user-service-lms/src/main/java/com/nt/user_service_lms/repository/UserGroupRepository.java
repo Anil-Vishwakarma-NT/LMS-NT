@@ -38,7 +38,7 @@ public interface UserGroupRepository extends JpaRepository<UserGroup, Long> {
      *
      * @param groupId the ID of the group to find users for
      * @return a list of UserGroup entities associated with the group,
-     *         empty list if no associations are found
+     * empty list if no associations are found
      * @throws IllegalArgumentException if groupId is null
      */
     List<UserGroup> findAllByGroupId(Long groupId);
@@ -47,10 +47,10 @@ public interface UserGroupRepository extends JpaRepository<UserGroup, Long> {
      * Finds a specific user group mapping by user ID and group ID.
      * Useful for checking if a user belongs to a specific group.
      *
-     * @param userId the ID of the user
+     * @param userId  the ID of the user
      * @param groupId the ID of the group
      * @return an Optional containing the UserGroup entity if found,
-     *         empty Optional if no association exists
+     * empty Optional if no association exists
      * @throws IllegalArgumentException if userId or groupId is null
      */
     Optional<UserGroup> findByUserIdAndGroupId(Long userId, Long groupId);
@@ -61,7 +61,7 @@ public interface UserGroupRepository extends JpaRepository<UserGroup, Long> {
      *
      * @param userId the ID of the user
      * @return an Optional containing the UserGroup entity if found,
-     *         empty Optional if no association exists
+     * empty Optional if no association exists
      * @throws IllegalArgumentException if userId is null
      */
     Optional<UserGroup> findByUserId(Long userId);
@@ -83,7 +83,7 @@ public interface UserGroupRepository extends JpaRepository<UserGroup, Long> {
      *
      * @param groupId the ID of the group to find users for
      * @return a list of user IDs belonging to the group,
-     *         empty list if no users are found
+     * empty list if no users are found
      * @throws IllegalArgumentException if groupId is null
      */
     @Query("SELECT ug.userId FROM UserGroup ug WHERE ug.groupId = :groupId")
@@ -108,7 +108,7 @@ public interface UserGroupRepository extends JpaRepository<UserGroup, Long> {
      * instead of physically deleting the record.
      *
      * @param groupId the ID of the group
-     * @param userId the ID of the user
+     * @param userId  the ID of the user
      * @throws IllegalArgumentException if groupId or userId is null
      */
     @Modifying

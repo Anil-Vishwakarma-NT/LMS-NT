@@ -166,7 +166,7 @@ public class FeignTokenInterceptor implements RequestInterceptor {
      *   <li>X-Request-Timestamp: The current timestamp in milliseconds</li>
      * </ul>
      *
-     * @param template the request template to add headers to
+     * @param template  the request template to add headers to
      * @param principal the service principal containing user information
      */
     private void addUserContextHeaders(final RequestTemplate template, final ServicePrincipal principal) {
@@ -247,8 +247,8 @@ public class FeignTokenInterceptor implements RequestInterceptor {
      * to a proper HMAC implementation for enhanced security.
      *
      * @param timestamp the timestamp string to include in the signature
-     * @param nonce the nonce string to include in the signature
-     * @param secret the secret key to use for signature generation
+     * @param nonce     the nonce string to include in the signature
+     * @param secret    the secret key to use for signature generation
      * @return a signature string for gateway authentication
      */
     private String generateSignature(final String timestamp, final String nonce, final String secret) {

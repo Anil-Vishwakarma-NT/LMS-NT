@@ -45,7 +45,7 @@ public interface QuizQuestionService {
     /**
      * Updates an existing quiz question.
      *
-     * @param questionId the question ID to update
+     * @param questionId              the question ID to update
      * @param updateQuizQuestionInDTO the updated question data
      * @return the updated question as QuizQuestionOutDTO
      */

@@ -10,6 +10,7 @@ public interface EnrollmentsService {
 
 
     StandardResponseOutDTO<List<GroupCourseOutDTO>> getCourseDetail(long groupId);
+
     public StandardResponseOutDTO<List<GroupUserOutDTO>> getUserDetail(long groupId);
 
 }

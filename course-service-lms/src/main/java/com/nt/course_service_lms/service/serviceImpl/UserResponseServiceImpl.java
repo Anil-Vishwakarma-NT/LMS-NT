@@ -1,5 +1,7 @@
 package com.nt.course_service_lms.service.serviceImpl;
 
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.nt.course_service_lms.converters.UserResponseConverter;
 import com.nt.course_service_lms.dto.inDTO.UserResponseInDTO;
 import com.nt.course_service_lms.dto.inDTO.UserResponseUpdateInDTO;
@@ -11,8 +13,6 @@ import com.nt.course_service_lms.exception.ResourceNotFoundException;
 import com.nt.course_service_lms.repository.QuizQuestionRepository;
 import com.nt.course_service_lms.repository.UserResponseRepository;
 import com.nt.course_service_lms.service.UserResponseService;
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -40,14 +40,50 @@ import java.util.stream.Collectors;
 @Transactional
 public class UserResponseServiceImpl implements UserResponseService {
 
+    /**
+     * Repository for user response data access operations.
+     * Used for retrieving and validating user responses.
+     */
     private final UserResponseRepository userResponseRepository;
+    /**
+     * User convertor object.
+     */
     private final UserResponseConverter userResponseConverter;
+    /**
+     * Repository for quiz question data access operations.
+     * Used for retrieving and validating quiz question.
+     */
     @Autowired
     private QuizQuestionRepository quizQuestionRepository;
 
+    /**
+     * Creates multiple user responses for quiz questions in batch.
+     *
+     * <p>This method validates that no duplicate responses exist for the same user, question, and attempt
+     * combination before creating new responses. It calculates points earned based on answer correctness
+     * and sets timestamps for each response.</p>
+     *
+     * <p>The method performs the following operations:</p>
+     * <ul>
+     *   <li>Validates input list is not empty</li>
+     *   <li>Checks for existing responses to prevent duplicates</li>
+     *   <li>Batch fetches all referenced questions for validation</li>
+     *   <li>Validates each user answer against the correct answer</li>
+     *   <li>Calculates points earned based on correctness</li>
+     *   <li>Sets timestamps if not provided</li>
+     *   <li>Saves all responses in batch for performance</li>
+     * </ul>
+     *
+     * @param userResponseInDTOList List of user response input DTOs containing user answers
+     * @return List of created user response output DTOs with generated IDs and calculated scores
+     * @throws IllegalArgumentException       if the input list is empty
+     * @throws ResourceAlreadyExistsException if a response already exists for the same user, question, and attempt
+     * @throws ResourceNotFoundException      if any referenced question is not found
+     * @throws RuntimeException               if any unexpected error occurs during processing
+     */
     @Override
     @Transactional
-    public List<UserResponseOutDTO> createUserResponse(List<UserResponseInDTO> userResponseInDTOList) {
+    public List<UserResponseOutDTO> createUserResponse(final List<UserResponseInDTO> userResponseInDTOList) {
         log.info("Creating user responses for {} questions", userResponseInDTOList.size());
 
         if (userResponseInDTOList.isEmpty()) {
@@ -127,13 +163,24 @@ public class UserResponseServiceImpl implements UserResponseService {
 
     /**
      * Validates if the user's answer is correct based on the question type and correct answer.
-     * Fixed version with proper JSON array handling
      *
-     * @param userAnswer    the user's answer in JSON format
-     * @param question      the quiz question entity
+     * <p>This method supports multiple question types and answer formats:</p>
+     * <ul>
+     *   <li><strong>mcq_single</strong> - Single choice questions (radio buttons, dropdowns)</li>
+     *   <li><strong>mcq_multiple</strong> - Multiple choice questions (checkboxes)</li>
+     *   <li><strong>short_answer</strong> - Short text answers</li>
+     *   <li><strong>text</strong> - Free text answers</li>
+     * </ul>
+     *
+     * <p>The method handles various JSON formats for both user answers and correct answers,
+     * including arrays, objects, and plain text. It performs case-insensitive comparison
+     * for text-based answers.</p>
+     *
+     * @param userAnswer the user's answer in JSON format (e.g., ["a"], {"answer": "text"}, or plain text)
+     * @param question   the quiz question entity containing the correct answer and question type
      * @return true if the answer is correct, false otherwise
      */
-    private boolean validateAnswer(String userAnswer, QuizQuestion question) {
+    private boolean validateAnswer(final String userAnswer, final QuizQuestion question) {
         try {
             String questionType = question.getQuestionType().toLowerCase();
             String correctAnswer = question.getCorrectAnswer();
@@ -163,10 +210,23 @@ public class UserResponseServiceImpl implements UserResponseService {
     }
 
     /**
-     * Validates single choice answers (radio buttons, dropdowns).
-     * Fixed to handle JSON array format properly
+     * Validates single choice answers for radio buttons and dropdown questions.
+     *
+     * <p>This method handles multiple input formats for user answers:</p>
+     * <ul>
+     *   <li>JSON array format: ["a"], ["option1"]</li>
+     *   <li>JSON object format: {"answer": "a"}, {"selected": "option1"}</li>
+     *   <li>Quoted string format: "a"</li>
+     *   <li>Plain text format: a</li>
+     * </ul>
+     *
+     * <p>The correct answer is parsed similarly and comparison is case-insensitive.</p>
+     *
+     * @param userAnswer    the user's selected answer in various JSON or text formats
+     * @param correctAnswer the correct answer in similar formats
+     * @return true if the user's selection matches the correct answer, false otherwise
      */
-    private boolean validateSingleChoiceAnswer(String userAnswer, String correctAnswer) {
+    private boolean validateSingleChoiceAnswer(final String userAnswer, final String correctAnswer) {
         try {
             ObjectMapper mapper = new ObjectMapper();
 
@@ -178,19 +238,16 @@ public class UserResponseServiceImpl implements UserResponseService {
                 if (userArray.isArray() && userArray.size() > 0) {
                     selectedOption = userArray.get(0).asText();
                 }
-            }
-            // Handle simple string with quotes
-            else if (userAnswer.startsWith("\"") && userAnswer.endsWith("\"")) {
+            } else if (userAnswer.startsWith("\"") && userAnswer.endsWith("\"")) {
+                // Handle simple string with quotes
                 selectedOption = userAnswer.substring(1, userAnswer.length() - 1);
-            }
-            // Handle JSON object format
-            else if (userAnswer.startsWith("{")) {
+            } else if (userAnswer.startsWith("{")) {
+                // Handle JSON object format
                 JsonNode userNode = mapper.readTree(userAnswer);
-                selectedOption = userNode.has("answer") ? userNode.get("answer").asText() :
-                        userNode.has("selected") ? userNode.get("selected").asText() : null;
-            }
-            // Handle plain text
-            else {
+                selectedOption = userNode.has("answer") ? userNode.get("answer").asText()
+                        : userNode.has("selected") ? userNode.get("selected").asText() : null;
+            } else {
+                // Handle plain text
                 selectedOption = userAnswer.trim();
             }
 
@@ -203,12 +260,12 @@ public class UserResponseServiceImpl implements UserResponseService {
                 }
             } else if (correctAnswer.startsWith("{")) {
                 JsonNode correctNode = mapper.readTree(correctAnswer);
-                correctOption = correctNode.has("answer") ? correctNode.get("answer").asText() :
-                        correctNode.has("correct") ? correctNode.get("correct").asText() : correctAnswer;
+                correctOption = correctNode.has("answer") ? correctNode.get("answer").asText()
+                        : correctNode.has("correct") ? correctNode.get("correct").asText() : correctAnswer;
             }
 
-            boolean isCorrect = selectedOption != null &&
-                    selectedOption.trim().equalsIgnoreCase(correctOption.trim());
+            boolean isCorrect = selectedOption != null
+                    && selectedOption.trim().equalsIgnoreCase(correctOption.trim());
 
             log.debug("Single choice validation: selected='{}', correct='{}', result={}",
                     selectedOption, correctOption, isCorrect);
@@ -223,10 +280,23 @@ public class UserResponseServiceImpl implements UserResponseService {
     }
 
     /**
-     * Validates multiple choice answers (checkboxes).
-     * Fixed to handle JSON array format properly
+     * Validates multiple choice answers for checkbox questions.
+     *
+     * <p>This method handles multiple input formats for user answers:</p>
+     * <ul>
+     *   <li>JSON array format: ["a", "b", "c"]</li>
+     *   <li>JSON object format: {"selected": ["a", "b", "c"]}</li>
+     * </ul>
+     *
+     * <p>The correct answer is parsed similarly. The validation requires an exact match
+     * of all selected options (case-insensitive). Order doesn't matter as both sets
+     * are compared for equality.</p>
+     *
+     * @param userAnswer    the user's selected options in JSON array or object format
+     * @param correctAnswer the correct options in similar formats
+     * @return true if the user's selections exactly match the correct selections, false otherwise
      */
-    private boolean validateMultipleChoiceAnswer(String userAnswer, String correctAnswer) {
+    private boolean validateMultipleChoiceAnswer(final String userAnswer, final String correctAnswer) {
         try {
             ObjectMapper mapper = new ObjectMapper();
 
@@ -283,10 +353,23 @@ public class UserResponseServiceImpl implements UserResponseService {
     }
 
     /**
-     * Validates text-based answers.
-     * Fixed to handle JSON array format properly
+     * Validates text-based answers for short answer and free text questions.
+     *
+     * <p>This method handles multiple input formats for user answers:</p>
+     * <ul>
+     *   <li>JSON array format: ["text answer"]</li>
+     *   <li>JSON object format: {"answer": "text answer"}</li>
+     *   <li>Plain text format: text answer</li>
+     * </ul>
+     *
+     * <p>The correct answer is parsed similarly. The validation performs case-insensitive
+     * string comparison after trimming whitespace and removing surrounding quotes.</p>
+     *
+     * @param userAnswer    the user's text answer in various JSON or plain text formats
+     * @param correctAnswer the correct text answer in similar formats
+     * @return true if the user's text matches the correct answer (case-insensitive), false otherwise
      */
-    private boolean validateTextAnswer(String userAnswer, String correctAnswer) {
+    private boolean validateTextAnswer(final String userAnswer, final String correctAnswer) {
         try {
             ObjectMapper mapper = new ObjectMapper();
 
@@ -299,9 +382,8 @@ public class UserResponseServiceImpl implements UserResponseService {
                 if (userArray.isArray() && userArray.size() > 0) {
                     userText = userArray.get(0).asText();
                 }
-            }
-            // Handle JSON object format
-            else if (userAnswer.startsWith("{")) {
+            } else if (userAnswer.startsWith("{")) {
+                // Handle JSON object format
                 JsonNode userNode = mapper.readTree(userAnswer);
                 userText = userNode.has("answer") ? userNode.get("answer").asText() : userAnswer;
             }
@@ -335,9 +417,20 @@ public class UserResponseServiceImpl implements UserResponseService {
         }
     }
 
+    /**
+     * Retrieves a single user response by its unique identifier.
+     *
+     * <p>This method performs a read-only transaction to fetch a user response
+     * from the database and convert it to a DTO for client consumption.</p>
+     *
+     * @param responseId the unique identifier of the user response to retrieve
+     * @return UserResponseOutDTO containing the user response data
+     * @throws ResourceNotFoundException if no user response exists with the given ID
+     * @throws RuntimeException          if any unexpected error occurs during retrieval
+     */
     @Override
     @Transactional(readOnly = true)
-    public UserResponseOutDTO getUserResponseById(Long responseId) {
+    public UserResponseOutDTO getUserResponseById(final Long responseId) {
         log.info("Fetching user response with ID: {}", responseId);
 
         try {
@@ -359,8 +452,23 @@ public class UserResponseServiceImpl implements UserResponseService {
         }
     }
 
+    /**
+     * Updates an existing user response with new data.
+     *
+     * <p>This method retrieves the existing user response, applies the updates
+     * from the DTO, and saves the modified entity back to the database.</p>
+     *
+     * <p>Note: This method does not re-validate answers or recalculate points.
+     * It simply updates the provided fields in the existing response.</p>
+     *
+     * @param responseId              the unique identifier of the user response to update
+     * @param userResponseUpdateInDTO the DTO containing the updated field values
+     * @return UserResponseOutDTO containing the updated user response data
+     * @throws ResourceNotFoundException if no user response exists with the given ID
+     * @throws RuntimeException          if any unexpected error occurs during update
+     */
     @Override
-    public UserResponseOutDTO updateUserResponse(Long responseId, UserResponseUpdateInDTO userResponseUpdateInDTO) {
+    public UserResponseOutDTO updateUserResponse(final Long responseId, final UserResponseUpdateInDTO userResponseUpdateInDTO) {
         log.info("Updating user response with ID: {}", responseId);
 
         try {
@@ -371,7 +479,10 @@ public class UserResponseServiceImpl implements UserResponseService {
                     });
 
             // Update entity with new data
-            UserResponse updatedUserResponse = userResponseConverter.updateEntityFromDTO(existingUserResponse, userResponseUpdateInDTO);
+            UserResponse updatedUserResponse = userResponseConverter.updateEntityFromDTO(
+                    existingUserResponse,
+                    userResponseUpdateInDTO
+            );
 
             // Save updated entity
             UserResponse savedUserResponse = userResponseRepository.save(updatedUserResponse);
@@ -389,8 +500,21 @@ public class UserResponseServiceImpl implements UserResponseService {
         }
     }
 
+    /**
+     * Deletes a user response by its unique identifier.
+     *
+     * <p>This method first verifies that the user response exists before attempting
+     * to delete it. If the response doesn't exist, it throws a ResourceNotFoundException.</p>
+     *
+     * <p>Note: This operation is permanent and cannot be undone. Consider implementing
+     * soft deletion if audit trails are required.</p>
+     *
+     * @param responseId the unique identifier of the user response to delete
+     * @throws ResourceNotFoundException if no user response exists with the given ID
+     * @throws RuntimeException          if any unexpected error occurs during deletion
+     */
     @Override
-    public void deleteUserResponse(Long responseId) {
+    public void deleteUserResponse(final Long responseId) {
         log.info("Deleting user response with ID: {}", responseId);
 
         try {
@@ -411,9 +535,16 @@ public class UserResponseServiceImpl implements UserResponseService {
         }
     }
 
+    /**
+     * Retrieves all user responses with pagination support.
+     *
+     * @param pageable the pagination information including page number and size
+     * @return a paginated list of user responses converted to DTOs
+     * @throws RuntimeException if an unexpected error occurs during retrieval
+     */
     @Override
     @Transactional(readOnly = true)
-    public Page<UserResponseOutDTO> getAllUserResponses(Pageable pageable) {
+    public Page<UserResponseOutDTO> getAllUserResponses(final Pageable pageable) {
         log.info("Fetching all user responses with pagination - page: {}, size: {}",
                 pageable.getPageNumber(), pageable.getPageSize());
 
@@ -429,9 +560,16 @@ public class UserResponseServiceImpl implements UserResponseService {
         }
     }
 
+    /**
+     * Retrieves all user responses for a specific user.
+     *
+     * @param userId the unique identifier of the user
+     * @return a list of user responses for the specified user converted to DTOs
+     * @throws RuntimeException if an unexpected error occurs during retrieval
+     */
     @Override
     @Transactional(readOnly = true)
-    public List<UserResponseOutDTO> getUserResponsesByUserId(Long userId) {
+    public List<UserResponseOutDTO> getUserResponsesByUserId(final Long userId) {
         log.info("Fetching user responses for user ID: {}", userId);
 
         try {
@@ -446,9 +584,16 @@ public class UserResponseServiceImpl implements UserResponseService {
         }
     }
 
+    /**
+     * Retrieves all user responses for a specific quiz.
+     *
+     * @param quizId the unique identifier of the quiz
+     * @return a list of user responses for the specified quiz converted to DTOs
+     * @throws RuntimeException if an unexpected error occurs during retrieval
+     */
     @Override
     @Transactional(readOnly = true)
-    public List<UserResponseOutDTO> getUserResponsesByQuizId(Long quizId) {
+    public List<UserResponseOutDTO> getUserResponsesByQuizId(final Long quizId) {
         log.info("Fetching user responses for quiz ID: {}", quizId);
 
         try {
@@ -463,9 +608,17 @@ public class UserResponseServiceImpl implements UserResponseService {
         }
     }
 
+    /**
+     * Retrieves all user responses for a specific user and quiz combination.
+     *
+     * @param userId the unique identifier of the user
+     * @param quizId the unique identifier of the quiz
+     * @return a list of user responses for the specified user and quiz converted to DTOs
+     * @throws RuntimeException if an unexpected error occurs during retrieval
+     */
     @Override
     @Transactional(readOnly = true)
-    public List<UserResponseOutDTO> getUserResponsesByUserIdAndQuizId(Long userId, Long quizId) {
+    public List<UserResponseOutDTO> getUserResponsesByUserIdAndQuizId(final Long userId, final Long quizId) {
         log.info("Fetching user responses for user ID: {} and quiz ID: {}", userId, quizId);
 
         try {
@@ -475,14 +628,28 @@ public class UserResponseServiceImpl implements UserResponseService {
             return userResponseConverter.convertToOutDTOList(userResponses);
 
         } catch (Exception e) {
-            log.error("Unexpected error occurred while fetching user responses for user ID: {} and quiz ID: {}", userId, quizId, e);
+            log.error("Unexpected error occurred while fetching user responses for user ID: {} and quiz ID: {}",
+                    userId, quizId, e);
             throw new RuntimeException("Failed to fetch user responses", e);
         }
     }
 
+    /**
+     * Retrieves all user responses for a specific user, quiz, and attempt combination.
+     *
+     * @param userId  the unique identifier of the user
+     * @param quizId  the unique identifier of the quiz
+     * @param attempt the attempt number for the quiz
+     * @return a list of user responses for the specified user, quiz, and attempt converted to DTOs
+     * @throws RuntimeException if an unexpected error occurs during retrieval
+     */
     @Override
     @Transactional(readOnly = true)
-    public List<UserResponseOutDTO> getUserResponsesByUserIdAndQuizIdAndAttempt(Long userId, Long quizId, Long attempt) {
+    public List<UserResponseOutDTO> getUserResponsesByUserIdAndQuizIdAndAttempt(
+            final Long userId,
+            final Long quizId,
+            final Long attempt
+    ) {
         log.info("Fetching user responses for user ID: {}, quiz ID: {}, attempt: {}", userId, quizId, attempt);
 
         try {
@@ -499,9 +666,17 @@ public class UserResponseServiceImpl implements UserResponseService {
         }
     }
 
+    /**
+     * Retrieves all user responses for a specific user with pagination support.
+     *
+     * @param userId   the unique identifier of the user
+     * @param pageable the pagination information including page number and size
+     * @return a paginated list of user responses for the specified user converted to DTOs
+     * @throws RuntimeException if an unexpected error occurs during retrieval
+     */
     @Override
     @Transactional(readOnly = true)
-    public Page<UserResponseOutDTO> getUserResponsesByUserId(Long userId, Pageable pageable) {
+    public Page<UserResponseOutDTO> getUserResponsesByUserId(final Long userId, final Pageable pageable) {
         log.info("Fetching user responses for user ID: {} with pagination - page: {}, size: {}",
                 userId, pageable.getPageNumber(), pageable.getPageSize());
 
@@ -517,9 +692,17 @@ public class UserResponseServiceImpl implements UserResponseService {
         }
     }
 
+    /**
+     * Retrieves all user responses for a specific quiz with pagination support.
+     *
+     * @param quizId   the unique identifier of the quiz
+     * @param pageable the pagination information including page number and size
+     * @return a paginated list of user responses for the specified quiz converted to DTOs
+     * @throws RuntimeException if an unexpected error occurs during retrieval
+     */
     @Override
     @Transactional(readOnly = true)
-    public Page<UserResponseOutDTO> getUserResponsesByQuizId(Long quizId, Pageable pageable) {
+    public Page<UserResponseOutDTO> getUserResponsesByQuizId(final Long quizId, final Pageable pageable) {
         log.info("Fetching user responses for quiz ID: {} with pagination - page: {}, size: {}",
                 quizId, pageable.getPageNumber(), pageable.getPageSize());
 
@@ -535,9 +718,18 @@ public class UserResponseServiceImpl implements UserResponseService {
         }
     }
 
+    /**
+     * Calculates the total score for a specific user's quiz attempt.
+     *
+     * @param userId  the unique identifier of the user
+     * @param quizId  the unique identifier of the quiz
+     * @param attempt the attempt number for the quiz
+     * @return the total score as a BigDecimal, or BigDecimal.ZERO if no score is found
+     * @throws RuntimeException if an unexpected error occurs during calculation
+     */
     @Override
     @Transactional(readOnly = true)
-    public BigDecimal getTotalScore(Long userId, Long quizId, Long attempt) {
+    public BigDecimal getTotalScore(final Long userId, final Long quizId, final Long attempt) {
         log.info("Calculating total score for user ID: {}, quiz ID: {}, attempt: {}", userId, quizId, attempt);
 
         try {
@@ -555,14 +747,28 @@ public class UserResponseServiceImpl implements UserResponseService {
         }
     }
 
+    /**
+     * Counts the number of correct answers for a specific user's quiz attempt.
+     *
+     * @param userId  the unique identifier of the user
+     * @param quizId  the unique identifier of the quiz
+     * @param attempt the attempt number for the quiz
+     * @return the count of correct answers as a Long
+     * @throws RuntimeException if an unexpected error occurs during counting
+     */
     @Override
     @Transactional(readOnly = true)
-    public Long countCorrectAnswers(Long userId, Long quizId, Long attempt) {
+    public Long countCorrectAnswers(final Long userId, final Long quizId, final Long attempt) {
         log.info("Counting correct answers for user ID: {}, quiz ID: {}, attempt: {}", userId, quizId, attempt);
 
         try {
             Long correctCount = userResponseRepository.countCorrectAnswersByUserIdAndQuizIdAndAttempt(userId, quizId, attempt);
-            log.info("Correct answers count: {} for user ID: {}, quiz ID: {}, attempt: {}", correctCount, userId, quizId, attempt);
+            log.info("Correct answers count: {} for user ID: {}, quiz ID: {}, attempt: {}",
+                    correctCount,
+                    userId,
+                    quizId,
+                    attempt
+            );
             return correctCount;
 
         } catch (Exception e) {
@@ -572,9 +778,17 @@ public class UserResponseServiceImpl implements UserResponseService {
         }
     }
 
+    /**
+     * Retrieves the maximum attempt number for a specific user and quiz combination.
+     *
+     * @param userId the unique identifier of the user
+     * @param quizId the unique identifier of the quiz
+     * @return the maximum attempt number as a Long, or 0L if no attempts are found
+     * @throws RuntimeException if an unexpected error occurs during retrieval
+     */
     @Override
     @Transactional(readOnly = true)
-    public Long getMaxAttemptNumber(Long userId, Long quizId) {
+    public Long getMaxAttemptNumber(final Long userId, final Long quizId) {
         log.info("Getting maximum attempt number for user ID: {} and quiz ID: {}", userId, quizId);
 
         try {

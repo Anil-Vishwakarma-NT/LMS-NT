@@ -1,7 +1,16 @@
 package com.nt.course_service_lms.entity;
 
-import jakarta.persistence.*;
+import com.nt.course_service_lms.constants.CommonConstants;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.Table;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
@@ -14,6 +23,9 @@ import java.util.Objects;
 @Entity
 @Table(name = "user_response")
 @Data
+@NoArgsConstructor
+@AllArgsConstructor
+@Builder
 public class UserResponse {
 
     /**
@@ -63,7 +75,7 @@ public class UserResponse {
     /**
      * Points earned by the user for this response.
      */
-    @Column(name = "points_earned", nullable = false, precision = 5, scale = 2)
+    @Column(name = "points_earned", nullable = false, precision = CommonConstants.NUMBER_FIVE, scale = 2)
     private BigDecimal pointsEarned;
 
     /**
@@ -73,56 +85,28 @@ public class UserResponse {
     private LocalDateTime answeredAt;
 
     /**
-     * Default constructor.
-     */
-    public UserResponse() {}
-
-    /**
-     * Parameterized constructor to initialize all fields.
-     *
-     * @param responseId Unique identifier for the response
-     * @param userId ID of the user
-     * @param quizId ID of the quiz
-     * @param questionId ID of the question
-     * @param attempt Attempt number
-     * @param userAnswer Answer provided by the user
-     * @param isCorrect Whether the answer is correct
-     * @param pointsEarned Points earned for this response
-     * @param answeredAt Time when the answer was submitted
-     */
-    public UserResponse(Long responseId, Long userId, Long quizId, Long questionId,
-                        Long attempt, String userAnswer, Boolean isCorrect, BigDecimal pointsEarned,
-                        LocalDateTime answeredAt) {
-        this.responseId = responseId;
-        this.userId = userId;
-        this.quizId = quizId;
-        this.questionId = questionId;
-        this.attempt = attempt;
-        this.userAnswer = userAnswer;
-        this.isCorrect = isCorrect;
-        this.pointsEarned = pointsEarned;
-        this.answeredAt = answeredAt;
-    }
-
-    /**
      * Equality check based on all fields.
      *
      * @param o Object to compare
      * @return true if equal, false otherwise
      */
     @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (!(o instanceof UserResponse that)) return false;
-        return Objects.equals(responseId, that.responseId) &&
-                Objects.equals(userId, that.userId) &&
-                Objects.equals(quizId, that.quizId) &&
-                Objects.equals(questionId, that.questionId) &&
-                Objects.equals(attempt, that.attempt) &&
-                Objects.equals(userAnswer, that.userAnswer) &&
-                Objects.equals(isCorrect, that.isCorrect) &&
-                Objects.equals(pointsEarned, that.pointsEarned) &&
-                Objects.equals(answeredAt, that.answeredAt);
+    public boolean equals(final Object o) {
+        if (this == o) {
+            return true;
+        }
+        if (!(o instanceof UserResponse that)) {
+            return false;
+        }
+        return Objects.equals(responseId, that.responseId)
+                && Objects.equals(userId, that.userId)
+                && Objects.equals(quizId, that.quizId)
+                && Objects.equals(questionId, that.questionId)
+                && Objects.equals(attempt, that.attempt)
+                && Objects.equals(userAnswer, that.userAnswer)
+                && Objects.equals(isCorrect, that.isCorrect)
+                && Objects.equals(pointsEarned, that.pointsEarned)
+                && Objects.equals(answeredAt, that.answeredAt);
     }
 
     /**

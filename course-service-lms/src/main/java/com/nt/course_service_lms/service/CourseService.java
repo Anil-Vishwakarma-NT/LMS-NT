@@ -1,6 +1,8 @@
 package com.nt.course_service_lms.service;
 
 import com.nt.course_service_lms.dto.inDTO.CourseInDTO;
+import com.nt.course_service_lms.dto.inDTO.UpdateCourseInDTO;
+import com.nt.course_service_lms.dto.outDTO.CourseInfoOutDTO;
 import com.nt.course_service_lms.dto.outDTO.CourseOutDTO;
 import com.nt.course_service_lms.dto.outDTO.CourseSummaryOutDTO;
 import com.nt.course_service_lms.dto.outDTO.CourseInfoOutDTO;
@@ -9,69 +11,108 @@ import com.nt.course_service_lms.dto.outDTO.StandardResponseOutDTO;
 import com.nt.course_service_lms.entity.Course;
 
 import java.util.List;
-import java.util.Optional;
 
 /**
- * Service interface for managing courses in the LMS.
- * <p>
- * Provides operations for creating, retrieving, updating,
- * deleting courses and checking course existence.
- * </p>
+ * Service interface for managing courses in the Learning Management System (LMS).
+ *
+ * <p>This interface defines the contract for course-related operations including
+ * creation, retrieval, updating, deletion, and various query operations for courses.</p>
+ *
+ * @author Course Service Team
+ * @version 1.0
+ * @since 1.0
  */
 public interface CourseService {
 
     /**
-     * Creates a new course using the provided DTO.
+     * Creates a new course in the system.
      *
-     * @param courseInDTO the DTO containing course details
-     * @return the created {@link Course} entity
+     * @param courseInDTO the data transfer object containing course creation details
+     * @return the created course as a {@link CourseOutDTO}
+     * @throws IllegalArgumentException if the courseInDTO is null or invalid
      */
     CourseOutDTO createCourse(CourseInDTO courseInDTO);
 
     /**
-     * Retrieves all available courses.
+     * Retrieves all available courses from the system.
      *
-     * @return a list of all {@link Course} entities
+     * @return a list of all courses as {@link CourseOutDTO} objects
      */
     List<CourseOutDTO> getAllCourses();
 
     /**
-     * Retrieves a course by its ID.
+     * Retrieves detailed information about a specific course by its identifier.
      *
      * @param courseId the ID of the course to retrieve
      * @return an {@link Optional} containing the course if found, or empty if not
      */
     CourseInfoOutDTO getCourseById(Long courseId);
 
+    /**
+     * Retrieves the name of a course by its identifier.
+     *
+     * @param courseId the unique identifier of the course
+     * @return the name of the course as a string
+     * @throws IllegalArgumentException if courseId is null or invalid
+     */
     String getCourseNameById(Long courseId);
 
     /**
-     * Deletes a course by its ID.
+     * Deletes a course from the system by its identifier.
      *
-     * @param courseId the ID of the course to delete
-     * @return a message indicating the result of the deletion
+     * @param courseId the unique identifier of the course to delete
+     * @return a status message indicating the result of the deletion operation
+     * @throws IllegalArgumentException if courseId is null or invalid
      */
     String deleteCourse(Long courseId);
 
     /**
-     * Updates an existing course using the given DTO and ID.
+     * Updates an existing course with new information.
      *
-     * @param courseId the ID of the course to update
-     * @param updateCourseInDTO the DTO containing updated course data
-     * @return a message indicating the result of the update
+     * @param courseId          the unique identifier of the course to update
+     * @param updateCourseInDTO the data transfer object containing updated course information
+     * @return the updated course as a {@link CourseOutDTO}
+     * @throws IllegalArgumentException if courseId is null or updateCourseInDTO is invalid
      */
     CourseOutDTO updateCourse(Long courseId, UpdateCourseInDTO updateCourseInDTO);
 
     /**
-     * Checks whether a course exists by its ID.
+     * Checks whether a course exists in the system by its identifier.
      *
-     * @param courseId the ID of the course
+     * @param courseId the unique identifier of the course to check
      * @return {@code true} if the course exists, {@code false} otherwise
+     * @throws IllegalArgumentException if courseId is null
      */
     boolean courseExistsById(Long courseId);
+
+    /**
+     * Retrieves the total number of courses in the system.
+     *
+     * @return the total count of courses as a long value
+     */
     long countCourses();
+
+    /**
+     * Retrieves summary information of recently created courses.
+     *
+     * @return a list of recent course summaries as {@link CourseSummaryOutDTO} objects
+     */
     List<CourseSummaryOutDTO> getRecentCourseSummaries();
+
+    /**
+     * Retrieves detailed information for all courses in the system.
+     *
+     * @return a list of all course information as {@link CourseInfoOutDTO} objects
+     */
     List<CourseInfoOutDTO> getCoursesInfo();
+
+    /**
+     * Filters and returns existing course identifiers from the provided list.
+     *
+     * @param courseIds the list of course identifiers to validate
+     * @return a list containing only the identifiers that exist in the system
+     * @throws IllegalArgumentException if courseIds is null
+     */
     List<Long> findExistingIds(List<Long> courseIds);
 
     StandardResponseOutDTO<List<CourseInfoOutDTO>> getCoursesByIds(List<Long> courseIds);

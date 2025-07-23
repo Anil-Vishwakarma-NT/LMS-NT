@@ -1,7 +1,7 @@
 package com.nt.course_service_lms.converters;
 
-import com.nt.course_service_lms.dto.outDTO.CourseBundleOutDTO;
 import com.nt.course_service_lms.dto.inDTO.CourseBundleInDTO;
+import com.nt.course_service_lms.dto.outDTO.CourseBundleOutDTO;
 import com.nt.course_service_lms.entity.CourseBundle;
 
 /**
@@ -13,6 +13,7 @@ public final class CourseBundleConvertor {
     private CourseBundleConvertor() {
         throw new UnsupportedOperationException("This is a utility class and cannot be instantiated");
     }
+
     /**
      * Converts a {@link CourseBundleOutDTO} to a {@link CourseBundle} entity.
      * Typically used for general data representation or update operations.

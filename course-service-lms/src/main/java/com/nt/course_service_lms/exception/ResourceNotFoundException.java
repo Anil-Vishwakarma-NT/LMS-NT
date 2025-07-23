@@ -12,6 +12,7 @@ package com.nt.course_service_lms.exception;
 public class ResourceNotFoundException extends RuntimeException {
 
     private static final long serialVersionUID = 1L;
+
     /**
      * Constructs a new {@code ResourceNotFoundException} with the specified detail message.
      *

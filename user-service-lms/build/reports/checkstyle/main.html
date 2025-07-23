@@ -1,0 +1,3198 @@
+<html>
+    <head>
+        <META http-equiv="Content-Type" content="text/html; charset=UTF-8">
+        <title>Checkstyle Violations</title>
+        <style type="text/css">
+                    body {
+                        background-color: #fff;
+                        color: #02303A;
+                    }
+
+                    a {
+                        color: #1DA2BD;
+                    }
+                    a.link {
+                        color: #02303A;
+                    }
+
+                    p {
+                        font-size: 1rem;
+                    }
+
+                    h1 a[name] {
+                        margin: 0;
+                        padding: 0;
+                    }
+
+                    tr:nth-child(even) {
+                        background: white;
+                    }
+
+                    th {
+                        font-weight:bold;
+                    }
+                    tr {
+                        background: #efefef;
+                    }
+                    table th, td, tr {
+                        font-size:100%;
+                        border: none;
+                        text-align: left;
+                        vertical-align: top;
+                    }
+                </style>
+    </head>
+    <body>
+        <p>
+            <a name="top">
+                <h1>Checkstyle Results</h1>
+            </a>
+        </p>
+        <hr align="left" width="95%" size="1">
+        <h2>Summary</h2>
+        <table class="summary" width="95%">
+            <tr>
+                <th>Total files checked</th><th>Total violations</th><th>Files with violations</th>
+            </tr>
+            <tr>
+                <td>102</td><td>963</td><td>14</td>
+            </tr>
+        </table>
+        <hr align="left" width="95%" size="1">
+        <div class="violations">
+            <h2>Violations</h2>
+            <p>
+                <table class="filelist" width="95%">
+                    <tr>
+                        <th>File</th><th>Total violations</th>
+                    </tr>
+                    <tr>
+                        <td><a href="#N70196">C:\Users\DELL\Desktop\LMS CODE FREEZE\backend\LMS-NT\user-service-lms\src\main\java\com\nt\user_service_lms\service\serviceImpl\UserReportKPIQueries.java</a></td><td>347</td>
+                    </tr>
+                    <tr>
+                        <td><a href="#N66431">C:\Users\DELL\Desktop\LMS CODE FREEZE\backend\LMS-NT\user-service-lms\src\main\java\com\nt\user_service_lms\service\serviceImpl\CourseReportKPIQueries.java</a></td><td>258</td>
+                    </tr>
+                    <tr>
+                        <td><a href="#N68231">C:\Users\DELL\Desktop\LMS CODE FREEZE\backend\LMS-NT\user-service-lms\src\main\java\com\nt\user_service_lms\service\serviceImpl\EnrollmentServiceImpl.java</a></td><td>85</td>
+                    </tr>
+                    <tr>
+                        <td><a href="#N69133">C:\Users\DELL\Desktop\LMS CODE FREEZE\backend\LMS-NT\user-service-lms\src\main\java\com\nt\user_service_lms\service\serviceImpl\GroupServiceImpl.java</a></td><td>79</td>
+                    </tr>
+                    <tr>
+                        <td><a href="#N68828">C:\Users\DELL\Desktop\LMS CODE FREEZE\backend\LMS-NT\user-service-lms\src\main\java\com\nt\user_service_lms\service\serviceImpl\EnrollmentsServiceImpl.java</a></td><td>43</td>
+                    </tr>
+                    <tr>
+                        <td><a href="#N65946">C:\Users\DELL\Desktop\LMS CODE FREEZE\backend\LMS-NT\user-service-lms\src\main\java\com\nt\user_service_lms\service\serviceImpl\CourseExcelReportBuilder.java</a></td><td>42</td>
+                    </tr>
+                    <tr>
+                        <td><a href="#N69724">C:\Users\DELL\Desktop\LMS CODE FREEZE\backend\LMS-NT\user-service-lms\src\main\java\com\nt\user_service_lms\service\serviceImpl\UserExcelReportBuilder.java</a></td><td>40</td>
+                    </tr>
+                    <tr>
+                        <td><a href="#N70002">C:\Users\DELL\Desktop\LMS CODE FREEZE\backend\LMS-NT\user-service-lms\src\main\java\com\nt\user_service_lms\service\serviceImpl\UserPDFReportBuilder.java</a></td><td>28</td>
+                    </tr>
+                    <tr>
+                        <td><a href="#N66242">C:\Users\DELL\Desktop\LMS CODE FREEZE\backend\LMS-NT\user-service-lms\src\main\java\com\nt\user_service_lms\service\serviceImpl\CoursePDFReportBuilder.java</a></td><td>27</td>
+                    </tr>
+                    <tr>
+                        <td><a href="#N69685">C:\Users\DELL\Desktop\LMS CODE FREEZE\backend\LMS-NT\user-service-lms\src\main\java\com\nt\user_service_lms\service\serviceImpl\ManagerServiceImpl.java</a></td><td>5</td>
+                    </tr>
+                    <tr>
+                        <td><a href="#N65852">C:\Users\DELL\Desktop\LMS CODE FREEZE\backend\LMS-NT\user-service-lms\src\main\java\com\nt\user_service_lms\feignClient\CourseMicroserviceClient.java</a></td><td>3</td>
+                    </tr>
+                    <tr>
+                        <td><a href="#N65909">C:\Users\DELL\Desktop\LMS CODE FREEZE\backend\LMS-NT\user-service-lms\src\main\java\com\nt\user_service_lms\service\EnrollmentsService.java</a></td><td>3</td>
+                    </tr>
+                    <tr>
+                        <td><a href="#N65566">C:\Users\DELL\Desktop\LMS CODE FREEZE\backend\LMS-NT\user-service-lms\src\main\java\com\nt\user_service_lms\config\ServiceTokenConverter.java</a></td><td>2</td>
+                    </tr>
+                    <tr>
+                        <td><a href="#N72632">C:\Users\DELL\Desktop\LMS CODE FREEZE\backend\LMS-NT\user-service-lms\src\main\java\com\nt\user_service_lms\UserServiceLmsApplication.java</a></td><td>1</td>
+                    </tr>
+                </table>
+                <p></p>
+                
+                <div class="file-violation">
+                    <h3>
+                        <a class="link" name="N65566">C:\Users\DELL\Desktop\LMS CODE FREEZE\backend\LMS-NT\user-service-lms\src\main\java\com\nt\user_service_lms\config\ServiceTokenConverter.java</a>
+                    </h3>
+                    <table class="violationlist" width="95%">
+                        <tr>
+                            <th>Severity</th><th>Description</th><th>Line Number</th>
+                        </tr>
+                        <tr>
+                            <td>error</td><td>Using the '.*' form of import should be avoided - java.util.*.</td><td>12</td>
+                        </tr>
+                        <tr>
+                            <td>error</td><td>Name 'SECRET' must match pattern '^[a-z][a-zA-Z0-9]*$'.</td><td>57</td>
+                        </tr>
+                    </table>
+                    <p></p>
+                    <a href="#top">Back to top</a>
+                    <p></p>
+                </div>
+                
+                <div class="file-violation">
+                    <h3>
+                        <a class="link" name="N65852">C:\Users\DELL\Desktop\LMS CODE FREEZE\backend\LMS-NT\user-service-lms\src\main\java\com\nt\user_service_lms\feignClient\CourseMicroserviceClient.java</a>
+                    </h3>
+                    <table class="violationlist" width="95%">
+                        <tr>
+                            <th>Severity</th><th>Description</th><th>Line Number</th>
+                        </tr>
+                        <tr>
+                            <td>error</td><td>Redundant 'public' modifier.</td><td>69</td>
+                        </tr>
+                        <tr>
+                            <td>error</td><td>Redundant 'public' modifier.</td><td>95</td>
+                        </tr>
+                        <tr>
+                            <td>error</td><td>Redundant 'public' modifier.</td><td>132</td>
+                        </tr>
+                    </table>
+                    <p></p>
+                    <a href="#top">Back to top</a>
+                    <p></p>
+                </div>
+                
+                <div class="file-violation">
+                    <h3>
+                        <a class="link" name="N65909">C:\Users\DELL\Desktop\LMS CODE FREEZE\backend\LMS-NT\user-service-lms\src\main\java\com\nt\user_service_lms\service\EnrollmentsService.java</a>
+                    </h3>
+                    <table class="violationlist" width="95%">
+                        <tr>
+                            <th>Severity</th><th>Description</th><th>Line Number</th>
+                        </tr>
+                        <tr>
+                            <td>error</td><td>Missing a Javadoc comment.</td><td>12</td>
+                        </tr>
+                        <tr>
+                            <td>error</td><td>Missing a Javadoc comment.</td><td>13</td>
+                        </tr>
+                        <tr>
+                            <td>error</td><td>Redundant 'public' modifier.</td><td>13</td>
+                        </tr>
+                    </table>
+                    <p></p>
+                    <a href="#top">Back to top</a>
+                    <p></p>
+                </div>
+                
+                <div class="file-violation">
+                    <h3>
+                        <a class="link" name="N65946">C:\Users\DELL\Desktop\LMS CODE FREEZE\backend\LMS-NT\user-service-lms\src\main\java\com\nt\user_service_lms\service\serviceImpl\CourseExcelReportBuilder.java</a>
+                    </h3>
+                    <table class="violationlist" width="95%">
+                        <tr>
+                            <th>Severity</th><th>Description</th><th>Line Number</th>
+                        </tr>
+                        <tr>
+                            <td>error</td><td>Using the '.*' form of import should be avoided - org.apache.poi.ss.usermodel.*.</td><td>3</td>
+                        </tr>
+                        <tr>
+                            <td>error</td><td>Missing a Javadoc comment.</td><td>16</td>
+                        </tr>
+                        <tr>
+                            <td>error</td><td>Missing a Javadoc comment.</td><td>17</td>
+                        </tr>
+                        <tr>
+                            <td>error</td><td>Class 'CourseExcelReportBuilder' looks like designed for extension (can be subclassed), but the method 'buildExcel' does not have javadoc that explains how to do that safely. If class is not designed for extension consider making the class 'CourseExcelReportBuilder' final or making the method 'buildExcel' static/final/abstract/empty, or adding allowed annotation for the method.</td><td>19</td>
+                        </tr>
+                        <tr>
+                            <td>error</td><td>Missing a Javadoc comment.</td><td>19</td>
+                        </tr>
+                        <tr>
+                            <td>error</td><td>Parameter data should be final.</td><td>19</td>
+                        </tr>
+                        <tr>
+                            <td>error</td><td>Parameter outputStream should be final.</td><td>19</td>
+                        </tr>
+                        <tr>
+                            <td>error</td><td>Line is longer than 130 characters (found 134).</td><td>47</td>
+                        </tr>
+                        <tr>
+                            <td>error</td><td>Line is longer than 130 characters (found 150).</td><td>52</td>
+                        </tr>
+                        <tr>
+                            <td>error</td><td>More than 7 parameters (found 8).</td><td>67</td>
+                        </tr>
+                        <tr>
+                            <td>error</td><td>Parameter sheet should be final.</td><td>67</td>
+                        </tr>
+                        <tr>
+                            <td>error</td><td>Parameter rowNum should be final.</td><td>67</td>
+                        </tr>
+                        <tr>
+                            <td>error</td><td>Parameter title should be final.</td><td>67</td>
+                        </tr>
+                        <tr>
+                            <td>error</td><td>Parameter rows should be final.</td><td>67</td>
+                        </tr>
+                        <tr>
+                            <td>error</td><td>Parameter headerStyle should be final.</td><td>68</td>
+                        </tr>
+                        <tr>
+                            <td>error</td><td>Parameter titleStyle should be final.</td><td>68</td>
+                        </tr>
+                        <tr>
+                            <td>error</td><td>Parameter percentageStyle should be final.</td><td>68</td>
+                        </tr>
+                        <tr>
+                            <td>error</td><td>Parameter numberStyle should be final.</td><td>68</td>
+                        </tr>
+                        <tr>
+                            <td>error</td><td>'if' construct must use '{}'s.</td><td>69</td>
+                        </tr>
+                        <tr>
+                            <td>error</td><td>Parameter sheet should be final.</td><td>97</td>
+                        </tr>
+                        <tr>
+                            <td>error</td><td>Parameter rowNum should be final.</td><td>97</td>
+                        </tr>
+                        <tr>
+                            <td>error</td><td>Parameter data should be final.</td><td>97</td>
+                        </tr>
+                        <tr>
+                            <td>error</td><td>Parameter headerStyle should be final.</td><td>98</td>
+                        </tr>
+                        <tr>
+                            <td>error</td><td>Parameter titleStyle should be final.</td><td>98</td>
+                        </tr>
+                        <tr>
+                            <td>error</td><td>Parameter percentageStyle should be final.</td><td>98</td>
+                        </tr>
+                        <tr>
+                            <td>error</td><td>Parameter numberStyle should be final.</td><td>98</td>
+                        </tr>
+                        <tr>
+                            <td>error</td><td>Each variable declaration must be in its own statement.</td><td>99</td>
+                        </tr>
+                        <tr>
+                            <td>error</td><td>'if' construct must use '{}'s.</td><td>122</td>
+                        </tr>
+                        <tr>
+                            <td>error</td><td>Parameter entry should be final.</td><td>148</td>
+                        </tr>
+                        <tr>
+                            <td>error</td><td>'if' construct must use '{}'s.</td><td>149</td>
+                        </tr>
+                        <tr>
+                            <td>error</td><td>'if' construct must use '{}'s.</td><td>151</td>
+                        </tr>
+                        <tr>
+                            <td>error</td><td>Parameter sheet should be final.</td><td>156</td>
+                        </tr>
+                        <tr>
+                            <td>error</td><td>Parameter rowNum should be final.</td><td>156</td>
+                        </tr>
+                        <tr>
+                            <td>error</td><td>Parameter entry should be final.</td><td>156</td>
+                        </tr>
+                        <tr>
+                            <td>error</td><td>Parameter percentageStyle should be final.</td><td>157</td>
+                        </tr>
+                        <tr>
+                            <td>error</td><td>Parameter numberStyle should be final.</td><td>157</td>
+                        </tr>
+                        <tr>
+                            <td>error</td><td>Parameter cell should be final.</td><td>167</td>
+                        </tr>
+                        <tr>
+                            <td>error</td><td>Parameter value should be final.</td><td>167</td>
+                        </tr>
+                        <tr>
+                            <td>error</td><td>Parameter columnName should be final.</td><td>167</td>
+                        </tr>
+                        <tr>
+                            <td>error</td><td>Parameter percentageStyle should be final.</td><td>168</td>
+                        </tr>
+                        <tr>
+                            <td>error</td><td>Parameter numberStyle should be final.</td><td>168</td>
+                        </tr>
+                        <tr>
+                            <td>error</td><td>'100.0' is a magic number.</td><td>176</td>
+                        </tr>
+                    </table>
+                    <p></p>
+                    <a href="#top">Back to top</a>
+                    <p></p>
+                </div>
+                <div class="file-violation">
+                    <h3>
+                        <a class="link" name="N66242">C:\Users\DELL\Desktop\LMS CODE FREEZE\backend\LMS-NT\user-service-lms\src\main\java\com\nt\user_service_lms\service\serviceImpl\CoursePDFReportBuilder.java</a>
+                    </h3>
+                    <table class="violationlist" width="95%">
+                        <tr>
+                            <th>Severity</th><th>Description</th><th>Line Number</th>
+                        </tr>
+                        <tr>
+                            <td>error</td><td>Missing a Javadoc comment.</td><td>25</td>
+                        </tr>
+                        <tr>
+                            <td>error</td><td>Missing a Javadoc comment.</td><td>26</td>
+                        </tr>
+                        <tr>
+                            <td>error</td><td>Class 'CoursePDFReportBuilder' looks like designed for extension (can be subclassed), but the method 'buildPdf' does not have javadoc that explains how to do that safely. If class is not designed for extension consider making the class 'CoursePDFReportBuilder' final or making the method 'buildPdf' static/final/abstract/empty, or adding allowed annotation for the method.</td><td>28</td>
+                        </tr>
+                        <tr>
+                            <td>error</td><td>Missing a Javadoc comment.</td><td>28</td>
+                        </tr>
+                        <tr>
+                            <td>error</td><td>Parameter data should be final.</td><td>28</td>
+                        </tr>
+                        <tr>
+                            <td>error</td><td>Parameter outputStream should be final.</td><td>28</td>
+                        </tr>
+                        <tr>
+                            <td>error</td><td>Line is longer than 130 characters (found 135).</td><td>33</td>
+                        </tr>
+                        <tr>
+                            <td>error</td><td>'130' is a magic number.</td><td>35</td>
+                        </tr>
+                        <tr>
+                            <td>error</td><td>'150' is a magic number.</td><td>35</td>
+                        </tr>
+                        <tr>
+                            <td>error</td><td>'150' is a magic number.</td><td>36</td>
+                        </tr>
+                        <tr>
+                            <td>error</td><td>'50' is a magic number.</td><td>36</td>
+                        </tr>
+                        <tr>
+                            <td>error</td><td>'18' is a magic number.</td><td>40</td>
+                        </tr>
+                        <tr>
+                            <td>error</td><td>Line is longer than 130 characters (found 139).</td><td>54</td>
+                        </tr>
+                        <tr>
+                            <td>error</td><td>Parameter document should be final.</td><td>63</td>
+                        </tr>
+                        <tr>
+                            <td>error</td><td>Parameter title should be final.</td><td>63</td>
+                        </tr>
+                        <tr>
+                            <td>error</td><td>Parameter rows should be final.</td><td>63</td>
+                        </tr>
+                        <tr>
+                            <td>error</td><td>'if' construct must use '{}'s.</td><td>64</td>
+                        </tr>
+                        <tr>
+                            <td>error</td><td>Parameter document should be final.</td><td>84</td>
+                        </tr>
+                        <tr>
+                            <td>error</td><td>Parameter data should be final.</td><td>84</td>
+                        </tr>
+                        <tr>
+                            <td>error</td><td>'if' construct must use '{}'s.</td><td>99</td>
+                        </tr>
+                        <tr>
+                            <td>error</td><td>'if' construct must use '{}'s.</td><td>101</td>
+                        </tr>
+                        <tr>
+                            <td>error</td><td>'if' construct must use '{}'s.</td><td>104</td>
+                        </tr>
+                        <tr>
+                            <td>error</td><td>Line is longer than 130 characters (found 142).</td><td>108</td>
+                        </tr>
+                        <tr>
+                            <td>error</td><td>Line is longer than 130 characters (found 142).</td><td>112</td>
+                        </tr>
+                        <tr>
+                            <td>error</td><td>Parameter value should be final.</td><td>129</td>
+                        </tr>
+                        <tr>
+                            <td>error</td><td>Parameter columnName should be final.</td><td>129</td>
+                        </tr>
+                        <tr>
+                            <td>error</td><td>'if' construct must use '{}'s.</td><td>130</td>
+                        </tr>
+                    </table>
+                    <p></p>
+                    <a href="#top">Back to top</a>
+                    <p></p>
+                </div>
+                <div class="file-violation">
+                    <h3>
+                        <a class="link" name="N66431">C:\Users\DELL\Desktop\LMS CODE FREEZE\backend\LMS-NT\user-service-lms\src\main\java\com\nt\user_service_lms\service\serviceImpl\CourseReportKPIQueries.java</a>
+                    </h3>
+                    <table class="violationlist" width="95%">
+                        <tr>
+                            <th>Severity</th><th>Description</th><th>Line Number</th>
+                        </tr>
+                        <tr>
+                            <td>error</td><td>Utility classes should not have a public or default constructor.</td><td>6</td>
+                        </tr>
+                        <tr>
+                            <td>error</td><td>Missing a Javadoc comment.</td><td>8</td>
+                        </tr>
+                        <tr>
+                            <td>error</td><td>Name 'base_query' must match pattern '^[A-Z][A-Z0-9]*(_[A-Z0-9]+)*$'.</td><td>8</td>
+                        </tr>
+                        <tr>
+                            <td>error</td><td>'+' should be on a new line.</td><td>9</td>
+                        </tr>
+                        <tr>
+                            <td>error</td><td>'+' should be on a new line.</td><td>10</td>
+                        </tr>
+                        <tr>
+                            <td>error</td><td>Line is longer than 130 characters (found 133).</td><td>11</td>
+                        </tr>
+                        <tr>
+                            <td>error</td><td>'+' should be on a new line.</td><td>11</td>
+                        </tr>
+                        <tr>
+                            <td>error</td><td>'+' should be on a new line.</td><td>12</td>
+                        </tr>
+                        <tr>
+                            <td>error</td><td>'+' should be on a new line.</td><td>13</td>
+                        </tr>
+                        <tr>
+                            <td>error</td><td>'+' should be on a new line.</td><td>14</td>
+                        </tr>
+                        <tr>
+                            <td>error</td><td>'+' should be on a new line.</td><td>15</td>
+                        </tr>
+                        <tr>
+                            <td>error</td><td>'+' should be on a new line.</td><td>16</td>
+                        </tr>
+                        <tr>
+                            <td>error</td><td>'+' should be on a new line.</td><td>17</td>
+                        </tr>
+                        <tr>
+                            <td>error</td><td>'+' should be on a new line.</td><td>18</td>
+                        </tr>
+                        <tr>
+                            <td>error</td><td>'+' should be on a new line.</td><td>19</td>
+                        </tr>
+                        <tr>
+                            <td>error</td><td>'+' should be on a new line.</td><td>20</td>
+                        </tr>
+                        <tr>
+                            <td>error</td><td>'+' should be on a new line.</td><td>21</td>
+                        </tr>
+                        <tr>
+                            <td>error</td><td>'+' should be on a new line.</td><td>22</td>
+                        </tr>
+                        <tr>
+                            <td>error</td><td>'+' should be on a new line.</td><td>23</td>
+                        </tr>
+                        <tr>
+                            <td>error</td><td>'+' should be on a new line.</td><td>24</td>
+                        </tr>
+                        <tr>
+                            <td>error</td><td>'+' should be on a new line.</td><td>25</td>
+                        </tr>
+                        <tr>
+                            <td>error</td><td>'+' should be on a new line.</td><td>26</td>
+                        </tr>
+                        <tr>
+                            <td>error</td><td>'+' should be on a new line.</td><td>27</td>
+                        </tr>
+                        <tr>
+                            <td>error</td><td>'+' should be on a new line.</td><td>28</td>
+                        </tr>
+                        <tr>
+                            <td>error</td><td>'+' should be on a new line.</td><td>29</td>
+                        </tr>
+                        <tr>
+                            <td>error</td><td>'+' should be on a new line.</td><td>30</td>
+                        </tr>
+                        <tr>
+                            <td>error</td><td>Line is longer than 130 characters (found 154).</td><td>31</td>
+                        </tr>
+                        <tr>
+                            <td>error</td><td>'+' should be on a new line.</td><td>31</td>
+                        </tr>
+                        <tr>
+                            <td>error</td><td>Missing a Javadoc comment.</td><td>34</td>
+                        </tr>
+                        <tr>
+                            <td>error</td><td>Name 'course_kpi_queries' must match pattern '^[A-Z][A-Z0-9]*(_[A-Z0-9]+)*$'.</td><td>34</td>
+                        </tr>
+                        <tr>
+                            <td>error</td><td>'+' should be on a new line.</td><td>39</td>
+                        </tr>
+                        <tr>
+                            <td>error</td><td>'+' should be on a new line.</td><td>45</td>
+                        </tr>
+                        <tr>
+                            <td>error</td><td>'+' should be on a new line.</td><td>46</td>
+                        </tr>
+                        <tr>
+                            <td>error</td><td>'+' should be on a new line.</td><td>52</td>
+                        </tr>
+                        <tr>
+                            <td>error</td><td>'+' should be on a new line.</td><td>53</td>
+                        </tr>
+                        <tr>
+                            <td>error</td><td>'+' should be on a new line.</td><td>59</td>
+                        </tr>
+                        <tr>
+                            <td>error</td><td>'+' should be on a new line.</td><td>60</td>
+                        </tr>
+                        <tr>
+                            <td>error</td><td>'+' should be on a new line.</td><td>66</td>
+                        </tr>
+                        <tr>
+                            <td>error</td><td>'+' should be on a new line.</td><td>67</td>
+                        </tr>
+                        <tr>
+                            <td>error</td><td>'+' should be on a new line.</td><td>73</td>
+                        </tr>
+                        <tr>
+                            <td>error</td><td>'+' should be on a new line.</td><td>74</td>
+                        </tr>
+                        <tr>
+                            <td>error</td><td>'+' should be on a new line.</td><td>80</td>
+                        </tr>
+                        <tr>
+                            <td>error</td><td>'+' should be on a new line.</td><td>86</td>
+                        </tr>
+                        <tr>
+                            <td>error</td><td>'+' should be on a new line.</td><td>87</td>
+                        </tr>
+                        <tr>
+                            <td>error</td><td>'+' should be on a new line.</td><td>88</td>
+                        </tr>
+                        <tr>
+                            <td>error</td><td>'+' should be on a new line.</td><td>89</td>
+                        </tr>
+                        <tr>
+                            <td>error</td><td>'+' should be on a new line.</td><td>90</td>
+                        </tr>
+                        <tr>
+                            <td>error</td><td>'+' should be on a new line.</td><td>91</td>
+                        </tr>
+                        <tr>
+                            <td>error</td><td>Line has trailing spaces.</td><td>94</td>
+                        </tr>
+                        <tr>
+                            <td>error</td><td>'+' should be on a new line.</td><td>97</td>
+                        </tr>
+                        <tr>
+                            <td>error</td><td>'+' should be on a new line.</td><td>98</td>
+                        </tr>
+                        <tr>
+                            <td>error</td><td>'+' should be on a new line.</td><td>99</td>
+                        </tr>
+                        <tr>
+                            <td>error</td><td>'+' should be on a new line.</td><td>100</td>
+                        </tr>
+                        <tr>
+                            <td>error</td><td>'+' should be on a new line.</td><td>101</td>
+                        </tr>
+                        <tr>
+                            <td>error</td><td>'+' should be on a new line.</td><td>102</td>
+                        </tr>
+                        <tr>
+                            <td>error</td><td>'+' should be on a new line.</td><td>103</td>
+                        </tr>
+                        <tr>
+                            <td>error</td><td>'+' should be on a new line.</td><td>104</td>
+                        </tr>
+                        <tr>
+                            <td>error</td><td>Line has trailing spaces.</td><td>107</td>
+                        </tr>
+                        <tr>
+                            <td>error</td><td>'+' should be on a new line.</td><td>110</td>
+                        </tr>
+                        <tr>
+                            <td>error</td><td>'+' should be on a new line.</td><td>111</td>
+                        </tr>
+                        <tr>
+                            <td>error</td><td>'+' should be on a new line.</td><td>112</td>
+                        </tr>
+                        <tr>
+                            <td>error</td><td>'+' should be on a new line.</td><td>113</td>
+                        </tr>
+                        <tr>
+                            <td>error</td><td>'+' should be on a new line.</td><td>114</td>
+                        </tr>
+                        <tr>
+                            <td>error</td><td>'+' should be on a new line.</td><td>115</td>
+                        </tr>
+                        <tr>
+                            <td>error</td><td>'+' should be on a new line.</td><td>116</td>
+                        </tr>
+                        <tr>
+                            <td>error</td><td>'+' should be on a new line.</td><td>117</td>
+                        </tr>
+                        <tr>
+                            <td>error</td><td>'+' should be on a new line.</td><td>123</td>
+                        </tr>
+                        <tr>
+                            <td>error</td><td>'+' should be on a new line.</td><td>124</td>
+                        </tr>
+                        <tr>
+                            <td>error</td><td>'+' should be on a new line.</td><td>125</td>
+                        </tr>
+                        <tr>
+                            <td>error</td><td>'+' should be on a new line.</td><td>126</td>
+                        </tr>
+                        <tr>
+                            <td>error</td><td>'+' should be on a new line.</td><td>127</td>
+                        </tr>
+                        <tr>
+                            <td>error</td><td>'+' should be on a new line.</td><td>128</td>
+                        </tr>
+                        <tr>
+                            <td>error</td><td>'+' should be on a new line.</td><td>129</td>
+                        </tr>
+                        <tr>
+                            <td>error</td><td>'+' should be on a new line.</td><td>130</td>
+                        </tr>
+                        <tr>
+                            <td>error</td><td>'+' should be on a new line.</td><td>131</td>
+                        </tr>
+                        <tr>
+                            <td>error</td><td>'+' should be on a new line.</td><td>137</td>
+                        </tr>
+                        <tr>
+                            <td>error</td><td>'+' should be on a new line.</td><td>138</td>
+                        </tr>
+                        <tr>
+                            <td>error</td><td>'+' should be on a new line.</td><td>139</td>
+                        </tr>
+                        <tr>
+                            <td>error</td><td>'+' should be on a new line.</td><td>140</td>
+                        </tr>
+                        <tr>
+                            <td>error</td><td>'+' should be on a new line.</td><td>141</td>
+                        </tr>
+                        <tr>
+                            <td>error</td><td>'+' should be on a new line.</td><td>142</td>
+                        </tr>
+                        <tr>
+                            <td>error</td><td>'+' should be on a new line.</td><td>143</td>
+                        </tr>
+                        <tr>
+                            <td>error</td><td>'+' should be on a new line.</td><td>144</td>
+                        </tr>
+                        <tr>
+                            <td>error</td><td>'+' should be on a new line.</td><td>145</td>
+                        </tr>
+                        <tr>
+                            <td>error</td><td>'+' should be on a new line.</td><td>151</td>
+                        </tr>
+                        <tr>
+                            <td>error</td><td>'+' should be on a new line.</td><td>152</td>
+                        </tr>
+                        <tr>
+                            <td>error</td><td>'+' should be on a new line.</td><td>153</td>
+                        </tr>
+                        <tr>
+                            <td>error</td><td>'+' should be on a new line.</td><td>154</td>
+                        </tr>
+                        <tr>
+                            <td>error</td><td>'+' should be on a new line.</td><td>155</td>
+                        </tr>
+                        <tr>
+                            <td>error</td><td>'+' should be on a new line.</td><td>156</td>
+                        </tr>
+                        <tr>
+                            <td>error</td><td>'+' should be on a new line.</td><td>157</td>
+                        </tr>
+                        <tr>
+                            <td>error</td><td>'+' should be on a new line.</td><td>158</td>
+                        </tr>
+                        <tr>
+                            <td>error</td><td>'+' should be on a new line.</td><td>164</td>
+                        </tr>
+                        <tr>
+                            <td>error</td><td>'+' should be on a new line.</td><td>165</td>
+                        </tr>
+                        <tr>
+                            <td>error</td><td>'+' should be on a new line.</td><td>166</td>
+                        </tr>
+                        <tr>
+                            <td>error</td><td>'+' should be on a new line.</td><td>167</td>
+                        </tr>
+                        <tr>
+                            <td>error</td><td>'+' should be on a new line.</td><td>168</td>
+                        </tr>
+                        <tr>
+                            <td>error</td><td>'+' should be on a new line.</td><td>169</td>
+                        </tr>
+                        <tr>
+                            <td>error</td><td>'+' should be on a new line.</td><td>170</td>
+                        </tr>
+                        <tr>
+                            <td>error</td><td>'+' should be on a new line.</td><td>171</td>
+                        </tr>
+                        <tr>
+                            <td>error</td><td>'+' should be on a new line.</td><td>177</td>
+                        </tr>
+                        <tr>
+                            <td>error</td><td>'+' should be on a new line.</td><td>178</td>
+                        </tr>
+                        <tr>
+                            <td>error</td><td>'+' should be on a new line.</td><td>179</td>
+                        </tr>
+                        <tr>
+                            <td>error</td><td>'+' should be on a new line.</td><td>180</td>
+                        </tr>
+                        <tr>
+                            <td>error</td><td>'+' should be on a new line.</td><td>181</td>
+                        </tr>
+                        <tr>
+                            <td>error</td><td>'+' should be on a new line.</td><td>182</td>
+                        </tr>
+                        <tr>
+                            <td>error</td><td>'+' should be on a new line.</td><td>183</td>
+                        </tr>
+                        <tr>
+                            <td>error</td><td>'+' should be on a new line.</td><td>184</td>
+                        </tr>
+                        <tr>
+                            <td>error</td><td>'+' should be on a new line.</td><td>190</td>
+                        </tr>
+                        <tr>
+                            <td>error</td><td>'+' should be on a new line.</td><td>191</td>
+                        </tr>
+                        <tr>
+                            <td>error</td><td>'+' should be on a new line.</td><td>192</td>
+                        </tr>
+                        <tr>
+                            <td>error</td><td>'+' should be on a new line.</td><td>193</td>
+                        </tr>
+                        <tr>
+                            <td>error</td><td>'+' should be on a new line.</td><td>194</td>
+                        </tr>
+                        <tr>
+                            <td>error</td><td>'+' should be on a new line.</td><td>195</td>
+                        </tr>
+                        <tr>
+                            <td>error</td><td>'+' should be on a new line.</td><td>196</td>
+                        </tr>
+                        <tr>
+                            <td>error</td><td>'+' should be on a new line.</td><td>197</td>
+                        </tr>
+                        <tr>
+                            <td>error</td><td>'+' should be on a new line.</td><td>205</td>
+                        </tr>
+                        <tr>
+                            <td>error</td><td>'+' should be on a new line.</td><td>206</td>
+                        </tr>
+                        <tr>
+                            <td>error</td><td>'+' should be on a new line.</td><td>212</td>
+                        </tr>
+                        <tr>
+                            <td>error</td><td>'+' should be on a new line.</td><td>213</td>
+                        </tr>
+                        <tr>
+                            <td>error</td><td>'+' should be on a new line.</td><td>214</td>
+                        </tr>
+                        <tr>
+                            <td>error</td><td>'+' should be on a new line.</td><td>215</td>
+                        </tr>
+                        <tr>
+                            <td>error</td><td>'+' should be on a new line.</td><td>216</td>
+                        </tr>
+                        <tr>
+                            <td>error</td><td>'+' should be on a new line.</td><td>217</td>
+                        </tr>
+                        <tr>
+                            <td>error</td><td>'+' should be on a new line.</td><td>218</td>
+                        </tr>
+                        <tr>
+                            <td>error</td><td>'+' should be on a new line.</td><td>224</td>
+                        </tr>
+                        <tr>
+                            <td>error</td><td>'+' should be on a new line.</td><td>225</td>
+                        </tr>
+                        <tr>
+                            <td>error</td><td>'+' should be on a new line.</td><td>226</td>
+                        </tr>
+                        <tr>
+                            <td>error</td><td>'+' should be on a new line.</td><td>227</td>
+                        </tr>
+                        <tr>
+                            <td>error</td><td>'+' should be on a new line.</td><td>228</td>
+                        </tr>
+                        <tr>
+                            <td>error</td><td>'+' should be on a new line.</td><td>229</td>
+                        </tr>
+                        <tr>
+                            <td>error</td><td>'+' should be on a new line.</td><td>230</td>
+                        </tr>
+                        <tr>
+                            <td>error</td><td>'+' should be on a new line.</td><td>236</td>
+                        </tr>
+                        <tr>
+                            <td>error</td><td>'+' should be on a new line.</td><td>237</td>
+                        </tr>
+                        <tr>
+                            <td>error</td><td>'+' should be on a new line.</td><td>238</td>
+                        </tr>
+                        <tr>
+                            <td>error</td><td>'+' should be on a new line.</td><td>239</td>
+                        </tr>
+                        <tr>
+                            <td>error</td><td>'+' should be on a new line.</td><td>240</td>
+                        </tr>
+                        <tr>
+                            <td>error</td><td>'+' should be on a new line.</td><td>241</td>
+                        </tr>
+                        <tr>
+                            <td>error</td><td>'+' should be on a new line.</td><td>242</td>
+                        </tr>
+                        <tr>
+                            <td>error</td><td>'+' should be on a new line.</td><td>248</td>
+                        </tr>
+                        <tr>
+                            <td>error</td><td>Line is longer than 130 characters (found 138).</td><td>249</td>
+                        </tr>
+                        <tr>
+                            <td>error</td><td>'+' should be on a new line.</td><td>249</td>
+                        </tr>
+                        <tr>
+                            <td>error</td><td>'+' should be on a new line.</td><td>250</td>
+                        </tr>
+                        <tr>
+                            <td>error</td><td>'+' should be on a new line.</td><td>251</td>
+                        </tr>
+                        <tr>
+                            <td>error</td><td>'+' should be on a new line.</td><td>252</td>
+                        </tr>
+                        <tr>
+                            <td>error</td><td>'+' should be on a new line.</td><td>253</td>
+                        </tr>
+                        <tr>
+                            <td>error</td><td>'+' should be on a new line.</td><td>254</td>
+                        </tr>
+                        <tr>
+                            <td>error</td><td>'+' should be on a new line.</td><td>260</td>
+                        </tr>
+                        <tr>
+                            <td>error</td><td>'+' should be on a new line.</td><td>261</td>
+                        </tr>
+                        <tr>
+                            <td>error</td><td>'+' should be on a new line.</td><td>262</td>
+                        </tr>
+                        <tr>
+                            <td>error</td><td>'+' should be on a new line.</td><td>263</td>
+                        </tr>
+                        <tr>
+                            <td>error</td><td>'+' should be on a new line.</td><td>264</td>
+                        </tr>
+                        <tr>
+                            <td>error</td><td>'+' should be on a new line.</td><td>265</td>
+                        </tr>
+                        <tr>
+                            <td>error</td><td>'+' should be on a new line.</td><td>266</td>
+                        </tr>
+                        <tr>
+                            <td>error</td><td>'+' should be on a new line.</td><td>267</td>
+                        </tr>
+                        <tr>
+                            <td>error</td><td>'+' should be on a new line.</td><td>268</td>
+                        </tr>
+                        <tr>
+                            <td>error</td><td>'+' should be on a new line.</td><td>269</td>
+                        </tr>
+                        <tr>
+                            <td>error</td><td>'+' should be on a new line.</td><td>275</td>
+                        </tr>
+                        <tr>
+                            <td>error</td><td>'+' should be on a new line.</td><td>276</td>
+                        </tr>
+                        <tr>
+                            <td>error</td><td>'+' should be on a new line.</td><td>277</td>
+                        </tr>
+                        <tr>
+                            <td>error</td><td>'+' should be on a new line.</td><td>278</td>
+                        </tr>
+                        <tr>
+                            <td>error</td><td>'+' should be on a new line.</td><td>279</td>
+                        </tr>
+                        <tr>
+                            <td>error</td><td>'+' should be on a new line.</td><td>280</td>
+                        </tr>
+                        <tr>
+                            <td>error</td><td>'+' should be on a new line.</td><td>281</td>
+                        </tr>
+                        <tr>
+                            <td>error</td><td>'+' should be on a new line.</td><td>282</td>
+                        </tr>
+                        <tr>
+                            <td>error</td><td>'+' should be on a new line.</td><td>283</td>
+                        </tr>
+                        <tr>
+                            <td>error</td><td>'+' should be on a new line.</td><td>284</td>
+                        </tr>
+                        <tr>
+                            <td>error</td><td>'+' should be on a new line.</td><td>290</td>
+                        </tr>
+                        <tr>
+                            <td>error</td><td>'+' should be on a new line.</td><td>291</td>
+                        </tr>
+                        <tr>
+                            <td>error</td><td>'+' should be on a new line.</td><td>292</td>
+                        </tr>
+                        <tr>
+                            <td>error</td><td>'+' should be on a new line.</td><td>293</td>
+                        </tr>
+                        <tr>
+                            <td>error</td><td>'+' should be on a new line.</td><td>294</td>
+                        </tr>
+                        <tr>
+                            <td>error</td><td>'+' should be on a new line.</td><td>295</td>
+                        </tr>
+                        <tr>
+                            <td>error</td><td>'+' should be on a new line.</td><td>296</td>
+                        </tr>
+                        <tr>
+                            <td>error</td><td>'+' should be on a new line.</td><td>297</td>
+                        </tr>
+                        <tr>
+                            <td>error</td><td>'+' should be on a new line.</td><td>298</td>
+                        </tr>
+                        <tr>
+                            <td>error</td><td>'+' should be on a new line.</td><td>299</td>
+                        </tr>
+                        <tr>
+                            <td>error</td><td>'+' should be on a new line.</td><td>300</td>
+                        </tr>
+                        <tr>
+                            <td>error</td><td>'+' should be on a new line.</td><td>306</td>
+                        </tr>
+                        <tr>
+                            <td>error</td><td>'+' should be on a new line.</td><td>307</td>
+                        </tr>
+                        <tr>
+                            <td>error</td><td>'+' should be on a new line.</td><td>308</td>
+                        </tr>
+                        <tr>
+                            <td>error</td><td>'+' should be on a new line.</td><td>309</td>
+                        </tr>
+                        <tr>
+                            <td>error</td><td>'+' should be on a new line.</td><td>310</td>
+                        </tr>
+                        <tr>
+                            <td>error</td><td>'+' should be on a new line.</td><td>311</td>
+                        </tr>
+                        <tr>
+                            <td>error</td><td>'+' should be on a new line.</td><td>312</td>
+                        </tr>
+                        <tr>
+                            <td>error</td><td>'+' should be on a new line.</td><td>313</td>
+                        </tr>
+                        <tr>
+                            <td>error</td><td>'+' should be on a new line.</td><td>314</td>
+                        </tr>
+                        <tr>
+                            <td>error</td><td>'+' should be on a new line.</td><td>315</td>
+                        </tr>
+                        <tr>
+                            <td>error</td><td>'+' should be on a new line.</td><td>316</td>
+                        </tr>
+                        <tr>
+                            <td>error</td><td>'+' should be on a new line.</td><td>322</td>
+                        </tr>
+                        <tr>
+                            <td>error</td><td>'+' should be on a new line.</td><td>323</td>
+                        </tr>
+                        <tr>
+                            <td>error</td><td>'+' should be on a new line.</td><td>324</td>
+                        </tr>
+                        <tr>
+                            <td>error</td><td>'+' should be on a new line.</td><td>325</td>
+                        </tr>
+                        <tr>
+                            <td>error</td><td>'+' should be on a new line.</td><td>326</td>
+                        </tr>
+                        <tr>
+                            <td>error</td><td>'+' should be on a new line.</td><td>327</td>
+                        </tr>
+                        <tr>
+                            <td>error</td><td>'+' should be on a new line.</td><td>328</td>
+                        </tr>
+                        <tr>
+                            <td>error</td><td>'+' should be on a new line.</td><td>329</td>
+                        </tr>
+                        <tr>
+                            <td>error</td><td>'+' should be on a new line.</td><td>330</td>
+                        </tr>
+                        <tr>
+                            <td>error</td><td>'+' should be on a new line.</td><td>331</td>
+                        </tr>
+                        <tr>
+                            <td>error</td><td>'+' should be on a new line.</td><td>337</td>
+                        </tr>
+                        <tr>
+                            <td>error</td><td>'+' should be on a new line.</td><td>338</td>
+                        </tr>
+                        <tr>
+                            <td>error</td><td>'+' should be on a new line.</td><td>339</td>
+                        </tr>
+                        <tr>
+                            <td>error</td><td>'+' should be on a new line.</td><td>340</td>
+                        </tr>
+                        <tr>
+                            <td>error</td><td>'+' should be on a new line.</td><td>341</td>
+                        </tr>
+                        <tr>
+                            <td>error</td><td>'+' should be on a new line.</td><td>342</td>
+                        </tr>
+                        <tr>
+                            <td>error</td><td>'+' should be on a new line.</td><td>343</td>
+                        </tr>
+                        <tr>
+                            <td>error</td><td>'+' should be on a new line.</td><td>344</td>
+                        </tr>
+                        <tr>
+                            <td>error</td><td>'+' should be on a new line.</td><td>345</td>
+                        </tr>
+                        <tr>
+                            <td>error</td><td>'+' should be on a new line.</td><td>346</td>
+                        </tr>
+                        <tr>
+                            <td>error</td><td>'+' should be on a new line.</td><td>352</td>
+                        </tr>
+                        <tr>
+                            <td>error</td><td>'+' should be on a new line.</td><td>353</td>
+                        </tr>
+                        <tr>
+                            <td>error</td><td>'+' should be on a new line.</td><td>354</td>
+                        </tr>
+                        <tr>
+                            <td>error</td><td>'+' should be on a new line.</td><td>355</td>
+                        </tr>
+                        <tr>
+                            <td>error</td><td>'+' should be on a new line.</td><td>356</td>
+                        </tr>
+                        <tr>
+                            <td>error</td><td>'+' should be on a new line.</td><td>357</td>
+                        </tr>
+                        <tr>
+                            <td>error</td><td>'+' should be on a new line.</td><td>358</td>
+                        </tr>
+                        <tr>
+                            <td>error</td><td>'+' should be on a new line.</td><td>359</td>
+                        </tr>
+                        <tr>
+                            <td>error</td><td>'+' should be on a new line.</td><td>360</td>
+                        </tr>
+                        <tr>
+                            <td>error</td><td>'+' should be on a new line.</td><td>361</td>
+                        </tr>
+                        <tr>
+                            <td>error</td><td>'+' should be on a new line.</td><td>367</td>
+                        </tr>
+                        <tr>
+                            <td>error</td><td>'+' should be on a new line.</td><td>368</td>
+                        </tr>
+                        <tr>
+                            <td>error</td><td>'+' should be on a new line.</td><td>369</td>
+                        </tr>
+                        <tr>
+                            <td>error</td><td>'+' should be on a new line.</td><td>370</td>
+                        </tr>
+                        <tr>
+                            <td>error</td><td>'+' should be on a new line.</td><td>371</td>
+                        </tr>
+                        <tr>
+                            <td>error</td><td>'+' should be on a new line.</td><td>372</td>
+                        </tr>
+                        <tr>
+                            <td>error</td><td>'+' should be on a new line.</td><td>373</td>
+                        </tr>
+                        <tr>
+                            <td>error</td><td>'+' should be on a new line.</td><td>374</td>
+                        </tr>
+                        <tr>
+                            <td>error</td><td>'+' should be on a new line.</td><td>375</td>
+                        </tr>
+                        <tr>
+                            <td>error</td><td>'+' should be on a new line.</td><td>376</td>
+                        </tr>
+                        <tr>
+                            <td>error</td><td>'+' should be on a new line.</td><td>382</td>
+                        </tr>
+                        <tr>
+                            <td>error</td><td>'+' should be on a new line.</td><td>383</td>
+                        </tr>
+                        <tr>
+                            <td>error</td><td>'+' should be on a new line.</td><td>389</td>
+                        </tr>
+                        <tr>
+                            <td>error</td><td>'+' should be on a new line.</td><td>390</td>
+                        </tr>
+                        <tr>
+                            <td>error</td><td>'+' should be on a new line.</td><td>391</td>
+                        </tr>
+                        <tr>
+                            <td>error</td><td>'+' should be on a new line.</td><td>392</td>
+                        </tr>
+                        <tr>
+                            <td>error</td><td>'+' should be on a new line.</td><td>398</td>
+                        </tr>
+                        <tr>
+                            <td>error</td><td>'+' should be on a new line.</td><td>399</td>
+                        </tr>
+                        <tr>
+                            <td>error</td><td>'+' should be on a new line.</td><td>400</td>
+                        </tr>
+                        <tr>
+                            <td>error</td><td>'+' should be on a new line.</td><td>401</td>
+                        </tr>
+                        <tr>
+                            <td>error</td><td>'+' should be on a new line.</td><td>402</td>
+                        </tr>
+                        <tr>
+                            <td>error</td><td>'+' should be on a new line.</td><td>403</td>
+                        </tr>
+                        <tr>
+                            <td>error</td><td>'+' should be on a new line.</td><td>404</td>
+                        </tr>
+                        <tr>
+                            <td>error</td><td>'+' should be on a new line.</td><td>405</td>
+                        </tr>
+                        <tr>
+                            <td>error</td><td>'+' should be on a new line.</td><td>406</td>
+                        </tr>
+                        <tr>
+                            <td>error</td><td>Line is longer than 130 characters (found 143).</td><td>407</td>
+                        </tr>
+                        <tr>
+                            <td>error</td><td>'+' should be on a new line.</td><td>407</td>
+                        </tr>
+                        <tr>
+                            <td>error</td><td>Line is longer than 130 characters (found 139).</td><td>408</td>
+                        </tr>
+                        <tr>
+                            <td>error</td><td>'+' should be on a new line.</td><td>408</td>
+                        </tr>
+                        <tr>
+                            <td>error</td><td>Line is longer than 130 characters (found 150).</td><td>409</td>
+                        </tr>
+                        <tr>
+                            <td>error</td><td>'+' should be on a new line.</td><td>409</td>
+                        </tr>
+                        <tr>
+                            <td>error</td><td>Line is longer than 130 characters (found 156).</td><td>410</td>
+                        </tr>
+                        <tr>
+                            <td>error</td><td>'+' should be on a new line.</td><td>410</td>
+                        </tr>
+                        <tr>
+                            <td>error</td><td>Line is longer than 130 characters (found 181).</td><td>411</td>
+                        </tr>
+                        <tr>
+                            <td>error</td><td>'+' should be on a new line.</td><td>411</td>
+                        </tr>
+                        <tr>
+                            <td>error</td><td>'+' should be on a new line.</td><td>412</td>
+                        </tr>
+                        <tr>
+                            <td>error</td><td>'+' should be on a new line.</td><td>413</td>
+                        </tr>
+                        <tr>
+                            <td>error</td><td>'+' should be on a new line.</td><td>414</td>
+                        </tr>
+                        <tr>
+                            <td>error</td><td>'+' should be on a new line.</td><td>415</td>
+                        </tr>
+                    </table>
+                    <p></p>
+                    <a href="#top">Back to top</a>
+                    <p></p>
+                </div>
+                <div class="file-violation">
+                    <h3>
+                        <a class="link" name="N68231">C:\Users\DELL\Desktop\LMS CODE FREEZE\backend\LMS-NT\user-service-lms\src\main\java\com\nt\user_service_lms\service\serviceImpl\EnrollmentServiceImpl.java</a>
+                    </h3>
+                    <table class="violationlist" width="95%">
+                        <tr>
+                            <th>Severity</th><th>Description</th><th>Line Number</th>
+                        </tr>
+                        <tr>
+                            <td>error</td><td>Class 'EnrollmentServiceImpl' looks like designed for extension (can be subclassed), but the method 'enroll' does not have javadoc that explains how to do that safely. If class is not designed for extension consider making the class 'EnrollmentServiceImpl' final or making the method 'enroll' static/final/abstract/empty, or adding allowed annotation for the method.</td><td>95</td>
+                        </tr>
+                        <tr>
+                            <td>error</td><td>Parameter requestDTO should be final.</td><td>96</td>
+                        </tr>
+                        <tr>
+                            <td>error</td><td>Class 'EnrollmentServiceImpl' looks like designed for extension (can be subclassed), but the method 'getEnrollmentStats' does not have javadoc that explains how to do that safely. If class is not designed for extension consider making the class 'EnrollmentServiceImpl' final or making the method 'getEnrollmentStats' static/final/abstract/empty, or adding allowed annotation for the method.</td><td>130</td>
+                        </tr>
+                        <tr>
+                            <td>error</td><td>'||' should be on a new line.</td><td>210</td>
+                        </tr>
+                        <tr>
+                            <td>error</td><td>'30' is a magic number.</td><td>216</td>
+                        </tr>
+                        <tr>
+                            <td>error</td><td>Parameter completed should be final.</td><td>294</td>
+                        </tr>
+                        <tr>
+                            <td>error</td><td>Parameter total should be final.</td><td>294</td>
+                        </tr>
+                        <tr>
+                            <td>error</td><td>'100' is a magic number.</td><td>299</td>
+                        </tr>
+                        <tr>
+                            <td>error</td><td>Parameter enrollments should be final.</td><td>304</td>
+                        </tr>
+                        <tr>
+                            <td>error</td><td>Parameter counts should be final.</td><td>317</td>
+                        </tr>
+                        <tr>
+                            <td>error</td><td>Parameter total should be final.</td><td>317</td>
+                        </tr>
+                        <tr>
+                            <td>error</td><td>'100' is a magic number.</td><td>325</td>
+                        </tr>
+                        <tr>
+                            <td>error</td><td>Class 'EnrollmentServiceImpl' looks like designed for extension (can be subclassed), but the method 'getUserEnrollmentsByUserID' does not have javadoc that explains how to do that safely. If class is not designed for extension consider making the class 'EnrollmentServiceImpl' final or making the method 'getUserEnrollmentsByUserID' static/final/abstract/empty, or adding allowed annotation for the method.</td><td>333</td>
+                        </tr>
+                        <tr>
+                            <td>error</td><td>Parameter userId should be final.</td><td>334</td>
+                        </tr>
+                        <tr>
+                            <td>error</td><td>Parameter userId should be final.</td><td>383</td>
+                        </tr>
+                        <tr>
+                            <td>error</td><td>Parameter userName should be final.</td><td>383</td>
+                        </tr>
+                        <tr>
+                            <td>error</td><td>Parameter courseEnrollments should be final.</td><td>398</td>
+                        </tr>
+                        <tr>
+                            <td>error</td><td>Parameter bundleEnrollments should be final.</td><td>429</td>
+                        </tr>
+                        <tr>
+                            <td>error</td><td>':' should be on a new line.</td><td>458</td>
+                        </tr>
+                        <tr>
+                            <td>error</td><td>Parameter bundleId should be final.</td><td>470</td>
+                        </tr>
+                        <tr>
+                            <td>error</td><td>Parameter userId should be final.</td><td>470</td>
+                        </tr>
+                        <tr>
+                            <td>error</td><td>Parameter enrolledCourses should be final.</td><td>515</td>
+                        </tr>
+                        <tr>
+                            <td>error</td><td>Parameter enrolledBundles should be final.</td><td>516</td>
+                        </tr>
+                        <tr>
+                            <td>error</td><td>Parameter enrolledCourses should be final.</td><td>524</td>
+                        </tr>
+                        <tr>
+                            <td>error</td><td>Parameter enrolledBundles should be final.</td><td>525</td>
+                        </tr>
+                        <tr>
+                            <td>error</td><td>':' should be on a new line.</td><td>536</td>
+                        </tr>
+                        <tr>
+                            <td>error</td><td>Parameter enrollments should be final.</td><td>543</td>
+                        </tr>
+                        <tr>
+                            <td>error</td><td>'7' is a magic number.</td><td>545</td>
+                        </tr>
+                        <tr>
+                            <td>error</td><td>Parameter enrollments should be final.</td><td>553</td>
+                        </tr>
+                        <tr>
+                            <td>error</td><td>Class 'EnrollmentServiceImpl' looks like designed for extension (can be subclassed), but the method 'getAllUsersEnrollments' does not have javadoc that explains how to do that safely. If class is not designed for extension consider making the class 'EnrollmentServiceImpl' final or making the method 'getAllUsersEnrollments' static/final/abstract/empty, or adding allowed annotation for the method.</td><td>558</td>
+                        </tr>
+                        <tr>
+                            <td>error</td><td>Parameter userId should be final.</td><td>613</td>
+                        </tr>
+                        <tr>
+                            <td>error</td><td>Parameter userEnrollments should be final.</td><td>614</td>
+                        </tr>
+                        <tr>
+                            <td>error</td><td>Parameter userMap should be final.</td><td>615</td>
+                        </tr>
+                        <tr>
+                            <td>error</td><td>Parameter courseNamesMap should be final.</td><td>616</td>
+                        </tr>
+                        <tr>
+                            <td>error</td><td>Parameter bundleNamesMap should be final.</td><td>617</td>
+                        </tr>
+                        <tr>
+                            <td>error</td><td>Parameter bundleCourseMappings should be final.</td><td>618</td>
+                        </tr>
+                        <tr>
+                            <td>error</td><td>Parameter courseEnrollments should be final.</td><td>665</td>
+                        </tr>
+                        <tr>
+                            <td>error</td><td>Parameter courseNamesMap should be final.</td><td>666</td>
+                        </tr>
+                        <tr>
+                            <td>error</td><td>Parameter userId should be final.</td><td>667</td>
+                        </tr>
+                        <tr>
+                            <td>error</td><td>Parameter bundleEnrollments should be final.</td><td>693</td>
+                        </tr>
+                        <tr>
+                            <td>error</td><td>Parameter bundleNamesMap should be final.</td><td>694</td>
+                        </tr>
+                        <tr>
+                            <td>error</td><td>Parameter bundleCourseMappings should be final.</td><td>695</td>
+                        </tr>
+                        <tr>
+                            <td>error</td><td>Parameter courseNamesMap should be final.</td><td>696</td>
+                        </tr>
+                        <tr>
+                            <td>error</td><td>Parameter userId should be final.</td><td>697</td>
+                        </tr>
+                        <tr>
+                            <td>error</td><td>':' should be on a new line.</td><td>719</td>
+                        </tr>
+                        <tr>
+                            <td>error</td><td>Parameter bundleId should be final.</td><td>732</td>
+                        </tr>
+                        <tr>
+                            <td>error</td><td>Parameter userId should be final.</td><td>733</td>
+                        </tr>
+                        <tr>
+                            <td>error</td><td>Parameter bundleCourseMappings should be final.</td><td>734</td>
+                        </tr>
+                        <tr>
+                            <td>error</td><td>Parameter courseNamesMap should be final.</td><td>735</td>
+                        </tr>
+                        <tr>
+                            <td>error</td><td>Parameter courseIds should be final.</td><td>762</td>
+                        </tr>
+                        <tr>
+                            <td>error</td><td>Parameter bundleIds should be final.</td><td>799</td>
+                        </tr>
+                        <tr>
+                            <td>error</td><td>Parameter bundleIds should be final.</td><td>838</td>
+                        </tr>
+                        <tr>
+                            <td>error</td><td>'?' should be on a new line.</td><td>844</td>
+                        </tr>
+                        <tr>
+                            <td>error</td><td>Class 'EnrollmentServiceImpl' looks like designed for extension (can be subclassed), but the method 'getIndividualCourseEnrollments' does not have javadoc that explains how to do that safely. If class is not designed for extension consider making the class 'EnrollmentServiceImpl' final or making the method 'getIndividualCourseEnrollments' static/final/abstract/empty, or adding allowed annotation for the method.</td><td>854</td>
+                        </tr>
+                        <tr>
+                            <td>error</td><td>Class 'EnrollmentServiceImpl' looks like designed for extension (can be subclassed), but the method 'getIndividualBundleEnrollments' does not have javadoc that explains how to do that safely. If class is not designed for extension consider making the class 'EnrollmentServiceImpl' final or making the method 'getIndividualBundleEnrollments' static/final/abstract/empty, or adding allowed annotation for the method.</td><td>953</td>
+                        </tr>
+                        <tr>
+                            <td>error</td><td>':' should be on a new line.</td><td>1072</td>
+                        </tr>
+                        <tr>
+                            <td>error</td><td>Parameter courseIds should be final.</td><td>1091</td>
+                        </tr>
+                        <tr>
+                            <td>error</td><td>Parameter bundleIds should be final.</td><td>1111</td>
+                        </tr>
+                        <tr>
+                            <td>error</td><td>Parameter userIds should be final.</td><td>1131</td>
+                        </tr>
+                        <tr>
+                            <td>error</td><td>Class 'EnrollmentServiceImpl' looks like designed for extension (can be subclassed), but the method 'getUserEnrolledCourses' does not have javadoc that explains how to do that safely. If class is not designed for extension consider making the class 'EnrollmentServiceImpl' final or making the method 'getUserEnrolledCourses' static/final/abstract/empty, or adding allowed annotation for the method.</td><td>1145</td>
+                        </tr>
+                        <tr>
+                            <td>error</td><td>Parameter userId should be final.</td><td>1146</td>
+                        </tr>
+                        <tr>
+                            <td>error</td><td>'if' construct must use '{}'s.</td><td>1153</td>
+                        </tr>
+                        <tr>
+                            <td>error</td><td>'||' should be on a new line.</td><td>1155</td>
+                        </tr>
+                        <tr>
+                            <td>error</td><td>Parameter userId should be final.</td><td>1174</td>
+                        </tr>
+                        <tr>
+                            <td>error</td><td>Parameter groupId should be final.</td><td>1174</td>
+                        </tr>
+                        <tr>
+                            <td>error</td><td>Parameter courseId should be final.</td><td>1174</td>
+                        </tr>
+                        <tr>
+                            <td>error</td><td>Parameter bundleId should be final.</td><td>1174</td>
+                        </tr>
+                        <tr>
+                            <td>error</td><td>Parameter enrollmentSource should be final.</td><td>1174</td>
+                        </tr>
+                        <tr>
+                            <td>error</td><td>Parameter requestDTO should be final.</td><td>1180</td>
+                        </tr>
+                        <tr>
+                            <td>error</td><td>Parameter requestDTO should be final.</td><td>1203</td>
+                        </tr>
+                        <tr>
+                            <td>error</td><td>'+' should be on a new line.</td><td>1216</td>
+                        </tr>
+                        <tr>
+                            <td>error</td><td>Parameter requestDTO should be final.</td><td>1237</td>
+                        </tr>
+                        <tr>
+                            <td>error</td><td>'+' should be on a new line.</td><td>1249</td>
+                        </tr>
+                        <tr>
+                            <td>error</td><td>Parameter requestDTO should be final.</td><td>1269</td>
+                        </tr>
+                        <tr>
+                            <td>error</td><td>'+' should be on a new line.</td><td>1286</td>
+                        </tr>
+                        <tr>
+                            <td>error</td><td>Line is longer than 130 characters (found 156).</td><td>1287</td>
+                        </tr>
+                        <tr>
+                            <td>error</td><td>Parameter userId should be final.</td><td>1309</td>
+                        </tr>
+                        <tr>
+                            <td>error</td><td>Parameter groupId should be final.</td><td>1309</td>
+                        </tr>
+                        <tr>
+                            <td>error</td><td>Parameter courseId should be final.</td><td>1309</td>
+                        </tr>
+                        <tr>
+                            <td>error</td><td>Parameter bundleId should be final.</td><td>1309</td>
+                        </tr>
+                        <tr>
+                            <td>error</td><td>Parameter enrollmentSource should be final.</td><td>1310</td>
+                        </tr>
+                        <tr>
+                            <td>error</td><td>Parameter requestDTO should be final.</td><td>1310</td>
+                        </tr>
+                        <tr>
+                            <td>error</td><td>Parameter enrollment should be final.</td><td>1329</td>
+                        </tr>
+                        <tr>
+                            <td>error</td><td>Parameter requestDTO should be final.</td><td>1351</td>
+                        </tr>
+                        <tr>
+                            <td>error</td><td>Line is longer than 130 characters (found 168).</td><td>1353</td>
+                        </tr>
+                    </table>
+                    <p></p>
+                    <a href="#top">Back to top</a>
+                    <p></p>
+                </div>
+                <div class="file-violation">
+                    <h3>
+                        <a class="link" name="N68828">C:\Users\DELL\Desktop\LMS CODE FREEZE\backend\LMS-NT\user-service-lms\src\main\java\com\nt\user_service_lms\service\serviceImpl\EnrollmentsServiceImpl.java</a>
+                    </h3>
+                    <table class="violationlist" width="95%">
+                        <tr>
+                            <th>Severity</th><th>Description</th><th>Line Number</th>
+                        </tr>
+                        <tr>
+                            <td>error</td><td>Using the '.*' form of import should be avoided - java.util.*.</td><td>17</td>
+                        </tr>
+                        <tr>
+                            <td>error</td><td>Missing a Javadoc comment.</td><td>23</td>
+                        </tr>
+                        <tr>
+                            <td>error</td><td>Variable 'enrollmentRepository' must be private and have accessor methods.</td><td>24</td>
+                        </tr>
+                        <tr>
+                            <td>error</td><td>Missing a Javadoc comment.</td><td>27</td>
+                        </tr>
+                        <tr>
+                            <td>error</td><td>Missing a Javadoc comment.</td><td>30</td>
+                        </tr>
+                        <tr>
+                            <td>error</td><td>Missing a Javadoc comment.</td><td>33</td>
+                        </tr>
+                        <tr>
+                            <td>error</td><td>Class 'EnrollmentsServiceImpl' looks like designed for extension (can be subclassed), but the method 'getCourseDetail' does not have javadoc that explains how to do that safely. If class is not designed for extension consider making the class 'EnrollmentsServiceImpl' final or making the method 'getCourseDetail' static/final/abstract/empty, or adding allowed annotation for the method.</td><td>36</td>
+                        </tr>
+                        <tr>
+                            <td>error</td><td>Parameter groupId should be final.</td><td>37</td>
+                        </tr>
+                        <tr>
+                            <td>error</td><td>',' is preceded with whitespace.</td><td>42</td>
+                        </tr>
+                        <tr>
+                            <td>error</td><td>'&gt;' is preceded with whitespace.</td><td>42</td>
+                        </tr>
+                        <tr>
+                            <td>error</td><td>'{' is not preceded with whitespace.</td><td>44</td>
+                        </tr>
+                        <tr>
+                            <td>error</td><td>',' is not followed by whitespace.</td><td>46</td>
+                        </tr>
+                        <tr>
+                            <td>error</td><td>'+' is not followed by whitespace.</td><td>47</td>
+                        </tr>
+                        <tr>
+                            <td>error</td><td>'+' is not preceded with whitespace.</td><td>47</td>
+                        </tr>
+                        <tr>
+                            <td>error</td><td>'*' is not followed by whitespace.</td><td>49</td>
+                        </tr>
+                        <tr>
+                            <td>error</td><td>'*' is not preceded with whitespace.</td><td>49</td>
+                        </tr>
+                        <tr>
+                            <td>error</td><td>'+' is not preceded with whitespace.</td><td>49</td>
+                        </tr>
+                        <tr>
+                            <td>error</td><td>'/' is not followed by whitespace.</td><td>49</td>
+                        </tr>
+                        <tr>
+                            <td>error</td><td>'/' is not preceded with whitespace.</td><td>49</td>
+                        </tr>
+                        <tr>
+                            <td>error</td><td>',' is not followed by whitespace.</td><td>55</td>
+                        </tr>
+                        <tr>
+                            <td>error</td><td>'(' is followed by whitespace.</td><td>60</td>
+                        </tr>
+                        <tr>
+                            <td>error</td><td>',' is not followed by whitespace.</td><td>60</td>
+                        </tr>
+                        <tr>
+                            <td>error</td><td>Class 'EnrollmentsServiceImpl' looks like designed for extension (can be subclassed), but the method 'getUserDetail' does not have javadoc that explains how to do that safely. If class is not designed for extension consider making the class 'EnrollmentsServiceImpl' final or making the method 'getUserDetail' static/final/abstract/empty, or adding allowed annotation for the method.</td><td>63</td>
+                        </tr>
+                        <tr>
+                            <td>error</td><td>Parameter groupId should be final.</td><td>64</td>
+                        </tr>
+                        <tr>
+                            <td>error</td><td>',' is preceded with whitespace.</td><td>69</td>
+                        </tr>
+                        <tr>
+                            <td>error</td><td>'&gt;' is preceded with whitespace.</td><td>69</td>
+                        </tr>
+                        <tr>
+                            <td>error</td><td>'{' is not preceded with whitespace.</td><td>71</td>
+                        </tr>
+                        <tr>
+                            <td>error</td><td>',' is not followed by whitespace.</td><td>73</td>
+                        </tr>
+                        <tr>
+                            <td>error</td><td>'+' is not followed by whitespace.</td><td>74</td>
+                        </tr>
+                        <tr>
+                            <td>error</td><td>'+' is not preceded with whitespace.</td><td>74</td>
+                        </tr>
+                        <tr>
+                            <td>error</td><td>'*' is not followed by whitespace.</td><td>76</td>
+                        </tr>
+                        <tr>
+                            <td>error</td><td>'*' is not preceded with whitespace.</td><td>76</td>
+                        </tr>
+                        <tr>
+                            <td>error</td><td>'+' is not preceded with whitespace.</td><td>76</td>
+                        </tr>
+                        <tr>
+                            <td>error</td><td>'/' is not followed by whitespace.</td><td>76</td>
+                        </tr>
+                        <tr>
+                            <td>error</td><td>'/' is not preceded with whitespace.</td><td>76</td>
+                        </tr>
+                        <tr>
+                            <td>error</td><td>',' is not followed by whitespace.</td><td>83</td>
+                        </tr>
+                        <tr>
+                            <td>error</td><td>'for' is not followed by whitespace.</td><td>86</td>
+                        </tr>
+                        <tr>
+                            <td>error</td><td>'{' is not preceded with whitespace.</td><td>86</td>
+                        </tr>
+                        <tr>
+                            <td>error</td><td>'if' is not followed by whitespace.</td><td>88</td>
+                        </tr>
+                        <tr>
+                            <td>error</td><td>'{' is not preceded with whitespace.</td><td>88</td>
+                        </tr>
+                        <tr>
+                            <td>error</td><td>',' is not followed by whitespace.</td><td>99</td>
+                        </tr>
+                        <tr>
+                            <td>error</td><td>'(' is followed by whitespace.</td><td>105</td>
+                        </tr>
+                        <tr>
+                            <td>error</td><td>',' is not followed by whitespace.</td><td>105</td>
+                        </tr>
+                    </table>
+                    <p></p>
+                    <a href="#top">Back to top</a>
+                    <p></p>
+                </div>
+                <div class="file-violation">
+                    <h3>
+                        <a class="link" name="N69133">C:\Users\DELL\Desktop\LMS CODE FREEZE\backend\LMS-NT\user-service-lms\src\main\java\com\nt\user_service_lms\service\serviceImpl\GroupServiceImpl.java</a>
+                    </h3>
+                    <table class="violationlist" width="95%">
+                        <tr>
+                            <th>Severity</th><th>Description</th><th>Line Number</th>
+                        </tr>
+                        <tr>
+                            <td>error</td><td>Using the '.*' form of import should be avoided - com.nt.user_service_lms.dto.outDTO.*.</td><td>7</td>
+                        </tr>
+                        <tr>
+                            <td>error</td><td>Using the '.*' form of import should be avoided - java.util.*.</td><td>25</td>
+                        </tr>
+                        <tr>
+                            <td>error</td><td>Missing a Javadoc comment.</td><td>69</td>
+                        </tr>
+                        <tr>
+                            <td>error</td><td>Missing a Javadoc comment.</td><td>72</td>
+                        </tr>
+                        <tr>
+                            <td>error</td><td>Line is longer than 130 characters (found 139).</td><td>89</td>
+                        </tr>
+                        <tr>
+                            <td>error</td><td>',' is preceded with whitespace.</td><td>89</td>
+                        </tr>
+                        <tr>
+                            <td>error</td><td>'if' is not followed by whitespace.</td><td>98</td>
+                        </tr>
+                        <tr>
+                            <td>error</td><td>'{' is not preceded with whitespace.</td><td>98</td>
+                        </tr>
+                        <tr>
+                            <td>error</td><td>'=' is not preceded with whitespace.</td><td>101</td>
+                        </tr>
+                        <tr>
+                            <td>error</td><td>',' is not followed by whitespace.</td><td>101</td>
+                        </tr>
+                        <tr>
+                            <td>error</td><td>',' is not followed by whitespace.</td><td>106</td>
+                        </tr>
+                        <tr>
+                            <td>error</td><td>',' is not followed by whitespace.</td><td>131</td>
+                        </tr>
+                        <tr>
+                            <td>error</td><td>',' is not followed by whitespace.</td><td>144</td>
+                        </tr>
+                        <tr>
+                            <td>error</td><td>',' is preceded with whitespace.</td><td>144</td>
+                        </tr>
+                        <tr>
+                            <td>error</td><td>Parameter username should be final.</td><td>144</td>
+                        </tr>
+                        <tr>
+                            <td>error</td><td>'for' is not followed by whitespace.</td><td>155</td>
+                        </tr>
+                        <tr>
+                            <td>error</td><td>',' is not followed by whitespace.</td><td>159</td>
+                        </tr>
+                        <tr>
+                            <td>error</td><td>'if' is not followed by whitespace.</td><td>160</td>
+                        </tr>
+                        <tr>
+                            <td>error</td><td>'{' is not preceded with whitespace.</td><td>160</td>
+                        </tr>
+                        <tr>
+                            <td>error</td><td>'}' at column 17 should be on the same line as the next part of a multi-block statement (one that directly contains multiple blocks: if/else-if/else, do/while or try/catch/finally).</td><td>163</td>
+                        </tr>
+                        <tr>
+                            <td>error</td><td>'if' is not followed by whitespace.</td><td>170</td>
+                        </tr>
+                        <tr>
+                            <td>error</td><td>'{' is not preceded with whitespace.</td><td>170</td>
+                        </tr>
+                        <tr>
+                            <td>error</td><td>'for' is not followed by whitespace.</td><td>171</td>
+                        </tr>
+                        <tr>
+                            <td>error</td><td>'for' is not followed by whitespace.</td><td>172</td>
+                        </tr>
+                        <tr>
+                            <td>error</td><td>Line is longer than 130 characters (found 154).</td><td>173</td>
+                        </tr>
+                        <tr>
+                            <td>error</td><td>',' is not followed by whitespace.</td><td>196</td>
+                        </tr>
+                        <tr>
+                            <td>error</td><td>Class 'GroupServiceImpl' looks like designed for extension (can be subclassed), but the method 'updateGroup' does not have javadoc that explains how to do that safely. If class is not designed for extension consider making the class 'GroupServiceImpl' final or making the method 'updateGroup' static/final/abstract/empty, or adding allowed annotation for the method.</td><td>203</td>
+                        </tr>
+                        <tr>
+                            <td>error</td><td>Parameter groupId should be final.</td><td>204</td>
+                        </tr>
+                        <tr>
+                            <td>error</td><td>Parameter groupName should be final.</td><td>204</td>
+                        </tr>
+                        <tr>
+                            <td>error</td><td>'try' is not followed by whitespace.</td><td>205</td>
+                        </tr>
+                        <tr>
+                            <td>error</td><td>'{' is not preceded with whitespace.</td><td>205</td>
+                        </tr>
+                        <tr>
+                            <td>error</td><td>'if' is not followed by whitespace.</td><td>207</td>
+                        </tr>
+                        <tr>
+                            <td>error</td><td>'{' is not preceded with whitespace.</td><td>207</td>
+                        </tr>
+                        <tr>
+                            <td>error</td><td>'}' at column 14 should be on the same line as the next part of a multi-block statement (one that directly contains multiple blocks: if/else-if/else, do/while or try/catch/finally).</td><td>210</td>
+                        </tr>
+                        <tr>
+                            <td>error</td><td>',' is not followed by whitespace.</td><td>215</td>
+                        </tr>
+                        <tr>
+                            <td>error</td><td>'}' at column 10 should be on the same line as the next part of a multi-block statement (one that directly contains multiple blocks: if/else-if/else, do/while or try/catch/finally).</td><td>216</td>
+                        </tr>
+                        <tr>
+                            <td>error</td><td>'{' is not preceded with whitespace.</td><td>217</td>
+                        </tr>
+                        <tr>
+                            <td>error</td><td>',' is not followed by whitespace.</td><td>219</td>
+                        </tr>
+                        <tr>
+                            <td>error</td><td>',' is not followed by whitespace.</td><td>238</td>
+                        </tr>
+                        <tr>
+                            <td>error</td><td>',' is not followed by whitespace.</td><td>239</td>
+                        </tr>
+                        <tr>
+                            <td>error</td><td>',' is not followed by whitespace.</td><td>241</td>
+                        </tr>
+                        <tr>
+                            <td>error</td><td>Class 'GroupServiceImpl' looks like designed for extension (can be subclassed), but the method 'getUserCourses' does not have javadoc that explains how to do that safely. If class is not designed for extension consider making the class 'GroupServiceImpl' final or making the method 'getUserCourses' static/final/abstract/empty, or adding allowed annotation for the method.</td><td>248</td>
+                        </tr>
+                        <tr>
+                            <td>error</td><td>')' is preceded with whitespace.</td><td>249</td>
+                        </tr>
+                        <tr>
+                            <td>error</td><td>'{' is not preceded with whitespace.</td><td>249</td>
+                        </tr>
+                        <tr>
+                            <td>error</td><td>'try' is not followed by whitespace.</td><td>250</td>
+                        </tr>
+                        <tr>
+                            <td>error</td><td>'{' is not preceded with whitespace.</td><td>250</td>
+                        </tr>
+                        <tr>
+                            <td>error</td><td>',' is not followed by whitespace.</td><td>251</td>
+                        </tr>
+                        <tr>
+                            <td>error</td><td>Line is longer than 130 characters (found 145).</td><td>265</td>
+                        </tr>
+                        <tr>
+                            <td>error</td><td>',' is preceded with whitespace.</td><td>268</td>
+                        </tr>
+                        <tr>
+                            <td>error</td><td>'}' is not followed by whitespace.</td><td>270</td>
+                        </tr>
+                        <tr>
+                            <td>error</td><td>'catch' is not preceded with whitespace.</td><td>270</td>
+                        </tr>
+                        <tr>
+                            <td>error</td><td>'}' at column 13 should be on the same line as the next part of a multi-block statement (one that directly contains multiple blocks: if/else-if/else, do/while or try/catch/finally).</td><td>302</td>
+                        </tr>
+                        <tr>
+                            <td>error</td><td>',' is not followed by whitespace.</td><td>314</td>
+                        </tr>
+                        <tr>
+                            <td>error</td><td>',' is not followed by whitespace.</td><td>340</td>
+                        </tr>
+                        <tr>
+                            <td>error</td><td>Class 'GroupServiceImpl' looks like designed for extension (can be subclassed), but the method 'countGroups' does not have javadoc that explains how to do that safely. If class is not designed for extension consider making the class 'GroupServiceImpl' final or making the method 'countGroups' static/final/abstract/empty, or adding allowed annotation for the method.</td><td>346</td>
+                        </tr>
+                        <tr>
+                            <td>error</td><td>Class 'GroupServiceImpl' looks like designed for extension (can be subclassed), but the method 'getAllActiveGroups' does not have javadoc that explains how to do that safely. If class is not designed for extension consider making the class 'GroupServiceImpl' final or making the method 'getAllActiveGroups' static/final/abstract/empty, or adding allowed annotation for the method.</td><td>352</td>
+                        </tr>
+                        <tr>
+                            <td>error</td><td>'if' is not followed by whitespace.</td><td>355</td>
+                        </tr>
+                        <tr>
+                            <td>error</td><td>',' is not followed by whitespace.</td><td>367</td>
+                        </tr>
+                        <tr>
+                            <td>error</td><td>Class 'GroupServiceImpl' looks like designed for extension (can be subclassed), but the method 'getRecentGroupSummaries' does not have javadoc that explains how to do that safely. If class is not designed for extension consider making the class 'GroupServiceImpl' final or making the method 'getRecentGroupSummaries' static/final/abstract/empty, or adding allowed annotation for the method.</td><td>371</td>
+                        </tr>
+                        <tr>
+                            <td>error</td><td>Parameter groups should be final.</td><td>385</td>
+                        </tr>
+                        <tr>
+                            <td>error</td><td>Class 'GroupServiceImpl' looks like designed for extension (can be subclassed), but the method 'getCourseDetail' does not have javadoc that explains how to do that safely. If class is not designed for extension consider making the class 'GroupServiceImpl' final or making the method 'getCourseDetail' static/final/abstract/empty, or adding allowed annotation for the method.</td><td>408</td>
+                        </tr>
+                        <tr>
+                            <td>error</td><td>Parameter groupId should be final.</td><td>409</td>
+                        </tr>
+                        <tr>
+                            <td>error</td><td>',' is preceded with whitespace.</td><td>414</td>
+                        </tr>
+                        <tr>
+                            <td>error</td><td>'&gt;' is preceded with whitespace.</td><td>414</td>
+                        </tr>
+                        <tr>
+                            <td>error</td><td>Line is longer than 130 characters (found 155).</td><td>421</td>
+                        </tr>
+                        <tr>
+                            <td>error</td><td>'(' is followed by whitespace.</td><td>433</td>
+                        </tr>
+                        <tr>
+                            <td>error</td><td>',' is not followed by whitespace.</td><td>433</td>
+                        </tr>
+                        <tr>
+                            <td>error</td><td>Class 'GroupServiceImpl' looks like designed for extension (can be subclassed), but the method 'getUserDetail' does not have javadoc that explains how to do that safely. If class is not designed for extension consider making the class 'GroupServiceImpl' final or making the method 'getUserDetail' static/final/abstract/empty, or adding allowed annotation for the method.</td><td>436</td>
+                        </tr>
+                        <tr>
+                            <td>error</td><td>Parameter groupId should be final.</td><td>437</td>
+                        </tr>
+                        <tr>
+                            <td>error</td><td>',' is preceded with whitespace.</td><td>442</td>
+                        </tr>
+                        <tr>
+                            <td>error</td><td>'&gt;' is preceded with whitespace.</td><td>442</td>
+                        </tr>
+                        <tr>
+                            <td>error</td><td>Line is longer than 130 characters (found 155).</td><td>449</td>
+                        </tr>
+                        <tr>
+                            <td>error</td><td>'for' is not followed by whitespace.</td><td>460</td>
+                        </tr>
+                        <tr>
+                            <td>error</td><td>'{' is not preceded with whitespace.</td><td>460</td>
+                        </tr>
+                        <tr>
+                            <td>error</td><td>'if' is not followed by whitespace.</td><td>461</td>
+                        </tr>
+                        <tr>
+                            <td>error</td><td>'{' is not preceded with whitespace.</td><td>461</td>
+                        </tr>
+                        <tr>
+                            <td>error</td><td>',' is not followed by whitespace.</td><td>472</td>
+                        </tr>
+                        <tr>
+                            <td>error</td><td>'(' is followed by whitespace.</td><td>476</td>
+                        </tr>
+                        <tr>
+                            <td>error</td><td>',' is not followed by whitespace.</td><td>476</td>
+                        </tr>
+                    </table>
+                    <p></p>
+                    <a href="#top">Back to top</a>
+                    <p></p>
+                </div>
+                <div class="file-violation">
+                    <h3>
+                        <a class="link" name="N69685">C:\Users\DELL\Desktop\LMS CODE FREEZE\backend\LMS-NT\user-service-lms\src\main\java\com\nt\user_service_lms\service\serviceImpl\ManagerServiceImpl.java</a>
+                    </h3>
+                    <table class="violationlist" width="95%">
+                        <tr>
+                            <th>Severity</th><th>Description</th><th>Line Number</th>
+                        </tr>
+                        <tr>
+                            <td>error</td><td>Missing a Javadoc comment.</td><td>24</td>
+                        </tr>
+                        <tr>
+                            <td>error</td><td>Missing a Javadoc comment.</td><td>28</td>
+                        </tr>
+                        <tr>
+                            <td>error</td><td>',' is not followed by whitespace.</td><td>50</td>
+                        </tr>
+                        <tr>
+                            <td>error</td><td>',' is preceded with whitespace.</td><td>55</td>
+                        </tr>
+                        <tr>
+                            <td>error</td><td>',' is not followed by whitespace.</td><td>60</td>
+                        </tr>
+                    </table>
+                    <p></p>
+                    <a href="#top">Back to top</a>
+                    <p></p>
+                </div>
+                <div class="file-violation">
+                    <h3>
+                        <a class="link" name="N69724">C:\Users\DELL\Desktop\LMS CODE FREEZE\backend\LMS-NT\user-service-lms\src\main\java\com\nt\user_service_lms\service\serviceImpl\UserExcelReportBuilder.java</a>
+                    </h3>
+                    <table class="violationlist" width="95%">
+                        <tr>
+                            <th>Severity</th><th>Description</th><th>Line Number</th>
+                        </tr>
+                        <tr>
+                            <td>error</td><td>Using the '.*' form of import should be avoided - org.apache.poi.ss.usermodel.*.</td><td>3</td>
+                        </tr>
+                        <tr>
+                            <td>error</td><td>Missing a Javadoc comment.</td><td>16</td>
+                        </tr>
+                        <tr>
+                            <td>error</td><td>Missing a Javadoc comment.</td><td>17</td>
+                        </tr>
+                        <tr>
+                            <td>error</td><td>Class 'UserExcelReportBuilder' looks like designed for extension (can be subclassed), but the method 'buildExcel' does not have javadoc that explains how to do that safely. If class is not designed for extension consider making the class 'UserExcelReportBuilder' final or making the method 'buildExcel' static/final/abstract/empty, or adding allowed annotation for the method.</td><td>19</td>
+                        </tr>
+                        <tr>
+                            <td>error</td><td>Missing a Javadoc comment.</td><td>19</td>
+                        </tr>
+                        <tr>
+                            <td>error</td><td>Parameter data should be final.</td><td>19</td>
+                        </tr>
+                        <tr>
+                            <td>error</td><td>Parameter outputStream should be final.</td><td>19</td>
+                        </tr>
+                        <tr>
+                            <td>error</td><td>Line is longer than 130 characters (found 169).</td><td>42</td>
+                        </tr>
+                        <tr>
+                            <td>error</td><td>Line is longer than 130 characters (found 181).</td><td>47</td>
+                        </tr>
+                        <tr>
+                            <td>error</td><td>Line is longer than 130 characters (found 177).</td><td>52</td>
+                        </tr>
+                        <tr>
+                            <td>error</td><td>Line is longer than 130 characters (found 192).</td><td>74</td>
+                        </tr>
+                        <tr>
+                            <td>error</td><td>More than 7 parameters (found 8).</td><td>74</td>
+                        </tr>
+                        <tr>
+                            <td>error</td><td>Parameter sheet should be final.</td><td>74</td>
+                        </tr>
+                        <tr>
+                            <td>error</td><td>Parameter rowNum should be final.</td><td>74</td>
+                        </tr>
+                        <tr>
+                            <td>error</td><td>Parameter title should be final.</td><td>74</td>
+                        </tr>
+                        <tr>
+                            <td>error</td><td>Parameter rows should be final.</td><td>74</td>
+                        </tr>
+                        <tr>
+                            <td>error</td><td>Parameter headerStyle should be final.</td><td>74</td>
+                        </tr>
+                        <tr>
+                            <td>error</td><td>Parameter titleStyle should be final.</td><td>74</td>
+                        </tr>
+                        <tr>
+                            <td>error</td><td>Parameter percentageStyle should be final.</td><td>74</td>
+                        </tr>
+                        <tr>
+                            <td>error</td><td>Parameter numberStyle should be final.</td><td>74</td>
+                        </tr>
+                        <tr>
+                            <td>error</td><td>'if' construct must use '{}'s.</td><td>75</td>
+                        </tr>
+                        <tr>
+                            <td>error</td><td>Line is longer than 130 characters (found 176).</td><td>103</td>
+                        </tr>
+                        <tr>
+                            <td>error</td><td>Parameter sheet should be final.</td><td>103</td>
+                        </tr>
+                        <tr>
+                            <td>error</td><td>Parameter rowNum should be final.</td><td>103</td>
+                        </tr>
+                        <tr>
+                            <td>error</td><td>Parameter data should be final.</td><td>103</td>
+                        </tr>
+                        <tr>
+                            <td>error</td><td>Parameter headerStyle should be final.</td><td>103</td>
+                        </tr>
+                        <tr>
+                            <td>error</td><td>Parameter titleStyle should be final.</td><td>103</td>
+                        </tr>
+                        <tr>
+                            <td>error</td><td>Parameter percentageStyle should be final.</td><td>103</td>
+                        </tr>
+                        <tr>
+                            <td>error</td><td>Parameter numberStyle should be final.</td><td>103</td>
+                        </tr>
+                        <tr>
+                            <td>error</td><td>'if' construct must use '{}'s.</td><td>117</td>
+                        </tr>
+                        <tr>
+                            <td>error</td><td>'if' construct must use '{}'s.</td><td>118</td>
+                        </tr>
+                        <tr>
+                            <td>error</td><td>'if' construct must use '{}'s.</td><td>147</td>
+                        </tr>
+                        <tr>
+                            <td>error</td><td>'if' construct must use '{}'s.</td><td>148</td>
+                        </tr>
+                        <tr>
+                            <td>error</td><td>Line is longer than 130 characters (found 135).</td><td>165</td>
+                        </tr>
+                        <tr>
+                            <td>error</td><td>Parameter cell should be final.</td><td>165</td>
+                        </tr>
+                        <tr>
+                            <td>error</td><td>Parameter value should be final.</td><td>165</td>
+                        </tr>
+                        <tr>
+                            <td>error</td><td>Parameter columnName should be final.</td><td>165</td>
+                        </tr>
+                        <tr>
+                            <td>error</td><td>Parameter percentageStyle should be final.</td><td>165</td>
+                        </tr>
+                        <tr>
+                            <td>error</td><td>Parameter numberStyle should be final.</td><td>165</td>
+                        </tr>
+                        <tr>
+                            <td>error</td><td>'100.0' is a magic number.</td><td>173</td>
+                        </tr>
+                    </table>
+                    <p></p>
+                    <a href="#top">Back to top</a>
+                    <p></p>
+                </div>
+                <div class="file-violation">
+                    <h3>
+                        <a class="link" name="N70002">C:\Users\DELL\Desktop\LMS CODE FREEZE\backend\LMS-NT\user-service-lms\src\main\java\com\nt\user_service_lms\service\serviceImpl\UserPDFReportBuilder.java</a>
+                    </h3>
+                    <table class="violationlist" width="95%">
+                        <tr>
+                            <th>Severity</th><th>Description</th><th>Line Number</th>
+                        </tr>
+                        <tr>
+                            <td>error</td><td>Missing a Javadoc comment.</td><td>25</td>
+                        </tr>
+                        <tr>
+                            <td>error</td><td>Missing a Javadoc comment.</td><td>26</td>
+                        </tr>
+                        <tr>
+                            <td>error</td><td>Class 'UserPDFReportBuilder' looks like designed for extension (can be subclassed), but the method 'buildPdf' does not have javadoc that explains how to do that safely. If class is not designed for extension consider making the class 'UserPDFReportBuilder' final or making the method 'buildPdf' static/final/abstract/empty, or adding allowed annotation for the method.</td><td>28</td>
+                        </tr>
+                        <tr>
+                            <td>error</td><td>Missing a Javadoc comment.</td><td>28</td>
+                        </tr>
+                        <tr>
+                            <td>error</td><td>Parameter data should be final.</td><td>28</td>
+                        </tr>
+                        <tr>
+                            <td>error</td><td>Parameter outputStream should be final.</td><td>28</td>
+                        </tr>
+                        <tr>
+                            <td>error</td><td>Line is longer than 130 characters (found 135).</td><td>34</td>
+                        </tr>
+                        <tr>
+                            <td>error</td><td>'130' is a magic number.</td><td>36</td>
+                        </tr>
+                        <tr>
+                            <td>error</td><td>'150' is a magic number.</td><td>36</td>
+                        </tr>
+                        <tr>
+                            <td>error</td><td>'18' is a magic number.</td><td>39</td>
+                        </tr>
+                        <tr>
+                            <td>error</td><td>'150' is a magic number.</td><td>44</td>
+                        </tr>
+                        <tr>
+                            <td>error</td><td>'50' is a magic number.</td><td>45</td>
+                        </tr>
+                        <tr>
+                            <td>error</td><td>Line is longer than 130 characters (found 142).</td><td>50</td>
+                        </tr>
+                        <tr>
+                            <td>error</td><td>Line is longer than 130 characters (found 160).</td><td>55</td>
+                        </tr>
+                        <tr>
+                            <td>error</td><td>Line is longer than 130 characters (found 154).</td><td>60</td>
+                        </tr>
+                        <tr>
+                            <td>error</td><td>Parameter document should be final.</td><td>70</td>
+                        </tr>
+                        <tr>
+                            <td>error</td><td>Parameter title should be final.</td><td>70</td>
+                        </tr>
+                        <tr>
+                            <td>error</td><td>Parameter rows should be final.</td><td>70</td>
+                        </tr>
+                        <tr>
+                            <td>error</td><td>Parameter document should be final.</td><td>95</td>
+                        </tr>
+                        <tr>
+                            <td>error</td><td>Parameter data should be final.</td><td>95</td>
+                        </tr>
+                        <tr>
+                            <td>error</td><td>'if' construct must use '{}'s.</td><td>118</td>
+                        </tr>
+                        <tr>
+                            <td>error</td><td>'if' construct must use '{}'s.</td><td>120</td>
+                        </tr>
+                        <tr>
+                            <td>error</td><td>'if' construct must use '{}'s.</td><td>122</td>
+                        </tr>
+                        <tr>
+                            <td>error</td><td>Line is longer than 130 characters (found 140).</td><td>126</td>
+                        </tr>
+                        <tr>
+                            <td>error</td><td>Line is longer than 130 characters (found 142).</td><td>130</td>
+                        </tr>
+                        <tr>
+                            <td>error</td><td>Parameter value should be final.</td><td>147</td>
+                        </tr>
+                        <tr>
+                            <td>error</td><td>Parameter columnName should be final.</td><td>147</td>
+                        </tr>
+                        <tr>
+                            <td>error</td><td>'if' construct must use '{}'s.</td><td>148</td>
+                        </tr>
+                    </table>
+                    <p></p>
+                    <a href="#top">Back to top</a>
+                    <p></p>
+                </div>
+                <div class="file-violation">
+                    <h3>
+                        <a class="link" name="N70196">C:\Users\DELL\Desktop\LMS CODE FREEZE\backend\LMS-NT\user-service-lms\src\main\java\com\nt\user_service_lms\service\serviceImpl\UserReportKPIQueries.java</a>
+                    </h3>
+                    <table class="violationlist" width="95%">
+                        <tr>
+                            <th>Severity</th><th>Description</th><th>Line Number</th>
+                        </tr>
+                        <tr>
+                            <td>error</td><td>Utility classes should not have a public or default constructor.</td><td>6</td>
+                        </tr>
+                        <tr>
+                            <td>error</td><td>Missing a Javadoc comment.</td><td>8</td>
+                        </tr>
+                        <tr>
+                            <td>error</td><td>Name 'base_query' must match pattern '^[A-Z][A-Z0-9]*(_[A-Z0-9]+)*$'.</td><td>8</td>
+                        </tr>
+                        <tr>
+                            <td>error</td><td>'+' should be on a new line.</td><td>9</td>
+                        </tr>
+                        <tr>
+                            <td>error</td><td>'+' should be on a new line.</td><td>10</td>
+                        </tr>
+                        <tr>
+                            <td>error</td><td>'+' should be on a new line.</td><td>12</td>
+                        </tr>
+                        <tr>
+                            <td>error</td><td>'+' should be on a new line.</td><td>13</td>
+                        </tr>
+                        <tr>
+                            <td>error</td><td>'+' should be on a new line.</td><td>14</td>
+                        </tr>
+                        <tr>
+                            <td>error</td><td>'+' should be on a new line.</td><td>16</td>
+                        </tr>
+                        <tr>
+                            <td>error</td><td>'+' should be on a new line.</td><td>17</td>
+                        </tr>
+                        <tr>
+                            <td>error</td><td>'+' should be on a new line.</td><td>18</td>
+                        </tr>
+                        <tr>
+                            <td>error</td><td>'+' should be on a new line.</td><td>20</td>
+                        </tr>
+                        <tr>
+                            <td>error</td><td>'+' should be on a new line.</td><td>21</td>
+                        </tr>
+                        <tr>
+                            <td>error</td><td>'+' should be on a new line.</td><td>22</td>
+                        </tr>
+                        <tr>
+                            <td>error</td><td>'+' should be on a new line.</td><td>23</td>
+                        </tr>
+                        <tr>
+                            <td>error</td><td>'+' should be on a new line.</td><td>24</td>
+                        </tr>
+                        <tr>
+                            <td>error</td><td>'+' should be on a new line.</td><td>25</td>
+                        </tr>
+                        <tr>
+                            <td>error</td><td>'+' should be on a new line.</td><td>26</td>
+                        </tr>
+                        <tr>
+                            <td>error</td><td>'+' should be on a new line.</td><td>27</td>
+                        </tr>
+                        <tr>
+                            <td>error</td><td>'+' should be on a new line.</td><td>29</td>
+                        </tr>
+                        <tr>
+                            <td>error</td><td>'+' should be on a new line.</td><td>30</td>
+                        </tr>
+                        <tr>
+                            <td>error</td><td>'+' should be on a new line.</td><td>31</td>
+                        </tr>
+                        <tr>
+                            <td>error</td><td>'+' should be on a new line.</td><td>32</td>
+                        </tr>
+                        <tr>
+                            <td>error</td><td>Missing a Javadoc comment.</td><td>36</td>
+                        </tr>
+                        <tr>
+                            <td>error</td><td>Name 'user_kpi_queries' must match pattern '^[A-Z][A-Z0-9]*(_[A-Z0-9]+)*$'.</td><td>36</td>
+                        </tr>
+                        <tr>
+                            <td>error</td><td>'+' should be on a new line.</td><td>41</td>
+                        </tr>
+                        <tr>
+                            <td>error</td><td>'+' should be on a new line.</td><td>47</td>
+                        </tr>
+                        <tr>
+                            <td>error</td><td>'+' should be on a new line.</td><td>48</td>
+                        </tr>
+                        <tr>
+                            <td>error</td><td>'+' should be on a new line.</td><td>54</td>
+                        </tr>
+                        <tr>
+                            <td>error</td><td>'+' should be on a new line.</td><td>55</td>
+                        </tr>
+                        <tr>
+                            <td>error</td><td>'+' should be on a new line.</td><td>56</td>
+                        </tr>
+                        <tr>
+                            <td>error</td><td>'+' should be on a new line.</td><td>57</td>
+                        </tr>
+                        <tr>
+                            <td>error</td><td>'+' should be on a new line.</td><td>58</td>
+                        </tr>
+                        <tr>
+                            <td>error</td><td>'+' should be on a new line.</td><td>59</td>
+                        </tr>
+                        <tr>
+                            <td>error</td><td>'+' should be on a new line.</td><td>65</td>
+                        </tr>
+                        <tr>
+                            <td>error</td><td>'+' should be on a new line.</td><td>66</td>
+                        </tr>
+                        <tr>
+                            <td>error</td><td>'+' should be on a new line.</td><td>72</td>
+                        </tr>
+                        <tr>
+                            <td>error</td><td>'+' should be on a new line.</td><td>73</td>
+                        </tr>
+                        <tr>
+                            <td>error</td><td>'+' should be on a new line.</td><td>79</td>
+                        </tr>
+                        <tr>
+                            <td>error</td><td>'+' should be on a new line.</td><td>80</td>
+                        </tr>
+                        <tr>
+                            <td>error</td><td>'+' should be on a new line.</td><td>86</td>
+                        </tr>
+                        <tr>
+                            <td>error</td><td>'+' should be on a new line.</td><td>87</td>
+                        </tr>
+                        <tr>
+                            <td>error</td><td>'+' should be on a new line.</td><td>93</td>
+                        </tr>
+                        <tr>
+                            <td>error</td><td>'+' should be on a new line.</td><td>94</td>
+                        </tr>
+                        <tr>
+                            <td>error</td><td>'+' should be on a new line.</td><td>95</td>
+                        </tr>
+                        <tr>
+                            <td>error</td><td>'+' should be on a new line.</td><td>96</td>
+                        </tr>
+                        <tr>
+                            <td>error</td><td>'+' should be on a new line.</td><td>97</td>
+                        </tr>
+                        <tr>
+                            <td>error</td><td>'+' should be on a new line.</td><td>103</td>
+                        </tr>
+                        <tr>
+                            <td>error</td><td>'+' should be on a new line.</td><td>104</td>
+                        </tr>
+                        <tr>
+                            <td>error</td><td>'+' should be on a new line.</td><td>105</td>
+                        </tr>
+                        <tr>
+                            <td>error</td><td>'+' should be on a new line.</td><td>106</td>
+                        </tr>
+                        <tr>
+                            <td>error</td><td>'+' should be on a new line.</td><td>107</td>
+                        </tr>
+                        <tr>
+                            <td>error</td><td>'+' should be on a new line.</td><td>108</td>
+                        </tr>
+                        <tr>
+                            <td>error</td><td>'+' should be on a new line.</td><td>109</td>
+                        </tr>
+                        <tr>
+                            <td>error</td><td>'+' should be on a new line.</td><td>110</td>
+                        </tr>
+                        <tr>
+                            <td>error</td><td>'+' should be on a new line.</td><td>111</td>
+                        </tr>
+                        <tr>
+                            <td>error</td><td>'+' should be on a new line.</td><td>112</td>
+                        </tr>
+                        <tr>
+                            <td>error</td><td>'+' should be on a new line.</td><td>118</td>
+                        </tr>
+                        <tr>
+                            <td>error</td><td>'+' should be on a new line.</td><td>119</td>
+                        </tr>
+                        <tr>
+                            <td>error</td><td>'+' should be on a new line.</td><td>120</td>
+                        </tr>
+                        <tr>
+                            <td>error</td><td>'+' should be on a new line.</td><td>121</td>
+                        </tr>
+                        <tr>
+                            <td>error</td><td>'+' should be on a new line.</td><td>122</td>
+                        </tr>
+                        <tr>
+                            <td>error</td><td>'+' should be on a new line.</td><td>123</td>
+                        </tr>
+                        <tr>
+                            <td>error</td><td>'+' should be on a new line.</td><td>124</td>
+                        </tr>
+                        <tr>
+                            <td>error</td><td>'+' should be on a new line.</td><td>125</td>
+                        </tr>
+                        <tr>
+                            <td>error</td><td>'+' should be on a new line.</td><td>126</td>
+                        </tr>
+                        <tr>
+                            <td>error</td><td>'+' should be on a new line.</td><td>127</td>
+                        </tr>
+                        <tr>
+                            <td>error</td><td>'+' should be on a new line.</td><td>128</td>
+                        </tr>
+                        <tr>
+                            <td>error</td><td>'+' should be on a new line.</td><td>134</td>
+                        </tr>
+                        <tr>
+                            <td>error</td><td>'+' should be on a new line.</td><td>135</td>
+                        </tr>
+                        <tr>
+                            <td>error</td><td>'+' should be on a new line.</td><td>136</td>
+                        </tr>
+                        <tr>
+                            <td>error</td><td>'+' should be on a new line.</td><td>137</td>
+                        </tr>
+                        <tr>
+                            <td>error</td><td>'+' should be on a new line.</td><td>138</td>
+                        </tr>
+                        <tr>
+                            <td>error</td><td>'+' should be on a new line.</td><td>139</td>
+                        </tr>
+                        <tr>
+                            <td>error</td><td>'+' should be on a new line.</td><td>140</td>
+                        </tr>
+                        <tr>
+                            <td>error</td><td>'+' should be on a new line.</td><td>141</td>
+                        </tr>
+                        <tr>
+                            <td>error</td><td>'+' should be on a new line.</td><td>142</td>
+                        </tr>
+                        <tr>
+                            <td>error</td><td>'+' should be on a new line.</td><td>143</td>
+                        </tr>
+                        <tr>
+                            <td>error</td><td>'+' should be on a new line.</td><td>144</td>
+                        </tr>
+                        <tr>
+                            <td>error</td><td>'+' should be on a new line.</td><td>150</td>
+                        </tr>
+                        <tr>
+                            <td>error</td><td>'+' should be on a new line.</td><td>151</td>
+                        </tr>
+                        <tr>
+                            <td>error</td><td>'+' should be on a new line.</td><td>152</td>
+                        </tr>
+                        <tr>
+                            <td>error</td><td>'+' should be on a new line.</td><td>153</td>
+                        </tr>
+                        <tr>
+                            <td>error</td><td>'+' should be on a new line.</td><td>154</td>
+                        </tr>
+                        <tr>
+                            <td>error</td><td>'+' should be on a new line.</td><td>155</td>
+                        </tr>
+                        <tr>
+                            <td>error</td><td>'+' should be on a new line.</td><td>156</td>
+                        </tr>
+                        <tr>
+                            <td>error</td><td>'+' should be on a new line.</td><td>157</td>
+                        </tr>
+                        <tr>
+                            <td>error</td><td>'+' should be on a new line.</td><td>158</td>
+                        </tr>
+                        <tr>
+                            <td>error</td><td>'+' should be on a new line.</td><td>159</td>
+                        </tr>
+                        <tr>
+                            <td>error</td><td>'+' should be on a new line.</td><td>165</td>
+                        </tr>
+                        <tr>
+                            <td>error</td><td>'+' should be on a new line.</td><td>166</td>
+                        </tr>
+                        <tr>
+                            <td>error</td><td>'+' should be on a new line.</td><td>167</td>
+                        </tr>
+                        <tr>
+                            <td>error</td><td>'+' should be on a new line.</td><td>168</td>
+                        </tr>
+                        <tr>
+                            <td>error</td><td>'+' should be on a new line.</td><td>169</td>
+                        </tr>
+                        <tr>
+                            <td>error</td><td>'+' should be on a new line.</td><td>170</td>
+                        </tr>
+                        <tr>
+                            <td>error</td><td>'+' should be on a new line.</td><td>171</td>
+                        </tr>
+                        <tr>
+                            <td>error</td><td>'+' should be on a new line.</td><td>172</td>
+                        </tr>
+                        <tr>
+                            <td>error</td><td>'+' should be on a new line.</td><td>173</td>
+                        </tr>
+                        <tr>
+                            <td>error</td><td>'+' should be on a new line.</td><td>174</td>
+                        </tr>
+                        <tr>
+                            <td>error</td><td>'+' should be on a new line.</td><td>180</td>
+                        </tr>
+                        <tr>
+                            <td>error</td><td>'+' should be on a new line.</td><td>181</td>
+                        </tr>
+                        <tr>
+                            <td>error</td><td>'+' should be on a new line.</td><td>182</td>
+                        </tr>
+                        <tr>
+                            <td>error</td><td>'+' should be on a new line.</td><td>183</td>
+                        </tr>
+                        <tr>
+                            <td>error</td><td>'+' should be on a new line.</td><td>184</td>
+                        </tr>
+                        <tr>
+                            <td>error</td><td>'+' should be on a new line.</td><td>185</td>
+                        </tr>
+                        <tr>
+                            <td>error</td><td>'+' should be on a new line.</td><td>186</td>
+                        </tr>
+                        <tr>
+                            <td>error</td><td>'+' should be on a new line.</td><td>187</td>
+                        </tr>
+                        <tr>
+                            <td>error</td><td>'+' should be on a new line.</td><td>188</td>
+                        </tr>
+                        <tr>
+                            <td>error</td><td>'+' should be on a new line.</td><td>189</td>
+                        </tr>
+                        <tr>
+                            <td>error</td><td>'+' should be on a new line.</td><td>195</td>
+                        </tr>
+                        <tr>
+                            <td>error</td><td>'+' should be on a new line.</td><td>196</td>
+                        </tr>
+                        <tr>
+                            <td>error</td><td>'+' should be on a new line.</td><td>197</td>
+                        </tr>
+                        <tr>
+                            <td>error</td><td>'+' should be on a new line.</td><td>198</td>
+                        </tr>
+                        <tr>
+                            <td>error</td><td>'+' should be on a new line.</td><td>199</td>
+                        </tr>
+                        <tr>
+                            <td>error</td><td>'+' should be on a new line.</td><td>200</td>
+                        </tr>
+                        <tr>
+                            <td>error</td><td>'+' should be on a new line.</td><td>201</td>
+                        </tr>
+                        <tr>
+                            <td>error</td><td>'+' should be on a new line.</td><td>202</td>
+                        </tr>
+                        <tr>
+                            <td>error</td><td>'+' should be on a new line.</td><td>203</td>
+                        </tr>
+                        <tr>
+                            <td>error</td><td>'+' should be on a new line.</td><td>204</td>
+                        </tr>
+                        <tr>
+                            <td>error</td><td>'+' should be on a new line.</td><td>205</td>
+                        </tr>
+                        <tr>
+                            <td>error</td><td>'+' should be on a new line.</td><td>206</td>
+                        </tr>
+                        <tr>
+                            <td>error</td><td>'+' should be on a new line.</td><td>207</td>
+                        </tr>
+                        <tr>
+                            <td>error</td><td>'+' should be on a new line.</td><td>213</td>
+                        </tr>
+                        <tr>
+                            <td>error</td><td>'+' should be on a new line.</td><td>214</td>
+                        </tr>
+                        <tr>
+                            <td>error</td><td>'+' should be on a new line.</td><td>215</td>
+                        </tr>
+                        <tr>
+                            <td>error</td><td>'+' should be on a new line.</td><td>216</td>
+                        </tr>
+                        <tr>
+                            <td>error</td><td>'+' should be on a new line.</td><td>217</td>
+                        </tr>
+                        <tr>
+                            <td>error</td><td>'+' should be on a new line.</td><td>218</td>
+                        </tr>
+                        <tr>
+                            <td>error</td><td>'+' should be on a new line.</td><td>219</td>
+                        </tr>
+                        <tr>
+                            <td>error</td><td>'+' should be on a new line.</td><td>220</td>
+                        </tr>
+                        <tr>
+                            <td>error</td><td>'+' should be on a new line.</td><td>221</td>
+                        </tr>
+                        <tr>
+                            <td>error</td><td>'+' should be on a new line.</td><td>222</td>
+                        </tr>
+                        <tr>
+                            <td>error</td><td>'+' should be on a new line.</td><td>223</td>
+                        </tr>
+                        <tr>
+                            <td>error</td><td>'+' should be on a new line.</td><td>224</td>
+                        </tr>
+                        <tr>
+                            <td>error</td><td>'+' should be on a new line.</td><td>225</td>
+                        </tr>
+                        <tr>
+                            <td>error</td><td>'+' should be on a new line.</td><td>231</td>
+                        </tr>
+                        <tr>
+                            <td>error</td><td>'+' should be on a new line.</td><td>232</td>
+                        </tr>
+                        <tr>
+                            <td>error</td><td>'+' should be on a new line.</td><td>233</td>
+                        </tr>
+                        <tr>
+                            <td>error</td><td>'+' should be on a new line.</td><td>234</td>
+                        </tr>
+                        <tr>
+                            <td>error</td><td>'+' should be on a new line.</td><td>235</td>
+                        </tr>
+                        <tr>
+                            <td>error</td><td>'+' should be on a new line.</td><td>236</td>
+                        </tr>
+                        <tr>
+                            <td>error</td><td>'+' should be on a new line.</td><td>237</td>
+                        </tr>
+                        <tr>
+                            <td>error</td><td>'+' should be on a new line.</td><td>238</td>
+                        </tr>
+                        <tr>
+                            <td>error</td><td>'+' should be on a new line.</td><td>239</td>
+                        </tr>
+                        <tr>
+                            <td>error</td><td>'+' should be on a new line.</td><td>240</td>
+                        </tr>
+                        <tr>
+                            <td>error</td><td>'+' should be on a new line.</td><td>241</td>
+                        </tr>
+                        <tr>
+                            <td>error</td><td>'+' should be on a new line.</td><td>242</td>
+                        </tr>
+                        <tr>
+                            <td>error</td><td>'+' should be on a new line.</td><td>243</td>
+                        </tr>
+                        <tr>
+                            <td>error</td><td>'+' should be on a new line.</td><td>249</td>
+                        </tr>
+                        <tr>
+                            <td>error</td><td>'+' should be on a new line.</td><td>250</td>
+                        </tr>
+                        <tr>
+                            <td>error</td><td>'+' should be on a new line.</td><td>251</td>
+                        </tr>
+                        <tr>
+                            <td>error</td><td>'+' should be on a new line.</td><td>252</td>
+                        </tr>
+                        <tr>
+                            <td>error</td><td>'+' should be on a new line.</td><td>253</td>
+                        </tr>
+                        <tr>
+                            <td>error</td><td>'+' should be on a new line.</td><td>254</td>
+                        </tr>
+                        <tr>
+                            <td>error</td><td>'+' should be on a new line.</td><td>255</td>
+                        </tr>
+                        <tr>
+                            <td>error</td><td>'+' should be on a new line.</td><td>256</td>
+                        </tr>
+                        <tr>
+                            <td>error</td><td>'+' should be on a new line.</td><td>257</td>
+                        </tr>
+                        <tr>
+                            <td>error</td><td>'+' should be on a new line.</td><td>258</td>
+                        </tr>
+                        <tr>
+                            <td>error</td><td>'+' should be on a new line.</td><td>259</td>
+                        </tr>
+                        <tr>
+                            <td>error</td><td>'+' should be on a new line.</td><td>260</td>
+                        </tr>
+                        <tr>
+                            <td>error</td><td>'+' should be on a new line.</td><td>261</td>
+                        </tr>
+                        <tr>
+                            <td>error</td><td>'+' should be on a new line.</td><td>262</td>
+                        </tr>
+                        <tr>
+                            <td>error</td><td>'+' should be on a new line.</td><td>268</td>
+                        </tr>
+                        <tr>
+                            <td>error</td><td>'+' should be on a new line.</td><td>269</td>
+                        </tr>
+                        <tr>
+                            <td>error</td><td>'+' should be on a new line.</td><td>270</td>
+                        </tr>
+                        <tr>
+                            <td>error</td><td>'+' should be on a new line.</td><td>271</td>
+                        </tr>
+                        <tr>
+                            <td>error</td><td>'+' should be on a new line.</td><td>272</td>
+                        </tr>
+                        <tr>
+                            <td>error</td><td>'+' should be on a new line.</td><td>273</td>
+                        </tr>
+                        <tr>
+                            <td>error</td><td>'+' should be on a new line.</td><td>274</td>
+                        </tr>
+                        <tr>
+                            <td>error</td><td>'+' should be on a new line.</td><td>275</td>
+                        </tr>
+                        <tr>
+                            <td>error</td><td>'+' should be on a new line.</td><td>276</td>
+                        </tr>
+                        <tr>
+                            <td>error</td><td>'+' should be on a new line.</td><td>277</td>
+                        </tr>
+                        <tr>
+                            <td>error</td><td>'+' should be on a new line.</td><td>278</td>
+                        </tr>
+                        <tr>
+                            <td>error</td><td>'+' should be on a new line.</td><td>279</td>
+                        </tr>
+                        <tr>
+                            <td>error</td><td>'+' should be on a new line.</td><td>280</td>
+                        </tr>
+                        <tr>
+                            <td>error</td><td>'+' should be on a new line.</td><td>286</td>
+                        </tr>
+                        <tr>
+                            <td>error</td><td>'+' should be on a new line.</td><td>287</td>
+                        </tr>
+                        <tr>
+                            <td>error</td><td>'+' should be on a new line.</td><td>288</td>
+                        </tr>
+                        <tr>
+                            <td>error</td><td>'+' should be on a new line.</td><td>289</td>
+                        </tr>
+                        <tr>
+                            <td>error</td><td>'+' should be on a new line.</td><td>290</td>
+                        </tr>
+                        <tr>
+                            <td>error</td><td>'+' should be on a new line.</td><td>291</td>
+                        </tr>
+                        <tr>
+                            <td>error</td><td>'+' should be on a new line.</td><td>292</td>
+                        </tr>
+                        <tr>
+                            <td>error</td><td>'+' should be on a new line.</td><td>293</td>
+                        </tr>
+                        <tr>
+                            <td>error</td><td>'+' should be on a new line.</td><td>294</td>
+                        </tr>
+                        <tr>
+                            <td>error</td><td>'+' should be on a new line.</td><td>295</td>
+                        </tr>
+                        <tr>
+                            <td>error</td><td>'+' should be on a new line.</td><td>296</td>
+                        </tr>
+                        <tr>
+                            <td>error</td><td>'+' should be on a new line.</td><td>297</td>
+                        </tr>
+                        <tr>
+                            <td>error</td><td>'+' should be on a new line.</td><td>298</td>
+                        </tr>
+                        <tr>
+                            <td>error</td><td>'+' should be on a new line.</td><td>305</td>
+                        </tr>
+                        <tr>
+                            <td>error</td><td>'+' should be on a new line.</td><td>306</td>
+                        </tr>
+                        <tr>
+                            <td>error</td><td>'+' should be on a new line.</td><td>307</td>
+                        </tr>
+                        <tr>
+                            <td>error</td><td>'+' should be on a new line.</td><td>313</td>
+                        </tr>
+                        <tr>
+                            <td>error</td><td>'+' should be on a new line.</td><td>314</td>
+                        </tr>
+                        <tr>
+                            <td>error</td><td>'+' should be on a new line.</td><td>315</td>
+                        </tr>
+                        <tr>
+                            <td>error</td><td>'+' should be on a new line.</td><td>316</td>
+                        </tr>
+                        <tr>
+                            <td>error</td><td>'+' should be on a new line.</td><td>317</td>
+                        </tr>
+                        <tr>
+                            <td>error</td><td>'+' should be on a new line.</td><td>318</td>
+                        </tr>
+                        <tr>
+                            <td>error</td><td>'+' should be on a new line.</td><td>319</td>
+                        </tr>
+                        <tr>
+                            <td>error</td><td>'+' should be on a new line.</td><td>320</td>
+                        </tr>
+                        <tr>
+                            <td>error</td><td>'+' should be on a new line.</td><td>321</td>
+                        </tr>
+                        <tr>
+                            <td>error</td><td>'+' should be on a new line.</td><td>322</td>
+                        </tr>
+                        <tr>
+                            <td>error</td><td>'+' should be on a new line.</td><td>323</td>
+                        </tr>
+                        <tr>
+                            <td>error</td><td>'+' should be on a new line.</td><td>329</td>
+                        </tr>
+                        <tr>
+                            <td>error</td><td>'+' should be on a new line.</td><td>330</td>
+                        </tr>
+                        <tr>
+                            <td>error</td><td>'+' should be on a new line.</td><td>331</td>
+                        </tr>
+                        <tr>
+                            <td>error</td><td>'+' should be on a new line.</td><td>332</td>
+                        </tr>
+                        <tr>
+                            <td>error</td><td>'+' should be on a new line.</td><td>333</td>
+                        </tr>
+                        <tr>
+                            <td>error</td><td>'+' should be on a new line.</td><td>334</td>
+                        </tr>
+                        <tr>
+                            <td>error</td><td>'+' should be on a new line.</td><td>335</td>
+                        </tr>
+                        <tr>
+                            <td>error</td><td>'+' should be on a new line.</td><td>336</td>
+                        </tr>
+                        <tr>
+                            <td>error</td><td>'+' should be on a new line.</td><td>337</td>
+                        </tr>
+                        <tr>
+                            <td>error</td><td>'+' should be on a new line.</td><td>338</td>
+                        </tr>
+                        <tr>
+                            <td>error</td><td>'+' should be on a new line.</td><td>339</td>
+                        </tr>
+                        <tr>
+                            <td>error</td><td>'+' should be on a new line.</td><td>345</td>
+                        </tr>
+                        <tr>
+                            <td>error</td><td>'+' should be on a new line.</td><td>346</td>
+                        </tr>
+                        <tr>
+                            <td>error</td><td>'+' should be on a new line.</td><td>347</td>
+                        </tr>
+                        <tr>
+                            <td>error</td><td>'+' should be on a new line.</td><td>348</td>
+                        </tr>
+                        <tr>
+                            <td>error</td><td>'+' should be on a new line.</td><td>349</td>
+                        </tr>
+                        <tr>
+                            <td>error</td><td>'+' should be on a new line.</td><td>350</td>
+                        </tr>
+                        <tr>
+                            <td>error</td><td>'+' should be on a new line.</td><td>351</td>
+                        </tr>
+                        <tr>
+                            <td>error</td><td>'+' should be on a new line.</td><td>352</td>
+                        </tr>
+                        <tr>
+                            <td>error</td><td>'+' should be on a new line.</td><td>353</td>
+                        </tr>
+                        <tr>
+                            <td>error</td><td>'+' should be on a new line.</td><td>354</td>
+                        </tr>
+                        <tr>
+                            <td>error</td><td>'+' should be on a new line.</td><td>355</td>
+                        </tr>
+                        <tr>
+                            <td>error</td><td>'+' should be on a new line.</td><td>361</td>
+                        </tr>
+                        <tr>
+                            <td>error</td><td>'+' should be on a new line.</td><td>362</td>
+                        </tr>
+                        <tr>
+                            <td>error</td><td>'+' should be on a new line.</td><td>363</td>
+                        </tr>
+                        <tr>
+                            <td>error</td><td>'+' should be on a new line.</td><td>364</td>
+                        </tr>
+                        <tr>
+                            <td>error</td><td>'+' should be on a new line.</td><td>365</td>
+                        </tr>
+                        <tr>
+                            <td>error</td><td>'+' should be on a new line.</td><td>366</td>
+                        </tr>
+                        <tr>
+                            <td>error</td><td>'+' should be on a new line.</td><td>367</td>
+                        </tr>
+                        <tr>
+                            <td>error</td><td>'+' should be on a new line.</td><td>368</td>
+                        </tr>
+                        <tr>
+                            <td>error</td><td>'+' should be on a new line.</td><td>374</td>
+                        </tr>
+                        <tr>
+                            <td>error</td><td>'+' should be on a new line.</td><td>375</td>
+                        </tr>
+                        <tr>
+                            <td>error</td><td>'+' should be on a new line.</td><td>376</td>
+                        </tr>
+                        <tr>
+                            <td>error</td><td>'+' should be on a new line.</td><td>377</td>
+                        </tr>
+                        <tr>
+                            <td>error</td><td>'+' should be on a new line.</td><td>378</td>
+                        </tr>
+                        <tr>
+                            <td>error</td><td>'+' should be on a new line.</td><td>379</td>
+                        </tr>
+                        <tr>
+                            <td>error</td><td>'+' should be on a new line.</td><td>380</td>
+                        </tr>
+                        <tr>
+                            <td>error</td><td>'+' should be on a new line.</td><td>381</td>
+                        </tr>
+                        <tr>
+                            <td>error</td><td>'+' should be on a new line.</td><td>382</td>
+                        </tr>
+                        <tr>
+                            <td>error</td><td>'+' should be on a new line.</td><td>388</td>
+                        </tr>
+                        <tr>
+                            <td>error</td><td>'+' should be on a new line.</td><td>389</td>
+                        </tr>
+                        <tr>
+                            <td>error</td><td>'+' should be on a new line.</td><td>390</td>
+                        </tr>
+                        <tr>
+                            <td>error</td><td>'+' should be on a new line.</td><td>391</td>
+                        </tr>
+                        <tr>
+                            <td>error</td><td>'+' should be on a new line.</td><td>392</td>
+                        </tr>
+                        <tr>
+                            <td>error</td><td>'+' should be on a new line.</td><td>393</td>
+                        </tr>
+                        <tr>
+                            <td>error</td><td>'+' should be on a new line.</td><td>394</td>
+                        </tr>
+                        <tr>
+                            <td>error</td><td>'+' should be on a new line.</td><td>395</td>
+                        </tr>
+                        <tr>
+                            <td>error</td><td>'+' should be on a new line.</td><td>401</td>
+                        </tr>
+                        <tr>
+                            <td>error</td><td>'+' should be on a new line.</td><td>402</td>
+                        </tr>
+                        <tr>
+                            <td>error</td><td>'+' should be on a new line.</td><td>403</td>
+                        </tr>
+                        <tr>
+                            <td>error</td><td>'+' should be on a new line.</td><td>404</td>
+                        </tr>
+                        <tr>
+                            <td>error</td><td>'+' should be on a new line.</td><td>405</td>
+                        </tr>
+                        <tr>
+                            <td>error</td><td>'+' should be on a new line.</td><td>406</td>
+                        </tr>
+                        <tr>
+                            <td>error</td><td>'+' should be on a new line.</td><td>407</td>
+                        </tr>
+                        <tr>
+                            <td>error</td><td>'+' should be on a new line.</td><td>408</td>
+                        </tr>
+                        <tr>
+                            <td>error</td><td>'+' should be on a new line.</td><td>409</td>
+                        </tr>
+                        <tr>
+                            <td>error</td><td>'+' should be on a new line.</td><td>410</td>
+                        </tr>
+                        <tr>
+                            <td>error</td><td>'+' should be on a new line.</td><td>411</td>
+                        </tr>
+                        <tr>
+                            <td>error</td><td>'+' should be on a new line.</td><td>412</td>
+                        </tr>
+                        <tr>
+                            <td>error</td><td>'+' should be on a new line.</td><td>418</td>
+                        </tr>
+                        <tr>
+                            <td>error</td><td>'+' should be on a new line.</td><td>419</td>
+                        </tr>
+                        <tr>
+                            <td>error</td><td>'+' should be on a new line.</td><td>420</td>
+                        </tr>
+                        <tr>
+                            <td>error</td><td>'+' should be on a new line.</td><td>421</td>
+                        </tr>
+                        <tr>
+                            <td>error</td><td>'+' should be on a new line.</td><td>422</td>
+                        </tr>
+                        <tr>
+                            <td>error</td><td>'+' should be on a new line.</td><td>423</td>
+                        </tr>
+                        <tr>
+                            <td>error</td><td>'+' should be on a new line.</td><td>424</td>
+                        </tr>
+                        <tr>
+                            <td>error</td><td>'+' should be on a new line.</td><td>425</td>
+                        </tr>
+                        <tr>
+                            <td>error</td><td>'+' should be on a new line.</td><td>426</td>
+                        </tr>
+                        <tr>
+                            <td>error</td><td>'+' should be on a new line.</td><td>432</td>
+                        </tr>
+                        <tr>
+                            <td>error</td><td>'+' should be on a new line.</td><td>433</td>
+                        </tr>
+                        <tr>
+                            <td>error</td><td>'+' should be on a new line.</td><td>434</td>
+                        </tr>
+                        <tr>
+                            <td>error</td><td>'+' should be on a new line.</td><td>435</td>
+                        </tr>
+                        <tr>
+                            <td>error</td><td>'+' should be on a new line.</td><td>436</td>
+                        </tr>
+                        <tr>
+                            <td>error</td><td>'+' should be on a new line.</td><td>437</td>
+                        </tr>
+                        <tr>
+                            <td>error</td><td>'+' should be on a new line.</td><td>438</td>
+                        </tr>
+                        <tr>
+                            <td>error</td><td>'+' should be on a new line.</td><td>439</td>
+                        </tr>
+                        <tr>
+                            <td>error</td><td>'+' should be on a new line.</td><td>440</td>
+                        </tr>
+                        <tr>
+                            <td>error</td><td>'+' should be on a new line.</td><td>446</td>
+                        </tr>
+                        <tr>
+                            <td>error</td><td>'+' should be on a new line.</td><td>447</td>
+                        </tr>
+                        <tr>
+                            <td>error</td><td>'+' should be on a new line.</td><td>448</td>
+                        </tr>
+                        <tr>
+                            <td>error</td><td>'+' should be on a new line.</td><td>449</td>
+                        </tr>
+                        <tr>
+                            <td>error</td><td>'+' should be on a new line.</td><td>450</td>
+                        </tr>
+                        <tr>
+                            <td>error</td><td>'+' should be on a new line.</td><td>451</td>
+                        </tr>
+                        <tr>
+                            <td>error</td><td>'+' should be on a new line.</td><td>452</td>
+                        </tr>
+                        <tr>
+                            <td>error</td><td>'+' should be on a new line.</td><td>453</td>
+                        </tr>
+                        <tr>
+                            <td>error</td><td>'+' should be on a new line.</td><td>454</td>
+                        </tr>
+                        <tr>
+                            <td>error</td><td>'+' should be on a new line.</td><td>455</td>
+                        </tr>
+                        <tr>
+                            <td>error</td><td>'+' should be on a new line.</td><td>456</td>
+                        </tr>
+                        <tr>
+                            <td>error</td><td>'+' should be on a new line.</td><td>462</td>
+                        </tr>
+                        <tr>
+                            <td>error</td><td>'+' should be on a new line.</td><td>463</td>
+                        </tr>
+                        <tr>
+                            <td>error</td><td>'+' should be on a new line.</td><td>464</td>
+                        </tr>
+                        <tr>
+                            <td>error</td><td>'+' should be on a new line.</td><td>465</td>
+                        </tr>
+                        <tr>
+                            <td>error</td><td>'+' should be on a new line.</td><td>466</td>
+                        </tr>
+                        <tr>
+                            <td>error</td><td>'+' should be on a new line.</td><td>467</td>
+                        </tr>
+                        <tr>
+                            <td>error</td><td>'+' should be on a new line.</td><td>468</td>
+                        </tr>
+                        <tr>
+                            <td>error</td><td>'+' should be on a new line.</td><td>469</td>
+                        </tr>
+                        <tr>
+                            <td>error</td><td>'+' should be on a new line.</td><td>470</td>
+                        </tr>
+                        <tr>
+                            <td>error</td><td>'+' should be on a new line.</td><td>471</td>
+                        </tr>
+                        <tr>
+                            <td>error</td><td>'+' should be on a new line.</td><td>477</td>
+                        </tr>
+                        <tr>
+                            <td>error</td><td>'+' should be on a new line.</td><td>478</td>
+                        </tr>
+                        <tr>
+                            <td>error</td><td>'+' should be on a new line.</td><td>479</td>
+                        </tr>
+                        <tr>
+                            <td>error</td><td>'+' should be on a new line.</td><td>480</td>
+                        </tr>
+                        <tr>
+                            <td>error</td><td>'+' should be on a new line.</td><td>481</td>
+                        </tr>
+                        <tr>
+                            <td>error</td><td>'+' should be on a new line.</td><td>482</td>
+                        </tr>
+                        <tr>
+                            <td>error</td><td>'+' should be on a new line.</td><td>483</td>
+                        </tr>
+                        <tr>
+                            <td>error</td><td>'+' should be on a new line.</td><td>484</td>
+                        </tr>
+                        <tr>
+                            <td>error</td><td>'+' should be on a new line.</td><td>485</td>
+                        </tr>
+                        <tr>
+                            <td>error</td><td>'+' should be on a new line.</td><td>486</td>
+                        </tr>
+                        <tr>
+                            <td>error</td><td>'+' should be on a new line.</td><td>492</td>
+                        </tr>
+                        <tr>
+                            <td>error</td><td>'+' should be on a new line.</td><td>493</td>
+                        </tr>
+                        <tr>
+                            <td>error</td><td>'+' should be on a new line.</td><td>494</td>
+                        </tr>
+                        <tr>
+                            <td>error</td><td>'+' should be on a new line.</td><td>495</td>
+                        </tr>
+                        <tr>
+                            <td>error</td><td>'+' should be on a new line.</td><td>496</td>
+                        </tr>
+                        <tr>
+                            <td>error</td><td>'+' should be on a new line.</td><td>497</td>
+                        </tr>
+                        <tr>
+                            <td>error</td><td>'+' should be on a new line.</td><td>498</td>
+                        </tr>
+                        <tr>
+                            <td>error</td><td>'+' should be on a new line.</td><td>504</td>
+                        </tr>
+                        <tr>
+                            <td>error</td><td>'+' should be on a new line.</td><td>505</td>
+                        </tr>
+                        <tr>
+                            <td>error</td><td>'+' should be on a new line.</td><td>506</td>
+                        </tr>
+                        <tr>
+                            <td>error</td><td>'+' should be on a new line.</td><td>507</td>
+                        </tr>
+                        <tr>
+                            <td>error</td><td>'+' should be on a new line.</td><td>508</td>
+                        </tr>
+                        <tr>
+                            <td>error</td><td>'+' should be on a new line.</td><td>509</td>
+                        </tr>
+                        <tr>
+                            <td>error</td><td>'+' should be on a new line.</td><td>510</td>
+                        </tr>
+                        <tr>
+                            <td>error</td><td>'+' should be on a new line.</td><td>516</td>
+                        </tr>
+                        <tr>
+                            <td>error</td><td>'+' should be on a new line.</td><td>517</td>
+                        </tr>
+                        <tr>
+                            <td>error</td><td>'+' should be on a new line.</td><td>518</td>
+                        </tr>
+                        <tr>
+                            <td>error</td><td>'+' should be on a new line.</td><td>519</td>
+                        </tr>
+                        <tr>
+                            <td>error</td><td>'+' should be on a new line.</td><td>520</td>
+                        </tr>
+                        <tr>
+                            <td>error</td><td>'+' should be on a new line.</td><td>521</td>
+                        </tr>
+                        <tr>
+                            <td>error</td><td>'+' should be on a new line.</td><td>522</td>
+                        </tr>
+                        <tr>
+                            <td>error</td><td>'+' should be on a new line.</td><td>523</td>
+                        </tr>
+                        <tr>
+                            <td>error</td><td>'+' should be on a new line.</td><td>524</td>
+                        </tr>
+                        <tr>
+                            <td>error</td><td>Line is longer than 130 characters (found 151).</td><td>525</td>
+                        </tr>
+                        <tr>
+                            <td>error</td><td>'+' should be on a new line.</td><td>525</td>
+                        </tr>
+                        <tr>
+                            <td>error</td><td>Line is longer than 130 characters (found 147).</td><td>526</td>
+                        </tr>
+                        <tr>
+                            <td>error</td><td>'+' should be on a new line.</td><td>526</td>
+                        </tr>
+                        <tr>
+                            <td>error</td><td>Line is longer than 130 characters (found 158).</td><td>527</td>
+                        </tr>
+                        <tr>
+                            <td>error</td><td>'+' should be on a new line.</td><td>527</td>
+                        </tr>
+                        <tr>
+                            <td>error</td><td>Line is longer than 130 characters (found 164).</td><td>528</td>
+                        </tr>
+                        <tr>
+                            <td>error</td><td>'+' should be on a new line.</td><td>528</td>
+                        </tr>
+                        <tr>
+                            <td>error</td><td>Line is longer than 130 characters (found 144).</td><td>529</td>
+                        </tr>
+                        <tr>
+                            <td>error</td><td>'+' should be on a new line.</td><td>529</td>
+                        </tr>
+                        <tr>
+                            <td>error</td><td>'+' should be on a new line.</td><td>530</td>
+                        </tr>
+                        <tr>
+                            <td>error</td><td>'+' should be on a new line.</td><td>531</td>
+                        </tr>
+                        <tr>
+                            <td>error</td><td>'+' should be on a new line.</td><td>532</td>
+                        </tr>
+                        <tr>
+                            <td>error</td><td>'+' should be on a new line.</td><td>533</td>
+                        </tr>
+                    </table>
+                    <p></p>
+                    <a href="#top">Back to top</a>
+                    <p></p>
+                </div>
+                
+                <div class="file-violation">
+                    <h3>
+                        <a class="link" name="N72632">C:\Users\DELL\Desktop\LMS CODE FREEZE\backend\LMS-NT\user-service-lms\src\main\java\com\nt\user_service_lms\UserServiceLmsApplication.java</a>
+                    </h3>
+                    <table class="violationlist" width="95%">
+                        <tr>
+                            <th>Severity</th><th>Description</th><th>Line Number</th>
+                        </tr>
+                        <tr>
+                            <td>error</td><td>Utility classes should not have a public or default constructor.</td><td>16</td>
+                        </tr>
+                    </table>
+                    <p></p>
+                    <a href="#top">Back to top</a>
+                    <p></p>
+                </div>
+                
+                <p></p>
+            </p>
+        </div>
+        <hr align="left" width="95%" size="1">
+        <p>
+            Generated by <a href="https://gradle.org">Gradle 8.13</a> with <a href="https://checkstyle.sourceforge.io/">Checkstyle 10.3</a>.
+        </p>
+    </body>
+</html>

@@ -2,8 +2,8 @@ package com.nt.course_service_lms.service.serviceImpl;
 
 import com.nt.course_service_lms.converters.BundleConverter;
 import com.nt.course_service_lms.dto.inDTO.BundleInDTO;
-import com.nt.course_service_lms.dto.outDTO.BundleOutDTO;
 import com.nt.course_service_lms.dto.inDTO.UpdateBundleInDTO;
+import com.nt.course_service_lms.dto.outDTO.BundleOutDTO;
 import com.nt.course_service_lms.dto.outDTO.StandardResponseOutDTO;
 import com.nt.course_service_lms.entity.Bundle;
 import com.nt.course_service_lms.entity.CourseBundle;
@@ -63,7 +63,7 @@ public class BundleServiceImpl implements BundleService {
      * @param bundleInDTO the DTO containing the bundle details
      * @return the created {@link BundleOutDTO}
      * @throws ResourceAlreadyExistsException if a bundle with the same name already exists
-     * @throws RuntimeException               if there is a general error during bundle creation
+     * @throws RuntimeException if there is a general error during bundle creation
      */
     @Override
     public StandardResponseOutDTO<BundleOutDTO> createBundle(final BundleInDTO bundleInDTO) {
@@ -154,12 +154,12 @@ public class BundleServiceImpl implements BundleService {
      * Validates that the new bundle name is unique (excluding the same bundle) before updating.
      * </p>
      *
-     * @param bundleId  the ID of the bundle to update
+     * @param bundleId          the ID of the bundle to update
      * @param updateBundleInDTO the DTO containing the updated bundle data
      * @return success message
-     * @throws ResourceNotFoundException if the bundle with the specified ID does not exist
+     * @throws ResourceNotFoundException      if the bundle with the specified ID does not exist
      * @throws ResourceAlreadyExistsException if the new bundle name already exists for a different bundle
-     * @throws RuntimeException if there is a general error during the update
+     * @throws RuntimeException               if there is a general error during the update
      */
     @Override
     public BundleOutDTO updateBundle(final Long bundleId, final UpdateBundleInDTO updateBundleInDTO) {
@@ -202,7 +202,7 @@ public class BundleServiceImpl implements BundleService {
      *
      * @param id the ID of the bundle to delete
      * @throws ResourceNotFoundException if the bundle with the specified ID does not exist
-     * @throws RuntimeException if there is a general error during the deletion
+     * @throws RuntimeException          if there is a general error during the deletion
      */
     @Override
     public void deleteBundle(final Long id) {
@@ -271,10 +271,10 @@ public class BundleServiceImpl implements BundleService {
      * @param bundleId the ID of the bundle
      * @return the bundle name
      * @throws ResourceNotFoundException if the bundle is not found
-     * @throws RuntimeException if there is a general error
+     * @throws RuntimeException          if there is a general error
      */
     @Override
-    public String getBundleNameById(Long bundleId) {
+    public String getBundleNameById(final Long bundleId) {
         try {
             log.info("Fetching bundle name for ID: {}", bundleId);
 
@@ -295,9 +295,17 @@ public class BundleServiceImpl implements BundleService {
         }
     }
 
+    /**
+     * Finds existing bundle IDs from a list of provided IDs.
+     *
+     * @param bundleIds the list of bundle IDs to check
+     * @return a list of existing bundle IDs
+     * @throws ResourceNotFoundException if no bundles are found with the provided IDs
+     * @throws RuntimeException          if there is a general error during the operation
+     */
     @Override
-    public List<Long> findExistingIds(List<Long> bundleIds) {
-        try{
+    public List<Long> findExistingIds(final List<Long> bundleIds) {
+        try {
             List<Long> existingCourseIds = bundleRepository.findExistingIds(bundleIds);
             if (existingCourseIds.isEmpty()) {
                 throw new ResourceNotFoundException("No Bundle IDs found");
