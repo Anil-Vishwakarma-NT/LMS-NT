@@ -1,2 +1,0 @@
-x2025-07-22 11:28:09 [Test worker] INFO  c.n.u.s.serviceImpl.GroupServiceImpl - Attempting to delete group with ID: 100
-x2025-07-22 11:28:09 [Test worker] INFO  c.n.u.s.serviceImpl.GroupServiceImpl - Group with ID: 100 deleted successfully

@@ -1,6 +1,8 @@
 package com.nt.course_service_lms.serviceImplTest;
 
 import com.nt.course_service_lms.dto.inDTO.BundleInDTO;
+import com.nt.course_service_lms.dto.outDTO.BundleOutDTO;
+import com.nt.course_service_lms.dto.outDTO.StandardResponseOutDTO;
 import com.nt.course_service_lms.entity.Bundle;
 import com.nt.course_service_lms.exception.ResourceAlreadyExistsException;
 import com.nt.course_service_lms.exception.ResourceNotFoundException;
@@ -39,10 +41,10 @@ class BundleServiceImplTest {
 
         when(bundleRepository.save(any(Bundle.class))).thenReturn(savedBundle);
 
-        Bundle result = bundleService.createBundle(dto);
+        StandardResponseOutDTO<BundleOutDTO> result = bundleService.createBundle(dto);
 
         assertNotNull(result);
-        assertEquals("JavaBundle", result.getBundleName());
+        assertEquals("JavaBundle", result.getData().getBundleName());
         verify(bundleRepository, times(1)).save(any(Bundle.class));
     }
 

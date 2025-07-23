@@ -2,6 +2,7 @@ package com.nt.user_service_lms.serviceImpl;
 
 import com.nt.user_service_lms.converter.GroupDTOConverter;
 import com.nt.user_service_lms.converter.UserDTOConverter;
+import com.nt.user_service_lms.dto.outDTO.GroupOutDTO;
 import com.nt.user_service_lms.dto.outDTO.MessageOutDTO;
 import com.nt.user_service_lms.dto.outDTO.StandardResponseOutDTO;
 import com.nt.user_service_lms.entities.Group;
@@ -18,6 +19,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.*;
 import org.mockito.junit.jupiter.MockitoExtension;
 
+import javax.swing.text.html.Option;
 import java.util.*;
 
 import static com.nt.user_service_lms.constants.GroupConstants.*;
@@ -196,24 +198,84 @@ void deleteGroup_ShouldDeleteGroupSuccessfully_WhenGroupExists() {
     StandardResponseOutDTO<MessageOutDTO> response = groupService.deleteGroup(100L);
 
     assertNotNull(response);
-    assertEquals(GROUP_DELETED, response.getMessage());
+    assertEquals(GROUP_DELETED, response.getData().getMessage());
     verify(enrollmentRepository).softDeleteByGroupId(100L);
     verify(userGroupRepository).softDeleteByGroupId(100L);
     verify(groupRepository).softDeleteByGroupId(100L);
 }
-//
-//    @Test
-//    void delGroup_ShouldThrow_WhenGroupNotFound() {
-//        when(groupRepository.findById(999L)).thenReturn(Optional.empty());
-//
-//        Exception ex = assertThrows(RuntimeException.class, () ->
-//                groupService.delGroup(999L)
-//        );
-//
-//        assertEquals(GROUP_NOT_FOUND, ex.getCause().getMessage());
-//    }
-//
-//    // ---------------------- addUserToGroup -----------------------
+
+    @Test
+    void delGroup_ShouldThrow_WhenGroupNotFound() {
+        when(groupRepository.findById(999L)).thenReturn(Optional.empty());
+
+        Exception ex = assertThrows(RuntimeException.class, () ->
+                groupService.deleteGroup(999L)
+        );
+
+        assertEquals(GROUP_NOT_FOUND, ex.getCause().getMessage());
+    }
+//------------------------updateGroup-----------------------------
+
+    @Test
+    void updateGroup_ShouldUpdateGroupName_WhenGroupExists() {
+        when(groupRepository.findById(100L)).thenReturn(Optional.of(mockGroup));
+
+        StandardResponseOutDTO<MessageOutDTO> response = groupService.updateGroup(100L, "Updated Name");
+
+        assertNotNull(response);
+        assertEquals("Group updated", response.getData().getMessage());
+        assertEquals("Updated Name", mockGroup.getGroupName());
+        verify(groupRepository).save(mockGroup);
+    }
+
+
+    @Test
+    void updateGroup_ShouldGiveError_WhenGroupNotExist() {
+        when(groupRepository.findById(100L)).thenReturn(Optional.empty());
+
+       Exception response = assertThrows(RuntimeException.class , ()->groupService.updateGroup(100L, "Updated Name"));
+        assertEquals("Group Not found", response.getCause().getMessage());
+    }
+
+    @Test
+    void removeUserFromGroup_ShouldRemoveUser_WhenUserInGroupExists() {
+        when(userGroupRepository.findByUserIdAndGroupId(2L, 100L)).thenReturn(Optional.of(mockUserGroup));
+
+        StandardResponseOutDTO<MessageOutDTO> response = groupService.removeUserFromGroup(2L, 100L);
+
+        assertNotNull(response);
+        assertEquals(USER_REMOVED_SUCCESSFULLY, response.getData().getMessage());
+        verify(userGroupRepository).softDeleteByGroupIdAndUserId(100L, 2L);
+        verify(enrollmentRepository).softDeleteByGroupIdAndUserId(100L, 2L);
+    }
+
+    @Test
+    void getGroups_ShouldReturnGroupsForAdmin() {
+        admin.setUserId(1L); // Admin ID
+        when(userRepository.findByEmailIgnoreCase("admin@example.com")).thenReturn(Optional.of(admin));
+        when(groupRepository.findAll()).thenReturn(List.of(mockGroup));
+        when(groupDTOConverter.groupToOutDto(eq(mockGroup), anyString())).thenReturn(new GroupOutDTO());
+
+        StandardResponseOutDTO<List<GroupOutDTO>> response = groupService.getGroups("admin@example.com");
+
+        assertNotNull(response);
+        assertEquals("Group fetched Successfully", response.getMessage());
+        assertEquals(1, response.getData().size());
+    }
+
+    @Test
+    void countGroups_ShouldReturnCorrectCount() {
+        when(groupRepository.count()).thenReturn(5L);
+        long count = groupService.countGroups();
+        assertEquals(5L, count);
+    }
+
+    
+
+
+
+
+// ---------------------- addUserToGroup -----------------------
 //
 //    @Test
 //    void addUserToGroup_ShouldAddUserSuccessfully() {

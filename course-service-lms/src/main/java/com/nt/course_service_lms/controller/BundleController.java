@@ -39,9 +39,8 @@ public class BundleController {
     @PostMapping
     public ResponseEntity<StandardResponseOutDTO<BundleOutDTO>> createBundle(@Valid @RequestBody final BundleInDTO bundleInDTO) {
         log.info("Received request to create bundle: {}", bundleInDTO.getBundleName());
-        BundleOutDTO createdBundle = bundleService.createBundle(bundleInDTO);
-        return ResponseEntity.status(HttpStatus.CREATED)
-                .body(StandardResponseOutDTO.success(createdBundle, "Bundle created successfully"));
+        StandardResponseOutDTO<BundleOutDTO> createdBundle = bundleService.createBundle(bundleInDTO);
+          return new ResponseEntity<>(createdBundle , HttpStatus.OK);
     }
 
     /**

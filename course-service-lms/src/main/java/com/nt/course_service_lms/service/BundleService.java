@@ -23,7 +23,7 @@ public interface BundleService {
      * @param bundleInDTO the data transfer object containing bundle details
      * @return the newly created {@link BundleOutDTO}
      */
-    BundleOutDTO createBundle(BundleInDTO bundleInDTO);
+    StandardResponseOutDTO<BundleOutDTO> createBundle(BundleInDTO bundleInDTO);
 
     /**
      * Retrieves all existing bundles.

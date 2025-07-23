@@ -63,10 +63,10 @@ public class BundleServiceImpl implements BundleService {
      * @param bundleInDTO the DTO containing the bundle details
      * @return the created {@link BundleOutDTO}
      * @throws ResourceAlreadyExistsException if a bundle with the same name already exists
-     * @throws RuntimeException if there is a general error during bundle creation
+     * @throws RuntimeException               if there is a general error during bundle creation
      */
     @Override
-    public BundleOutDTO createBundle(final BundleInDTO bundleInDTO) {
+    public StandardResponseOutDTO<BundleOutDTO> createBundle(final BundleInDTO bundleInDTO) {
         try {
             log.info("Attempting to create a new bundle: {}", bundleInDTO.getBundleName());
 
@@ -84,7 +84,7 @@ public class BundleServiceImpl implements BundleService {
             log.info("Bundle '{}' created successfully with ID: {}", savedBundle.getBundleName(), savedBundle.getBundleId());
 
             // Convert entity to output DTO
-            return bundleConverter.toOutDTO(savedBundle);
+            return StandardResponseOutDTO.success(bundleConverter.toOutDTO(savedBundle),null);
         } catch (ResourceAlreadyExistsException e) {
             throw e;
         } catch (Exception e) {

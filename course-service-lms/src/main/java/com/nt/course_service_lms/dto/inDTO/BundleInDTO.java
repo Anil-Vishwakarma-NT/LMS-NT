@@ -47,7 +47,7 @@ public class BundleInDTO {
     @NotBlank(message = BUNDLE_NAME_NOT_BLANK)
     @Size(min = INT_VALUE_3, message = BUNDLE_NAME_MIN_LENGTH)
     @Pattern(
-            regexp = "^(?!\\d)(?!\\s)[A-Za-z][A-Za-z0-9]*(?<!\\s)$",
+            regexp = "^(?!\\d)(?!\\s)[A-Za-z][A-Za-z0-9 ]*(?<!\\s)$",
             message = BUNDLE_NAME_INVALID
     )
     private String bundleName;

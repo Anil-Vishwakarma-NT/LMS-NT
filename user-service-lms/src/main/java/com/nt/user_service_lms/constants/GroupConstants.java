@@ -33,4 +33,15 @@ public final class GroupConstants {
 
     /** Message indicating the user is already a member of the group. */
     public static final String USER_ALREADY_PRESENT_IN_GROUP = "User already present in group";
+
+    /** Message indicating the group is updated. */
+    public static final String GROUP_UPDATED = "Group name updated successfully.";
+
+    /** Message indicating the group updation failed. */
+    public static final String GROUP_UPDATION_FAILED = "ERROR while updating group.";
+
+
+
+
+
 }

@@ -26,14 +26,8 @@ import java.util.*;
 import java.util.stream.Collectors;
 
 import static com.nt.user_service_lms.constants.CommonConstants.*;
-import static com.nt.user_service_lms.constants.GroupConstants.GROUP_CREATED;
-import static com.nt.user_service_lms.constants.GroupConstants.GROUP_DELETED;
-import static com.nt.user_service_lms.constants.GroupConstants.GROUP_FAILURE;
-import static com.nt.user_service_lms.constants.GroupConstants.GROUP_NOT_FOUND;
-import static com.nt.user_service_lms.constants.GroupConstants.USER_ADDED_TO_GROUP;
+import static com.nt.user_service_lms.constants.GroupConstants.*;
 import static com.nt.user_service_lms.constants.UserConstants.USER_NOT_FOUND;
-import static com.nt.user_service_lms.constants.GroupConstants.USER_NOT_FOUND_IN_GROUP;
-import static com.nt.user_service_lms.constants.GroupConstants.USER_REMOVED_SUCCESSFULLY;
 
 /**
  * Implementation of the GroupService interface for managing user groups.
@@ -255,14 +249,14 @@ public class GroupServiceImpl implements GroupService {
                  groupRepository.save(group.get());
              }
              else {
-                throw new ResourceNotFoundException("Group Not found");
+                throw new ResourceNotFoundException(GROUP_NOT_FOUND);
              }
-             MessageOutDTO messageOutDto =  new MessageOutDTO("Group updated");
+             MessageOutDTO messageOutDto =  new MessageOutDTO(GROUP_UPDATED);
              return StandardResponseOutDTO.success(messageOutDto,null);
          }
          catch (Exception e){
-             log.error("Error in updating group");
-             throw new RuntimeException("Group not updated",e);
+             log.error(GROUP_UPDATION_FAILED);
+             throw new RuntimeException(GROUP_UPDATION_FAILED,e);
          }
 
 
