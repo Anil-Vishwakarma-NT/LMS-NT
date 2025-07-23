@@ -1,7 +1,7 @@
 package com.nt.user_service_lms.service.serviceImpl;
 
 import com.nt.user_service_lms.constants.CommonConstants;
-import com.nt.user_service_lms.dto.UsersDetailsViewDTO;
+import com.nt.user_service_lms.dto.outDTO.UsersDetailsViewDTO;
 import com.nt.user_service_lms.dto.outDTO.CourseDeadlinesDTO;
 import com.nt.user_service_lms.dto.outDTO.CourseInfoOutDTO;
 import com.nt.user_service_lms.dto.outDTO.StandardResponseOutDTO;

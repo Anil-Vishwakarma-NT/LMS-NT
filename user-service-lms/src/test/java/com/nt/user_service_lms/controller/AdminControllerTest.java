@@ -1,6 +1,6 @@
 package com.nt.user_service_lms.controller;
 
-import com.nt.user_service_lms.dto.RegisterDto;
+import com.nt.user_service_lms.dto.inDTO.RegisterDto;
 import com.nt.user_service_lms.service.serviceImpl.AdminServiceImpl;
 import com.nt.user_service_lms.service.serviceImpl.GroupServiceImpl;
 import com.nt.user_service_lms.service.serviceImpl.UserServiceImpl;

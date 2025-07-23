@@ -177,13 +177,29 @@ class CourseContentConverterTest {
         assertThat(CourseContentConverters.updateDtoToEntity(null)).isNull();
     }
 
-//    @Test
-//    void testPrivateConstructor_throwsException() throws Exception {
-//        var constructor = CourseContentConverters.class.getDeclaredConstructor();
-//        constructor.setAccessible(true);
-//
-//        assertThrows(UnsupportedOperationException.class, constructor::newInstance);
-//    }
+    @Test
+    void testCourseContentDtoToCourseContent_deprecatedMethodDelegation() {
+        CourseContentInDTO dto = new CourseContentInDTO();
+        dto.setCourseId(3L);
+        dto.setTitle("Dep");
+        dto.setDescription("Desc");
+        dto.setResourceLink("link");
+        dto.setActive(true);
+
+        CourseContent entity = CourseContentConverters.courseContentDtoToCourseContent(dto);
+
+        assertThat(entity).isNotNull();
+        assertThat(entity.getCourseId()).isEqualTo(3L);
+        assertThat(entity.getTitle()).isEqualTo("Dep");
+    }
+
+    @Test
+    void testPrivateConstructor_throwsException() throws Exception {
+        var constructor = CourseContentConverters.class.getDeclaredConstructor();
+        constructor.setAccessible(true);
+
+        assertThrows(UnsupportedOperationException.class, constructor::newInstance);
+    }
 
     @Test
     void testUpdateCourseContentInDTONoArgsConstructor() {

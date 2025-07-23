@@ -84,7 +84,7 @@ public final class CourseContentConverters {
      * This method is used during update operations.
      *
      * @param existingEntity the existing CourseContent entity to update
-     * @param updateDTO      the DTO containing updated data
+     * @param updateDTO the DTO containing updated data
      */
     public static void updateEntityFromDto(final CourseContent existingEntity,
                                            final UpdateCourseContentInDTO updateDTO) {
@@ -118,5 +118,14 @@ public final class CourseContentConverters {
         courseContent.setResourceLink(updateDTO.getResourceLink());
         courseContent.setActive(updateDTO.isActive());
         return courseContent;
+    }
+
+    /**
+     * Legacy method for backward compatibility.
+     * @deprecated Use {@link #courseContentInDtoToEntity(CourseContentInDTO)} instead
+     */
+    @Deprecated
+    public static CourseContent courseContentDtoToCourseContent(final CourseContentInDTO courseContentInDTO) {
+        return courseContentInDtoToEntity(courseContentInDTO);
     }
 }

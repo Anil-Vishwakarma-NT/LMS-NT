@@ -3,9 +3,13 @@ package com.nt.user_service_lms.dto.inDTO;
 import com.nt.user_service_lms.validation.ValidateEnrollmentDTO;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Positive;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 import java.time.LocalDateTime;
+import java.util.Objects;
 
 /**
  * Data Transfer Object for updating enrollment information.
@@ -19,6 +23,9 @@ import java.time.LocalDateTime;
  */
 @Data
 @ValidateEnrollmentDTO
+@NoArgsConstructor
+@AllArgsConstructor
+@Builder
 public class UpdateEnrollmentInDTO {
 
     /**
@@ -65,4 +72,16 @@ public class UpdateEnrollmentInDTO {
      * Represents the new date and time by which the enrollment should be completed.
      */
     private LocalDateTime deadline;
+
+    @Override
+    public boolean equals(Object o) {
+        if (o == null || getClass() != o.getClass()) return false;
+        UpdateEnrollmentInDTO that = (UpdateEnrollmentInDTO) o;
+        return Objects.equals(userId, that.userId) && Objects.equals(groupId, that.groupId) && Objects.equals(courseId, that.courseId) && Objects.equals(bundleId, that.bundleId) && Objects.equals(managerId, that.managerId) && Objects.equals(status, that.status) && Objects.equals(deadline, that.deadline);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(userId, groupId, courseId, bundleId, managerId, status, deadline);
+    }
 }

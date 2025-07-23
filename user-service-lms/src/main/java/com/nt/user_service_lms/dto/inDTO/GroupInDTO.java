@@ -2,11 +2,13 @@ package com.nt.user_service_lms.dto.inDTO;
 
 import jakarta.validation.constraints.Pattern;
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Objects;
 
 /**
  * Data Transfer Object for group input operations.
@@ -19,6 +21,7 @@ import java.util.List;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
+@Builder
 public class GroupInDTO {
 
     /**
@@ -129,5 +132,17 @@ public class GroupInDTO {
      */
     public void setAssignedAt(final LocalDateTime assignedAt) {
         this.assignedAt = assignedAt;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (o == null || getClass() != o.getClass()) return false;
+        GroupInDTO that = (GroupInDTO) o;
+        return groupId == that.groupId && userId == that.userId && Objects.equals(groupName, that.groupName) && Objects.equals(employees, that.employees) && Objects.equals(courses, that.courses) && Objects.equals(deadline, that.deadline) && Objects.equals(assignedAt, that.assignedAt);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(groupName, groupId, userId, employees, courses, deadline, assignedAt);
     }
 }

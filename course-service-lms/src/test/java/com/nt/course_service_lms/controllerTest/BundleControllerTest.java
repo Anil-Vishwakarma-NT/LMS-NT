@@ -1,184 +1,214 @@
 package com.nt.course_service_lms.controllerTest;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.nt.course_service_lms.controller.BundleController;
 import com.nt.course_service_lms.dto.inDTO.BundleInDTO;
 import com.nt.course_service_lms.dto.inDTO.UpdateBundleInDTO;
 import com.nt.course_service_lms.dto.outDTO.BundleOutDTO;
-import com.nt.course_service_lms.dto.outDTO.StandardResponseOutDTO;
+import com.nt.course_service_lms.exception.ResourceAlreadyExistsException;
+import com.nt.course_service_lms.exception.ResourceNotFoundException;
 import com.nt.course_service_lms.service.BundleService;
+
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.mockito.InjectMocks;
-import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
-import org.springframework.http.ResponseEntity;
+import org.mockito.Mockito;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
+import org.springframework.boot.test.context.TestConfiguration;
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Import;
+import org.springframework.http.MediaType;
+import org.springframework.test.web.servlet.MockMvc;
 
+import java.time.LocalDateTime;
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.List;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.mockito.Mockito.times;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
+import static org.hamcrest.Matchers.*;
+import static org.mockito.ArgumentMatchers.*;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
-public class BundleControllerTest {
+@WebMvcTest(BundleController.class)
+@Import(BundleControllerTest.TestConfig.class)
+class BundleControllerTest {
 
-    @InjectMocks
-    private BundleController bundleController;
+    @TestConfiguration
+    static class TestConfig {
+        @Bean
+        public BundleService bundleService() {
+            return Mockito.mock(BundleService.class);
+        }
+    }
 
-    @Mock
+    @Autowired
+    private MockMvc mockMvc;
+
+    @Autowired
     private BundleService bundleService;
 
+    private final ObjectMapper objectMapper = new ObjectMapper();
+    private BundleOutDTO sampleBundle;
+
     @BeforeEach
-    void setUp() {
-        MockitoAnnotations.openMocks(this);
+    void setup() {
+        sampleBundle = BundleOutDTO.builder()
+                .bundleId(1L)
+                .bundleName("JavaBundle")
+                .isActive(true)
+                .createdAt(LocalDateTime.now())
+                .updatedAt(LocalDateTime.now())
+                .build();
     }
 
     @Test
-    void testCreateBundle() {
-        BundleInDTO bundleInDTO = new BundleInDTO();
-        bundleInDTO.setBundleName("Test Bundle");
+    void createBundle_ReturnsCreated() throws Exception {
+        BundleInDTO input = new BundleInDTO("JavaBundle", true);
+        Mockito.when(bundleService.createBundle(any())).thenReturn(sampleBundle);
 
-        BundleOutDTO bundleOutDTO = new BundleOutDTO();
-        bundleOutDTO.setBundleName("Test Bundle");
-
-        when(bundleService.createBundle(bundleInDTO)).thenReturn(bundleOutDTO);
-
-        ResponseEntity<StandardResponseOutDTO<BundleOutDTO>> response = bundleController.createBundle(bundleInDTO);
-
-        assertEquals(201, response.getStatusCodeValue());
-        assertEquals("Test Bundle", response.getBody().getData().getBundleName());
+        mockMvc.perform(post("/api/service-api/bundles")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(input)))
+                .andExpect(status().isCreated())
+                .andExpect(jsonPath("$.data.bundleId").value(1))
+                .andExpect(jsonPath("$.message").value("Bundle created successfully"));
     }
 
     @Test
-    void testGetAllBundles() {
-        BundleOutDTO b1 = new BundleOutDTO();
-        b1.setBundleName("Bundle 1");
+    void createBundle_InvalidInput_ReturnsBadRequest() throws Exception {
+        BundleInDTO invalid = new BundleInDTO("", true);
 
-        BundleOutDTO b2 = new BundleOutDTO();
-        b2.setBundleName("Bundle 2");
-
-        when(bundleService.getAllBundles()).thenReturn(Arrays.asList(b1, b2));
-
-        ResponseEntity<StandardResponseOutDTO<List<BundleOutDTO>>> response = bundleController.getAllBundles();
-
-        assertEquals(200, response.getStatusCodeValue());
-        assertEquals(2, response.getBody().getData().size());
+        mockMvc.perform(post("/api/service-api/bundles")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(invalid)))
+                .andExpect(status().isBadRequest());
     }
 
     @Test
-    void testGetAllBundlesEmpty() {
-        when(bundleService.getAllBundles()).thenReturn(Collections.emptyList());
+    void getAllBundles_ReturnsList() throws Exception {
+        Mockito.when(bundleService.getAllBundles()).thenReturn(Arrays.asList(sampleBundle));
 
-        ResponseEntity<StandardResponseOutDTO<List<BundleOutDTO>>> response = bundleController.getAllBundles();
-
-        assertEquals(200, response.getStatusCodeValue());
-        assertTrue(response.getBody().getData().isEmpty());
+        mockMvc.perform(get("/api/service-api/bundles"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.data", hasSize(1)))
+                .andExpect(jsonPath("$.data[0].bundleId").value(1));
     }
 
     @Test
-    void testGetBundleById() {
-        Long id = 1L;
+    void getAllBundles_Empty_ReturnsNotFound() throws Exception {
+        Mockito.when(bundleService.getAllBundles()).thenThrow(new ResourceNotFoundException("No bundles found"));
 
-        BundleOutDTO bundle = new BundleOutDTO();
-        bundle.setBundleName("Test Bundle");
-
-        when(bundleService.getBundleById(id)).thenReturn(bundle);
-
-        ResponseEntity<StandardResponseOutDTO<BundleOutDTO>> response = bundleController.getBundleById(id);
-
-        assertEquals(200, response.getStatusCodeValue());
-        assertEquals("Test Bundle", response.getBody().getData().getBundleName());
+        mockMvc.perform(get("/api/service-api/bundles"))
+                .andExpect(status().isNotFound());
     }
 
     @Test
-    void testUpdateBundle() {
-        Long id = 1L;
-        UpdateBundleInDTO updateDTO = new UpdateBundleInDTO();
-        updateDTO.setBundleName("Updated");
+    void getBundleById_ReturnsBundle() throws Exception {
+        Mockito.when(bundleService.getBundleById(1L)).thenReturn(sampleBundle);
 
-        BundleOutDTO updated = new BundleOutDTO();
-        updated.setBundleName("Updated");
-
-        when(bundleService.updateBundle(id, updateDTO)).thenReturn(updated);
-
-        ResponseEntity<StandardResponseOutDTO<BundleOutDTO>> response = bundleController.updateBundle(id, updateDTO);
-
-        assertEquals(200, response.getStatusCodeValue());
-        assertEquals("Updated", response.getBody().getData().getBundleName());
+        mockMvc.perform(get("/api/service-api/bundles/1"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.data.bundleName").value("JavaBundle"));
     }
 
     @Test
-    void testDeleteBundle() {
-        Long id = 1L;
+    void getBundleById_NotFound_Returns404() throws Exception {
+        Mockito.when(bundleService.getBundleById(99L)).thenThrow(new ResourceNotFoundException("Bundle not found"));
 
-        ResponseEntity<StandardResponseOutDTO<Void>> response = bundleController.deleteBundle(id);
-
-        verify(bundleService, times(1)).deleteBundle(id);
-        assertEquals(200, response.getStatusCodeValue());
-        assertEquals("Bundle deleted successfully", response.getBody().getMessage());
+        mockMvc.perform(get("/api/service-api/bundles/99"))
+                .andExpect(status().isNotFound());
     }
 
     @Test
-    void testCheckIfBundleExists_True() {
-        Long id = 1L;
-        when(bundleService.existsByBundleId(id)).thenReturn(true);
+    void updateBundle_ReturnsUpdated() throws Exception {
+        UpdateBundleInDTO updateDto = new UpdateBundleInDTO("Updated", true);
+        Mockito.when(bundleService.updateBundle(eq(1L), any())).thenReturn(sampleBundle);
 
-        ResponseEntity<StandardResponseOutDTO<Boolean>> response = bundleController.checkIfBundleExists(id);
-
-        assertEquals(200, response.getStatusCodeValue());
-        assertTrue(response.getBody().getData());
-        assertEquals("Bundle exists", response.getBody().getMessage());
+        mockMvc.perform(put("/api/service-api/bundles/1")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(updateDto)))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.message").value("Bundle updated successfully"));
     }
 
     @Test
-    void testCheckIfBundleExists_False() {
-        Long id = 2L;
-        when(bundleService.existsByBundleId(id)).thenReturn(false);
+    void updateBundle_DuplicateName_ReturnsConflict() throws Exception {
+        UpdateBundleInDTO updateDto = new UpdateBundleInDTO("Duplicate", true);
+        Mockito.when(bundleService.updateBundle(eq(1L), any()))
+                .thenThrow(new ResourceAlreadyExistsException("Already exists"));
 
-        ResponseEntity<StandardResponseOutDTO<Boolean>> response = bundleController.checkIfBundleExists(id);
-
-        assertEquals(200, response.getStatusCodeValue());
-        assertFalse(response.getBody().getData());
-        assertEquals("Bundle does not exist", response.getBody().getMessage());
+        mockMvc.perform(put("/api/service-api/bundles/1")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(updateDto)))
+                .andExpect(status().isConflict());
     }
 
     @Test
-    void testGetBundleCount() {
-        when(bundleService.countBundles()).thenReturn(5L);
-
-        ResponseEntity<StandardResponseOutDTO<Long>> response = bundleController.getBundleCount();
-
-        assertEquals(200, response.getStatusCodeValue());
-        assertEquals(5L, response.getBody().getData());
+    void deleteBundle_ReturnsOk() throws Exception {
+        mockMvc.perform(delete("/api/service-api/bundles/1"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.message").value("Bundle deleted successfully"));
     }
 
     @Test
-    void testGetBundleNameById() {
-        Long id = 1L;
-        when(bundleService.getBundleNameById(id)).thenReturn("Test Bundle");
+    void deleteBundle_NotFound_Returns404() throws Exception {
+        Mockito.doThrow(new ResourceNotFoundException("Not found")).when(bundleService).deleteBundle(999L);
 
-        ResponseEntity<StandardResponseOutDTO<String>> response = bundleController.getBundleNameById(id);
-
-        assertEquals(200, response.getStatusCodeValue());
-        assertEquals("Test Bundle", response.getBody().getData());
+        mockMvc.perform(delete("/api/service-api/bundles/999"))
+                .andExpect(status().isNotFound());
     }
 
     @Test
-    void testGetExistingBundleIds() {
-        List<Long> input = Arrays.asList(1L, 2L, 3L);
-        List<Long> output = Arrays.asList(1L, 3L);
+    void checkIfBundleExists_True() throws Exception {
+        Mockito.when(bundleService.existsByBundleId(1L)).thenReturn(true);
 
-        when(bundleService.findExistingIds(input)).thenReturn(output);
+        mockMvc.perform(get("/api/service-api/bundles/1/exists"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.data").value(true))
+                .andExpect(jsonPath("$.message").value("Bundle exists"));
+    }
 
-        ResponseEntity<List<Long>> response = bundleController.getExistingBundleIds(input);
+    @Test
+    void checkIfBundleExists_False() throws Exception {
+        Mockito.when(bundleService.existsByBundleId(10L)).thenReturn(false);
 
-        assertEquals(200, response.getStatusCodeValue());
-        assertEquals(2, response.getBody().size());
-        assertTrue(response.getBody().contains(1L));
-        assertFalse(response.getBody().contains(2L));
+        mockMvc.perform(get("/api/service-api/bundles/10/exists"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.data").value(false))
+                .andExpect(jsonPath("$.message").value("Bundle does not exist"));
+    }
+
+    @Test
+    void getBundleCount_ReturnsCount() throws Exception {
+        Mockito.when(bundleService.countBundles()).thenReturn(5L);
+
+        mockMvc.perform(get("/api/service-api/bundles/count"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.data").value(5));
+    }
+
+    @Test
+    void getBundleNameById_ReturnsName() throws Exception {
+        Mockito.when(bundleService.getBundleNameById(1L)).thenReturn("JavaBundle");
+
+        mockMvc.perform(get("/api/service-api/bundles/1/name"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.data").value("JavaBundle"));
+    }
+
+    @Test
+    void getExistingBundleIds_ReturnsExistingIds() throws Exception {
+        List<Long> requestIds = Arrays.asList(1L, 2L, 3L);
+        List<Long> existingIds = Arrays.asList(1L, 3L);
+
+        Mockito.when(bundleService.findExistingIds(requestIds)).thenReturn(existingIds);
+
+        mockMvc.perform(post("/api/service-api/bundles/existing-ids")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(requestIds)))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$", hasSize(2)))
+                .andExpect(jsonPath("$[0]").value(1))
+                .andExpect(jsonPath("$[1]").value(3));
     }
 }
