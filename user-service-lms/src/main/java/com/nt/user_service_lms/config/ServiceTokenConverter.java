@@ -9,10 +9,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
 import java.security.Key;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 import static com.nt.user_service_lms.constants.TokenConverterConstant.CLIENT_ID;
 import static com.nt.user_service_lms.constants.TokenConverterConstant.CONVERSION_CHAIN;
@@ -56,14 +53,14 @@ public class ServiceTokenConverter {
      * JWT secret key used for signing and verifying tokens.
      * Default value is provided if not specified in configuration.
      */
-    @Value("${jwt.secret:my_secret_key_my_secret_key_my_secret_key}")
-    private String secret;
+    @Value("${jwt.secret}")
+    private String SECRET;
 
     /**
      * JWT issuer identifier that specifies who issued the token.
      * Default value points to the authentication service.
      */
-    @Value("${jwt.issuer:https://auth.nucleusteq.com}")
+    @Value("${jwt.issuer}")
     private String issuer;
 
     /**
@@ -93,7 +90,7 @@ public class ServiceTokenConverter {
      * @return Key object used for JWT signing and verification
      */
     private Key getSigningKey() {
-        byte[] keyBytes = secret.getBytes();
+        byte[] keyBytes = Base64.getDecoder().decode(SECRET);
         return Keys.hmacShaKeyFor(keyBytes);
     }
 
@@ -117,6 +114,7 @@ public class ServiceTokenConverter {
             String scope = jwtUtil.extractScope(originalToken);
             String originalTokenType = jwtUtil.extractTokenType(originalToken);
             String originalClientId = jwtUtil.extractClientId(originalToken);
+            Date originalExpiration = jwtUtil.extractExpiration(originalToken);
 
             Map<String, Object> claims = new HashMap<>();
             claims.put(TOKEN_TYPE, SERVICE);
@@ -148,7 +146,7 @@ public class ServiceTokenConverter {
                     .setAudience(targetService)
                     .setIssuer(issuer)
                     .setIssuedAt(new Date())
-                    .setExpiration(new Date(System.currentTimeMillis() + expiration))
+                    .setExpiration(originalExpiration)
                     .signWith(getSigningKey())
                     .compact();
 
