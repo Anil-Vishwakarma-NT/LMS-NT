@@ -66,4 +66,4 @@ public interface AdminService {
     StandardResponseOutDTO<MessageOutDTO> removeCourseFromBundle(Long bundleId, Long courseId);
 
    }
-}
+

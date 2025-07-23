@@ -10,7 +10,7 @@ import com.nt.user_service_lms.dto.outDTO.UserOutDTO;
 import com.nt.user_service_lms.entities.Enrollment;
 import com.nt.user_service_lms.exception.InvalidRequestException;
 import com.nt.user_service_lms.exception.ResourceNotFoundException;
-import com.nt.user_service_lms.dto.RegisterDto;
+import com.nt.user_service_lms.dto.inDTO.RegisterDto;
 import com.nt.user_service_lms.entities.Role;
 import com.nt.user_service_lms.entities.User;
 import com.nt.user_service_lms.exception.ResourceConflictException;

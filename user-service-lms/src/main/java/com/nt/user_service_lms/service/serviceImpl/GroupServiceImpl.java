@@ -4,14 +4,8 @@ import com.nt.user_service_lms.constants.UserConstants;
 import com.nt.user_service_lms.converter.GroupDTOConverter;
 import com.nt.user_service_lms.converter.UserDTOConverter;
 import com.nt.user_service_lms.dto.inDTO.GroupInDTO;
-import com.nt.user_service_lms.dto.outDTO.CourseInfoOutDTO;
-import com.nt.user_service_lms.dto.outDTO.GroupCourseOutDTO;
-import com.nt.user_service_lms.dto.outDTO.GroupOutDTO;
-import com.nt.user_service_lms.dto.outDTO.GroupSummaryOutDTO;
-import com.nt.user_service_lms.dto.outDTO.GroupUserOutDTO;
-import com.nt.user_service_lms.dto.outDTO.MessageOutDto;
-import com.nt.user_service_lms.dto.outDTO.StandardResponseOutDTO;
-import com.nt.user_service_lms.dto.outDTO.UserGroupOutDTO;
+import com.nt.user_service_lms.dto.outDTO.*;
+import com.nt.user_service_lms.dto.outDTO.MessageOutDTO;
 import com.nt.user_service_lms.entities.Enrollment;
 import com.nt.user_service_lms.entities.Group;
 import com.nt.user_service_lms.entities.User;
@@ -37,14 +31,10 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-import static com.nt.user_service_lms.constants.GroupConstants.GROUP_CREATED;
-import static com.nt.user_service_lms.constants.GroupConstants.GROUP_DELETED;
-import static com.nt.user_service_lms.constants.GroupConstants.GROUP_FAILURE;
-import static com.nt.user_service_lms.constants.GroupConstants.GROUP_NOT_FOUND;
-import static com.nt.user_service_lms.constants.GroupConstants.USER_ADDED_TO_GROUP;
-import static com.nt.user_service_lms.constants.GroupConstants.USER_NOT_FOUND_IN_GROUP;
-import static com.nt.user_service_lms.constants.GroupConstants.USER_REMOVED_SUCCESSFULLY;
+import static com.nt.user_service_lms.constants.CommonConstants.*;
+import static com.nt.user_service_lms.constants.GroupConstants.*;
 import static com.nt.user_service_lms.constants.UserConstants.USER_NOT_FOUND;
+
 
 /**
  * Service implementation for managing user groups in the Learning Management System.
@@ -192,8 +182,7 @@ public class GroupServiceImpl implements GroupService {
      */
     @Override
     public StandardResponseOutDTO<MessageOutDTO> addUserToGroup(final GroupInDTO groupInDTO , String username) {
-    public StandardResponseOutDTO<MessageOutDto> addUserToGroup(final GroupInDTO groupInDTO, final String username) {
-        try {
+            try {
             log.info("Adding user ID: to group ID: {}", groupInDTO.getGroupId());
 
             User user = userRepository.findByEmailIgnoreCase(username)

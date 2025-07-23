@@ -2,14 +2,8 @@ package com.nt.user_service_lms.controller;
 
 import com.nt.user_service_lms.config.ServicePrincipal;
 import com.nt.user_service_lms.dto.inDTO.GroupInDTO;
-import com.nt.user_service_lms.dto.outDTO.CourseInfoOutDTO;
-import com.nt.user_service_lms.dto.outDTO.GroupCourseOutDTO;
-import com.nt.user_service_lms.dto.outDTO.GroupOutDTO;
-import com.nt.user_service_lms.dto.outDTO.GroupSummaryOutDTO;
-import com.nt.user_service_lms.dto.outDTO.GroupUserOutDTO;
-import com.nt.user_service_lms.dto.outDTO.MessageOutDto;
-import com.nt.user_service_lms.dto.outDTO.StandardResponseOutDTO;
-import com.nt.user_service_lms.dto.outDTO.UserGroupOutDTO;
+import com.nt.user_service_lms.dto.outDTO.*;
+import com.nt.user_service_lms.dto.outDTO.MessageOutDTO;
 import com.nt.user_service_lms.exception.UnauthorizedAccessException;
 import com.nt.user_service_lms.repository.UserRepository;
 import com.nt.user_service_lms.service.EnrollmentsService;
@@ -77,8 +71,7 @@ public class GroupController {
      */
     @PostMapping("/create-group")
     @PreAuthorize("hasRole('ADMIN')")
-    public ResponseEntity<StandardResponseOutDTO<MessageOutDto>> createGroup(@Valid @RequestBody final GroupInDTO groupInDTO) {
-    public ResponseEntity<StandardResponseOutDTO<MessageOutDTO>> createGroup(@Valid @RequestBody final GroupInDTO groupInDTO) {
+      public ResponseEntity<StandardResponseOutDTO<MessageOutDTO>> createGroup(@Valid @RequestBody final GroupInDTO groupInDTO) {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
 
         if (!(authentication.getPrincipal() instanceof ServicePrincipal principal)) {
@@ -103,7 +96,7 @@ public class GroupController {
      */
     @DeleteMapping("/remove/{groupId}")
     @PreAuthorize("hasRole('ADMIN')")
-    public ResponseEntity<StandardResponseOutDTO<MessageOutDto>> deleteGroup(@PathVariable final long groupId) {
+    public ResponseEntity<StandardResponseOutDTO<MessageOutDTO>> deleteGroup(@PathVariable final long groupId) {
         log.info("Attempting to delete group with ID: {}", groupId);
         StandardResponseOutDTO<MessageOutDTO> response = groupService.deleteGroup(groupId);
         return new ResponseEntity<>(response, HttpStatus.OK);
@@ -143,8 +136,7 @@ public class GroupController {
      */
     @PostMapping("/add-user")
     @PreAuthorize("hasRole('ADMIN')")
-    public ResponseEntity<StandardResponseOutDTO<MessageOutDto>> addUserToGroup(@Valid @RequestBody final GroupInDTO groupInDTO) {
-    public ResponseEntity<StandardResponseOutDTO<MessageOutDTO>> addUserToGroup(@Valid @RequestBody final GroupInDTO groupInDTO) {
+        public ResponseEntity<StandardResponseOutDTO<MessageOutDTO>> addUserToGroup(@Valid @RequestBody final GroupInDTO groupInDTO) {
         log.info("Attempting to add user with ID: to group with ID: {}", groupInDTO.getGroupId());
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
 

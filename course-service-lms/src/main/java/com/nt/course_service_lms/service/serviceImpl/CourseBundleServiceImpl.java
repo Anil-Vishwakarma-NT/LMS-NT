@@ -29,6 +29,7 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 import static com.nt.course_service_lms.constants.CourseBundleConstants.BUNDLE_NOT_FOUND;
@@ -431,6 +432,7 @@ public class CourseBundleServiceImpl implements CourseBundleService {
          List<CourseBundle> courseBundles = courseBundleRepository.findByBundleId(bundleId);
 
         Set<Long> coursesIds = courseBundles.stream().filter(CourseBundle::isActive).map(CourseBundle::getCourseId).collect(Collectors.toSet());
+
         List<Course> courses = courseRepository.findAll();
         List<CourseInfoOutDTO> courseToAdd = courses.stream().filter(course ->
                 !coursesIds.contains(course.getCourseId()) && course.isActive())
