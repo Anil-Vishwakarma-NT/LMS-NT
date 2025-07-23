@@ -1,5 +1,7 @@
 package com.nt.course_service_lms.service.serviceImpl;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.nt.course_service_lms.constants.CommonConstants;
 import com.nt.course_service_lms.dto.inDTO.QuizAttemptUpdateInDTO;
 import com.nt.course_service_lms.dto.inDTO.UserResponseInDTO;
 import com.nt.course_service_lms.dto.outDTO.QuizAttemptOutDTO;
@@ -13,7 +15,6 @@ import com.nt.course_service_lms.repository.QuizAttemptRepository;
 import com.nt.course_service_lms.repository.QuizQuestionRepository;
 import com.nt.course_service_lms.service.QuizAttemptService;
 import com.nt.course_service_lms.service.UserResponseService;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -28,31 +29,82 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 /**
- * Service for handling quiz submissions (both manual and automatic)
+ * Service class responsible for handling quiz submissions in the Learning Management System.
+ * <p>
+ * This service provides comprehensive functionality for processing quiz submissions including:
+ * <ul>
+ *   <li>Manual quiz submissions by users</li>
+ *   <li>Automatic quiz submissions when time expires</li>
+ *   <li>Score calculations and statistics</li>
+ *   <li>Quiz attempt status management</li>
+ * </ul>
+ * </p>
+ *
+ * <p>
+ * The service handles both complete and partial submissions, calculates scores based on
+ * user responses, and maintains comprehensive audit trails for all quiz submission activities.
+ * </p>
  */
 @Service
 @RequiredArgsConstructor
 @Slf4j
 public class QuizSubmissionService {
 
+    /**
+     * Service for managing user responses to quiz questions.
+     * Used for creating, retrieving, and calculating scores from user responses.
+     */
     private final UserResponseService userResponseService;
+
+    /**
+     * Service for managing quiz attempts.
+     * Used for updating quiz attempt status and completion details.
+     */
     private final QuizAttemptService quizAttemptService;
+
+    /**
+     * Repository for quiz attempt data access operations.
+     * Used for retrieving and validating quiz attempts.
+     */
     private final QuizAttemptRepository quizAttemptRepository;
+
+    /**
+     * Repository for quiz question data access operations.
+     * Used for retrieving question details and calculating maximum possible scores.
+     */
     private final QuizQuestionRepository quizQuestionRepository;
+
+    /**
+     * Jackson ObjectMapper for JSON serialization and deserialization.
+     * Used for converting score details to JSON format for storage.
+     */
     private final ObjectMapper objectMapper;
 
     /**
-     * Submits a quiz attempt with user responses
+     * Submits a quiz attempt with user responses and processes the submission.
+     * <p>
+     * This method handles the complete quiz submission workflow including:
+     * <ul>
+     *   <li>Validating the quiz attempt exists and is in progress</li>
+     *   <li>Saving user responses (if provided)</li>
+     *   <li>Calculating scores and statistics</li>
+     *   <li>Updating quiz attempt with completion details</li>
+     *   <li>Creating comprehensive submission results</li>
+     * </ul>
+     * </p>
      *
-     * @param quizAttemptId the quiz attempt ID
-     * @param userResponses list of user responses (can be partial)
-     * @param submissionType "MANUAL" or "AUTO_TIMEOUT"
-     * @return QuizSubmissionResultOutDTO containing attempt details and responses
+     * @param quizAttemptId  the unique identifier of the quiz attempt to submit
+     * @param userResponses  list of user responses to quiz questions (can be null or empty for partial submissions)
+     * @param submissionType the type of submission ("MANUAL" for user-initiated, "AUTO_TIMEOUT" for time-based)
+     * @return QuizSubmissionResultOutDTO containing complete submission results including scores and attempt details
+     * @throws ResourceNotFoundException if the quiz attempt is not found
+     * @throws ResourceNotValidException if the quiz attempt is not in a valid state for submission
+     * @throws RuntimeException          if any unexpected error occurs during submission processing
      */
     @Transactional
-    public QuizSubmissionResultOutDTO submitQuiz(Long quizAttemptId,
-                                                 List<UserResponseInDTO> userResponses,
-                                                 String submissionType) {
+    public QuizSubmissionResultOutDTO submitQuiz(final Long quizAttemptId,
+                                                 final List<UserResponseInDTO> userResponses,
+                                                 final String submissionType) {
         log.info("Submitting quiz attempt ID: {} with {} responses, submission type: {}",
                 quizAttemptId, userResponses != null ? userResponses.size() : 0, submissionType);
 
@@ -148,11 +200,24 @@ public class QuizSubmissionService {
     }
 
     /**
-     * Handles automatic quiz submission when time runs out
+     * Handles automatic quiz submission when the quiz time limit expires.
+     * <p>
+     * This method is typically called by a scheduled job or timer service when
+     * a quiz attempt reaches its time limit. It processes any partial responses
+     * that were saved during the quiz attempt and completes the submission
+     * with a "TIMED_OUT" status.
+     * </p>
+     *
+     * @param quizAttemptId the unique identifier of the quiz attempt that timed out
+     * @param userResponses list of user responses collected before timeout (can be null or empty)
+     * @return QuizSubmissionResultOutDTO containing the timeout submission results
+     * @throws ResourceNotFoundException if the quiz attempt is not found
+     * @throws ResourceNotValidException if the quiz attempt is not in a valid state for timeout submission
+     * @throws RuntimeException          if any unexpected error occurs during timeout processing
      */
     @Transactional
-    public QuizSubmissionResultOutDTO submitQuizOnTimeout(Long quizAttemptId,
-                                                          List<UserResponseInDTO> userResponses) {
+    public QuizSubmissionResultOutDTO submitQuizOnTimeout(final Long quizAttemptId,
+                                                          final List<UserResponseInDTO> userResponses) {
         log.info("Auto-submitting quiz attempt {} due to timeout", quizAttemptId);
         try {
             return submitQuiz(quizAttemptId, userResponses, "AUTO_TIMEOUT");
@@ -172,30 +237,24 @@ public class QuizSubmissionService {
     }
 
     /**
-     * Handles manual quiz submission by user
+     * Validates and retrieves a quiz attempt for submission processing.
+     * <p>
+     * This method performs comprehensive validation to ensure the quiz attempt
+     * is in a valid state for submission, including:
+     * <ul>
+     *   <li>Checking that the quiz attempt ID is not null</li>
+     *   <li>Verifying the quiz attempt exists in the database</li>
+     *   <li>Confirming the attempt status is "IN_PROGRESS"</li>
+     * </ul>
+     * </p>
+     *
+     * @param quizAttemptId the unique identifier of the quiz attempt to validate
+     * @return QuizAttempt entity if validation passes
+     * @throws ResourceNotFoundException if the quiz attempt is not found in the database
+     * @throws ResourceNotValidException if the quiz attempt ID is null or the attempt is not in progress
+     * @throws RuntimeException          if any unexpected error occurs during validation
      */
-    @Transactional
-    public QuizSubmissionResultOutDTO submitQuizManually(Long quizAttemptId,
-                                                         List<UserResponseInDTO> userResponses) {
-        log.info("Manually submitting quiz attempt {}", quizAttemptId);
-        try {
-            return submitQuiz(quizAttemptId, userResponses, "MANUAL");
-        } catch (ResourceNotFoundException e) {
-            log.error("Resource not found during manual submission for attempt {}: {}", quizAttemptId, e.getMessage());
-            throw e;
-        } catch (ResourceNotValidException e) {
-            log.error("Invalid resource during manual submission for attempt {}: {}", quizAttemptId, e.getMessage());
-            throw e;
-        } catch (RuntimeException e) {
-            log.error("Runtime exception during manual submission for attempt {}", quizAttemptId, e);
-            throw new RuntimeException("Failed to submit quiz manually", e);
-        } catch (Exception e) {
-            log.error("Unexpected exception during manual submission for attempt {}", quizAttemptId, e);
-            throw new RuntimeException("Unexpected error during manual submission", e);
-        }
-    }
-
-    private QuizAttempt validateAndGetAttempt(Long quizAttemptId) {
+    private QuizAttempt validateAndGetAttempt(final Long quizAttemptId) {
         try {
             if (quizAttemptId == null) {
                 throw new ResourceNotValidException("Quiz attempt ID cannot be null");
@@ -224,7 +283,35 @@ public class QuizSubmissionService {
         }
     }
 
-    private QuizScoreCalculation calculateScores(QuizAttempt attempt, List<UserResponseOutDTO> responses) {
+    /**
+     * Calculates comprehensive scores and statistics for a quiz submission.
+     * <p>
+     * This method computes various scoring metrics including:
+     * <ul>
+     *   <li>Total score achieved by the user</li>
+     *   <li>Maximum possible score for the quiz</li>
+     *   <li>Number of correct answers</li>
+     *   <li>Total number of questions</li>
+     *   <li>Percentage score</li>
+     * </ul>
+     * </p>
+     *
+     * <p>
+     * The calculation logic handles both scenarios:
+     * <ul>
+     *   <li>When responses are provided: calculates based on answered questions</li>
+     *   <li>When no responses: calculates based on all questions in the quiz</li>
+     * </ul>
+     * </p>
+     *
+     * @param attempt   the quiz attempt entity containing user and quiz information
+     * @param responses list of user responses (can be null or empty)
+     * @return QuizScoreCalculation containing all calculated scores and statistics
+     * @throws ResourceNotFoundException if required data for score calculation is not found
+     * @throws ResourceNotValidException if the data required for calculation is invalid
+     * @throws RuntimeException          if any unexpected error occurs during score calculation
+     */
+    private QuizScoreCalculation calculateScores(final QuizAttempt attempt, final List<UserResponseOutDTO> responses) {
         try {
             QuizScoreCalculation calculation = new QuizScoreCalculation();
 
@@ -253,7 +340,11 @@ public class QuizSubmissionService {
             }
 
             try {
-                correctAnswers = userResponseService.countCorrectAnswers(attempt.getUserId(), attempt.getQuizId(), attempt.getAttempt());
+                correctAnswers = userResponseService.countCorrectAnswers(
+                        attempt.getUserId(),
+                        attempt.getQuizId(),
+                        attempt.getAttempt()
+                );
             } catch (ResourceNotFoundException e) {
                 log.error("Resource not found while counting correct answers for user {}, quiz {}, attempt {}: {}",
                         attempt.getUserId(), attempt.getQuizId(), attempt.getAttempt(), e.getMessage());
@@ -274,7 +365,7 @@ public class QuizSubmissionService {
 
             // Calculate max possible score from the original quiz questions
             BigDecimal maxPossibleScore = BigDecimal.ZERO;
-            Long totalQuestions = 0L;
+            long totalQuestions = 0L;
 
             if (responses != null && !responses.isEmpty()) {
                 // Get question IDs from responses
@@ -315,7 +406,7 @@ public class QuizSubmissionService {
             BigDecimal percentageScore = BigDecimal.ZERO;
             if (maxPossibleScore.compareTo(BigDecimal.ZERO) > 0) {
                 percentageScore = calculation.getTotalScore()
-                        .multiply(BigDecimal.valueOf(100))
+                        .multiply(BigDecimal.valueOf(CommonConstants.NUMBER_HUNDRED))
                         .divide(maxPossibleScore, 2, BigDecimal.ROUND_HALF_UP);
             }
             calculation.setPercentageScore(percentageScore);
@@ -325,7 +416,11 @@ public class QuizSubmissionService {
 
             return calculation;
         } catch (ResourceNotFoundException e) {
-            log.error("Resource not found while calculating scores for attempt {}: {}", attempt.getQuizAttemptId(), e.getMessage());
+            log.error(
+                    "Resource not found while calculating scores for attempt {}: {}",
+                    attempt.getQuizAttemptId(),
+                    e.getMessage()
+            );
             throw e;
         } catch (ResourceNotValidException e) {
             log.error("Invalid resource while calculating scores for attempt {}: {}", attempt.getQuizAttemptId(), e.getMessage());
@@ -339,9 +434,29 @@ public class QuizSubmissionService {
         }
     }
 
-    private QuizAttemptOutDTO completeQuizAttempt(QuizAttempt attempt,
-                                                  QuizScoreCalculation calculation,
-                                                  String submissionType) {
+    /**
+     * Completes a quiz attempt by updating its status and storing comprehensive results.
+     * <p>
+     * This method performs the final step of quiz submission by:
+     * <ul>
+     *   <li>Creating detailed score information in JSON format</li>
+     *   <li>Determining the appropriate completion status based on submission type</li>
+     *   <li>Updating the quiz attempt record with completion details</li>
+     *   <li>Setting the finish timestamp</li>
+     * </ul>
+     * </p>
+     *
+     * @param attempt        the quiz attempt entity to complete
+     * @param calculation    the calculated scores and statistics
+     * @param submissionType the type of submission ("MANUAL" or "AUTO_TIMEOUT")
+     * @return QuizAttemptOutDTO containing the updated quiz attempt information
+     * @throws ResourceNotFoundException if the quiz attempt cannot be found during update
+     * @throws ResourceNotValidException if the update data is invalid
+     * @throws RuntimeException          if JSON serialization fails or any unexpected error occurs
+     */
+    private QuizAttemptOutDTO completeQuizAttempt(final QuizAttempt attempt,
+                                                  final QuizScoreCalculation calculation,
+                                                  final String submissionType) {
         try {
             // Create score details JSON
             Map<String, Object> scoreDetails = new HashMap<>();
@@ -398,16 +513,28 @@ public class QuizSubmissionService {
         }
     }
 
-    private String getCompletionStatus(String submissionType) {
+    /**
+     * Determines the appropriate completion status based on the submission type.
+     * <p>
+     * This method maps submission types to their corresponding completion statuses:
+     * <ul>
+     *   <li>"AUTO_TIMEOUT" maps to "TIMED_OUT"</li>
+     *   <li>"MANUAL" maps to "COMPLETED"</li>
+     *   <li>Any other type defaults to "COMPLETED"</li>
+     * </ul>
+     * </p>
+     *
+     * @param submissionType the type of submission ("MANUAL", "AUTO_TIMEOUT", or other)
+     * @return the appropriate completion status string
+     * @throws RuntimeException if any unexpected error occurs during status determination
+     */
+    private String getCompletionStatus(final String submissionType) {
         try {
-            switch (submissionType) {
-                case "AUTO_TIMEOUT":
-                    return "TIMED_OUT";
-                case "MANUAL":
-                    return "COMPLETED";
-                default:
-                    return "COMPLETED";
-            }
+            return switch (submissionType) {
+                case "AUTO_TIMEOUT" -> "TIMED_OUT";
+                case "MANUAL" -> "COMPLETED";
+                default -> "COMPLETED";
+            };
         } catch (RuntimeException e) {
             log.error("Runtime exception while getting completion status for submission type {}", submissionType, e);
             throw new RuntimeException("Failed to determine completion status", e);
@@ -418,29 +545,138 @@ public class QuizSubmissionService {
     }
 
     /**
-     * Inner class to hold score calculation results
+     * Inner class that encapsulates all score calculation results for a quiz submission.
+     * <p>
+     * This class serves as a data transfer object for passing calculated scores
+     * and statistics between internal methods within the {@code QuizSubmissionService}.
+     * It contains all the essential metrics needed to evaluate a quiz performance.
+     * </p>
      */
-    private static class QuizScoreCalculation {
+    private final class QuizScoreCalculation {
+
+        /**
+         * The total score achieved by the user in the quiz.
+         * <p>
+         * This represents the sum of points earned for all correctly answered questions.
+         * </p>
+         */
         private BigDecimal totalScore;
+
+        /**
+         * The maximum possible score that can be achieved in the quiz.
+         * <p>
+         * This is the sum of all possible points for every question in the quiz,
+         * regardless of whether the user answered correctly or not.
+         * </p>
+         */
         private BigDecimal maxPossibleScore;
+
+        /**
+         * The number of questions answered correctly by the user.
+         */
         private Long correctAnswers;
+
+        /**
+         * The total number of questions in the quiz.
+         */
         private Long totalQuestions;
+
+        /**
+         * The percentage score calculated as (totalScore / maxPossibleScore) * 100.
+         * <p>
+         * This value is rounded to 2 decimal places using {@code RoundingMode.HALF_UP}.
+         * </p>
+         */
         private BigDecimal percentageScore;
 
-        // Getters and setters
-        public BigDecimal getTotalScore() { return totalScore; }
-        public void setTotalScore(BigDecimal totalScore) { this.totalScore = totalScore; }
+        /**
+         * Gets the total score achieved by the user.
+         *
+         * @return the total score as a {@link BigDecimal}
+         */
+        public BigDecimal getTotalScore() {
+            return totalScore;
+        }
 
-        public BigDecimal getMaxPossibleScore() { return maxPossibleScore; }
-        public void setMaxPossibleScore(BigDecimal maxPossibleScore) { this.maxPossibleScore = maxPossibleScore; }
+        /**
+         * Sets the total score achieved by the user.
+         *
+         * @param totalScore the total score to set
+         */
+        public void setTotalScore(final BigDecimal totalScore) {
+            this.totalScore = totalScore;
+        }
 
-        public Long getCorrectAnswers() { return correctAnswers; }
-        public void setCorrectAnswers(Long correctAnswers) { this.correctAnswers = correctAnswers; }
+        /**
+         * Gets the maximum possible score for the quiz.
+         *
+         * @return the maximum possible score as a {@link BigDecimal}
+         */
+        public BigDecimal getMaxPossibleScore() {
+            return maxPossibleScore;
+        }
 
-        public Long getTotalQuestions() { return totalQuestions; }
-        public void setTotalQuestions(Long totalQuestions) { this.totalQuestions = totalQuestions; }
+        /**
+         * Sets the maximum possible score for the quiz.
+         *
+         * @param maxPossibleScore the maximum possible score to set
+         */
+        public void setMaxPossibleScore(final BigDecimal maxPossibleScore) {
+            this.maxPossibleScore = maxPossibleScore;
+        }
 
-        public BigDecimal getPercentageScore() { return percentageScore; }
-        public void setPercentageScore(BigDecimal percentageScore) { this.percentageScore = percentageScore; }
+        /**
+         * Gets the number of questions answered correctly by the user.
+         *
+         * @return the number of correct answers as a {@link Long}
+         */
+        public Long getCorrectAnswers() {
+            return correctAnswers;
+        }
+
+        /**
+         * Sets the number of questions answered correctly by the user.
+         *
+         * @param correctAnswers the number of correct answers
+         */
+        public void setCorrectAnswers(final Long correctAnswers) {
+            this.correctAnswers = correctAnswers;
+        }
+
+        /**
+         * Gets the total number of questions in the quiz.
+         *
+         * @return the total number of questions as a {@link Long}
+         */
+        public Long getTotalQuestions() {
+            return totalQuestions;
+        }
+
+        /**
+         * Sets the total number of questions in the quiz.
+         *
+         * @param totalQuestions the total number of questions
+         */
+        public void setTotalQuestions(final Long totalQuestions) {
+            this.totalQuestions = totalQuestions;
+        }
+
+        /**
+         * Gets the percentage score achieved by the user.
+         *
+         * @return the percentage score as a {@link BigDecimal}
+         */
+        public BigDecimal getPercentageScore() {
+            return percentageScore;
+        }
+
+        /**
+         * Sets the percentage score achieved by the user.
+         *
+         * @param percentageScore the percentage score to set
+         */
+        public void setPercentageScore(final BigDecimal percentageScore) {
+            this.percentageScore = percentageScore;
+        }
     }
 }

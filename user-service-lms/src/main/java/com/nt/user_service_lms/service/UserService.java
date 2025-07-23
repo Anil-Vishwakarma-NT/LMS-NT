@@ -1,9 +1,9 @@
 package com.nt.user_service_lms.service;
 
-import com.nt.user_service_lms.dto.UsersDetailsViewDTO;
-import com.nt.user_service_lms.dto.outDTO.UserCourseEnrollDetails;
+import com.nt.user_service_lms.dto.outDTO.UsersDetailsViewDTO;
 import com.nt.user_service_lms.dto.outDTO.CourseDeadlinesDTO;
 import com.nt.user_service_lms.dto.outDTO.StandardResponseOutDTO;
+import com.nt.user_service_lms.dto.outDTO.UserCourseEnrollDetails;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;

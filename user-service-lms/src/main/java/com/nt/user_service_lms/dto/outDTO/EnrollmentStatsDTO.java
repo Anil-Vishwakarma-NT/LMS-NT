@@ -55,7 +55,7 @@ public class EnrollmentStatsDTO {
         /**
          * Constructs a new CourseEnrollmentStatsDTO.
          *
-         * @param courseId the course ID
+         * @param courseId        the course ID
          * @param enrollmentCount the enrollment count
          */
         public CourseEnrollmentStatsDTO(final Long courseId, final Long enrollmentCount) {
@@ -109,11 +109,11 @@ public class EnrollmentStatsDTO {
     /**
      * Constructs a new EnrollmentStatsDTO.
      *
-     * @param totalEnrollments total enrollments
-     * @param totalUsersEnrolled total users enrolled
-     * @param totalGroupsEnrolled total groups enrolled
-     * @param topEnrolledCourse top enrolled course details
-     * @param totalBundlesEnrolled total bundles enrolled
+     * @param totalEnrollments          total enrollments
+     * @param totalUsersEnrolled        total users enrolled
+     * @param totalGroupsEnrolled       total groups enrolled
+     * @param topEnrolledCourse         top enrolled course details
+     * @param totalBundlesEnrolled      total bundles enrolled
      * @param averageProgressPercentage average progress percentage
      */
     public EnrollmentStatsDTO(

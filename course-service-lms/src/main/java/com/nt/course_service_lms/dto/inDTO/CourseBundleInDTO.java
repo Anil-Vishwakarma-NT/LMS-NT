@@ -2,7 +2,10 @@ package com.nt.course_service_lms.dto.inDTO;
 
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Positive;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 import java.util.Objects;
 
@@ -25,6 +28,9 @@ import static com.nt.course_service_lms.constants.CourseBundleConstants.COURSE_I
  * </ul>
  */
 @Data
+@NoArgsConstructor
+@AllArgsConstructor
+@Builder
 public class CourseBundleInDTO {
 
     /**
@@ -52,31 +58,14 @@ public class CourseBundleInDTO {
     @NotNull(message = "Is Active field is required")
     private boolean isActive;
 
-    /**
-     * Default constructor for frameworks that require no-args constructor.
-     */
-    public CourseBundleInDTO() {
-    }
-
-    /**
-     * All-args constructor for manual DTO instantiation.
-     *
-     * @param courseBundleId unique ID of the course-bundle mapping
-     * @param bundleId       ID of the bundle
-     * @param courseId       ID of the course
-     */
-
-    public CourseBundleInDTO(long courseBundleId, Long bundleId, Long courseId, boolean isActive) {
-        this.courseBundleId = courseBundleId;
-        this.bundleId = bundleId;
-        this.courseId = courseId;
-        this.isActive = isActive;
-    }
-
     @Override
     public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
+        if (this == o) {
+            return true;
+        }
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
         CourseBundleInDTO that = (CourseBundleInDTO) o;
         return courseBundleId == that.courseBundleId && isActive == that.isActive && Objects.equals(bundleId, that.bundleId) && Objects.equals(courseId, that.courseId);
     }

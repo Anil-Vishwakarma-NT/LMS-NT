@@ -1,7 +1,15 @@
 package com.nt.course_service_lms.entity;
 
-import jakarta.persistence.*;
-import lombok.*;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.Table;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 
 import java.time.LocalDateTime;
 import java.util.Objects;
@@ -12,8 +20,9 @@ import java.util.Objects;
  */
 @Entity
 @Table(name = "user_progress")
-@Getter
-@Setter
+@Data
+@NoArgsConstructor
+@AllArgsConstructor
 @Builder
 public class UserProgress {
 
@@ -87,36 +96,27 @@ public class UserProgress {
     private LocalDateTime firstCompletedAt;
 
     /**
-     * Default constructor.
-     */
-    public UserProgress() {
-    }
-
-    /**
-     * Parameterized constructor to initialize all fields.
-     */
-    public UserProgress(Long progressId, Long userId, Long contentId, Long courseId, String contentType, double lastPosition, double contentCompletionPercentage, double courseCompletionPercentage, boolean courseCompleted, LocalDateTime lastUpdated, LocalDateTime firstCompletedAt) {
-        this.progressId = progressId;
-        this.userId = userId;
-        this.contentId = contentId;
-        this.courseId = courseId;
-        this.contentType = contentType;
-        this.lastPosition = lastPosition;
-        this.contentCompletionPercentage = contentCompletionPercentage;
-        this.courseCompletionPercentage = courseCompletionPercentage;
-        this.courseCompleted = courseCompleted;
-        this.lastUpdated = lastUpdated;
-        this.firstCompletedAt = firstCompletedAt;
-    }
-
-    /**
      * Checks equality based on all fields.
      */
     @Override
-    public boolean equals(Object o) {
-        if (o == null || getClass() != o.getClass()) return false;
+    public boolean equals(final Object o) {
+        if (this == o) {
+            return true;
+        }
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
         UserProgress that = (UserProgress) o;
-        return progressId == that.progressId && userId == that.userId && contentId == that.contentId && courseId == that.courseId && Double.compare(lastPosition, that.lastPosition) == 0 && Double.compare(contentCompletionPercentage, that.contentCompletionPercentage) == 0 && Double.compare(courseCompletionPercentage, that.courseCompletionPercentage) == 0 && courseCompleted == that.courseCompleted && Objects.equals(contentType, that.contentType) && Objects.equals(lastUpdated, that.lastUpdated) && Objects.equals(firstCompletedAt, that.firstCompletedAt);
+        return Double.compare(lastPosition, that.lastPosition) == 0
+                && Double.compare(contentCompletionPercentage, that.contentCompletionPercentage) == 0
+                && Double.compare(courseCompletionPercentage, that.courseCompletionPercentage) == 0
+                && courseCompleted == that.courseCompleted && Objects.equals(progressId, that.progressId)
+                && Objects.equals(userId, that.userId)
+                && Objects.equals(contentId, that.contentId)
+                && Objects.equals(courseId, that.courseId)
+                && Objects.equals(contentType, that.contentType)
+                && Objects.equals(lastUpdated, that.lastUpdated)
+                && Objects.equals(firstCompletedAt, that.firstCompletedAt);
     }
 
     /**
@@ -124,6 +124,17 @@ public class UserProgress {
      */
     @Override
     public int hashCode() {
-        return Objects.hash(progressId, userId, contentId, courseId, contentType, lastPosition, contentCompletionPercentage, courseCompletionPercentage, courseCompleted, lastUpdated, firstCompletedAt);
+        return Objects.hash(
+                progressId,
+                userId,
+                contentId,
+                courseId,
+                contentType,
+                lastPosition,
+                contentCompletionPercentage,
+                courseCompletionPercentage,
+                courseCompleted,
+                lastUpdated,
+                firstCompletedAt);
     }
 }

@@ -6,11 +6,11 @@ import com.nt.user_service_lms.dto.outDTO.CourseDeadlinesDTO;
 import com.nt.user_service_lms.dto.outDTO.StandardResponseOutDTO;
 import com.nt.user_service_lms.dto.outDTO.UserCourseEnrollDetails;
 import com.nt.user_service_lms.dto.outDTO.UserOutDTO;
+import com.nt.user_service_lms.entities.User;
 import com.nt.user_service_lms.exception.UnauthorizedAccessException;
+import com.nt.user_service_lms.repository.UserRepository;
 import com.nt.user_service_lms.service.UserService;
 import lombok.extern.slf4j.Slf4j;
-import com.nt.user_service_lms.entities.User;
-import com.nt.user_service_lms.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -23,6 +23,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
 /**
@@ -58,7 +59,7 @@ public class UserController {
      *
      * @param email the email address of the user to retrieve (case-insensitive)
      * @return ResponseEntity containing UserOutDTO with user details if found,
-     *         or NOT_FOUND status with null body if user doesn't exist
+     * or NOT_FOUND status with null body if user doesn't exist
      */
     @GetMapping("/getUserId")
     public ResponseEntity<UserOutDTO> getUserIdByEmail(@RequestParam final String email) {
@@ -81,7 +82,7 @@ public class UserController {
      * Uses Spring Security context to determine the authenticated user's email.
      *
      * @return ResponseEntity containing UserOutDTO with authenticated user's details if found,
-     *         or NOT_FOUND status with null body if user doesn't exist
+     * or NOT_FOUND status with null body if user doesn't exist
      */
     @GetMapping("/getUserDetails")
     public ResponseEntity<UserOutDTO> getUserIdByAuth() {
@@ -106,7 +107,7 @@ public class UserController {
      *
      * @param userId the unique identifier of the user to retrieve
      * @return ResponseEntity containing StandardResponseOutDTO with UserOutDTO if user exists,
-     *         or NOT_FOUND status with error message if user doesn't exist
+     * or NOT_FOUND status with error message if user doesn't exist
      */
     @GetMapping("/{userId}")
     public ResponseEntity<StandardResponseOutDTO<UserOutDTO>> getUserNameById(@PathVariable final long userId) {
@@ -144,7 +145,7 @@ public class UserController {
         }
         String username = principal.getUserEmail();
         StandardResponseOutDTO<List<CourseDeadlinesDTO>> deadlines = userService.deadlineCourses(username);
-        return new  ResponseEntity<>(deadlines, HttpStatus.OK);
+        return new ResponseEntity<>(deadlines, HttpStatus.OK);
     }
 
     /**
@@ -164,5 +165,13 @@ public class UserController {
         List<UserCourseEnrollDetails> enrolledCourses = userService.getUserEnrolledCourses(Long.parseLong(userId));
         return ResponseEntity.ok(StandardResponseOutDTO.success(enrolledCourses, "Fetched enrolled courses successfully"));
     }
+
+    @GetMapping("/{userId}/statistics")
+    public ResponseEntity<StandardResponseOutDTO<Map<String, Long>>> getUserEnrollments(@PathVariable Long userId) {
+        Map<String, Long> stats = userService.userStatistics(userId);
+        StandardResponseOutDTO<Map<String, Long>> standardResponseOutDTO = StandardResponseOutDTO.success(stats, "Fetched Users Enrolled");
+        return ResponseEntity.ok(standardResponseOutDTO);
+    }
+
 
 }

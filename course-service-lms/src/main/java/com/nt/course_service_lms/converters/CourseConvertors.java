@@ -35,6 +35,13 @@ public final class CourseConvertors {
         return course;
     }
 
+    /**
+     * Converts a {@link Course} entity to a {@link CourseOutDTO}.
+     * Maps all relevant fields for course output representation.
+     *
+     * @param course the course entity to convert
+     * @return the constructed {@link CourseOutDTO}
+     */
     public static CourseOutDTO courseToCourseOutDTO(final Course course) {
         CourseOutDTO courseOutDTO = new CourseOutDTO();
         courseOutDTO.setCourseId(course.getCourseId());
@@ -54,7 +61,7 @@ public final class CourseConvertors {
      * This method modifies the existing course instance rather than creating a new one.
      *
      * @param existingCourse the course entity to update
-     * @param updateDTO the DTO containing updated course data
+     * @param updateDTO      the DTO containing updated course data
      */
     public static void updateCourseFromDTO(final Course existingCourse, final UpdateCourseInDTO updateDTO) {
         existingCourse.setTitle(StringUtils.toProperCase(updateDTO.getTitle()));

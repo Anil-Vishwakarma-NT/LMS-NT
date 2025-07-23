@@ -1,12 +1,17 @@
 package com.nt.user_service_lms.entities;
 
+import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
-import jakarta.persistence.Table;
-import jakarta.persistence.Id;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
-import jakarta.persistence.Column;
+import jakarta.persistence.Id;
+import jakarta.persistence.Table;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
+import lombok.NoArgsConstructor;
+
+import java.util.Objects;
 
 /**
  * Table declaration for Role.
@@ -14,6 +19,9 @@ import lombok.Data;
 @Entity
 @Table(name = "role")
 @Data
+@NoArgsConstructor
+@AllArgsConstructor
+@Builder
 public class Role {
 
     /**
@@ -29,4 +37,15 @@ public class Role {
     @Column(nullable = false, unique = true)
     private String name;
 
+    @Override
+    public boolean equals(Object o) {
+        if (o == null || getClass() != o.getClass()) return false;
+        Role role = (Role) o;
+        return Objects.equals(roleId, role.roleId) && Objects.equals(name, role.name);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(roleId, name);
+    }
 }

@@ -1,105 +1,183 @@
 package com.nt.course_service_lms.controllerTest;
 
 import com.nt.course_service_lms.controller.CourseBundleController;
-import com.nt.course_service_lms.dto.outDTO.CourseBundleOutDTO;
 import com.nt.course_service_lms.dto.inDTO.CourseBundleInDTO;
+import com.nt.course_service_lms.dto.inDTO.UpdateCourseBundleInDTO;
+import com.nt.course_service_lms.dto.outDTO.BundleInfoOutDTO;
+import com.nt.course_service_lms.dto.outDTO.BundleSummaryOutDTO;
+import com.nt.course_service_lms.dto.outDTO.CourseBundleOutDTO;
+import com.nt.course_service_lms.dto.outDTO.StandardResponseOutDTO;
+import com.nt.course_service_lms.entity.CourseBundle;
 import com.nt.course_service_lms.service.CourseBundleService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
-import org.springframework.http.MediaType;
-import org.springframework.test.web.servlet.MockMvc;
-import org.springframework.test.web.servlet.setup.MockMvcBuilders;
+import org.springframework.http.ResponseEntity;
 
+import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 
+import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
-class CourseBundleControllerTest {
+public class CourseBundleControllerTest {
 
-    private MockMvc mockMvc;
+    @InjectMocks
+    private CourseBundleController courseBundleController;
 
     @Mock
     private CourseBundleService courseBundleService;
 
-    private CourseBundleController courseBundleController;
-
     @BeforeEach
     void setUp() {
         MockitoAnnotations.openMocks(this);
-        courseBundleController = new CourseBundleController(courseBundleService);
-        mockMvc = MockMvcBuilders.standaloneSetup(courseBundleController).build();
     }
 
     @Test
-    void testCreateCourseBundle() throws Exception {
-        // Mock service response
-        CourseBundleInDTO mockCourseBundleInDTO = new CourseBundleInDTO(1L, 101L, 201L);
-        when(courseBundleService.createCourseBundle(any(CourseBundleInDTO.class))).thenReturn(mockCourseBundleInDTO);
+    void testCreateCourseBundle() {
+        CourseBundleInDTO inDTO = new CourseBundleInDTO();
+        CourseBundle bundle = new CourseBundle();
+        bundle.setCourseBundleId(1L);
 
-        // Perform POST request
-        mockMvc.perform(post("/api/bundles/course_bundles")
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content("{\"courseBundleId\": 1, \"bundleId\": 101, \"courseId\": 201}"))
-                .andExpect(status().isCreated())
-                .andExpect(jsonPath("$.courseBundleId").value(1L));
+        when(courseBundleService.createCourseBundle(inDTO)).thenReturn(bundle);
+
+        ResponseEntity<StandardResponseOutDTO<CourseBundle>> response = courseBundleController.createCourseBundle(inDTO);
+
+        assertEquals(201, response.getStatusCodeValue());
+        assertEquals(1L, response.getBody().getData().getCourseBundleId());
+        assertEquals("Course Bundle created successfully.", response.getBody().getMessage());
     }
 
     @Test
-    void testGetAllCourseBundles() throws Exception {
-        // Mock service response
-        List<CourseBundleOutDTO> mockCourseBundles = List.of(
-                new CourseBundleOutDTO(1L, 101L, "MockBundle1", 201L, "MockCourse1"),
-                new CourseBundleOutDTO(2L, 102L, "MockBundle2", 202L, "MockCourse2")
-        );
-        when(courseBundleService.getAllCourseBundles()).thenReturn(mockCourseBundles);
+    void testGetAllCourseBundles() {
+        CourseBundleOutDTO b1 = new CourseBundleOutDTO();
+        CourseBundleOutDTO b2 = new CourseBundleOutDTO();
 
-        // Perform GET request
-        mockMvc.perform(get("/api/bundles/course_bundles"))
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$.size()").value(2))
-                .andExpect(jsonPath("$[0].bundleName").value("MockBundle1"))
-                .andExpect(jsonPath("$[1].bundleName").value("MockBundle2"));
+        when(courseBundleService.getAllCourseBundles()).thenReturn(Arrays.asList(b1, b2));
+
+        ResponseEntity<StandardResponseOutDTO<List<CourseBundleOutDTO>>> response = courseBundleController.getAllCourseBundles();
+
+        assertEquals(200, response.getStatusCodeValue());
+        assertEquals(2, response.getBody().getData().size());
     }
 
     @Test
-    void testGetCourseBundleById() throws Exception {
-        // Mock service response
-        CourseBundleOutDTO mockCourseBundleOutDTO = new CourseBundleOutDTO(1L, 101L, "MockBundle", 201L, "MockCourse");
-        when(courseBundleService.getCourseBundleById(1L)).thenReturn(mockCourseBundleOutDTO);
+    void testGetAllCourseBundlesEmpty() {
+        when(courseBundleService.getAllCourseBundles()).thenReturn(Collections.emptyList());
 
-        // Perform GET request
-        mockMvc.perform(get("/api/bundles/course_bundles/1"))
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$.courseBundleId").value(1L))
-                .andExpect(jsonPath("$.bundleName").value("MockBundle"))
-                .andExpect(jsonPath("$.courseName").value("MockCourse"));
+        ResponseEntity<StandardResponseOutDTO<List<CourseBundleOutDTO>>> response = courseBundleController.getAllCourseBundles();
+
+        assertEquals(200, response.getStatusCodeValue());
+        assertTrue(response.getBody().getData().isEmpty());
     }
 
     @Test
-    void testDeleteCourseBundle() throws Exception {
-        // Perform DELETE request
-        mockMvc.perform(delete("/api/bundles/course_bundles/1"))
-                .andExpect(status().isOk())
-                .andExpect(content().string("Course-bundle with ID 1 deleted successfully."));
+    void testGetCourseBundleById() {
+        Long id = 1L;
+        CourseBundleOutDTO outDTO = new CourseBundleOutDTO();
 
-        // Verify service interaction
-        verify(courseBundleService, times(1)).deleteCourseBundle(1L);
+        when(courseBundleService.getCourseBundleById(id)).thenReturn(outDTO);
+
+        ResponseEntity<StandardResponseOutDTO<CourseBundleOutDTO>> response = courseBundleController.getCourseBundleById(id);
+
+        assertEquals(200, response.getStatusCodeValue());
+        assertNotNull(response.getBody().getData());
+        assertTrue(response.getBody().getMessage().contains("retrieved successfully"));
     }
 
     @Test
-    void testUpdateCourseBundle() throws Exception {
-        // Mock service response
-        CourseBundleInDTO mockUpdatedCourseBundleInDTO = new CourseBundleInDTO(1L, 102L,  202L);
-        when(courseBundleService.updateCourseBundle(eq(1L), any(CourseBundleInDTO.class))).thenReturn(mockUpdatedCourseBundleInDTO);
+    void testDeleteCourseBundle() {
+        Long id = 1L;
 
-        // Perform PUT request
-        mockMvc.perform(put("/api/bundles/course_bundles/1")
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content("{\"courseBundleId\": 1, \"bundleId\": 102, \"courseId\": 202}"))
-                .andExpect(status().isOk());
+        ResponseEntity<StandardResponseOutDTO<Void>> response = courseBundleController.deleteCourseBundle(id);
+
+        verify(courseBundleService, times(1)).deleteCourseBundle(id);
+        assertEquals(200, response.getStatusCodeValue());
+        assertEquals("Course-bundle with ID " + id + " deleted successfully.", response.getBody().getMessage());
+    }
+
+    @Test
+    void testUpdateCourseBundle() {
+        Long id = 1L;
+        UpdateCourseBundleInDTO updateDTO = new UpdateCourseBundleInDTO();
+
+        String serviceResponse = "Updated Successfully";
+
+        when(courseBundleService.updateCourseBundle(id, updateDTO)).thenReturn(serviceResponse);
+
+        ResponseEntity<StandardResponseOutDTO<String>> response = courseBundleController.updateCourseBundle(id, updateDTO);
+
+        assertEquals(200, response.getStatusCodeValue());
+        assertEquals(serviceResponse, response.getBody().getData());
+        assertTrue(response.getBody().getMessage().contains("updated successfully"));
+    }
+
+    @Test
+    void testGetAllCoursesByBundleId() {
+        Long bundleId = 1L;
+        CourseBundle cb1 = new CourseBundle();
+        CourseBundle cb2 = new CourseBundle();
+
+        when(courseBundleService.getAllCoursesByBundle(bundleId)).thenReturn(Arrays.asList(cb1, cb2));
+
+        ResponseEntity<StandardResponseOutDTO<List<CourseBundle>>> response = courseBundleController.getAllCoursesByBundleId(bundleId);
+
+        assertEquals(200, response.getStatusCodeValue());
+        assertEquals(2, response.getBody().getData().size());
+        assertTrue(response.getBody().getMessage().contains("retrieved successfully"));
+    }
+
+    @Test
+    void testGetAllCoursesByBundleIdEmpty() {
+        when(courseBundleService.getAllCoursesByBundle(100L)).thenReturn(Collections.emptyList());
+
+        ResponseEntity<StandardResponseOutDTO<List<CourseBundle>>> response = courseBundleController.getAllCoursesByBundleId(100L);
+
+        assertEquals(200, response.getStatusCodeValue());
+        assertTrue(response.getBody().getData().isEmpty());
+    }
+
+    @Test
+    void testGetAllBundleInfo() {
+        BundleInfoOutDTO dto1 = new BundleInfoOutDTO();
+        BundleInfoOutDTO dto2 = new BundleInfoOutDTO();
+
+        when(courseBundleService.getBundlesInfo()).thenReturn(Arrays.asList(dto1, dto2));
+
+        ResponseEntity<StandardResponseOutDTO<List<BundleInfoOutDTO>>> response = courseBundleController.getALlBundleInfo();
+
+        assertEquals(200, response.getStatusCodeValue());
+        assertEquals(2, response.getBody().getData().size());
+        assertEquals("Bundles info retrieved successfully.", response.getBody().getMessage());
+    }
+
+    @Test
+    void testGetRecentBundles() {
+        BundleSummaryOutDTO dto1 = new BundleSummaryOutDTO();
+
+        when(courseBundleService.getRecentBundleSummaries()).thenReturn(Arrays.asList(dto1));
+
+        ResponseEntity<StandardResponseOutDTO<List<BundleSummaryOutDTO>>> response = courseBundleController.getRecentBundles();
+
+        assertEquals(200, response.getStatusCodeValue());
+        assertEquals(1, response.getBody().getData().size());
+        assertEquals("Recent bundles retrieved successfully.", response.getBody().getMessage());
+    }
+
+    @Test
+    void testFindCourseIdsByBundleId() {
+        Long bundleId = 1L;
+        List<Long> courseIds = Arrays.asList(101L, 102L);
+
+        when(courseBundleService.findCourseIdsByBundleId(bundleId)).thenReturn(courseIds);
+
+        ResponseEntity<List<Long>> response = courseBundleController.findCourseIdsByBundleId(bundleId);
+
+        assertEquals(200, response.getStatusCodeValue());
+        assertEquals(2, response.getBody().size());
+        assertTrue(response.getBody().contains(101L));
     }
 }

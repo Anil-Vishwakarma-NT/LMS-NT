@@ -1,6 +1,6 @@
 package com.nt.user_service_lms.controller;
 
-import com.nt.user_service_lms.dto.*;
+import com.nt.user_service_lms.dto.inDTO.RegisterDto;
 import com.nt.user_service_lms.service.serviceImpl.AdminServiceImpl;
 import com.nt.user_service_lms.service.serviceImpl.GroupServiceImpl;
 import com.nt.user_service_lms.service.serviceImpl.UserServiceImpl;
@@ -15,12 +15,14 @@ import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import java.util.ArrayList;
 import java.util.List;
 
-import static org.mockito.Mockito.*;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 /**
  * Unit tests for the AdminController class.
@@ -69,7 +71,7 @@ class AdminControllerTest {
         MessageOutDto messageOutDto = new MessageOutDto();
         messageOutDto.setMessage("Admin registered successfully");
 
-        when(adminService.register(registerDto)).thenReturn(StandardResponseOutDTO.success(messageOutDto,"Admin registered successfully"));
+        when(adminService.register(registerDto)).thenReturn(StandardResponseOutDTO.success(messageOutDto, "Admin registered successfully"));
 
         mockMvc.perform(post("/admin/register")
                         .contentType("application/json")

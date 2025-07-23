@@ -6,10 +6,11 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
+
+import java.util.Objects;
+
+import java.util.Objects;
 
 
 /**
@@ -21,6 +22,7 @@ import lombok.Setter;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
+@Builder
 public class Group {
 
     /**
@@ -34,7 +36,7 @@ public class Group {
     /**
      * The name of the group.
      */
-    @Column(name = "group_name", nullable = false)
+    @Column(name = "group_name", unique = true, nullable = false)
     private String groupName;
 
     /**
@@ -56,11 +58,23 @@ public class Group {
     /**
      * Constructor to initialize group with name and creator ID.
      *
-     * @param name the group name
+     * @param name      the group name
      * @param creatorId the creator's user ID
      */
     public Group(final String name, final long creatorId) {
         this.groupName = name;
         this.creatorId = creatorId;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (o == null || getClass() != o.getClass()) return false;
+        Group group = (Group) o;
+        return creatorId == group.creatorId && isActive == group.isActive && Objects.equals(groupId, group.groupId) && Objects.equals(groupName, group.groupName);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(groupId, groupName, creatorId, isActive);
     }
 }

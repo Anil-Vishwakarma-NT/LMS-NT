@@ -1,11 +1,31 @@
 package com.nt.course_service_lms.dto.inDTO;
 
-import jakarta.validation.constraints.*;
+import jakarta.validation.constraints.Min;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Pattern;
+import jakarta.validation.constraints.Size;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
-import static com.nt.course_service_lms.constants.CourseContentConstants.*;
+import java.util.Objects;
+
+import static com.nt.course_service_lms.constants.CourseContentConstants.COURSE_ID_NOT_NULL;
+import static com.nt.course_service_lms.constants.CourseContentConstants.COURSE_ID_VALID;
+import static com.nt.course_service_lms.constants.CourseContentConstants.DESCRIPTION_NOT_BLANK;
+import static com.nt.course_service_lms.constants.CourseContentConstants.DESCRIPTION_SIZE_EXCEED;
+import static com.nt.course_service_lms.constants.CourseContentConstants.DESCRIPTION_SIZE_EXCEED_VALUE;
+import static com.nt.course_service_lms.constants.CourseContentConstants.RESOURCE_LINK_INVALID;
+import static com.nt.course_service_lms.constants.CourseContentConstants.TITLE_NOT_BLANK;
+import static com.nt.course_service_lms.constants.CourseContentConstants.TITLE_SIZE_EXCEED;
+import static com.nt.course_service_lms.constants.CourseContentConstants.TITLE_SIZE_EXCEED_VALUE;
 
 @Data
+@NoArgsConstructor
+@AllArgsConstructor
+@Builder
 public class UpdateCourseContentInDTO {
 
     /**
@@ -45,14 +65,17 @@ public class UpdateCourseContentInDTO {
     @NotNull(message = "Is Active field is required")
     private boolean isActive;
 
-    public UpdateCourseContentInDTO() {
+    @Override
+    public boolean equals(Object o) {
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
+        UpdateCourseContentInDTO that = (UpdateCourseContentInDTO) o;
+        return courseId == that.courseId && isActive == that.isActive && Objects.equals(title, that.title) && Objects.equals(description, that.description) && Objects.equals(resourceLink, that.resourceLink);
     }
 
-    public UpdateCourseContentInDTO(long courseId, String title, String description, String resourceLink, boolean isActive) {
-        this.courseId = courseId;
-        this.title = title;
-        this.description = description;
-        this.resourceLink = resourceLink;
-        this.isActive = isActive;
+    @Override
+    public int hashCode() {
+        return Objects.hash(courseId, title, description, resourceLink, isActive);
     }
 }

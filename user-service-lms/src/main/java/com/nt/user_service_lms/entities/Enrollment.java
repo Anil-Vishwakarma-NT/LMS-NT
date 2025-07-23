@@ -12,6 +12,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.time.LocalDateTime;
+import java.util.Objects;
 
 /**
  * Entity representing an enrollment record in the learning management system.
@@ -166,5 +167,17 @@ public class Enrollment {
      */
     public void setActive(final Boolean active) {
         isActive = active;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (o == null || getClass() != o.getClass()) return false;
+        Enrollment that = (Enrollment) o;
+        return Objects.equals(enrollmentId, that.enrollmentId) && Objects.equals(userId, that.userId) && Objects.equals(groupId, that.groupId) && Objects.equals(courseId, that.courseId) && Objects.equals(bundleId, that.bundleId) && Objects.equals(assignedBy, that.assignedBy) && Objects.equals(assignedAt, that.assignedAt) && Objects.equals(deadline, that.deadline) && Objects.equals(status, that.status) && Objects.equals(enrollmentSource, that.enrollmentSource) && Objects.equals(startedAt, that.startedAt) && Objects.equals(completedAt, that.completedAt) && Objects.equals(createdAt, that.createdAt) && Objects.equals(updatedAt, that.updatedAt) && Objects.equals(isActive, that.isActive);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(enrollmentId, userId, groupId, courseId, bundleId, assignedBy, assignedAt, deadline, status, enrollmentSource, startedAt, completedAt, createdAt, updatedAt, isActive);
     }
 }

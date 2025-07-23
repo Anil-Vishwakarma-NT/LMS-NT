@@ -12,13 +12,19 @@ import java.util.Objects;
  */
 public class StandardResponseOutDTO<T> {
 
-    /** The status of the response (e.g., "SUCCESS", "ERROR"). */
+    /**
+     * The status of the response (e.g., "SUCCESS", "ERROR").
+     */
     private String status;
 
-    /** A human-readable message describing the result of the operation. */
+    /**
+     * A human-readable message describing the result of the operation.
+     */
     private String message;
 
-    /** The actual data payload of the response. */
+    /**
+     * The actual data payload of the response.
+     */
     private T data;
 
     /**
@@ -88,14 +94,14 @@ public class StandardResponseOutDTO<T> {
      */
     public String getMessage() {
         return message;
-    }
+    }final
 
     /**
      * Sets the response message.
      *
      * @param message the message to set
      */
-    public void setMessage(String message) {
+    public void setMessage(final String message) {
         this.message = message;
     }
 
@@ -113,8 +119,19 @@ public class StandardResponseOutDTO<T> {
      *
      * @param data the data to set
      */
-    public void setData(T data) {
+    public void setData(final T data) {
         this.data = data;
+    }
+
+    /**
+     * Creates a failure response wrapper with the given error message.
+     *
+     * @param message the failure message
+     * @param <T>     the type of the payload (null in this case)
+     * @return a {@code StandardResponseOutDTO} with "FAILURE" status
+     */
+    public static <T> StandardResponseOutDTO<T> failure(final String message) {
+        return new StandardResponseOutDTO<>("FAILURE", message, null);
     }
 
     /**
@@ -124,13 +141,17 @@ public class StandardResponseOutDTO<T> {
      * @return {@code true} if this object is the same as the object argument; {@code false} otherwise
      */
     @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
+    public boolean equals(final Object o) {
+        if (this == o) {
+            return true;
+        }
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
         StandardResponseOutDTO<?> that = (StandardResponseOutDTO<?>) o;
-        return Objects.equals(status, that.status) &&
-                Objects.equals(message, that.message) &&
-                Objects.equals(data, that.data);
+        return Objects.equals(status, that.status)
+                && Objects.equals(message, that.message)
+                && Objects.equals(data, that.data);
     }
 
     /**
@@ -150,10 +171,10 @@ public class StandardResponseOutDTO<T> {
      */
     @Override
     public String toString() {
-        return "StandardResponseOutDTO{" +
-                "status='" + status + '\'' +
-                ", message='" + message + '\'' +
-                ", data=" + data +
-                '}';
+        return "StandardResponseOutDTO{"
+                + "status='" + status + '\''
+                + ", message='" + message + '\''
+                + ", data=" + data
+                + '}';
     }
 }

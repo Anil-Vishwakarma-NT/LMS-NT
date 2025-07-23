@@ -18,10 +18,21 @@ import java.util.stream.Collectors;
 
 /**
  * A centralized exception handler for all WebFlux controllers.
+ * <p>
+ * This class captures and processes various types of exceptions thrown by REST endpoints,
+ * and returns consistent and meaningful error responses to the client.
+ * </p>
  */
 @RestControllerAdvice
 public final class GlobalExceptionHandler {
 
+    /**
+     * Handles validation errors when request body constraints are violated.
+     *
+     * @param ex       the validation exception
+     * @param exchange the server web exchange context
+     * @return a {@link Mono} wrapping an {@link ErrorResponse} with validation details
+     */
     @ExceptionHandler(MethodArgumentNotValidException.class)
     public Mono<ErrorResponse> handleValidationException(final MethodArgumentNotValidException ex,
                                                          final ServerWebExchange exchange) {
@@ -32,39 +43,88 @@ public final class GlobalExceptionHandler {
                 .collect(Collectors.toList());
 
         String errorMessage = String.join(", ", errors);
-        return Mono.just(new ErrorResponse(LocalDateTime.now(), HttpStatus.BAD_REQUEST.value(),
-                "Validation failed: " + errorMessage));
+        return Mono.just(new ErrorResponse(
+                LocalDateTime.now(),
+                HttpStatus.BAD_REQUEST.value(),
+                "Validation failed: " + errorMessage
+        ));
     }
 
+    /**
+     * Handles cases where a requested resource is not found.
+     *
+     * @param ex       the {@link ResourceNotFoundException}
+     * @param exchange the server web exchange context
+     * @return a {@link Mono} wrapping an {@link ErrorResponse} with error details
+     */
     @ExceptionHandler(ResourceNotFoundException.class)
     public Mono<ErrorResponse> handleResourceNotFoundException(final ResourceNotFoundException ex,
                                                                final ServerWebExchange exchange) {
-        return Mono.just(new ErrorResponse(LocalDateTime.now(), HttpStatus.NOT_FOUND.value(), ex.getMessage()));
+        return Mono.just(new ErrorResponse(
+                LocalDateTime.now(),
+                HttpStatus.NOT_FOUND.value(),
+                ex.getMessage()
+        ));
     }
 
-
+    /**
+     * Handles malformed or invalid input in HTTP requests, such as type mismatches or unparseable JSON.
+     * If the error is related to an enum, a list of valid values is returned.
+     *
+     * @param ex       the {@link HttpMessageNotReadableException}
+     * @param exchange the server web exchange context
+     * @return a {@link Mono} wrapping an {@link ErrorResponse} with parsing error details
+     */
     @ExceptionHandler(HttpMessageNotReadableException.class)
     public Mono<ErrorResponse> handleHttpMessageNotReadableException(final HttpMessageNotReadableException ex,
                                                                      final ServerWebExchange exchange) {
         String errorMessage = "Invalid input format";
+
         if (ex.getCause() instanceof InvalidFormatException ife) {
             if (ife.getTargetType() != null && ife.getTargetType().isEnum()) {
                 errorMessage = String.format("Invalid value for %s. Accepted values are: %s",
                         ife.getPath().get(ife.getPath().size() - 1).getFieldName(),
-                        String.join(", ", getEnumValues(ife.getTargetType())));
+                        String.join(", ", getEnumValues(ife.getTargetType()))
+                );
             }
         }
-        return Mono.just(new ErrorResponse(LocalDateTime.now(), HttpStatus.BAD_REQUEST.value(), errorMessage));
+
+        return Mono.just(new ErrorResponse(
+                LocalDateTime.now(),
+                HttpStatus.BAD_REQUEST.value(),
+                errorMessage
+        ));
     }
 
+    /**
+     * A standardized structure for error responses returned to the client.
+     */
     @Data
     @AllArgsConstructor
     public static class ErrorResponse {
+
+        /**
+         * The timestamp when the error occurred.
+         */
         private LocalDateTime timestamp;
+
+        /**
+         * The HTTP status code associated with the error.
+         */
         private int status;
+
+        /**
+         * A human-readable message describing the error.
+         */
         private String message;
     }
 
+    /**
+     * Utility method to extract valid enum values for a given enum class.
+     *
+     * @param enumClass the enum class
+     * @return a list of valid enum values as strings
+     */
     private List<String> getEnumValues(final Class<?> enumClass) {
         return java.util.Arrays.stream(enumClass.getEnumConstants())
                 .map(Object::toString)

@@ -1,10 +1,14 @@
 package com.nt.user_service_lms.dto.inDTO;
 
-
 import jakarta.validation.constraints.NotNull;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Objects;
 
 /**
  * Data Transfer Object for enrollment request input.
@@ -15,6 +19,10 @@ import java.util.List;
  * @version 1.0
  * @since 1.0
  */
+@Data
+@NoArgsConstructor
+@AllArgsConstructor
+@Builder
 public class EnrollmentRequestInDTO {
 
     /**
@@ -60,13 +68,6 @@ public class EnrollmentRequestInDTO {
      * Defaults to "ACTIVE" if not specified.
      */
     private String status = "ACTIVE";
-
-    /**
-     * Default constructor for EnrollmentRequestInDTO.
-     */
-    public EnrollmentRequestInDTO() {
-
-    }
 
     /**
      * Gets the user ID who assigned this enrollment.
@@ -243,5 +244,17 @@ public class EnrollmentRequestInDTO {
         final boolean noConflicts = !(hasUsers() && hasGroups()) && !(hasCourses() && hasBundles());
 
         return hasTargets && hasContent && noConflicts;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (o == null || getClass() != o.getClass()) return false;
+        EnrollmentRequestInDTO that = (EnrollmentRequestInDTO) o;
+        return Objects.equals(assignedBy, that.assignedBy) && Objects.equals(userIds, that.userIds) && Objects.equals(groupIds, that.groupIds) && Objects.equals(courseIds, that.courseIds) && Objects.equals(bundleIds, that.bundleIds) && Objects.equals(deadline, that.deadline) && Objects.equals(status, that.status);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(assignedBy, userIds, groupIds, courseIds, bundleIds, deadline, status);
     }
 }

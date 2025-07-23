@@ -15,25 +15,28 @@ import java.lang.annotation.Target;
  */
 @Documented
 @Constraint(validatedBy = EnrollmentValidator.class)
-@Target({ ElementType.TYPE })
+@Target({ElementType.TYPE})
 @Retention(RetentionPolicy.RUNTIME)
 public @interface ValidateEnrollmentDTO {
     /**
      * The error message to be returned when validation fails.
+     *
      * @return the error message
      */
     String message() default "Invalid enrollment update: specify either userId"
             + " or groupId, and either courseId or bundleId";
 
     /**
-         * Allows specification of validation groups.
-         * @return the groups for validation
-         */
-        Class<?>[] groups() default {};
+     * Allows specification of validation groups.
+     *
+     * @return the groups for validation
+     */
+    Class<?>[] groups() default {};
 
-        /**
-         * Can be used by clients to assign custom payload objects to a constraint.
-         * @return the payload type for clients to specify
-         */
-        Class<? extends Payload>[] payload() default {};
+    /**
+     * Can be used by clients to assign custom payload objects to a constraint.
+     *
+     * @return the payload type for clients to specify
+     */
+    Class<? extends Payload>[] payload() default {};
 }

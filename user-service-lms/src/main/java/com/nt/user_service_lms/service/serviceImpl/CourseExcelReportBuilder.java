@@ -1,6 +1,13 @@
 package com.nt.user_service_lms.service.serviceImpl;
 
-import org.apache.poi.ss.usermodel.*;
+import org.apache.poi.ss.usermodel.Cell;
+import org.apache.poi.ss.usermodel.CellStyle;
+import org.apache.poi.ss.usermodel.DataFormat;
+import org.apache.poi.ss.usermodel.Font;
+import org.apache.poi.ss.usermodel.HorizontalAlignment;
+import org.apache.poi.ss.usermodel.Row;
+import org.apache.poi.ss.usermodel.Sheet;
+import org.apache.poi.ss.usermodel.Workbook;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.springframework.stereotype.Service;
 
@@ -66,7 +73,9 @@ public class CourseExcelReportBuilder {
 
     private int addTable(Sheet sheet, int rowNum, String title, List<Map<String, Object>> rows,
                          CellStyle headerStyle, CellStyle titleStyle, CellStyle percentageStyle, CellStyle numberStyle) {
-        if (rows == null || rows.isEmpty()) return rowNum;
+        if (rows == null || rows.isEmpty()) {
+            return rowNum;
+        }
 
         Row titleRow = sheet.createRow(rowNum++);
         Cell titleCell = titleRow.createCell(0);
@@ -119,7 +128,9 @@ public class CourseExcelReportBuilder {
             }
         }
 
-        if (hasCourseKpi) rowNum += 2;
+        if (hasCourseKpi) {
+            rowNum += 2;
+        }
 
         // Prepare global KPI table
         for (Map.Entry<String, Object> entry : data.entrySet()) {
@@ -146,9 +157,13 @@ public class CourseExcelReportBuilder {
     }
 
     private boolean isKpiValid(Map.Entry<String, Object> entry) {
-        if (!(entry.getValue() instanceof List)) return false;
+        if (!(entry.getValue() instanceof List)) {
+            return false;
+        }
         List list = (List) entry.getValue();
-        if (list.isEmpty() || !(list.get(0) instanceof Map)) return false;
+        if (list.isEmpty() || !(list.get(0) instanceof Map)) {
+            return false;
+        }
         Map map = (Map) list.get(0);
         return map.containsKey("value");
     }

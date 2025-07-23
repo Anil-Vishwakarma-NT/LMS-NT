@@ -41,11 +41,11 @@ public final class CourseEnrolledUserReport {
     /**
      * Constructs a new CourseEnrolledUserReport with the specified parameters.
      *
-     * @param userEnrolled the identifier of the enrolled user
+     * @param userEnrolled        the identifier of the enrolled user
      * @param percentageCompleted the percentage of course completion
-     * @param lastViewed the timestamp of last course access
-     * @param deadline the deadline for course completion
-     * @param firstCompletedAt the timestamp of first course completion
+     * @param lastViewed          the timestamp of last course access
+     * @param deadline            the deadline for course completion
+     * @param firstCompletedAt    the timestamp of first course completion
      */
     public CourseEnrolledUserReport(final String userEnrolled, final Double percentageCompleted,
                                     final LocalDateTime lastViewed, final LocalDateTime deadline,
@@ -73,10 +73,10 @@ public final class CourseEnrolledUserReport {
         }
         CourseEnrolledUserReport that = (CourseEnrolledUserReport) o;
         return Objects.equals(userEnrolled, that.userEnrolled)
-            && Objects.equals(percentageCompleted, that.percentageCompleted)
-            && Objects.equals(lastViewed, that.lastViewed)
-            && Objects.equals(deadline, that.deadline)
-            && Objects.equals(firstCompletedAt, that.firstCompletedAt);
+                && Objects.equals(percentageCompleted, that.percentageCompleted)
+                && Objects.equals(lastViewed, that.lastViewed)
+                && Objects.equals(deadline, that.deadline)
+                && Objects.equals(firstCompletedAt, that.firstCompletedAt);
     }
 
     /**

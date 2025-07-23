@@ -8,7 +8,9 @@ import org.junit.jupiter.api.Test;
 
 import java.time.LocalDateTime;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
 
 class UserProgressConverterTest {
 
@@ -22,20 +24,19 @@ class UserProgressConverterTest {
     @Test
     void testToDTO_ValidEntity() {
         LocalDateTime now = LocalDateTime.now();
-        UserProgress entity = UserProgress.builder()
-                .userId(1)
-                .courseId(10)
-                .contentId(100)
-                .contentType("VIDEO")
-                .lastPosition(120)
-                .contentCompletionPercentage(75.5)
-                .lastUpdated(now)
-                .build();
+        UserProgress entity = new UserProgress();
+        entity.setUserId(1L);
+        entity.setCourseId(10L);
+        entity.setContentId(100L);
+        entity.setContentType("VIDEO");
+        entity.setLastPosition(120);
+        entity.setContentCompletionPercentage(75.5);
+        entity.setLastUpdated(now);
 
         UserProgressOutDTO dto = converter.toDTO(entity);
 
         assertNotNull(dto);
-        assertEquals(1, dto.getUserId());
+        assertEquals(1L, dto.getUserId());
         assertEquals(10L, dto.getCourseId());
         assertEquals(100L, dto.getContentId());
         assertEquals("VIDEO", dto.getContentType());
@@ -60,33 +61,32 @@ class UserProgressConverterTest {
         assertNull(dto.getCourseId());
         assertNull(dto.getContentId());
         assertNull(dto.getContentType());
-        assertEquals(0, dto.getLastPosition()); // default int
-        assertEquals(0.0, dto.getContentCompletionPercentage()); // default double
+        assertEquals(0, dto.getLastPosition());
+        assertEquals(0.0, dto.getContentCompletionPercentage());
         assertNull(dto.getLastUpdated());
     }
 
     @Test
     void testToEntity_ValidDTO() {
-        UserProgressOutDTO dto = UserProgressOutDTO.builder()
-                .userId(2)
-                .courseId(20)
-                .contentId(200)
-                .contentType("QUIZ")
-                .lastPosition(45)
-                .contentCompletionPercentage(99.9)
-                .lastUpdated(LocalDateTime.of(2023, 10, 10, 10, 10))
-                .build();
+        UserProgressOutDTO dto = new UserProgressOutDTO();
+        dto.setUserId(2L);
+        dto.setCourseId(20L);
+        dto.setContentId(200L);
+        dto.setContentType("QUIZ");
+        dto.setLastPosition(45);
+        dto.setContentCompletionPercentage(99.9);
+        dto.setLastUpdated(LocalDateTime.of(2023, 10, 10, 10, 10));
 
         UserProgress entity = converter.toEntity(dto);
 
         assertNotNull(entity);
-        assertEquals(2, entity.getUserId());
+        assertEquals(2L, entity.getUserId());
         assertEquals(20L, entity.getCourseId());
         assertEquals(200L, entity.getContentId());
         assertEquals("QUIZ", entity.getContentType());
         assertEquals(45, entity.getLastPosition());
         assertEquals(99.9, entity.getContentCompletionPercentage());
-        assertNotNull(entity.getLastUpdated()); // Should be set to now
+        assertNotNull(entity.getLastUpdated());
     }
 
     @Test
@@ -107,7 +107,7 @@ class UserProgressConverterTest {
         assertNull(entity.getContentType());
         assertEquals(0, entity.getLastPosition());
         assertEquals(0.0, entity.getContentCompletionPercentage());
-        assertNotNull(entity.getLastUpdated()); // Should still be set
+        assertNotNull(entity.getLastUpdated());
     }
 }
 

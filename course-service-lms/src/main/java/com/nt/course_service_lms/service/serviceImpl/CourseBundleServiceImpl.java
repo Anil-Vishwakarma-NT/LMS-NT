@@ -1,19 +1,19 @@
 package com.nt.course_service_lms.service.serviceImpl;
 
+import com.nt.course_service_lms.dto.inDTO.CourseBundleInDTO;
+import com.nt.course_service_lms.dto.inDTO.UpdateCourseBundleInDTO;
+import com.nt.course_service_lms.dto.outDTO.BundleInfoOutDTO;
+import com.nt.course_service_lms.dto.outDTO.BundleSummaryOutDTO;
+import com.nt.course_service_lms.dto.outDTO.CourseBundleOutDTO;
 import com.nt.course_service_lms.entity.Bundle;
 import com.nt.course_service_lms.entity.Course;
 import com.nt.course_service_lms.entity.CourseBundle;
 import com.nt.course_service_lms.exception.ResourceAlreadyExistsException;
 import com.nt.course_service_lms.exception.ResourceNotFoundException;
 import com.nt.course_service_lms.exception.ResourceNotValidException;
-import com.nt.course_service_lms.dto.inDTO.CourseBundleInDTO;
-import com.nt.course_service_lms.dto.inDTO.UpdateCourseBundleInDTO;
-import com.nt.course_service_lms.dto.outDTO.BundleInfoOutDTO;
-import com.nt.course_service_lms.dto.outDTO.BundleSummaryOutDTO;
-import com.nt.course_service_lms.dto.outDTO.CourseBundleOutDTO;
+import com.nt.course_service_lms.repository.BundleRepository;
 import com.nt.course_service_lms.repository.CourseBundleRepository;
 import com.nt.course_service_lms.repository.CourseRepository;
-import com.nt.course_service_lms.repository.BundleRepository;
 import com.nt.course_service_lms.service.CourseBundleService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -58,7 +58,9 @@ public class CourseBundleServiceImpl implements CourseBundleService {
      */
     @Autowired
     private final CourseBundleRepository courseBundleRepository;
-
+    /**
+     * Repository for performing CRUD operations on {@link Bundle} entity.
+     */
     @Autowired
     private final BundleRepository bundleRepository;
     /**
@@ -68,15 +70,11 @@ public class CourseBundleServiceImpl implements CourseBundleService {
     private final CourseRepository courseRepository;
 
     /**
-     * Repository for performing CRUD operations on {@link Bundle} entity.
-     */
-
-    /**
      * Retrieves all course-bundle mappings from the repository.
      *
      * @return a list of {@link CourseBundleOutDTO} objects representing all course-bundle mappings
      * @throws ResourceNotFoundException if no course-bundle records are found
-     * @throws RuntimeException if an unexpected error occurs during the process
+     * @throws RuntimeException          if an unexpected error occurs during the process
      */
     @Override
     public List<CourseBundleOutDTO> getAllCourseBundles() {
@@ -104,7 +102,7 @@ public class CourseBundleServiceImpl implements CourseBundleService {
                 courseBundleOutDTO.setBundleName(bundleName);
 
 
-                Optional<Course> course  = courseRepository.findById(courseBundle.getBundleId());
+                Optional<Course> course = courseRepository.findById(courseBundle.getBundleId());
                 if (course.isEmpty()) {
                     throw new ResourceNotFoundException(COURSE_NOT_FOUND);
                 }
@@ -132,7 +130,7 @@ public class CourseBundleServiceImpl implements CourseBundleService {
      * @param courseBundleId the ID of the course-bundle mapping
      * @return the {@link CourseBundleOutDTO} object representing the course-bundle mapping
      * @throws ResourceNotFoundException if the course-bundle mapping with the given ID is not found
-     * @throws RuntimeException if an unexpected error occurs during the process
+     * @throws RuntimeException          if an unexpected error occurs during the process
      */
     @Override
     public CourseBundleOutDTO getCourseBundleById(final Long courseBundleId) {
@@ -156,7 +154,7 @@ public class CourseBundleServiceImpl implements CourseBundleService {
             courseBundleOutDTO.setBundleName(bundleName);
 
 
-            Optional<Course> course  = courseRepository.findById(courseBundle.getBundleId());
+            Optional<Course> course = courseRepository.findById(courseBundle.getBundleId());
             if (course.isEmpty()) {
                 throw new ResourceNotFoundException(COURSE_NOT_FOUND);
             }
@@ -166,7 +164,7 @@ public class CourseBundleServiceImpl implements CourseBundleService {
             log.info("Successfully retrieved course-bundle record: {}", courseBundleOutDTO);
             return courseBundleOutDTO;
 
-        }  catch (ResourceNotFoundException e) {
+        } catch (ResourceNotFoundException e) {
             throw e;
 
         } catch (Exception ex) {
@@ -180,7 +178,7 @@ public class CourseBundleServiceImpl implements CourseBundleService {
      *
      * @param courseBundleId the ID of the course-bundle mapping to delete
      * @throws ResourceNotFoundException if the course-bundle mapping with the given ID is not found
-     * @throws RuntimeException if an unexpected error occurs during the process
+     * @throws RuntimeException          if an unexpected error occurs during the process
      */
     @Override
     public void deleteCourseBundle(final Long courseBundleId) {
@@ -208,11 +206,11 @@ public class CourseBundleServiceImpl implements CourseBundleService {
     /**
      * Updates an existing course-bundle mapping.
      *
-     * @param courseBundleId the ID of the course-bundle mapping to update
+     * @param courseBundleId          the ID of the course-bundle mapping to update
      * @param updateCourseBundleInDTO the updated data for the course-bundle mapping
      * @return the updated {@link CourseBundleInDTO} object
      * @throws ResourceNotFoundException if the course-bundle mapping with the given ID is not found
-     * @throws RuntimeException if an unexpected error occurs during the update
+     * @throws RuntimeException          if an unexpected error occurs during the update
      */
     @Override
     public String updateCourseBundle(final Long courseBundleId, final UpdateCourseBundleInDTO updateCourseBundleInDTO) {
@@ -253,8 +251,8 @@ public class CourseBundleServiceImpl implements CourseBundleService {
      * @param courseBundleInDTO the data for the new course-bundle mapping
      * @return the created {@link CourseBundleInDTO} object
      * @throws ResourceAlreadyExistsException if the course-bundle mapping already exists
-     * @throws ResourceNotValidException if the provided bundle ID or course ID is invalid
-     * @throws RuntimeException if an unexpected error occurs during the creation process
+     * @throws ResourceNotValidException      if the provided bundle ID or course ID is invalid
+     * @throws RuntimeException               if an unexpected error occurs during the creation process
      */
     @Override
     public CourseBundle createCourseBundle(final CourseBundleInDTO courseBundleInDTO) {
@@ -301,15 +299,22 @@ public class CourseBundleServiceImpl implements CourseBundleService {
         }
     }
 
+    /**
+     * Retrieves information about all bundles, including their IDs, names, total courses, and active status.
+     *
+     * @return a list of {@link BundleInfoOutDTO} objects containing bundle information
+     * @throws ResourceNotFoundException if no bundles are found
+     * @throws RuntimeException          if an unexpected error occurs during the process
+     */
     @Override
     public List<BundleInfoOutDTO> getBundlesInfo() {
         try {
             List<Bundle> courseBundles = bundleRepository.findAll();
-            if(courseBundles.isEmpty()) {
+            if (courseBundles.isEmpty()) {
                 throw new ResourceNotFoundException("No courses added in bundle");
             }
             List<BundleInfoOutDTO> bundleInfoOutDTOS = new ArrayList<>();
-            for(Bundle courseBundle : courseBundles) {
+            for (Bundle courseBundle : courseBundles) {
                 BundleInfoOutDTO bundleInfoOutDTO = new BundleInfoOutDTO();
                 Bundle bundle = bundleRepository.findById(courseBundle.getBundleId())
                         .orElseThrow(() -> new ResourceNotFoundException("Bundle not found"));
@@ -336,7 +341,7 @@ public class CourseBundleServiceImpl implements CourseBundleService {
      * @param bundleId the ID of the bundle
      * @return a list of {@link CourseBundle} objects for the specified bundle
      * @throws ResourceNotFoundException if no courses are found in the given bundle
-     * @throws RuntimeException if an unexpected error occurs during the process
+     * @throws RuntimeException          if an unexpected error occurs during the process
      */
     @Override
     public List<CourseBundle> getAllCoursesByBundle(final Long bundleId) {
@@ -354,6 +359,12 @@ public class CourseBundleServiceImpl implements CourseBundleService {
         }
     }
 
+    /**
+     * Retrieves the 5 most recent bundles along with their course counts.
+     *
+     * @return a list of {@link BundleSummaryOutDTO} objects containing bundle summaries
+     * @throws RuntimeException if an unexpected error occurs during the process
+     */
     @Override
     public List<BundleSummaryOutDTO> getRecentBundleSummaries() {
         // Get the 5 most recent bundles
@@ -374,9 +385,17 @@ public class CourseBundleServiceImpl implements CourseBundleService {
                 .collect(Collectors.toList());
     }
 
+    /**
+     * Retrieves the IDs of all courses associated with a specific bundle.
+     *
+     * @param bundleId the ID of the bundle
+     * @return a list of course IDs associated with the specified bundle
+     * @throws ResourceNotFoundException if no course IDs are found for the given bundle ID
+     * @throws RuntimeException          if an unexpected error occurs during the process
+     */
     @Override
-    public List<Long> findCourseIdsByBundleId(Long bundleId) {
-        try{
+    public List<Long> findCourseIdsByBundleId(final Long bundleId) {
+        try {
             List<Long> courseIds = courseBundleRepository.findCourseIdsByBundleId(bundleId);
             if (courseIds.isEmpty()) {
                 throw new ResourceNotFoundException("No Course IDs found");
@@ -388,6 +407,4 @@ public class CourseBundleServiceImpl implements CourseBundleService {
             throw new RuntimeException("SERVER ERROR");
         }
     }
-
-
 }

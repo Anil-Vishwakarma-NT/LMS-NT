@@ -1,9 +1,8 @@
 package com.nt.course_service_lms.service;
 
 import com.nt.course_service_lms.dto.inDTO.BundleInDTO;
-import com.nt.course_service_lms.dto.outDTO.BundleOutDTO;
 import com.nt.course_service_lms.dto.inDTO.UpdateBundleInDTO;
-import com.nt.course_service_lms.exception.ResourceNotFoundException;
+import com.nt.course_service_lms.dto.outDTO.BundleOutDTO;
 
 import java.util.List;
 
@@ -36,14 +35,13 @@ public interface BundleService {
      *
      * @param id the ID of the bundle to retrieve
      * @return the {@link BundleOutDTO} if found
-     * @throws ResourceNotFoundException if bundle not found
      */
     BundleOutDTO getBundleById(Long id);
 
     /**
      * Updates the details of an existing bundle.
      *
-     * @param bundleId the ID of the bundle to update
+     * @param bundleId          the ID of the bundle to update
      * @param updateBundleInDTO the updated bundle data
      * @return success message
      */
@@ -79,5 +77,11 @@ public interface BundleService {
      */
     String getBundleNameById(Long bundleId);
 
+    /**
+     * Retrieves a list of existing bundle IDs from the provided list.
+     *
+     * @param bundleIds the list of bundle IDs to check
+     * @return a list of existing bundle IDs
+     */
     List<Long> findExistingIds(List<Long> bundleIds);
 }

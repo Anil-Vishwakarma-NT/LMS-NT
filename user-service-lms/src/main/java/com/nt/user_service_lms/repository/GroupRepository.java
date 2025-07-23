@@ -68,6 +68,9 @@ public interface GroupRepository extends JpaRepository<Group, Long> {
     @Query("UPDATE Group ug SET ug.isActive = false WHERE ug.groupId = :groupId")
     void softDeleteByGroupId(@Param("groupId") Long groupId);
 
+
+    Optional<Group> findByGroupId(Long groupId);
+
     /**
      * Finds all groups that are currently active.
      *

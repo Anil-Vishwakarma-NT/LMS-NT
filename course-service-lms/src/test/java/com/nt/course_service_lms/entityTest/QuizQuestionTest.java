@@ -43,22 +43,22 @@ class QuizQuestionTest {
     }
 
     @Test
-    void testAllArgsConstructor() {
+    void testFieldAssignmentsUsingSetters() {
         LocalDateTime now = LocalDateTime.now();
-        QuizQuestion question = new QuizQuestion(
-                2L,
-                20L,
-                "What is the capital of France?",
-                "MULTIPLE_CHOICE",
-                "[\"Paris\",\"London\"]",
-                "Paris",
-                BigDecimal.valueOf(10.0),
-                "Paris is the capital of France.",
-                false,
-                2,
-                now,
-                now
-        );
+
+        QuizQuestion question = new QuizQuestion();
+        question.setQuestionId(2L);
+        question.setQuizId(20L);
+        question.setQuestionText("What is the capital of France?");
+        question.setQuestionType("MULTIPLE_CHOICE");
+        question.setOptions("[\"Paris\",\"London\"]");
+        question.setCorrectAnswer("Paris");
+        question.setPoints(BigDecimal.valueOf(10.0));
+        question.setExplanation("Paris is the capital of France.");
+        question.setRequired(false);
+        question.setPosition(2);
+        question.setCreatedAt(now);
+        question.setUpdatedAt(now);
 
         assertThat(question.getQuestionId()).isEqualTo(2L);
         assertThat(question.getQuizId()).isEqualTo(20L);
@@ -78,15 +78,29 @@ class QuizQuestionTest {
     void testEqualsAndHashCode_SameValues() {
         LocalDateTime now = LocalDateTime.now();
 
-        QuizQuestion q1 = new QuizQuestion(
-                3L, 30L, "Q", "TRUE_FALSE", null, "true",
-                BigDecimal.TEN, null, true, 1, now, now
-        );
+        QuizQuestion q1 = new QuizQuestion();
+        q1.setQuestionId(3L);
+        q1.setQuizId(30L);
+        q1.setQuestionText("Q");
+        q1.setQuestionType("TRUE_FALSE");
+        q1.setCorrectAnswer("true");
+        q1.setPoints(BigDecimal.TEN);
+        q1.setRequired(true);
+        q1.setPosition(1);
+        q1.setCreatedAt(now);
+        q1.setUpdatedAt(now);
 
-        QuizQuestion q2 = new QuizQuestion(
-                3L, 30L, "Q", "TRUE_FALSE", null, "true",
-                BigDecimal.TEN, null, true, 1, now, now
-        );
+        QuizQuestion q2 = new QuizQuestion();
+        q2.setQuestionId(3L);
+        q2.setQuizId(30L);
+        q2.setQuestionText("Q");
+        q2.setQuestionType("TRUE_FALSE");
+        q2.setCorrectAnswer("true");
+        q2.setPoints(BigDecimal.TEN);
+        q2.setRequired(true);
+        q2.setPosition(1);
+        q2.setCreatedAt(now);
+        q2.setUpdatedAt(now);
 
         assertThat(q1).isEqualTo(q2);
         assertThat(q1.hashCode()).isEqualTo(q2.hashCode());
@@ -96,11 +110,29 @@ class QuizQuestionTest {
     void testEqualsAndHashCode_DifferentValues() {
         LocalDateTime now = LocalDateTime.now();
 
-        QuizQuestion q1 = new QuizQuestion(1L, 1L, "A", "TYPE", null, "1",
-                BigDecimal.ONE, null, true, 1, now, now);
+        QuizQuestion q1 = new QuizQuestion();
+        q1.setQuestionId(1L);
+        q1.setQuizId(1L);
+        q1.setQuestionText("A");
+        q1.setQuestionType("TYPE");
+        q1.setCorrectAnswer("1");
+        q1.setPoints(BigDecimal.ONE);
+        q1.setRequired(true);
+        q1.setPosition(1);
+        q1.setCreatedAt(now);
+        q1.setUpdatedAt(now);
 
-        QuizQuestion q2 = new QuizQuestion(2L, 2L, "B", "TYPE", null, "2",
-                BigDecimal.TEN, null, false, 2, now, now);
+        QuizQuestion q2 = new QuizQuestion();
+        q2.setQuestionId(2L);
+        q2.setQuizId(2L);
+        q2.setQuestionText("B");
+        q2.setQuestionType("TYPE");
+        q2.setCorrectAnswer("2");
+        q2.setPoints(BigDecimal.TEN);
+        q2.setRequired(false);
+        q2.setPosition(2);
+        q2.setCreatedAt(now);
+        q2.setUpdatedAt(now);
 
         assertThat(q1).isNotEqualTo(q2);
         assertThat(q1.hashCode()).isNotEqualTo(q2.hashCode());
@@ -123,8 +155,29 @@ class QuizQuestionTest {
     void testEqualsAfterFieldChange() {
         LocalDateTime now = LocalDateTime.now();
 
-        QuizQuestion q1 = new QuizQuestion(1L, 1L, "Q", "TYPE", null, "Ans", BigDecimal.ONE, null, true, 1, now, now);
-        QuizQuestion q2 = new QuizQuestion(1L, 1L, "Q", "TYPE", null, "Ans", BigDecimal.ONE, null, true, 1, now, now);
+        QuizQuestion q1 = new QuizQuestion();
+        q1.setQuestionId(1L);
+        q1.setQuizId(1L);
+        q1.setQuestionText("Q");
+        q1.setQuestionType("TYPE");
+        q1.setCorrectAnswer("Ans");
+        q1.setPoints(BigDecimal.ONE);
+        q1.setRequired(true);
+        q1.setPosition(1);
+        q1.setCreatedAt(now);
+        q1.setUpdatedAt(now);
+
+        QuizQuestion q2 = new QuizQuestion();
+        q2.setQuestionId(1L);
+        q2.setQuizId(1L);
+        q2.setQuestionText("Q");
+        q2.setQuestionType("TYPE");
+        q2.setCorrectAnswer("Ans");
+        q2.setPoints(BigDecimal.ONE);
+        q2.setRequired(true);
+        q2.setPosition(1);
+        q2.setCreatedAt(now);
+        q2.setUpdatedAt(now);
 
         assertThat(q1).isEqualTo(q2);
 
@@ -137,7 +190,19 @@ class QuizQuestionTest {
     void testToStringContainsFields() {
         LocalDateTime now = LocalDateTime.now();
 
-        QuizQuestion q = new QuizQuestion(99L, 88L, "Q", "TYPE", "opts", "A", BigDecimal.TEN, "exp", true, 1, now, now);
+        QuizQuestion q = new QuizQuestion();
+        q.setQuestionId(99L);
+        q.setQuizId(88L);
+        q.setQuestionText("Q");
+        q.setQuestionType("TYPE");
+        q.setOptions("opts");
+        q.setCorrectAnswer("A");
+        q.setPoints(BigDecimal.TEN);
+        q.setExplanation("exp");
+        q.setRequired(true);
+        q.setPosition(1);
+        q.setCreatedAt(now);
+        q.setUpdatedAt(now);
 
         String s = q.toString();
 
@@ -161,5 +226,83 @@ class QuizQuestionTest {
         assertThat(q.getExplanation()).isNull();
         assertThat(q.getCorrectAnswer()).isNull();
     }
+
+    @Test
+    void testEquals_FailsOnDifferentQuestionText() {
+        LocalDateTime now = LocalDateTime.now();
+
+        QuizQuestion q1 = new QuizQuestion();
+        q1.setQuestionId(1L);
+        q1.setQuizId(1L);
+        q1.setQuestionText("Question 1");
+        q1.setQuestionType("TYPE");
+        q1.setCorrectAnswer("A");
+        q1.setPoints(BigDecimal.ONE);
+        q1.setRequired(true);
+        q1.setPosition(1);
+        q1.setCreatedAt(now);
+        q1.setUpdatedAt(now);
+
+        QuizQuestion q2 = new QuizQuestion();
+        q2.setQuestionId(1L);
+        q2.setQuizId(1L);
+        q2.setQuestionText("Question 2"); // different
+        q2.setQuestionType("TYPE");
+        q2.setCorrectAnswer("A");
+        q2.setPoints(BigDecimal.ONE);
+        q2.setRequired(true);
+        q2.setPosition(1);
+        q2.setCreatedAt(now);
+        q2.setUpdatedAt(now);
+
+        assertThat(q1).isNotEqualTo(q2);
+    }
+
+    @Test
+    void testHashCodeChangesWhenFieldChanges() {
+        LocalDateTime now = LocalDateTime.now();
+
+        QuizQuestion q = new QuizQuestion();
+        q.setQuestionId(1L);
+        q.setQuizId(1L);
+        q.setQuestionText("Q");
+        q.setQuestionType("TYPE");
+        q.setCorrectAnswer("A");
+        q.setPoints(BigDecimal.ONE);
+        q.setRequired(true);
+        q.setPosition(1);
+        q.setCreatedAt(now);
+        q.setUpdatedAt(now);
+
+        int originalHash = q.hashCode();
+        q.setQuestionText("New Question Text");
+
+        assertThat(q.hashCode()).isNotEqualTo(originalHash);
+    }
+
+    @Test
+    void testBuilderPattern() {
+        LocalDateTime now = LocalDateTime.now();
+
+        QuizQuestion q = QuizQuestion.builder()
+                .questionId(1L)
+                .quizId(2L)
+                .questionText("Sample Question")
+                .questionType("MULTIPLE_CHOICE")
+                .options("[\"A\",\"B\"]")
+                .correctAnswer("A")
+                .points(BigDecimal.valueOf(5.0))
+                .explanation("Answer A is correct.")
+                .required(true)
+                .position(1)
+                .createdAt(now)
+                .updatedAt(now)
+                .build();
+
+        assertThat(q.getQuestionText()).isEqualTo("Sample Question");
+        assertThat(q.getCorrectAnswer()).isEqualTo("A");
+        assertThat(q.getOptions()).contains("A", "B");
+    }
+
 }
 

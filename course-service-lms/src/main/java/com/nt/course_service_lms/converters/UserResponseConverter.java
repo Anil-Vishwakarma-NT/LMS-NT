@@ -18,12 +18,12 @@ import java.util.stream.Collectors;
 public class UserResponseConverter {
 
     /**
-     * Converts UserResponseInDTO to UserResponse entity
+     * Converts UserResponseInDTO to UserResponse entity.
      *
      * @param inDTO the input DTO
      * @return UserResponse entity
      */
-    public UserResponse convertToEntity(UserResponseInDTO inDTO) {
+    public UserResponse convertToEntity(final UserResponseInDTO inDTO) {
         if (inDTO == null) {
             return null;
         }
@@ -40,12 +40,12 @@ public class UserResponseConverter {
     }
 
     /**
-     * Converts UserResponse entity to UserResponseOutDTO
+     * Converts UserResponse entity to UserResponseOutDTO.
      *
      * @param entity the UserResponse entity
      * @return UserResponseOutDTO
      */
-    public UserResponseOutDTO convertToOutDTO(UserResponse entity) {
+    public UserResponseOutDTO convertToOutDTO(final UserResponse entity) {
         if (entity == null) {
             return null;
         }
@@ -64,13 +64,13 @@ public class UserResponseConverter {
     }
 
     /**
-     * Updates UserResponse entity with data from UserResponseUpdateInDTO
+     * Updates UserResponse entity with data from UserResponseUpdateInDTO.
      *
-     * @param entity the existing entity
+     * @param entity    the existing entity
      * @param updateDTO the update DTO
      * @return updated UserResponse entity
      */
-    public UserResponse updateEntityFromDTO(UserResponse entity, UserResponseUpdateInDTO updateDTO) {
+    public UserResponse updateEntityFromDTO(final UserResponse entity, final UserResponseUpdateInDTO updateDTO) {
         if (entity == null || updateDTO == null) {
             return entity;
         }
@@ -87,12 +87,12 @@ public class UserResponseConverter {
     }
 
     /**
-     * Converts list of UserResponse entities to list of UserResponseOutDTOs
+     * Converts list of UserResponse entities to list of UserResponseOutDTOs.
      *
      * @param entities list of UserResponse entities
      * @return list of UserResponseOutDTOs
      */
-    public List<UserResponseOutDTO> convertToOutDTOList(List<UserResponse> entities) {
+    public List<UserResponseOutDTO> convertToOutDTOList(final List<UserResponse> entities) {
         if (entities == null) {
             return null;
         }

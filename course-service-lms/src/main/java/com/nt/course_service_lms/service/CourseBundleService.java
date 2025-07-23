@@ -1,72 +1,90 @@
 package com.nt.course_service_lms.service;
 
-import com.nt.course_service_lms.entity.CourseBundle;
 import com.nt.course_service_lms.dto.inDTO.CourseBundleInDTO;
 import com.nt.course_service_lms.dto.inDTO.UpdateCourseBundleInDTO;
 import com.nt.course_service_lms.dto.outDTO.BundleInfoOutDTO;
 import com.nt.course_service_lms.dto.outDTO.BundleSummaryOutDTO;
 import com.nt.course_service_lms.dto.outDTO.CourseBundleOutDTO;
+import com.nt.course_service_lms.entity.CourseBundle;
 
 import java.util.List;
 
 /**
- * Service interface for managing course-bundle relationships.
- * <p>
- * Provides methods for creating, updating, retrieving, and deleting
- * {@link CourseBundle} associations.
- * </p>
+ * Service interface for managing course-bundle relationships in the LMS.
+ *
+ * <p>This interface defines the contract for operations related to course-bundle
+ * associations, including CRUD operations and specialized queries for bundle
+ * information and summaries.</p>
  */
 public interface CourseBundleService {
 
     /**
-     * Retrieves all course-bundle associations.
+     * Retrieves all course-bundle associations from the system.
      *
-     * @return a list of {@link CourseBundleOutDTO} representing all course-bundle mappings
+     * @return a {@link List} of {@link CourseBundleOutDTO} representing all
+     * course-bundle mappings in the system
      */
     List<CourseBundleOutDTO> getAllCourseBundles();
 
     /**
-     * Retrieves a specific course-bundle association by its ID.
+     * Retrieves a specific course-bundle association by its unique identifier.
      *
-     * @param courseBundleId the ID of the course-bundle mapping to retrieve
-     * @return the {@link CourseBundleOutDTO} for the given ID
+     * @param courseBundleId the unique identifier of the course-bundle mapping to retrieve
+     * @return the {@link CourseBundleOutDTO} for the specified ID
      */
     CourseBundleOutDTO getCourseBundleById(Long courseBundleId);
 
     /**
      * Retrieves all course-bundle records associated with a specific bundle.
      *
-     * @param bundleId the ID of the bundle
-     * @return a list of {@link CourseBundle} entities linked to the specified bundle
+     * @param bundleId the unique identifier of the bundle
+     * @return a {@link List} of {@link CourseBundle} entities linked to the specified bundle
      */
     List<CourseBundle> getAllCoursesByBundle(Long bundleId);
 
     /**
-     * Deletes a course-bundle association by its ID.
+     * Deletes a course-bundle association by its unique identifier.
      *
-     * @param courseBundleId the ID of the course-bundle record to delete
+     * @param courseBundleId the unique identifier of the course-bundle record to delete
      */
     void deleteCourseBundle(Long courseBundleId);
 
     /**
-     * Updates an existing course-bundle association.
+     * Updates an existing course-bundle association with new data.
      *
-     * @param courseBundleId the ID of the course-bundle record to update
-     * @param updateCourseBundleInDTO the new data for the course-bundle mapping
-     * @return the updated {@link CourseBundleInDTO}
+     * @param courseBundleId          the unique identifier of the course-bundle record to update
+     * @param updateCourseBundleInDTO the data transfer object containing the updated information
+     * @return a {@link String} message indicating the result of the update operation
      */
     String updateCourseBundle(Long courseBundleId, UpdateCourseBundleInDTO updateCourseBundleInDTO);
 
     /**
-     * Creates a new course-bundle association.
+     * Creates a new course-bundle association in the system.
      *
-     * @param courseBundleInDTO the details of the new course-bundle mapping
-     * @return the created {@link CourseBundleInDTO}
+     * @param courseBundleInDTO the data transfer object containing the details of the new course-bundle mapping
+     * @return the created {@link CourseBundle} entity
      */
     CourseBundle createCourseBundle(CourseBundleInDTO courseBundleInDTO);
 
+    /**
+     * Retrieves comprehensive information about all bundles in the system.
+     *
+     * @return a {@link List} of {@link BundleInfoOutDTO} containing detailed bundle information
+     */
     List<BundleInfoOutDTO> getBundlesInfo();
+
+    /**
+     * Retrieves summary information for recently created or modified bundles.
+     *
+     * @return a {@link List} of {@link BundleSummaryOutDTO} containing summary details
+     */
     List<BundleSummaryOutDTO> getRecentBundleSummaries();
 
+    /**
+     * Finds all course identifiers associated with a specific bundle.
+     *
+     * @param bundleId the unique identifier of the bundle
+     * @return a {@link List} of {@link Long} values representing course IDs linked to the bundle
+     */
     List<Long> findCourseIdsByBundleId(Long bundleId);
 }

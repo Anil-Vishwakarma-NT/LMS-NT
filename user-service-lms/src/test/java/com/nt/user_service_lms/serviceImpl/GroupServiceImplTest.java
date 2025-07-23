@@ -15,14 +15,29 @@ import com.nt.user_service_lms.repository.UserRepository;
 import com.nt.user_service_lms.service.serviceImpl.GroupServiceImpl;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.mockito.*;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.MockitoAnnotations;
 
-import java.util.*;
+import java.util.Collections;
+import java.util.List;
+import java.util.Optional;
 
-import static com.nt.user_service_lms.constants.GroupConstants.*;
-import static com.nt.user_service_lms.constants.UserConstants.*;
-import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.Mockito.*;
+import static com.nt.user_service_lms.constants.GroupConstants.GROUP_CREATED;
+import static com.nt.user_service_lms.constants.GroupConstants.GROUP_DELETED;
+import static com.nt.user_service_lms.constants.GroupConstants.GROUP_NOT_FOUND;
+import static com.nt.user_service_lms.constants.GroupConstants.USER_ADDED_TO_GROUP;
+import static com.nt.user_service_lms.constants.GroupConstants.USER_ALREADY_PRESENT_IN_GROUP;
+import static com.nt.user_service_lms.constants.GroupConstants.USER_NOT_FOUND_IN_GROUP;
+import static com.nt.user_service_lms.constants.GroupConstants.USER_REMOVED_SUCCESSFULLY;
+import static com.nt.user_service_lms.constants.UserConstants.USER_NOT_FOUND;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.mockito.Mockito.any;
+import static org.mockito.Mockito.anyString;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 class GroupServiceImplTest {
 

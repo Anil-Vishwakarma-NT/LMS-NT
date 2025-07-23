@@ -2,9 +2,8 @@ package com.nt.course_service_lms.controllerTest;
 
 import com.nt.course_service_lms.controller.CourseController;
 import com.nt.course_service_lms.dto.inDTO.CourseInDTO;
-import com.nt.course_service_lms.entity.Course;
-import com.nt.course_service_lms.dto.outDTO.CourseOutDTO;
-import com.nt.course_service_lms.dto.outDTO.StandardResponseOutDTO;
+import com.nt.course_service_lms.dto.inDTO.UpdateCourseInDTO;
+import com.nt.course_service_lms.dto.outDTO.*;
 import com.nt.course_service_lms.service.CourseService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -14,8 +13,8 @@ import org.mockito.MockitoAnnotations;
 import org.springframework.http.ResponseEntity;
 
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
-import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
@@ -35,83 +34,167 @@ public class CourseControllerTest {
 
     @Test
     void testCreateCourse() {
-        CourseInDTO courseInDTO = new CourseInDTO();
-        courseInDTO.setTitle("Java Basics");
+        CourseInDTO input = new CourseInDTO();
+        input.setTitle("Java 101");
 
-        Course course = new Course();
-        course.setCourseId(1L);
-        course.setTitle("Java Basics");
+        CourseOutDTO output = new CourseOutDTO();
+        output.setTitle("Java 101");
 
-        when(courseService.createCourse(courseInDTO)).thenReturn(course);
+        when(courseService.createCourse(input)).thenReturn(output);
 
-        ResponseEntity<StandardResponseOutDTO<CourseOutDTO>> response = courseController.createCourse(courseInDTO);
+        ResponseEntity<StandardResponseOutDTO<CourseOutDTO>> response = courseController.createCourse(input);
 
         assertEquals(200, response.getStatusCodeValue());
-        assertNotNull(response.getBody());
-        assertEquals("Java Basics", response.getBody().getData().getTitle());
+        assertEquals("Java 101", response.getBody().getData().getTitle());
     }
 
     @Test
     void testGetAllCourses() {
-        Course course1 = new Course();
-        course1.setCourseId(1L);
-        course1.setTitle("Java");
+        CourseOutDTO c1 = new CourseOutDTO(); c1.setTitle("A");
+        CourseOutDTO c2 = new CourseOutDTO(); c2.setTitle("B");
 
-        Course course2 = new Course();
-        course2.setCourseId(2L);
-        course2.setTitle("Spring Boot");
+        when(courseService.getAllCourses()).thenReturn(Arrays.asList(c1, c2));
 
-        List<Course> courseList = Arrays.asList(course1, course2);
-
-        when(courseService.getAllCourses()).thenReturn(courseList);
-
-        ResponseEntity<List<Course>> response = courseController.getAllCourses();
+        ResponseEntity<StandardResponseOutDTO<List<CourseOutDTO>>> response = courseController.getAllCourses();
 
         assertEquals(200, response.getStatusCodeValue());
-        assertEquals(2, response.getBody().size());
+        assertEquals(2, response.getBody().getData().size());
+    }
+
+    @Test
+    void testGetAllCoursesEmpty() {
+        when(courseService.getAllCourses()).thenReturn(Collections.emptyList());
+
+        ResponseEntity<StandardResponseOutDTO<List<CourseOutDTO>>> response = courseController.getAllCourses();
+
+        assertEquals(200, response.getStatusCodeValue());
+        assertTrue(response.getBody().getData().isEmpty());
     }
 
     @Test
     void testGetCourseById() {
-        Course course = new Course();
-        course.setCourseId(1L);
-        course.setTitle("Spring Security");
+        Long id = 1L;
+        CourseInfoOutDTO dto = new CourseInfoOutDTO();
+        dto.setCourseId(id);
 
-        when(courseService.getCourseById(1L)).thenReturn(Optional.of(course));
+        when(courseService.getCourseById(id)).thenReturn(dto);
 
-        ResponseEntity<CourseOutDTO> response = courseController.getCourseById(1L);
+        ResponseEntity<StandardResponseOutDTO<CourseInfoOutDTO>> response = courseController.getCourseById(id);
 
         assertEquals(200, response.getStatusCodeValue());
-        assertTrue(response.getBody() != null);
-        assertEquals("Spring Security", response.getBody().get().getTitle());
+        assertEquals(id, response.getBody().getData().getCourseId());
     }
 
     @Test
     void testDeleteCourse() {
-        Long courseId = 1L;
-        String expectedMsg = "Course with ID 1 deleted successfully.";
+        Long id = 5L;
 
-        when(courseService.deleteCourse(courseId)).thenReturn(expectedMsg);
+        when(courseService.deleteCourse(id)).thenReturn("Deleted");
 
-        ResponseEntity<StandardResponseOutDTO<Void>> response = courseController.deleteCourse(courseId);
+        ResponseEntity<StandardResponseOutDTO<Void>> response = courseController.deleteCourse(id);
 
         assertEquals(200, response.getStatusCodeValue());
-        assertEquals(expectedMsg, response.getBody().getMessage());
+        assertEquals("Deleted", response.getBody().getMessage());
+        verify(courseService, times(1)).deleteCourse(id);
     }
 
     @Test
     void testUpdateCourse() {
-        Long courseId = 1L;
-        CourseInDTO courseInDTO = new CourseInDTO();
-        courseInDTO.setTitle("Updated Course");
+        Long id = 7L;
+        UpdateCourseInDTO update = new UpdateCourseInDTO();
+        update.setTitle("Updated Course");
 
-        String updateResponse = "Course updated successfully";
+        CourseOutDTO updated = new CourseOutDTO();
+        updated.setTitle("Updated Course");
 
-        when(courseService.updateCourse(courseId, courseInDTO)).thenReturn(updateResponse);
+        when(courseService.updateCourse(id, update)).thenReturn(updated);
 
-        ResponseEntity<String> response = courseController.updateCourse(courseId, courseInDTO);
+        ResponseEntity<StandardResponseOutDTO<CourseOutDTO>> response = courseController.updateCourse(id, update);
 
         assertEquals(200, response.getStatusCodeValue());
-        assertEquals(updateResponse, response.getBody());
+        assertEquals("Updated Course", response.getBody().getData().getTitle());
+    }
+
+    @Test
+    void testCheckIfCourseExists_True() {
+        Long id = 10L;
+        when(courseService.courseExistsById(id)).thenReturn(true);
+
+        ResponseEntity<Boolean> response = courseController.checkIfCourseExists(id);
+
+        assertTrue(response.getBody());
+    }
+
+    @Test
+    void testCheckIfCourseExists_False() {
+        Long id = 11L;
+        when(courseService.courseExistsById(id)).thenReturn(false);
+
+        ResponseEntity<Boolean> response = courseController.checkIfCourseExists(id);
+
+        assertFalse(response.getBody());
+    }
+
+    @Test
+    void testGetCourseCount() {
+        when(courseService.countCourses()).thenReturn(42L);
+
+        ResponseEntity<StandardResponseOutDTO<Long>> response = courseController.getCourseCount();
+
+        assertEquals(200, response.getStatusCodeValue());
+        assertEquals(42L, response.getBody().getData());
+    }
+
+    @Test
+    void testGetRecentCourses() {
+        CourseSummaryOutDTO dto1 = new CourseSummaryOutDTO();
+        dto1.setTitle("Summary 1");
+
+        when(courseService.getRecentCourseSummaries()).thenReturn(Collections.singletonList(dto1));
+
+        ResponseEntity<StandardResponseOutDTO<List<CourseSummaryOutDTO>>> response = courseController.getRecentCourses();
+
+        assertEquals(200, response.getStatusCodeValue());
+        assertEquals(1, response.getBody().getData().size());
+        assertEquals("Summary 1", response.getBody().getData().get(0).getTitle());
+    }
+
+    @Test
+    void testGetCourseNameById() {
+        Long id = 100L;
+        when(courseService.getCourseNameById(id)).thenReturn("Course Name");
+
+        ResponseEntity<String> response = courseController.getCourseNameById(id);
+
+        assertEquals(200, response.getStatusCodeValue());
+        assertEquals("Course Name", response.getBody());
+    }
+
+    @Test
+    void testGetCoursesInfo() {
+        CourseInfoOutDTO courseInfo = new CourseInfoOutDTO();
+        courseInfo.setTitle("Full Info");
+
+        when(courseService.getCoursesInfo()).thenReturn(Collections.singletonList(courseInfo));
+
+        ResponseEntity<StandardResponseOutDTO<List<CourseInfoOutDTO>>> response = courseController.getCoursesInfo();
+
+        assertEquals(200, response.getStatusCodeValue());
+        assertEquals("Full Info", response.getBody().getData().get(0).getTitle());
+    }
+
+    @Test
+    void testGetExistingCourseIds() {
+        List<Long> inputIds = Arrays.asList(1L, 2L, 3L);
+        List<Long> existing = Arrays.asList(1L, 3L);
+
+        when(courseService.findExistingIds(inputIds)).thenReturn(existing);
+
+        ResponseEntity<List<Long>> response = courseController.getExistingCourseIds(inputIds);
+
+        assertEquals(200, response.getStatusCodeValue());
+        assertEquals(2, response.getBody().size());
+        assertTrue(response.getBody().contains(1L));
+        assertFalse(response.getBody().contains(2L));
     }
 }

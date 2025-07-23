@@ -12,54 +12,88 @@ import java.time.LocalDateTime;
 @Data
 public class EnrollmentOutDTO {
 
-    /** Unique identifier for the enrollment. */
+    /**
+     * Unique identifier for the enrollment.
+     */
     private Long enrollmentId;
 
-    /** Identifier of the user associated with the enrollment. */
+    /**
+     * Identifier of the user associated with the enrollment.
+     */
     private Long userId;
 
-    /** Identifier of the group associated with the enrollment. */
+    /**
+     * Identifier of the group associated with the enrollment.
+     */
     private Long groupId;
 
-    /** Identifier of the course associated with the enrollment. */
+    /**
+     * Identifier of the course associated with the enrollment.
+     */
     private Long courseId;
 
-    /** Identifier of the bundle associated with the enrollment. */
+    /**
+     * Identifier of the bundle associated with the enrollment.
+     */
     private Long bundleId;
 
-    /** Identifier of the user who assigned the enrollment. */
+    /**
+     * Identifier of the user who assigned the enrollment.
+     */
     private Long assignedBy;
 
-    /** Timestamp when the enrollment was assigned. */
+    /**
+     * Timestamp when the enrollment was assigned.
+     */
     private LocalDateTime assignedAt;
 
-    /** Deadline for the enrollment. */
+    /**
+     * Deadline for the enrollment.
+     */
     private LocalDateTime deadline;
 
-    /** Status of the enrollment. */
+    /**
+     * Status of the enrollment.
+     */
     private String status;
 
-    /** Source of the enrollment. */
+    /**
+     * Source of the enrollment.
+     */
     private String enrollmentSource;
 
-    /** Identifier of the parent enrollment, if any. */
+    /**
+     * Identifier of the parent enrollment, if any.
+     */
     private Long parentEnrollmentId;
 
-    /** Timestamp when the enrollment was started. */
+    /**
+     * Timestamp when the enrollment was started.
+     */
     private LocalDateTime startedAt;
 
-    /** Timestamp when the enrollment was completed. */
+    /**
+     * Timestamp when the enrollment was completed.
+     */
     private LocalDateTime completedAt;
 
-    /** Progress percentage of the enrollment. */
+    /**
+     * Progress percentage of the enrollment.
+     */
     private BigDecimal progressPercentage;
 
-    /** Timestamp when the enrollment was created. */
+    /**
+     * Timestamp when the enrollment was created.
+     */
     private LocalDateTime createdAt;
 
-    /** Timestamp when the enrollment was last updated. */
+    /**
+     * Timestamp when the enrollment was last updated.
+     */
     private LocalDateTime updatedAt;
 
-    /** Indicates if the enrollment is active. */
+    /**
+     * Indicates if the enrollment is active.
+     */
     private Boolean isActive;
 }

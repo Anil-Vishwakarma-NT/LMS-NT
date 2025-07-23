@@ -11,6 +11,7 @@ public final class StringUtils {
     private StringUtils() {
         throw new UnsupportedOperationException("This is a utility class and cannot be instantiated");
     }
+
     /**
      * Converts a given string to Proper Case (each word's first letter capitalized).
      * Handles null or empty strings gracefully.

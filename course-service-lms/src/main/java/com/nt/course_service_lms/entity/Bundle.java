@@ -6,7 +6,10 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 import java.time.LocalDateTime;
 import java.util.Objects;
@@ -22,6 +25,9 @@ import java.util.Objects;
 @Entity
 @Table(name = "bundle")
 @Data
+@NoArgsConstructor
+@AllArgsConstructor
+@Builder
 public class Bundle {
 
     /**
@@ -40,31 +46,26 @@ public class Bundle {
     @Column(name = "bundle_name")
     private String bundleName;
 
+    /**
+     * Bundle Is Active or not.
+     * <p>Shows if a bundle is active or not.</p>
+     */
     @Column(name = "is_active")
     private boolean isActive;
 
+    /**
+     * Bundle created at this time.
+     * <p>Timestamp when the bundle is created</p>
+     */
     @Column(name = "created_at")
     private LocalDateTime createdAt;
 
+    /**
+     * Bundle updated at this time.
+     * <p>Used to label or describe the bundle.</p>
+     */
     @Column(name = "updated_at")
     private LocalDateTime updatedAt;
-
-    /**
-     * Constructs a {@code Bundle} with the given ID and name.
-     *
-     * @param bundleId    the unique ID of the bundle
-     * @param bundleName  the name of the bundle
-     */
-    public Bundle(final long bundleId, final String bundleName) {
-        this.bundleId = bundleId;
-        this.bundleName = bundleName;
-    }
-
-    /**
-     * Default no-argument constructor required by JPA.
-     */
-    public Bundle() {
-    }
 
     /**
      * Compares this bundle to another object for equality.

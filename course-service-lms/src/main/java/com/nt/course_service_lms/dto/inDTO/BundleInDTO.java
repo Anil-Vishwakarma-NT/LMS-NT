@@ -4,14 +4,17 @@ import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Pattern;
 import jakarta.validation.constraints.Size;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 import java.util.Objects;
 
 import static com.nt.course_service_lms.constants.BundleConstants.BUNDLE_NAME_INVALID;
 import static com.nt.course_service_lms.constants.BundleConstants.BUNDLE_NAME_MIN_LENGTH;
-import static com.nt.course_service_lms.constants.BundleConstants.INT_VALUE_3;
 import static com.nt.course_service_lms.constants.BundleConstants.BUNDLE_NAME_NOT_BLANK;
+import static com.nt.course_service_lms.constants.BundleConstants.INT_VALUE_3;
 
 /**
  * BundleDTO is a Data Transfer Object used for creating or updating Bundle entities.
@@ -29,6 +32,9 @@ import static com.nt.course_service_lms.constants.BundleConstants.BUNDLE_NAME_NO
  * </ul>
  */
 @Data
+@NoArgsConstructor
+@AllArgsConstructor
+@Builder
 public class BundleInDTO {
 
     /**
@@ -54,15 +60,14 @@ public class BundleInDTO {
     @NotNull(message = "Is Active field is required")
     private boolean isActive;
 
-    public BundleInDTO(String bundleName, boolean isActive) {
-        this.bundleName = bundleName;
-        this.isActive = isActive;
-    }
-
     @Override
     public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
+        if (this == o) {
+            return true;
+        }
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
         BundleInDTO bundleInDTO = (BundleInDTO) o;
         return isActive == bundleInDTO.isActive && Objects.equals(bundleName, bundleInDTO.bundleName);
     }
@@ -70,11 +75,5 @@ public class BundleInDTO {
     @Override
     public int hashCode() {
         return Objects.hash(bundleName, isActive);
-    }
-
-    /**
-     * No-args constructor for frameworks and serialization tools.
-     */
-    public BundleInDTO() {
     }
 }

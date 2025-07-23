@@ -1,7 +1,10 @@
 package com.nt.course_service_lms.dto.outDTO;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
@@ -15,6 +18,9 @@ import java.time.LocalDateTime;
  * </p>
  */
 @Data
+@NoArgsConstructor
+@AllArgsConstructor
+@Builder
 public class UserResponseOutDTO {
 
     /**
@@ -65,36 +71,4 @@ public class UserResponseOutDTO {
      */
     @JsonFormat(pattern = "yyyy-MM-dd'T'HH:mm:ss")
     private LocalDateTime answeredAt;
-
-    /**
-     * Default constructor for JSON serialization.
-     */
-    public UserResponseOutDTO() {}
-
-    /**
-     * Constructor with all fields.
-     *
-     * @param responseId    unique identifier for the response
-     * @param userId        the ID of the user
-     * @param quizId        the ID of the quiz
-     * @param questionId    the ID of the question
-     * @param attempt       the attempt number
-     * @param userAnswer    the user's answer in JSON format
-     * @param isCorrect     whether the answer is correct
-     * @param pointsEarned  points earned for this response
-     * @param answeredAt    timestamp when answered
-     */
-    public UserResponseOutDTO(Long responseId, Long userId, Long quizId, Long questionId,
-                              Long attempt, String userAnswer, Boolean isCorrect,
-                              BigDecimal pointsEarned, LocalDateTime answeredAt) {
-        this.responseId = responseId;
-        this.userId = userId;
-        this.quizId = quizId;
-        this.questionId = questionId;
-        this.attempt = attempt;
-        this.userAnswer = userAnswer;
-        this.isCorrect = isCorrect;
-        this.pointsEarned = pointsEarned;
-        this.answeredAt = answeredAt;
-    }
 }

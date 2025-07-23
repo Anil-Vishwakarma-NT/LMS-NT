@@ -6,7 +6,10 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 import java.time.LocalDateTime;
 import java.util.Objects;
@@ -21,6 +24,9 @@ import java.util.Objects;
 @Entity
 @Table(name = "course_content")
 @Data
+@NoArgsConstructor
+@AllArgsConstructor
+@Builder
 public class CourseContent {
 
     /**
@@ -56,44 +62,30 @@ public class CourseContent {
     @Column(name = "resource_link")
     private String resourceLink;
 
+    /**
+     * Flag indicating whether the content is currently active and visible to learners.
+     */
     @Column(name = "is_active")
     private boolean isActive;
 
+    /**
+     * Timestamp when the content record was first created.
+     */
     @Column(name = "created_at")
     private LocalDateTime createdAt;
 
+    /**
+     * Timestamp for the last update made to the content record.
+     */
     @Column(name = "updated_at")
     private LocalDateTime updatedAt;
 
     /**
-     * Default no-args constructor required by JPA.
-     */
-    public CourseContent() {
-    }
-
-    /**
-     * All-args constructor for manually creating a course content instance.
+     * Checks if this CourseContent is equal to another object.
      *
-     * @param courseContentId the ID of the course content
-     * @param courseId        the ID of the course
-     * @param title           the title of the content
-     * @param description     the content description
-     * @param resourceLink    the optional resource link
-     */
-    public CourseContent(final long courseContentId, final long courseId, final String title,
-                         final String description, final String resourceLink) {
-        this.courseContentId = courseContentId;
-        this.courseId = courseId;
-        this.title = title;
-        this.description = description;
-        this.resourceLink = resourceLink;
-    }
-
-    /**
-     * Compares this object with another for equality based on all fields.
-     *
-     * @param o the object to compare
-     * @return {@code true} if both instances are equal, {@code false} otherwise
+     * @param o the object to compare with this CourseContent instance.
+     * @return true if the other object is a CourseContent with the same ID,
+     * course ID, title, description, resource link, active status, and timestamps; false otherwise.
      */
     @Override
     public boolean equals(final Object o) {
@@ -103,18 +95,22 @@ public class CourseContent {
         CourseContent that = (CourseContent) o;
         return courseContentId == that.courseContentId
                 && courseId == that.courseId
+                && isActive == that.isActive
                 && Objects.equals(title, that.title)
                 && Objects.equals(description, that.description)
-                && Objects.equals(resourceLink, that.resourceLink);
+                && Objects.equals(resourceLink, that.resourceLink)
+                && Objects.equals(createdAt, that.createdAt)
+                && Objects.equals(updatedAt, that.updatedAt);
     }
 
     /**
-     * Generates a hash code based on all fields of the entity.
+     * Generates a hash code for this CourseContent instance.
      *
-     * @return the hash code
+     * @return a hash code based on the course content ID, course ID, title, description,
+     * resource link, active status, created at, and updated at timestamps.
      */
     @Override
     public int hashCode() {
-        return Objects.hash(courseContentId, courseId, title, description, resourceLink);
+        return Objects.hash(courseContentId, courseId, title, description, resourceLink, isActive, createdAt, updatedAt);
     }
 }

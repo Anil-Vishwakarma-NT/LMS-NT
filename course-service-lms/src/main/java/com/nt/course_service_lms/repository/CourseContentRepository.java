@@ -20,7 +20,7 @@ public interface CourseContentRepository extends JpaRepository<CourseContent, Lo
     /**
      * Retrieves a {@link CourseContent} entry by its title (case-insensitive) and associated course ID.
      *
-     * @param title the title of the course content
+     * @param title    the title of the course content
      * @param courseId the ID of the course the content belongs to
      * @return an {@link Optional} containing the matching {@link CourseContent} if found, or empty if not
      */

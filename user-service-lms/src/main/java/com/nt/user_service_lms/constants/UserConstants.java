@@ -104,6 +104,7 @@ public final class UserConstants {
 
     /**
      * to access admin id.
+     *
      * @return long
      */
     public static Long getAdminId() {
@@ -117,4 +118,6 @@ public final class UserConstants {
     private UserConstants() {
         throw new UnsupportedOperationException("Utility class cannot be instantiated.");
     }
+
+
 }
