@@ -3,6 +3,7 @@ package com.nt.course_service_lms.service.serviceImpl;
 import com.nt.course_service_lms.dto.inDTO.QuizAttemptCreateInDTO;
 import com.nt.course_service_lms.dto.inDTO.QuizAttemptUpdateInDTO;
 import com.nt.course_service_lms.dto.outDTO.QuizAttemptOutDTO;
+import com.nt.course_service_lms.dto.outDTO.QuizSubmissionResultOutDTO;
 import com.nt.course_service_lms.entity.Quiz;
 import com.nt.course_service_lms.entity.QuizAttempt;
 import com.nt.course_service_lms.exception.ResourceNotFoundException;
@@ -490,6 +491,13 @@ public class QuizAttemptServiceImpl implements QuizAttemptService {
 
         QuizAttempt savedAttempt = quizAttemptRepository.save(attempt);
         return convertToOutDTO(savedAttempt);
+    }
+
+    @Override
+    public List<QuizSubmissionResultOutDTO> getUserAttemptDetails(Long userId) {
+        try {
+
+        }
     }
 
     /**
