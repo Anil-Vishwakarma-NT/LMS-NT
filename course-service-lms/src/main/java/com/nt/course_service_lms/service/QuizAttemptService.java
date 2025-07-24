@@ -4,6 +4,7 @@ import com.nt.course_service_lms.dto.inDTO.QuizAttemptCreateInDTO;
 import com.nt.course_service_lms.dto.inDTO.QuizAttemptUpdateInDTO;
 import com.nt.course_service_lms.dto.outDTO.QuizAttemptOutDTO;
 import com.nt.course_service_lms.dto.outDTO.QuizSubmissionResultOutDTO;
+import com.nt.course_service_lms.dto.outDTO.UserQuizAttemptDetailsOutDTO;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
@@ -213,7 +214,7 @@ public interface QuizAttemptService {
      */
     QuizAttemptOutDTO timeOutAttempt(Long quizAttemptId);
 
-    List<QuizSubmissionResultOutDTO> getUserAttemptDetails(Long userId, Long courseId);
+    List<UserQuizAttemptDetailsOutDTO> getUserAttemptDetails(Long userId, Long courseId);
 
     /**
      * Checks whether a quiz attempt exists with the given identifier.

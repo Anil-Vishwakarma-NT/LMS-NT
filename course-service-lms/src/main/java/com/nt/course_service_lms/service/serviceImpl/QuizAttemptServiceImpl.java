@@ -4,7 +4,9 @@ import com.nt.course_service_lms.dto.inDTO.QuizAttemptCreateInDTO;
 import com.nt.course_service_lms.dto.inDTO.QuizAttemptUpdateInDTO;
 import com.nt.course_service_lms.dto.outDTO.QuizAttemptOutDTO;
 import com.nt.course_service_lms.dto.outDTO.QuizSubmissionResultOutDTO;
+import com.nt.course_service_lms.dto.outDTO.UserQuizAttemptDetailsOutDTO;
 import com.nt.course_service_lms.dto.outDTO.UserResponseOutDTO;
+import com.nt.course_service_lms.dto.outDTO.UserResponseWithCorrectAnswerOutDTO;
 import com.nt.course_service_lms.entity.Quiz;
 import com.nt.course_service_lms.entity.QuizAttempt;
 import com.nt.course_service_lms.entity.QuizQuestion;
@@ -509,7 +511,7 @@ public class QuizAttemptServiceImpl implements QuizAttemptService {
     }
 
     @Override
-    public List<QuizSubmissionResultOutDTO> getUserAttemptDetails(Long userId, Long courseId) {
+    public List<UserQuizAttemptDetailsOutDTO> getUserAttemptDetails(Long userId, Long courseId) {
         try {
             // Single query to get all quiz attempts for user in the course with quiz details
             // This replaces multiple separate queries
@@ -546,6 +548,10 @@ public class QuizAttemptServiceImpl implements QuizAttemptService {
             Map<Long, List<QuizQuestion>> questionsByQuiz = allQuizQuestions.stream()
                     .collect(Collectors.groupingBy(QuizQuestion::getQuizId));
 
+            // Create a map of questionId to correct answer for quick lookup
+            Map<Long, String> correctAnswersByQuestionId = allQuizQuestions.stream()
+                    .collect(Collectors.toMap(QuizQuestion::getQuestionId, QuizQuestion::getCorrectAnswer));
+
             // Pre-calculate max scores for each quiz to avoid repeated calculations
             Map<Long, BigDecimal> maxScoresByQuiz = questionsByQuiz.entrySet().stream()
                     .collect(Collectors.toMap(
@@ -555,7 +561,7 @@ public class QuizAttemptServiceImpl implements QuizAttemptService {
                                     .reduce(BigDecimal.ZERO, BigDecimal::add)
                     ));
 
-            List<QuizSubmissionResultOutDTO> results = new ArrayList<>();
+            List<UserQuizAttemptDetailsOutDTO> results = new ArrayList<>();
 
             // Process each attempt
             for (Object[] data : attemptData) {
@@ -607,9 +613,9 @@ public class QuizAttemptServiceImpl implements QuizAttemptService {
                         .divide(maxPossibleScore, 2, RoundingMode.HALF_UP)
                         : BigDecimal.ZERO;
 
-                // Convert responses to DTOs
-                List<UserResponseOutDTO> responseOutDTOs = attemptResponses.stream()
-                        .map(this::convertToUserResponseOutDTO)
+                // Convert responses to DTOs with correct answers
+                List<UserResponseWithCorrectAnswerOutDTO> responseOutDTOs = attemptResponses.stream()
+                        .map(response -> convertToUserResponseWithCorrectAnswerOutDTO(response, correctAnswersByQuestionId))
                         .collect(Collectors.toList());
 
                 // Build QuizAttemptOutDTO from query data
@@ -630,7 +636,7 @@ public class QuizAttemptServiceImpl implements QuizAttemptService {
                 String submissionType = determineSubmissionType(status);
 
                 // Build the result DTO
-                QuizSubmissionResultOutDTO resultDTO = QuizSubmissionResultOutDTO.builder()
+                UserQuizAttemptDetailsOutDTO resultDTO = UserQuizAttemptDetailsOutDTO.builder()
                         .quizAttempt(attemptOutDTO)
                         .userResponses(responseOutDTOs)
                         .totalScore(totalScore)
@@ -654,6 +660,28 @@ public class QuizAttemptServiceImpl implements QuizAttemptService {
             log.error("Error fetching user attempt details for userId: {} and courseId: {}", userId, courseId, e);
             throw new RuntimeException("Failed to fetch user attempt details", e);
         }
+    }
+
+    /**
+     * Convert UserResponse entity to UserResponseWithCorrectAnswerOutDTO
+     */
+    private UserResponseWithCorrectAnswerOutDTO convertToUserResponseWithCorrectAnswerOutDTO(
+            UserResponse userResponse, Map<Long, String> correctAnswersByQuestionId) {
+
+        String correctAnswer = correctAnswersByQuestionId.get(userResponse.getQuestionId());
+
+        return UserResponseWithCorrectAnswerOutDTO.builder()
+                .responseId(userResponse.getResponseId())
+                .userId(userResponse.getUserId())
+                .quizId(userResponse.getQuizId())
+                .questionId(userResponse.getQuestionId())
+                .attempt(userResponse.getAttempt())
+                .userAnswer(userResponse.getUserAnswer())
+                .correctAnswer(correctAnswer)
+                .isCorrect(userResponse.getIsCorrect())
+                .pointsEarned(userResponse.getPointsEarned())
+                .answeredAt(userResponse.getAnsweredAt())
+                .build();
     }
 
     /**

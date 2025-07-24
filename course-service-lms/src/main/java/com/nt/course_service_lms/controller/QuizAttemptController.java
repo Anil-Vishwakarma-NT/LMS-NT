@@ -6,6 +6,7 @@ import com.nt.course_service_lms.dto.inDTO.QuizAttemptUpdateInDTO;
 import com.nt.course_service_lms.dto.outDTO.QuizAttemptOutDTO;
 import com.nt.course_service_lms.dto.outDTO.QuizSubmissionResultOutDTO;
 import com.nt.course_service_lms.dto.outDTO.StandardResponseOutDTO;
+import com.nt.course_service_lms.dto.outDTO.UserQuizAttemptDetailsOutDTO;
 import com.nt.course_service_lms.service.QuizAttemptService;
 import jakarta.validation.Valid;
 import lombok.extern.slf4j.Slf4j;
@@ -284,9 +285,9 @@ public class QuizAttemptController {
     }
 
     @GetMapping("/user/{userId}/quiz/course/{courseId}")
-    public StandardResponseOutDTO<List<QuizSubmissionResultOutDTO>> getUserAttemptDetails(@PathVariable Long userId, @PathVariable Long courseId) {
-        List<QuizSubmissionResultOutDTO> quizSubmissionResultOutDTOS = quizAttemptService.getUserAttemptDetails(userId,courseId);
-        StandardResponseOutDTO<List<QuizSubmissionResultOutDTO>> standardResponseOutDTO = StandardResponseOutDTO.success(quizSubmissionResultOutDTOS, "Fetched user attempt details");
+    public StandardResponseOutDTO<List<UserQuizAttemptDetailsOutDTO>> getUserAttemptDetails(@PathVariable Long userId, @PathVariable Long courseId) {
+        List<UserQuizAttemptDetailsOutDTO> quizSubmissionResultOutDTOS = quizAttemptService.getUserAttemptDetails(userId,courseId);
+        StandardResponseOutDTO<List<UserQuizAttemptDetailsOutDTO>> standardResponseOutDTO = StandardResponseOutDTO.success(quizSubmissionResultOutDTOS, "Fetched user attempt details");
         return standardResponseOutDTO;
     }
 }
