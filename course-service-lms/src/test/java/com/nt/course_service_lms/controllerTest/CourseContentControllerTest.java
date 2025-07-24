@@ -1,177 +1,277 @@
 package com.nt.course_service_lms.controllerTest;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.nt.course_service_lms.controller.CourseContentController;
 import com.nt.course_service_lms.dto.inDTO.CourseContentInDTO;
 import com.nt.course_service_lms.dto.inDTO.UpdateCourseContentInDTO;
 import com.nt.course_service_lms.dto.outDTO.CourseContentOutDTO;
-import com.nt.course_service_lms.dto.outDTO.StandardResponseOutDTO;
+import com.nt.course_service_lms.exception.ResourceAlreadyExistsException;
+import com.nt.course_service_lms.exception.ResourceNotFoundException;
 import com.nt.course_service_lms.service.CourseContentService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.mockito.InjectMocks;
-import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
-import org.springframework.http.ResponseEntity;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
+import org.springframework.boot.test.context.TestConfiguration;
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Import;
+import org.springframework.http.MediaType;
+import org.springframework.test.web.servlet.MockMvc;
 
+import java.time.LocalDateTime;
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.List;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.mockito.Mockito.anyLong;
-import static org.mockito.Mockito.eq;
-import static org.mockito.Mockito.times;
-import static org.mockito.Mockito.verify;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.mock;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
-public class CourseContentControllerTest {
+@WebMvcTest(CourseContentController.class)
+@Import(CourseContentControllerTest.TestConfig.class)
+class CourseContentControllerTest {
 
-    @InjectMocks
-    private CourseContentController controller;
+    @TestConfiguration
+    static class TestConfig {
+        @Bean
+        public CourseContentService courseContentService() {
+            return mock(CourseContentService.class);
+        }
+    }
 
-    @Mock
-    private CourseContentService service;
+    @Autowired
+    private MockMvc mockMvc;
+
+    @Autowired
+    private CourseContentService courseContentService;
+
+    private final ObjectMapper objectMapper = new ObjectMapper();
+
+    private CourseContentOutDTO sampleOutDTO;
 
     @BeforeEach
     void setUp() {
-        MockitoAnnotations.openMocks(this);
+        sampleOutDTO = CourseContentOutDTO.builder()
+                .courseContentId(1L)
+                .courseId(100L)
+                .title("Sample Title")
+                .description("Sample Description")
+                .resourceLink("http://example.com/resource")
+                .isActive(true)
+                .createdAt(LocalDateTime.now())
+                .updatedAt(LocalDateTime.now())
+                .build();
     }
 
     @Test
-    void testCreateCourseContent() {
-        CourseContentInDTO inDTO = new CourseContentInDTO();
-        inDTO.setTitle("Intro");
-        inDTO.setCourseId(1L);
+    void createCourseContent_shouldReturnCreatedContent() throws Exception {
+        CourseContentInDTO inDTO = CourseContentInDTO.builder()
+                .courseId(100L)
+                .title("Sample Title")
+                .description("Sample Description")
+                .resourceLink("http://example.com/resource")
+                .isActive(true)
+                .build();
 
-        CourseContentOutDTO outDTO = new CourseContentOutDTO();
-        outDTO.setCourseContentId(10L);
-        outDTO.setTitle("Intro");
+        when(courseContentService.createCourseContent(any())).thenReturn(sampleOutDTO);
 
-        when(service.createCourseContent(inDTO)).thenReturn(outDTO);
-
-        ResponseEntity<StandardResponseOutDTO<CourseContentOutDTO>> response = controller.createCourseContent(inDTO);
-
-        assertEquals(201, response.getStatusCodeValue());
-        assertEquals("Intro", response.getBody().getData().getTitle());
+        mockMvc.perform(post("/api/course-contents")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(inDTO)))
+                .andExpect(status().isCreated())
+                .andExpect(jsonPath("$.data.courseContentId").value(1L));
     }
 
     @Test
-    void testGetAllCourseContents() {
-        CourseContentOutDTO c1 = new CourseContentOutDTO();
-        c1.setTitle("Topic 1");
+    void getCourseContentById_shouldReturnContent() throws Exception {
+        when(courseContentService.getCourseContentById(1L)).thenReturn(sampleOutDTO);
 
-        CourseContentOutDTO c2 = new CourseContentOutDTO();
-        c2.setTitle("Topic 2");
-
-        when(service.getAllCourseContents()).thenReturn(Arrays.asList(c1, c2));
-
-        ResponseEntity<StandardResponseOutDTO<List<CourseContentOutDTO>>> response = controller.getAllCourseContents();
-
-        assertEquals(200, response.getStatusCodeValue());
-        assertEquals(2, response.getBody().getData().size());
+        mockMvc.perform(get("/api/course-contents/1"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.data.courseContentId").value(1L));
     }
 
     @Test
-    void testGetAllCourseContents_Empty() {
-        when(service.getAllCourseContents()).thenReturn(Collections.emptyList());
+    void getCourseContentById_notFound() throws Exception {
+        when(courseContentService.getCourseContentById(99L))
+                .thenThrow(new ResourceNotFoundException("CourseContent not found"));
 
-        ResponseEntity<StandardResponseOutDTO<List<CourseContentOutDTO>>> response = controller.getAllCourseContents();
-
-        assertEquals(200, response.getStatusCodeValue());
-        assertTrue(response.getBody().getData().isEmpty());
+        mockMvc.perform(get("/api/course-contents/99"))
+                .andExpect(status().isNotFound())
+                .andExpect(jsonPath("$.message").value("CourseContent not found"));
     }
 
     @Test
-    void testGetCourseContentById() {
-        Long id = 1L;
-        CourseContentOutDTO dto = new CourseContentOutDTO();
-        dto.setCourseContentId(id);
-        dto.setTitle("Unit");
+    void getAllCourseContents_shouldReturnList() throws Exception {
+        when(courseContentService.getAllCourseContents()).thenReturn(Arrays.asList(sampleOutDTO));
 
-        when(service.getCourseContentById(id)).thenReturn(dto);
-
-        ResponseEntity<StandardResponseOutDTO<CourseContentOutDTO>> response = controller.getCourseContentById(id);
-
-        assertEquals(200, response.getStatusCodeValue());
-        assertEquals("Unit", response.getBody().getData().getTitle());
+        mockMvc.perform(get("/api/course-contents"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.data[0].courseContentId").value(1L));
     }
 
     @Test
-    void testGetCourseContentByCourseId() {
-        Long courseId = 101L;
+    void updateCourseContent_shouldReturnUpdatedContent() throws Exception {
+        UpdateCourseContentInDTO updateDTO = UpdateCourseContentInDTO.builder()
+                .courseId(100L)
+                .title("Updated Title")
+                .description("Updated Description")
+                .resourceLink("http://example.com/resource")
+                .isActive(true)
+                .build();
 
-        CourseContentOutDTO dto = new CourseContentOutDTO();
-        dto.setCourseContentId(1L);
+        CourseContentOutDTO updatedOutDTO = CourseContentOutDTO.builder()
+                .courseContentId(1L)
+                .courseId(100L)
+                .title("Updated Title")
+                .description("Updated Description")
+                .resourceLink("http://example.com/resource")
+                .isActive(true)
+                .createdAt(LocalDateTime.now())
+                .updatedAt(LocalDateTime.now())
+                .build();
 
-        when(service.getAllCourseContentByCourseId(courseId)).thenReturn(Collections.singletonList(dto));
+        when(courseContentService.updateCourseContent(eq(1L), any())).thenReturn(updatedOutDTO);
 
-        ResponseEntity<StandardResponseOutDTO<List<CourseContentOutDTO>>> response = controller.getCourseContentByCourseId(courseId);
-
-        assertEquals(200, response.getStatusCodeValue());
-        assertEquals(1, response.getBody().getData().size());
+        mockMvc.perform(put("/api/course-contents/1")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(updateDTO)))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.data.title").value("Updated Title"));
     }
 
     @Test
-    void testDeleteCourseContent() {
-        Long id = 99L;
-        when(service.deleteCourseContent(id)).thenReturn("Deleted");
+    void deleteCourseContent_shouldReturnSuccessMessage() throws Exception {
+        when(courseContentService.deleteCourseContent(1L)).thenReturn("Deleted Successfully");
 
-        ResponseEntity<StandardResponseOutDTO<Void>> response = controller.deleteCourseContent(id);
-
-        assertEquals(200, response.getStatusCodeValue());
-        assertEquals("Deleted", response.getBody().getMessage());
-        verify(service, times(1)).deleteCourseContent(id);
+        mockMvc.perform(delete("/api/course-contents/1"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.message").value("Deleted Successfully"));
     }
 
     @Test
-    void testUpdateCourseContent() {
-        Long id = 1L;
-        UpdateCourseContentInDTO updateDTO = new UpdateCourseContentInDTO();
-        updateDTO.setTitle("Updated");
+    void getAllCourseContentByCourseId_shouldReturnList() throws Exception {
+        when(courseContentService.getAllCourseContentByCourseId(100L))
+                .thenReturn(Arrays.asList(sampleOutDTO));
 
-        CourseContentOutDTO updatedDTO = new CourseContentOutDTO();
-        updatedDTO.setCourseContentId(id);
-        updatedDTO.setTitle("Updated");
-
-        when(service.updateCourseContent(id, updateDTO)).thenReturn(updatedDTO);
-
-        ResponseEntity<StandardResponseOutDTO<CourseContentOutDTO>> response = controller.updateCourseContent(id, updateDTO);
-
-        assertEquals(200, response.getStatusCodeValue());
-        assertEquals("Updated", response.getBody().getData().getTitle());
+        mockMvc.perform(get("/api/course-contents/course/100"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.data[0].courseId").value(100L));
     }
-
     @Test
-    void testHealthCheck() {
-        ResponseEntity<StandardResponseOutDTO<String>> response = controller.healthCheck();
+    void createCourseContent_missingRequiredFields_shouldReturnBadRequest() throws Exception {
+        CourseContentInDTO invalidDTO = CourseContentInDTO.builder()
+                .courseId(9L)
+                .title("")      // required
+                .description("Some description")
+                .resourceLink("http://example.com")
+                .isActive(true)
+                .build();
 
-        assertEquals(200, response.getStatusCodeValue());
-        assertEquals("UP", response.getBody().getData());
+        mockMvc.perform(post("/api/course-contents")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(invalidDTO)))
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.message").exists());
     }
-
     @Test
-    void testGetCourseContentCount() {
-        Long courseId = 3L;
-        List<CourseContentOutDTO> list = Arrays.asList(new CourseContentOutDTO(), new CourseContentOutDTO());
-
-        when(service.getAllCourseContentByCourseId(courseId)).thenReturn(list);
-
-        ResponseEntity<StandardResponseOutDTO<Integer>> response = controller.getCourseContentCount(courseId);
-
-        assertEquals(200, response.getStatusCodeValue());
-        assertEquals(2, response.getBody().getData());
+    void getCourseContentById_invalidIdFormat_shouldReturnBadRequest() throws Exception {
+        mockMvc.perform(get("/api/course-contents/abc")) // should be a number
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.message").value("Invalid parameter type"));
     }
-
     @Test
-    void testGetCourseContentCount_Empty() {
-        Long courseId = 3L;
+    void getAllCourseContents_shouldReturnEmptyList() throws Exception {
+        when(courseContentService.getAllCourseContents()).thenReturn(Arrays.asList());
 
-        when(service.getAllCourseContentByCourseId(courseId)).thenReturn(Collections.emptyList());
-
-        ResponseEntity<StandardResponseOutDTO<Integer>> response = controller.getCourseContentCount(courseId);
-
-        assertEquals(200, response.getStatusCodeValue());
-        assertEquals(0, response.getBody().getData());
+        mockMvc.perform(get("/api/course-contents"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.data").isArray())
+                .andExpect(jsonPath("$.data").isEmpty());
     }
+    @Test
+    void createCourseContent_duplicate_shouldReturnConflict() throws Exception {
+        CourseContentInDTO inDTO = CourseContentInDTO.builder()
+                .courseId(100L)
+                .title("Duplicate Title")
+                .description("Duplicate")
+                .resourceLink("http://example.com")
+                .isActive(true)
+                .build();
+
+        when(courseContentService.createCourseContent(any()))
+                .thenThrow(new ResourceAlreadyExistsException("Content already exists"));
+
+        mockMvc.perform(post("/api/course-contents")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(inDTO)))
+                .andExpect(status().isConflict())
+                .andExpect(jsonPath("$.message").value("Content already exists"));
+    }
+    @Test
+    void updateCourseContent_notFound_shouldReturnNotFound() throws Exception {
+        UpdateCourseContentInDTO updateDTO = UpdateCourseContentInDTO.builder()
+                .courseId(100L)
+                .title("Updated Title")
+                .description("Updated Description")
+                .resourceLink("http://example.com")
+                .isActive(true)
+                .build();
+
+        when(courseContentService.updateCourseContent(eq(999L), any()))
+                .thenThrow(new ResourceNotFoundException("Course content not found"));
+
+        mockMvc.perform(put("/api/course-contents/999")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(updateDTO)))
+                .andExpect(status().isNotFound())
+                .andExpect(jsonPath("$.message").value("Course content not found"));
+    }
+    @Test
+    void deleteCourseContent_notFound_shouldReturnNotFound() throws Exception {
+        when(courseContentService.deleteCourseContent(999L))
+                .thenThrow(new ResourceNotFoundException("Course content not found"));
+
+        mockMvc.perform(delete("/api/course-contents/999"))
+                .andExpect(status().isNotFound())
+                .andExpect(jsonPath("$.message").value("Course content not found"));
+    }
+    @Test
+    void updateCourseContent_missingFields_shouldReturnBadRequest() throws Exception {
+        UpdateCourseContentInDTO invalidDTO = UpdateCourseContentInDTO.builder()
+                .courseId(22L)
+                .title("")       // required
+                .description("Desc")
+                .resourceLink("http://example.com")
+                .isActive(true)
+                .build();
+
+        mockMvc.perform(put("/api/course-contents/1")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(invalidDTO)))
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.message").exists());
+    }
+    @Test
+    void getCourseContentCount_shouldReturnCount() throws Exception {
+        when(courseContentService.getAllCourseContentByCourseId(100L))
+                .thenReturn(Arrays.asList(sampleOutDTO, sampleOutDTO));
+
+        mockMvc.perform(get("/api/course-contents/course/100/count"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.data").value(2))
+                .andExpect(jsonPath("$.message").value("Course Content Count Retrieved Successfully"));
+    }
+    @Test
+    void getCourseContentCount_shouldReturnZero() throws Exception {
+        when(courseContentService.getAllCourseContentByCourseId(200L)).thenReturn(Arrays.asList());
+
+        mockMvc.perform(get("/api/course-contents/course/200/count"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.data").value(0));
+    }
+
+
 }

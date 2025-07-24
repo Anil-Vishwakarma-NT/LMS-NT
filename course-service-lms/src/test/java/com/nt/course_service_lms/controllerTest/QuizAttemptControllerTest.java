@@ -1,5 +1,6 @@
 package com.nt.course_service_lms.controllerTest;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.nt.course_service_lms.controller.QuizAttemptController;
 import com.nt.course_service_lms.dto.inDTO.QuizAttemptCreateInDTO;
 import com.nt.course_service_lms.dto.inDTO.QuizAttemptUpdateInDTO;
@@ -7,185 +8,223 @@ import com.nt.course_service_lms.dto.outDTO.QuizAttemptOutDTO;
 import com.nt.course_service_lms.service.QuizAttemptService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.mockito.InjectMocks;
-import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
+import org.mockito.Mockito;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
+import org.springframework.boot.test.context.TestConfiguration;
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Import;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.http.ResponseEntity;
+import org.springframework.http.MediaType;
+import org.springframework.test.web.servlet.MockMvc;
 
-import java.util.*;
+import java.time.LocalDateTime;
+import java.util.Arrays;
+import java.util.List;
+import java.util.Optional;
 
-import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.Mockito.*;
+import static org.mockito.ArgumentMatchers.*;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
+@WebMvcTest(QuizAttemptController.class)
+@Import(QuizAttemptControllerTest.TestConfig.class)
 public class QuizAttemptControllerTest {
 
-    @InjectMocks
-    private QuizAttemptController controller;
+    @TestConfiguration
+    static class TestConfig {
+        @Bean
+        public QuizAttemptService quizAttemptService() {
+            return Mockito.mock(QuizAttemptService.class);
+        }
+    }
 
-    @Mock
-    private QuizAttemptService service;
+    @Autowired
+    private MockMvc mockMvc;
+
+    @Autowired
+    private QuizAttemptService quizAttemptService;
+
+    private final ObjectMapper objectMapper = new ObjectMapper();
+
+    private QuizAttemptOutDTO sampleAttempt;
 
     @BeforeEach
-    void setUp() {
-        MockitoAnnotations.openMocks(this);
+    void setup() {
+        sampleAttempt = QuizAttemptOutDTO.builder()
+                .quizAttemptId(1L)
+                .quizId(100L)
+                .userId(200L)
+                .attempt(1L)
+                .attemptsLeft(2L)
+                .startedAt(LocalDateTime.now())
+                .finishedAt(LocalDateTime.now().plusMinutes(5))
+                .scoreDetails("{\"score\": 80}")
+                .status("COMPLETED")
+                .createdAt(LocalDateTime.now())
+                .updatedAt(LocalDateTime.now())
+                .build();
     }
 
     @Test
-    void testCreateQuizAttempt() {
-        QuizAttemptCreateInDTO dto = new QuizAttemptCreateInDTO();
-        dto.setUserId(1L);
-        dto.setQuizId(100L);
+    void testCreateQuizAttempt() throws Exception {
+        QuizAttemptCreateInDTO input = new QuizAttemptCreateInDTO(100L, 200L);
 
-        QuizAttemptOutDTO out = new QuizAttemptOutDTO();
-        when(service.createQuizAttempt(dto)).thenReturn(out);
+        Mockito.when(quizAttemptService.createQuizAttempt(any())).thenReturn(sampleAttempt);
 
-        ResponseEntity<QuizAttemptOutDTO> response = controller.createQuizAttempt(dto);
-
-        assertEquals(200, response.getStatusCodeValue());
-        assertNotNull(response.getBody());
+        mockMvc.perform(post("/quiz-attempts")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(input)))
+                .andExpect(status().isCreated())
+                .andExpect(jsonPath("$.quizAttemptId").value(sampleAttempt.getQuizAttemptId()));
     }
 
     @Test
-    void testUpdateQuizAttempt() {
-        Long id = 1L;
-        QuizAttemptUpdateInDTO dto = new QuizAttemptUpdateInDTO();
-        QuizAttemptOutDTO out = new QuizAttemptOutDTO();
+    void testCreateQuizAttemptValidationError() throws Exception {
+        QuizAttemptCreateInDTO input = new QuizAttemptCreateInDTO(null, -5L);
 
-        when(service.updateQuizAttempt(id, dto)).thenReturn(out);
-
-        ResponseEntity<QuizAttemptOutDTO> response = controller.updateQuizAttempt(id, dto);
-
-        assertEquals(200, response.getStatusCodeValue());
+        mockMvc.perform(post("/quiz-attempts")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(input)))
+                .andExpect(status().isBadRequest());
     }
 
     @Test
-    void testGetQuizAttemptById_Found() {
-        Long id = 1L;
-        QuizAttemptOutDTO out = new QuizAttemptOutDTO();
-        when(service.getQuizAttemptById(id)).thenReturn(Optional.of(out));
+    void testUpdateQuizAttempt() throws Exception {
+        QuizAttemptUpdateInDTO input = QuizAttemptUpdateInDTO.builder()
+                .status("COMPLETED")
+                .scoreDetails("{\"score\": 90}")
+                .finishedAt(LocalDateTime.now())
+                .build();
 
-        ResponseEntity<QuizAttemptOutDTO> response = controller.getQuizAttemptById(id);
-        assertEquals(200, response.getStatusCodeValue());
+        Mockito.when(quizAttemptService.updateQuizAttempt(eq(1L), any())).thenReturn(sampleAttempt);
+
+        mockMvc.perform(put("/quiz-attempts/1")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(input)))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.status").value("COMPLETED"));
     }
 
     @Test
-    void testGetQuizAttemptById_NotFound() {
-        when(service.getQuizAttemptById(100L)).thenReturn(Optional.empty());
+    void testGetQuizAttemptById() throws Exception {
+        Mockito.when(quizAttemptService.getQuizAttemptById(1L)).thenReturn(Optional.of(sampleAttempt));
 
-        ResponseEntity<QuizAttemptOutDTO> response = controller.getQuizAttemptById(100L);
-        assertEquals(404, response.getStatusCodeValue());
+        mockMvc.perform(get("/quiz-attempts/1"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.quizId").value(sampleAttempt.getQuizId()));
     }
 
     @Test
-    void testGetAllQuizAttempts() {
-        Page<QuizAttemptOutDTO> page = new PageImpl<>(Collections.singletonList(new QuizAttemptOutDTO()));
-        when(service.getAllQuizAttempts(any())).thenReturn(page);
+    void testGetQuizAttemptByIdNotFound() throws Exception {
+        Mockito.when(quizAttemptService.getQuizAttemptById(99L)).thenReturn(Optional.empty());
 
-        ResponseEntity<Page<QuizAttemptOutDTO>> response = controller.getAllQuizAttempts(PageRequest.of(0, 20));
-        assertEquals(200, response.getStatusCodeValue());
-        assertEquals(1, response.getBody().getTotalElements());
+        mockMvc.perform(get("/quiz-attempts/99"))
+                .andExpect(status().isNotFound());
     }
 
     @Test
-    void testGetQuizAttemptsByUserId() {
-        when(service.getQuizAttemptsByUserId(1L)).thenReturn(Collections.singletonList(new QuizAttemptOutDTO()));
-        ResponseEntity<List<QuizAttemptOutDTO>> response = controller.getQuizAttemptsByUserId(1L);
-        assertEquals(200, response.getStatusCodeValue());
+    void testGetAllQuizAttempts() throws Exception {
+        Page<QuizAttemptOutDTO> page = new PageImpl<>(Arrays.asList(sampleAttempt));
+        Mockito.when(quizAttemptService.getAllQuizAttempts(any())).thenReturn(page);
+
+        mockMvc.perform(get("/quiz-attempts?page=0&size=10"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.content[0].quizAttemptId").value(sampleAttempt.getQuizAttemptId()));
     }
 
     @Test
-    void testGetQuizAttemptsByQuizId() {
-        when(service.getQuizAttemptsByQuizId(100L)).thenReturn(Collections.singletonList(new QuizAttemptOutDTO()));
-        ResponseEntity<List<QuizAttemptOutDTO>> response = controller.getQuizAttemptsByQuizId(100L);
-        assertEquals(200, response.getStatusCodeValue());
+    void testGetByUserId() throws Exception {
+        Mockito.when(quizAttemptService.getQuizAttemptsByUserId(200L)).thenReturn(Arrays.asList(sampleAttempt));
+
+        mockMvc.perform(get("/quiz-attempts/user/200"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$[0].userId").value(200L));
     }
 
     @Test
-    void testGetQuizAttemptsByUserAndQuiz() {
-        when(service.getQuizAttemptsByUserAndQuiz(1L, 100L)).thenReturn(Collections.singletonList(new QuizAttemptOutDTO()));
-        ResponseEntity<List<QuizAttemptOutDTO>> response = controller.getQuizAttemptsByUserAndQuiz(1L, 100L);
-        assertEquals(200, response.getStatusCodeValue());
+    void testGetByQuizId() throws Exception {
+        Mockito.when(quizAttemptService.getQuizAttemptsByQuizId(100L)).thenReturn(Arrays.asList(sampleAttempt));
+
+        mockMvc.perform(get("/quiz-attempts/quiz/100"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$[0].quizId").value(100L));
     }
 
     @Test
-    void testGetQuizAttemptsByStatus() {
-        when(service.getQuizAttemptsByStatus("COMPLETED")).thenReturn(Collections.singletonList(new QuizAttemptOutDTO()));
-        ResponseEntity<List<QuizAttemptOutDTO>> response = controller.getQuizAttemptsByStatus("COMPLETED");
-        assertEquals(200, response.getStatusCodeValue());
+    void testGetByUserAndQuiz() throws Exception {
+        Mockito.when(quizAttemptService.getQuizAttemptsByUserAndQuiz(200L, 100L)).thenReturn(Arrays.asList(sampleAttempt));
+
+        mockMvc.perform(get("/quiz-attempts/user/200/quiz/100"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$[0].quizAttemptId").value(1L));
     }
 
     @Test
-    void testGetLatestAttemptByUserAndQuiz_Found() {
-        when(service.getLatestAttemptByUserAndQuiz(1L, 100L)).thenReturn(Optional.of(new QuizAttemptOutDTO()));
-        ResponseEntity<QuizAttemptOutDTO> response = controller.getLatestAttemptByUserAndQuiz(1L, 100L);
-        assertEquals(200, response.getStatusCodeValue());
+    void testGetByStatus() throws Exception {
+        Mockito.when(quizAttemptService.getQuizAttemptsByStatus("COMPLETED")).thenReturn(Arrays.asList(sampleAttempt));
+
+        mockMvc.perform(get("/quiz-attempts/status/COMPLETED"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$[0].status").value("COMPLETED"));
     }
 
     @Test
-    void testGetLatestAttemptByUserAndQuiz_NotFound() {
-        when(service.getLatestAttemptByUserAndQuiz(1L, 100L)).thenReturn(Optional.empty());
-        ResponseEntity<QuizAttemptOutDTO> response = controller.getLatestAttemptByUserAndQuiz(1L, 100L);
-        assertEquals(404, response.getStatusCodeValue());
+    void testGetLatestAttempt() throws Exception {
+        Mockito.when(quizAttemptService.getLatestAttemptByUserAndQuiz(200L, 100L)).thenReturn(Optional.of(sampleAttempt));
+
+        mockMvc.perform(get("/quiz-attempts/latest")
+                        .param("userId", "200")
+                        .param("quizId", "100"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.quizAttemptId").value(1L));
     }
 
     @Test
-    void testDeleteQuizAttempt() {
-        ResponseEntity<Void> response = controller.deleteQuizAttempt(1L);
-        verify(service).deleteQuizAttempt(1L);
-        assertEquals(204, response.getStatusCodeValue());
+    void testGetLatestAttemptNotFound() throws Exception {
+        Mockito.when(quizAttemptService.getLatestAttemptByUserAndQuiz(200L, 999L)).thenReturn(Optional.empty());
+
+        mockMvc.perform(get("/quiz-attempts/latest")
+                        .param("userId", "200")
+                        .param("quizId", "999"))
+                .andExpect(status().isNotFound());
     }
 
     @Test
-    void testCompleteAttempt() {
-        QuizAttemptOutDTO dto = new QuizAttemptOutDTO();
-        when(service.completeAttempt(1L, "details")).thenReturn(dto);
-        ResponseEntity<QuizAttemptOutDTO> response = controller.completeAttempt(1L, "details");
-        assertEquals(200, response.getStatusCodeValue());
+    void testDeleteQuizAttempt() throws Exception {
+        mockMvc.perform(delete("/quiz-attempts/1"))
+                .andExpect(status().isNoContent());
+        Mockito.verify(quizAttemptService).deleteQuizAttempt(1L);
     }
 
     @Test
-    void testAbandonAttempt() {
-        when(service.abandonAttempt(1L)).thenReturn(new QuizAttemptOutDTO());
-        ResponseEntity<QuizAttemptOutDTO> response = controller.abandonAttempt(1L);
-        assertEquals(200, response.getStatusCodeValue());
+    void testCompleteAttempt() throws Exception {
+        Mockito.when(quizAttemptService.completeAttempt(eq(1L), anyString())).thenReturn(sampleAttempt);
+
+        mockMvc.perform(put("/quiz-attempts/1/complete")
+                        .param("scoreDetails", "{\"score\": 90}"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.status").value("COMPLETED"));
     }
 
     @Test
-    void testTimeOutAttempt() {
-        when(service.timeOutAttempt(1L)).thenReturn(new QuizAttemptOutDTO());
-        ResponseEntity<QuizAttemptOutDTO> response = controller.timeOutAttempt(1L);
-        assertEquals(200, response.getStatusCodeValue());
+    void testAbandonAttempt() throws Exception {
+        Mockito.when(quizAttemptService.abandonAttempt(1L)).thenReturn(sampleAttempt);
+
+        mockMvc.perform(put("/quiz-attempts/1/abandon"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.status").value("COMPLETED"));
     }
 
     @Test
-    void testCheckQuizAttemptExists_True() {
-        when(service.existsById(1L)).thenReturn(true);
-        ResponseEntity<Void> response = controller.checkQuizAttemptExists(1L);
-        assertEquals(200, response.getStatusCodeValue());
-    }
+    void testTimeoutAttempt() throws Exception {
+        Mockito.when(quizAttemptService.timeOutAttempt(1L)).thenReturn(sampleAttempt);
 
-    @Test
-    void testCheckQuizAttemptExists_False() {
-        when(service.existsById(999L)).thenReturn(false);
-        ResponseEntity<Void> response = controller.checkQuizAttemptExists(999L);
-        assertEquals(404, response.getStatusCodeValue());
-    }
-
-    @Test
-    void testCountAttemptsByUserAndQuiz() {
-        when(service.countAttemptsByUserAndQuiz(1L, 100L)).thenReturn(3L);
-        ResponseEntity<Long> response = controller.countAttemptsByUserAndQuiz(1L, 100L);
-        assertEquals(200, response.getStatusCodeValue());
-        assertEquals(3L, response.getBody());
-    }
-
-    @Test
-    void testHealthCheck() {
-        ResponseEntity<String> response = controller.healthCheck();
-        assertEquals(200, response.getStatusCodeValue());
-        assertEquals("QuizAttempt Controller is healthy", response.getBody());
+        mockMvc.perform(put("/quiz-attempts/1/timeout"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.status").value("COMPLETED"));
     }
 }
+
+

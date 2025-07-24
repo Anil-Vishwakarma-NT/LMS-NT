@@ -1,183 +1,231 @@
 package com.nt.course_service_lms.controllerTest;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.nt.course_service_lms.controller.CourseBundleController;
 import com.nt.course_service_lms.dto.inDTO.CourseBundleInDTO;
 import com.nt.course_service_lms.dto.inDTO.UpdateCourseBundleInDTO;
-import com.nt.course_service_lms.dto.outDTO.BundleInfoOutDTO;
-import com.nt.course_service_lms.dto.outDTO.BundleSummaryOutDTO;
 import com.nt.course_service_lms.dto.outDTO.CourseBundleOutDTO;
-import com.nt.course_service_lms.dto.outDTO.StandardResponseOutDTO;
 import com.nt.course_service_lms.entity.CourseBundle;
+import com.nt.course_service_lms.exception.ResourceNotFoundException;
 import com.nt.course_service_lms.service.CourseBundleService;
+
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.mockito.InjectMocks;
-import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
-import org.springframework.http.ResponseEntity;
+import org.mockito.Mockito;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
+import org.springframework.boot.test.context.TestConfiguration;
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Import;
+import org.springframework.http.MediaType;
+import org.springframework.test.web.servlet.MockMvc;
 
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.List;
 
-import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.Mockito.*;
+import static org.hamcrest.Matchers.*;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
-public class CourseBundleControllerTest {
+@WebMvcTest(CourseBundleController.class)
+@Import(CourseBundleControllerTest.TestConfig.class)
+class CourseBundleControllerTest {
 
-    @InjectMocks
-    private CourseBundleController courseBundleController;
+    @TestConfiguration
+    static class TestConfig {
+        @Bean
+        public CourseBundleService courseBundleService() {
+            return Mockito.mock(CourseBundleService.class);
+        }
+    }
 
-    @Mock
+    @Autowired
+    private MockMvc mockMvc;
+
+    @Autowired
     private CourseBundleService courseBundleService;
 
+    private final ObjectMapper objectMapper = new ObjectMapper();
+    private CourseBundleOutDTO sampleOutDTO;
+
     @BeforeEach
-    void setUp() {
-        MockitoAnnotations.openMocks(this);
+    void setup() {
+        sampleOutDTO = CourseBundleOutDTO.builder()
+                .courseBundleId(1L)
+                .bundleId(10L)
+                .bundleName("Full Stack Bundle")
+                .courseId(20L)
+                .courseName("Java Mastery")
+                .build();
     }
 
     @Test
-    void testCreateCourseBundle() {
-        CourseBundleInDTO inDTO = new CourseBundleInDTO();
-        CourseBundle bundle = new CourseBundle();
-        bundle.setCourseBundleId(1L);
+    void createCourseBundle_ReturnsCreated() throws Exception {
+        CourseBundleInDTO input = new CourseBundleInDTO();
+        input.setBundleId(10L);
+        input.setCourseId(20L);
 
-        when(courseBundleService.createCourseBundle(inDTO)).thenReturn(bundle);
+        CourseBundle saved = new CourseBundle();
+        saved.setCourseBundleId(1L);
+        saved.setBundleId(10L);
+        saved.setCourseId(20L);
 
-        ResponseEntity<StandardResponseOutDTO<CourseBundle>> response = courseBundleController.createCourseBundle(inDTO);
+        Mockito.when(courseBundleService.createCourseBundle(any())).thenReturn(saved);
 
-        assertEquals(201, response.getStatusCodeValue());
-        assertEquals(1L, response.getBody().getData().getCourseBundleId());
-        assertEquals("Course Bundle created successfully.", response.getBody().getMessage());
+        mockMvc.perform(post("/api/service-api/course-bundles")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(input)))
+                .andExpect(status().isCreated())
+                .andExpect(jsonPath("$.message").value("CourseBundle created successfully"))
+                .andExpect(jsonPath("$.data.courseBundleId").value(1));
     }
 
     @Test
-    void testGetAllCourseBundles() {
-        CourseBundleOutDTO b1 = new CourseBundleOutDTO();
-        CourseBundleOutDTO b2 = new CourseBundleOutDTO();
+    void createCourseBundle_InvalidRequest_ReturnsBadRequest() throws Exception {
+        CourseBundleInDTO input = new CourseBundleInDTO(); // empty fields
 
-        when(courseBundleService.getAllCourseBundles()).thenReturn(Arrays.asList(b1, b2));
-
-        ResponseEntity<StandardResponseOutDTO<List<CourseBundleOutDTO>>> response = courseBundleController.getAllCourseBundles();
-
-        assertEquals(200, response.getStatusCodeValue());
-        assertEquals(2, response.getBody().getData().size());
+        mockMvc.perform(post("/api/service-api/course-bundles")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(input)))
+                .andExpect(status().isBadRequest());
     }
 
     @Test
-    void testGetAllCourseBundlesEmpty() {
-        when(courseBundleService.getAllCourseBundles()).thenReturn(Collections.emptyList());
+    void createCourseBundle_Duplicate_ReturnsBadRequest() throws Exception {
+        CourseBundleInDTO input = new CourseBundleInDTO();
+        input.setBundleId(10L);
+        input.setCourseId(20L);
 
-        ResponseEntity<StandardResponseOutDTO<List<CourseBundleOutDTO>>> response = courseBundleController.getAllCourseBundles();
+        Mockito.when(courseBundleService.createCourseBundle(any()))
+                .thenThrow(new IllegalArgumentException("Duplicate course in bundle"));
 
-        assertEquals(200, response.getStatusCodeValue());
-        assertTrue(response.getBody().getData().isEmpty());
+        mockMvc.perform(post("/api/service-api/course-bundles")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(input)))
+                .andExpect(status().isBadRequest());
     }
 
     @Test
-    void testGetCourseBundleById() {
-        Long id = 1L;
-        CourseBundleOutDTO outDTO = new CourseBundleOutDTO();
+    void getAllCourseBundles_ReturnsList() throws Exception {
+        Mockito.when(courseBundleService.getAllCourseBundles()).thenReturn(Arrays.asList(sampleOutDTO));
 
-        when(courseBundleService.getCourseBundleById(id)).thenReturn(outDTO);
-
-        ResponseEntity<StandardResponseOutDTO<CourseBundleOutDTO>> response = courseBundleController.getCourseBundleById(id);
-
-        assertEquals(200, response.getStatusCodeValue());
-        assertNotNull(response.getBody().getData());
-        assertTrue(response.getBody().getMessage().contains("retrieved successfully"));
+        mockMvc.perform(get("/api/service-api/course-bundles"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.data", hasSize(1)))
+                .andExpect(jsonPath("$.data[0].bundleName").value("Full Stack Bundle"));
     }
 
     @Test
-    void testDeleteCourseBundle() {
-        Long id = 1L;
+    void getAllCourseBundles_EmptyList_ReturnsEmptyArray() throws Exception {
+        Mockito.when(courseBundleService.getAllCourseBundles()).thenReturn(Arrays.asList());
 
-        ResponseEntity<StandardResponseOutDTO<Void>> response = courseBundleController.deleteCourseBundle(id);
-
-        verify(courseBundleService, times(1)).deleteCourseBundle(id);
-        assertEquals(200, response.getStatusCodeValue());
-        assertEquals("Course-bundle with ID " + id + " deleted successfully.", response.getBody().getMessage());
+        mockMvc.perform(get("/api/service-api/course-bundles"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.data", hasSize(0)));
     }
 
     @Test
-    void testUpdateCourseBundle() {
-        Long id = 1L;
+    void getCourseBundleById_ReturnsBundle() throws Exception {
+        Mockito.when(courseBundleService.getCourseBundleById(1L)).thenReturn(sampleOutDTO);
+
+        mockMvc.perform(get("/api/service-api/course-bundles/1"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.data.courseName").value("Java Mastery"));
+    }
+
+    @Test
+    void getCourseBundleById_NotFound_Returns404() throws Exception {
+        Mockito.when(courseBundleService.getCourseBundleById(999L))
+                .thenThrow(new ResourceNotFoundException("Not found"));
+
+        mockMvc.perform(get("/api/service-api/course-bundles/999"))
+                .andExpect(status().isNotFound());
+    }
+
+    @Test
+    void getCourseBundleById_InvalidId_ReturnsBadRequest() throws Exception {
+        mockMvc.perform(get("/api/service-api/course-bundles/invalid"))
+                .andExpect(status().isBadRequest());
+    }
+
+    @Test
+    void updateCourseBundle_ReturnsUpdatedMessage() throws Exception {
         UpdateCourseBundleInDTO updateDTO = new UpdateCourseBundleInDTO();
+        updateDTO.setBundleId(10L);
+        updateDTO.setCourseId(20L);
 
-        String serviceResponse = "Updated Successfully";
+        Mockito.when(courseBundleService.updateCourseBundle(eq(1L), any()))
+                .thenReturn("CourseBundle updated successfully");
 
-        when(courseBundleService.updateCourseBundle(id, updateDTO)).thenReturn(serviceResponse);
-
-        ResponseEntity<StandardResponseOutDTO<String>> response = courseBundleController.updateCourseBundle(id, updateDTO);
-
-        assertEquals(200, response.getStatusCodeValue());
-        assertEquals(serviceResponse, response.getBody().getData());
-        assertTrue(response.getBody().getMessage().contains("updated successfully"));
+        mockMvc.perform(put("/api/service-api/course-bundles/1")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(updateDTO)))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.message").value("CourseBundle updated successfully"));
     }
 
     @Test
-    void testGetAllCoursesByBundleId() {
-        Long bundleId = 1L;
-        CourseBundle cb1 = new CourseBundle();
-        CourseBundle cb2 = new CourseBundle();
+    void updateCourseBundle_NotFound_Returns404() throws Exception {
+        UpdateCourseBundleInDTO updateDTO = new UpdateCourseBundleInDTO();
+        updateDTO.setBundleId(10L);
+        updateDTO.setCourseId(20L);
 
-        when(courseBundleService.getAllCoursesByBundle(bundleId)).thenReturn(Arrays.asList(cb1, cb2));
+        Mockito.when(courseBundleService.updateCourseBundle(eq(999L), any()))
+                .thenThrow(new ResourceNotFoundException("Not found"));
 
-        ResponseEntity<StandardResponseOutDTO<List<CourseBundle>>> response = courseBundleController.getAllCoursesByBundleId(bundleId);
-
-        assertEquals(200, response.getStatusCodeValue());
-        assertEquals(2, response.getBody().getData().size());
-        assertTrue(response.getBody().getMessage().contains("retrieved successfully"));
+        mockMvc.perform(put("/api/service-api/course-bundles/999")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(updateDTO)))
+                .andExpect(status().isNotFound());
     }
 
     @Test
-    void testGetAllCoursesByBundleIdEmpty() {
-        when(courseBundleService.getAllCoursesByBundle(100L)).thenReturn(Collections.emptyList());
-
-        ResponseEntity<StandardResponseOutDTO<List<CourseBundle>>> response = courseBundleController.getAllCoursesByBundleId(100L);
-
-        assertEquals(200, response.getStatusCodeValue());
-        assertTrue(response.getBody().getData().isEmpty());
+    void deleteCourseBundle_ReturnsOk() throws Exception {
+        mockMvc.perform(delete("/api/service-api/course-bundles/1"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.message").value("CourseBundle deleted successfully"));
     }
 
     @Test
-    void testGetAllBundleInfo() {
-        BundleInfoOutDTO dto1 = new BundleInfoOutDTO();
-        BundleInfoOutDTO dto2 = new BundleInfoOutDTO();
+    void deleteCourseBundle_NotFound_Returns404() throws Exception {
+        Mockito.doThrow(new ResourceNotFoundException("Not found"))
+                .when(courseBundleService).deleteCourseBundle(99L);
 
-        when(courseBundleService.getBundlesInfo()).thenReturn(Arrays.asList(dto1, dto2));
-
-        ResponseEntity<StandardResponseOutDTO<List<BundleInfoOutDTO>>> response = courseBundleController.getALlBundleInfo();
-
-        assertEquals(200, response.getStatusCodeValue());
-        assertEquals(2, response.getBody().getData().size());
-        assertEquals("Bundles info retrieved successfully.", response.getBody().getMessage());
+        mockMvc.perform(delete("/api/service-api/course-bundles/99"))
+                .andExpect(status().isNotFound());
     }
 
     @Test
-    void testGetRecentBundles() {
-        BundleSummaryOutDTO dto1 = new BundleSummaryOutDTO();
-
-        when(courseBundleService.getRecentBundleSummaries()).thenReturn(Arrays.asList(dto1));
-
-        ResponseEntity<StandardResponseOutDTO<List<BundleSummaryOutDTO>>> response = courseBundleController.getRecentBundles();
-
-        assertEquals(200, response.getStatusCodeValue());
-        assertEquals(1, response.getBody().getData().size());
-        assertEquals("Recent bundles retrieved successfully.", response.getBody().getMessage());
+    void deleteCourseBundle_InvalidId_ReturnsBadRequest() throws Exception {
+        mockMvc.perform(delete("/api/service-api/course-bundles/abc"))
+                .andExpect(status().isBadRequest());
     }
 
     @Test
-    void testFindCourseIdsByBundleId() {
-        Long bundleId = 1L;
-        List<Long> courseIds = Arrays.asList(101L, 102L);
+    void getCoursesByBundleId_ReturnsCourseList() throws Exception {
+        CourseBundle entity = new CourseBundle();
+        entity.setCourseBundleId(1L);
+        entity.setBundleId(10L);
+        entity.setCourseId(20L);
 
-        when(courseBundleService.findCourseIdsByBundleId(bundleId)).thenReturn(courseIds);
+        Mockito.when(courseBundleService.getAllCoursesByBundle(10L)).thenReturn(Arrays.asList(entity));
 
-        ResponseEntity<List<Long>> response = courseBundleController.findCourseIdsByBundleId(bundleId);
+        mockMvc.perform(get("/api/service-api/course-bundles/bundle/10"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.data", hasSize(1)))
+                .andExpect(jsonPath("$.data[0].bundleId").value(10));
+    }
 
-        assertEquals(200, response.getStatusCodeValue());
-        assertEquals(2, response.getBody().size());
-        assertTrue(response.getBody().contains(101L));
+    @Test
+    void getCoursesByBundleId_EmptyList_ReturnsEmptyArray() throws Exception {
+        Mockito.when(courseBundleService.getAllCoursesByBundle(50L)).thenReturn(Arrays.asList());
+
+        mockMvc.perform(get("/api/service-api/course-bundles/bundle/50"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.data", hasSize(0)));
     }
 }
+

@@ -113,9 +113,14 @@ public class ServiceAuthenticationFilter extends OncePerRequestFilter {
                                     final HttpServletResponse response,
                                     final FilterChain filterChain) throws ServletException, IOException {
 
+
         try {
             String path = request.getRequestURI();
             if (path.startsWith("/video/") || path.startsWith("/pdf/")) {
+                filterChain.doFilter(request, response);
+                return;
+            }
+            if (path.startsWith("/h2-console")) {
                 filterChain.doFilter(request, response);
                 return;
             }
@@ -394,5 +399,11 @@ public class ServiceAuthenticationFilter extends OncePerRequestFilter {
         response.setStatus(HttpServletResponse.SC_FORBIDDEN);
         response.setContentType("application/json");
         response.getWriter().write(String.format(ERROR_FORBIDDEN, message));
+    }
+
+    @Override
+    protected boolean shouldNotFilter(HttpServletRequest request) throws ServletException {
+        String path = request.getRequestURI();
+        return path.startsWith("/h2-console");
     }
 }

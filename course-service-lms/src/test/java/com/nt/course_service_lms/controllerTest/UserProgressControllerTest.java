@@ -1,109 +1,203 @@
 package com.nt.course_service_lms.controllerTest;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.nt.course_service_lms.config.ServicePrincipal;
 import com.nt.course_service_lms.controller.UserProgressController;
-import com.nt.course_service_lms.dto.outDTO.CourseProgressWithMetaDTO;
 import com.nt.course_service_lms.dto.outDTO.UserProgressOutDTO;
+import com.nt.course_service_lms.dto.outDTO.CourseProgressWithMetaDTO;
 import com.nt.course_service_lms.service.UserProgressService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.mockito.InjectMocks;
-import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
+import org.mockito.Mockito;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
+import org.springframework.boot.test.context.TestConfiguration;
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Import;
+import org.springframework.http.MediaType;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContext;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.test.web.servlet.MockMvc;
 
 import java.time.LocalDateTime;
 
-import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
-public class UserProgressControllerTest {
+@WebMvcTest(UserProgressController.class)
+@Import(UserProgressControllerTest.TestConfig.class)
+class UserProgressControllerTest {
 
-    @InjectMocks
-    private UserProgressController controller;
+    @TestConfiguration
+    static class TestConfig {
+        @Bean
+        public UserProgressService userProgressService() {
+            return Mockito.mock(UserProgressService.class);
+        }
+    }
 
-    @Mock
-    private UserProgressService service;
+    @Autowired
+    private MockMvc mockMvc;
+
+    @Autowired
+    private UserProgressService userProgressService;
+
+    private final ObjectMapper objectMapper = new ObjectMapper();
+
+    private UserProgressOutDTO progressDTO;
 
     @BeforeEach
     void setUp() {
-        MockitoAnnotations.openMocks(this);
+        progressDTO = new UserProgressOutDTO();
+        progressDTO.setUserId(1L);
+        progressDTO.setCourseId(100L);
+        progressDTO.setContentId(200L);
+        progressDTO.setContentCompletionPercentage(75.0);
+        progressDTO.setLastPosition(300);
     }
 
     @Test
-    void testUpdateProgress() {
-        UserProgressOutDTO progressDTO = UserProgressOutDTO.builder()
-                .userId(1L)
-                .courseId(2L)
-                .contentId(3L)
-                .contentType("video")
-                .lastPosition(80.5)
-                .contentCompletionPercentage(70.0)
-                .lastUpdated(LocalDateTime.now())
+    void updateProgress_shouldSucceed() throws Exception {
+        mockMvc.perform(post("/api/service-api/user-progress/update")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(progressDTO)))
+                .andExpect(status().isOk());
+
+        verify(userProgressService).updateProgress(any(UserProgressOutDTO.class));
+    }
+
+    @Test
+    void getCourseProgressWithMetaWithId_shouldReturnData() throws Exception {
+        CourseProgressWithMetaDTO expected = new CourseProgressWithMetaDTO(90.0, LocalDateTime.now());
+
+        when(userProgressService.getCourseProgressWithMeta(1L, 100L)).thenReturn(expected);
+
+        mockMvc.perform(get("/api/service-api/user-progress/meta")
+                        .param("userId", "1")
+                        .param("courseId", "100"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.completionPercentage").value(90.0));
+
+        verify(userProgressService).getCourseProgressWithMeta(1L, 100L);
+    }
+
+    @Test
+    void getLastPosition_shouldReturnPosition() throws Exception {
+        when(userProgressService.getLastPosition(1L, 100L, 200L)).thenReturn(300);
+
+        mockMvc.perform(get("/api/service-api/user-progress/last-position")
+                        .param("userId", "1")
+                        .param("courseId", "100")
+                        .param("contentId", "200"))
+                .andExpect(status().isOk())
+                .andExpect(content().string("300"));
+
+        verify(userProgressService).getLastPosition(1L, 100L, 200L);
+    }
+
+    @Test
+    void getContentProgress_shouldReturnValue() throws Exception {
+        when(userProgressService.getContentProgress(1L, 100L, 200L)).thenReturn(55.5);
+
+        mockMvc.perform(get("/api/service-api/user-progress/content")
+                        .param("userId", "1")
+                        .param("courseId", "100")
+                        .param("contentId", "200"))
+                .andExpect(status().isOk())
+                .andExpect(content().string("55.5"));
+
+        verify(userProgressService).getContentProgress(1L, 100L, 200L);
+    }
+
+    @Test
+    void getCourseProgressWithMetaCourseId_shouldReturnData() throws Exception {
+        CourseProgressWithMetaDTO expected = new CourseProgressWithMetaDTO(100.0, LocalDateTime.now());
+
+        // Build mock principal (adjust method names if needed)
+        ServicePrincipal principal = ServicePrincipal.builder()
+                .userId("1")
+                .email("test@example.com")
+                .role("USER")
                 .build();
 
-        doNothing().when(service).updateProgress(progressDTO);
+        Authentication authentication = mock(Authentication.class);
+        when(authentication.getPrincipal()).thenReturn(principal);
+        SecurityContext context = mock(SecurityContext.class);
+        when(context.getAuthentication()).thenReturn(authentication);
+        SecurityContextHolder.setContext(context);
 
-        // This method returns void, so we just call it and verify
-        controller.updateProgress(progressDTO);
+        when(userProgressService.getCourseProgressWithMeta(1L, 100L)).thenReturn(expected);
 
-        verify(service, times(1)).updateProgress(progressDTO);
+        mockMvc.perform(get("/api/service-api/user-progress/meta-courseId")
+                        .param("courseId", "100"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.completionPercentage").value(100.0));
+
+        verify(userProgressService).getCourseProgressWithMeta(1L, 100L);
     }
+
 
     @Test
-    void testGetCourseProgressWithMetaWithId() {
-        Long userId = 1L;
-        Long courseId = 2L;
-        CourseProgressWithMetaDTO dto = new CourseProgressWithMetaDTO(95.5, LocalDateTime.now());
+    void getCourseProgressWithMetaCourseId_shouldFailOnMissingPrincipal() throws Exception {
+        // No ServicePrincipal in authentication
+        Authentication auth = mock(Authentication.class);
+        when(auth.getPrincipal()).thenReturn("someUser");
+        SecurityContextHolder.setContext(mock(SecurityContext.class));
+        when(SecurityContextHolder.getContext().getAuthentication()).thenReturn(auth);
 
-        when(service.getCourseProgressWithMeta(userId, courseId)).thenReturn(dto);
-
-        CourseProgressWithMetaDTO result = controller.getCourseProgressWithMetaWithId(userId, courseId);
-
-        assertNotNull(result);
-        assertEquals(95.5, result.getCourseCompletionPercentage());
-        assertNotNull(result.getFirstCompletedAt());
+        mockMvc.perform(get("/api/service-api/user-progress/meta-courseId")
+                        .param("courseId", "100"))
+                .andExpect(status().isNotFound());
     }
-
     @Test
-    void testGetLastPosition() {
-        Long userId = 1L, courseId = 2L, contentId = 3L;
+    void getCourseProgressWithMetaWithId_empty_shouldReturnDefault() throws Exception {
+        CourseProgressWithMetaDTO dto = new CourseProgressWithMetaDTO(0.0, null);
+        when(userProgressService.getCourseProgressWithMeta(1L, 2L)).thenReturn(dto);
 
-        when(service.getLastPosition(userId, courseId, contentId)).thenReturn(42);
-
-        Integer result = controller.getLastPosition(userId, courseId, contentId);
-
-        assertEquals(42, result);
+        mockMvc.perform(get("/api/service-api/user-progress/meta")
+                        .param("userId", "1")
+                        .param("courseId", "2"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.completionPercentage").value(0.0))
+                .andExpect(jsonPath("$.firstCompletedAt").doesNotExist());
     }
-
     @Test
-    void testGetLastPosition_NotFound() {
-        Long userId = 1L, courseId = 2L, contentId = 3L;
+    void getContentProgress_zeroProgress_shouldReturnZero() throws Exception {
+        when(userProgressService.getContentProgress(1L, 2L, 3L)).thenReturn(0.0);
 
-        when(service.getLastPosition(userId, courseId, contentId)).thenReturn(0);
-
-        Integer result = controller.getLastPosition(userId, courseId, contentId);
-
-        assertEquals(0, result);
+        mockMvc.perform(get("/api/service-api/user-progress/content")
+                        .param("userId", "1")
+                        .param("courseId", "2")
+                        .param("contentId", "3"))
+                .andExpect(status().isOk())
+                .andExpect(content().string("0.0"));
     }
-
     @Test
-    void testGetContentProgress() {
-        Long userId = 1L, courseId = 2L, contentId = 3L;
+    void getLastPosition_nullResponse_shouldReturnZero() throws Exception {
+        when(userProgressService.getLastPosition(1L, 2L, 3L)).thenReturn(0);
 
-        when(service.getContentProgress(userId, courseId, contentId)).thenReturn(0.9);
-
-        Double result = controller.getContentProgress(userId, courseId, contentId);
-
-        assertEquals(0.9, result);
+        mockMvc.perform(get("/api/service-api/user-progress/last-position")
+                        .param("userId", "1")
+                        .param("courseId", "2")
+                        .param("contentId", "3"))
+                .andExpect(status().isOk())
+                .andExpect(content().string("0"));
     }
-
     @Test
-    void testGetContentProgress_Empty() {
-        Long userId = 1L, courseId = 2L, contentId = 3L;
+    void getCourseProgressWithMetaCourseId_invalidPrincipal_shouldThrowException() throws Exception {
+        SecurityContext securityContext = mock(SecurityContext.class);
+        Authentication authentication = mock(Authentication.class);
 
-        when(service.getContentProgress(userId, courseId, contentId)).thenReturn(0.0);
+        when(authentication.getPrincipal()).thenReturn("anonymousUser");
+        when(securityContext.getAuthentication()).thenReturn(authentication);
+        SecurityContextHolder.setContext(securityContext);
 
-        Double result = controller.getContentProgress(userId, courseId, contentId);
-
-        assertEquals(0.0, result);
+        mockMvc.perform(get("/api/service-api/user-progress/meta-courseId")
+                        .param("courseId", "123"))
+                .andExpect(status().isNotFound());
     }
+
 }
+
