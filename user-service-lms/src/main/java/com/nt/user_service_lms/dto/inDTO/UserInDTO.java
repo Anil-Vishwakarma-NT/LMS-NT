@@ -57,14 +57,27 @@ public class UserInDTO {
     )
     private String role;
 
+
+    /**
+     * Checks if the object is equal.
+     *
+     * @param o
+     */
     @Override
-    public boolean equals(Object o) {
-        if (o == null || getClass() != o.getClass()) return false;
+    public boolean equals(final Object o) {
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
         UserInDTO userInDTO = (UserInDTO) o;
-        return userId == userInDTO.userId && Objects.equals(email, userInDTO.email) && Objects.equals(firstName, userInDTO.firstName) && Objects.equals(lastName, userInDTO.lastName) && Objects.equals(userName, userInDTO.userName) && Objects.equals(role, userInDTO.role);
+        return userId == userInDTO.userId && Objects.equals(email, userInDTO.email)
+                && Objects.equals(firstName, userInDTO.firstName) && Objects.equals(lastName, userInDTO.lastName)
+                && Objects.equals(userName, userInDTO.userName) && Objects.equals(role, userInDTO.role);
     }
 
-    @Override
+    /**
+     * generates hashcode.
+     */
+     @Override
     public int hashCode() {
         return Objects.hash(userId, email, firstName, lastName, userName, role);
     }

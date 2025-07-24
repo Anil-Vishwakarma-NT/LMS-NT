@@ -68,7 +68,12 @@ public interface GroupRepository extends JpaRepository<Group, Long> {
     @Query("UPDATE Group ug SET ug.isActive = false WHERE ug.groupId = :groupId")
     void softDeleteByGroupId(@Param("groupId") Long groupId);
 
-
+    /**
+     * Finds all groups by group ID.
+     *
+     * @param groupId
+     * @return optional of group.
+     */
     Optional<Group> findByGroupId(Long groupId);
 
     /**
@@ -82,6 +87,7 @@ public interface GroupRepository extends JpaRepository<Group, Long> {
     /**
      * Finds if group  with given name exists.
      *
+     * @param groupName
      * @return true if active group available
      */
     boolean existsByGroupName(String groupName);

@@ -157,14 +157,37 @@ public interface EnrollmentRepository extends JpaRepository<Enrollment, Long> {
      */
     List<Enrollment> findByBundleId(Long bundleId);
 
+    /**
+     * Finds list of enrollments by bundle ID.
+     *
+     * @param groupId the course ID
+     * @return List of  enrollment.
+     */
     List<Enrollment> findByGroupIdAndBundleIdIsNull(Long groupId);
 
+    /**
+     * Finds list of bundleId by group ID.
+     *
+     * @param groupId the course ID
+     * @return List of long
+     */
     @Query("SELECT e.bundleId FROM Enrollment e WHERE e.groupId = :groupId AND e.bundleId IS NOT NULL GROUP BY e.bundleId")
     List<Long> findBundleIdInGroup(@Param("groupId") Long groupId);
 
-
+    /**
+     * Finds list of enrollments by group ID where bundle Id is not null.
+     *
+     * @param groupId the course ID
+     * @return List of  enrollment
+     */
     List<Enrollment> findByGroupIdAndBundleIdIsNotNull(Long groupId);
 
-
-    List<Enrollment> findByBundleIdAndCourseId(Long bundleId , Long courseId);
+    /**
+     * Finds list of enrollments by bundle ID and course ID.
+     *
+     * @param courseId the course ID
+     * @param bundleId
+     * @return optional enrollment
+     */
+    List<Enrollment> findByBundleIdAndCourseId(Long bundleId, Long courseId);
 }

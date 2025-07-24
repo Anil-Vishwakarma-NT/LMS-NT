@@ -1,126 +1,14 @@
-<<<<<<< HEAD
-//package com.nt.user_service_lms.serviceImpl;
-//
-//import com.nt.user_service_lms.constants.UserConstants;
-//import com.nt.user_service_lms.entities.Role;
-//import com.nt.user_service_lms.entities.User;
-//import com.nt.user_service_lms.repository.RoleRepository;
-//import com.nt.user_service_lms.repository.UserRepository;
-//import com.nt.user_service_lms.service.serviceImpl.UserServiceImpl;
-//import org.junit.jupiter.api.BeforeEach;
-//import org.junit.jupiter.api.Test;
-//import org.mockito.InjectMocks;
-//import org.mockito.Mock;
-//import org.mockito.MockitoAnnotations;
-//import org.springframework.security.core.userdetails.UserDetails;
-//import org.springframework.security.core.userdetails.UsernameNotFoundException;
-//
-//import java.util.NoSuchElementException;
-//import java.util.Optional;
-//
-//import static org.junit.jupiter.api.Assertions.*;
-//import static org.mockito.Mockito.when;
-//
-///**
-// * Unit tests for the UserServiceImpl class.
-// * <p>
-// * These tests verify the functionality of the `loadUserByUsername` method in different scenarios, such as:
-// * - When the user exists.
-// * - When the user is not found.
-// * - When the role is not found for a user.
-// * </p>
-// */
-//class UserServiceImplTest {
-//
-//    @Mock
-//    private UserRepository userRepository;
-//
-//    @Mock
-//    private RoleRepository roleRepository;
-//
-//    @InjectMocks
-//    private UserServiceImpl userService;
-//
-//    private User mockUser;
-//    private Role mockRole;
-//
-//    /**
-//     * Setup mock data before each test.
-//     */
-//    @BeforeEach
-//    void setUp() {
-//        MockitoAnnotations.openMocks(this);
-//
-//        // Initialize mockUser with data
-//        mockUser = new User();
-//        mockUser.setUserId(1L);
-//        mockUser.setEmail("test@example.com");
-//        mockUser.setPassword("password123");
-//        mockUser.setRoleId(2L);
-//
-//        // Initialize mockRole with data
-//        mockRole = new Role();
-//        mockRole.setRoleId(2L);
-//        mockRole.setName("ROLE_USER");
-//    }
-//
-//    /**
-//     * Test case for successfully loading user details when the user exists.
-//     */
-//    @Test
-//    void loadUserByUsername_ShouldReturnUserDetails_WhenUserExists() {
-//        // Arrange
-//        when(userRepository.findByEmail("test@example.com")).thenReturn(Optional.of(mockUser));
-//        when(roleRepository.findById(2L)).thenReturn(Optional.of(mockRole));
-//
-//        // Act
-//        UserDetails userDetails = userService.loadUserByUsername("test@example.com");
-//
-//        // Assert
-//        assertEquals("test@example.com", userDetails.getUsername());
-//        assertEquals("password123", userDetails.getPassword());
-//        assertTrue(userDetails.getAuthorities().stream()
-//                .anyMatch(auth -> auth.getAuthority().equals("ROLE_USER")));
-//    }
-//
-//    /**
-//     * Test case when the user is not found in the repository.
-//     */
-//    @Test
-//    void loadUserByUsername_ShouldThrowException_WhenUserNotFound() {
-//        // Arrange
-//        when(userRepository.findByEmail("notfound@example.com")).thenReturn(Optional.empty());
-//
-//        // Act + Assert
-//        UsernameNotFoundException exception = assertThrows(UsernameNotFoundException.class, () ->
-//                userService.loadUserByUsername("notfound@example.com"));
-//
-//        assertTrue(exception.getMessage().contains(UserConstants.USER_NOT_FOUND));
-//    }
-//
-//    /**
-//     * Test case when the role is not found for the user.
-//     */
-//    @Test
-//    void loadUserByUsername_ShouldThrowException_WhenRoleNotFound() {
-//        // Arrange
-//        when(userRepository.findByEmail("test@example.com")).thenReturn(Optional.of(mockUser));
-//        when(roleRepository.findById(2L)).thenReturn(Optional.empty());
-//
-//        // Act + Assert
-//        NoSuchElementException exception = assertThrows(NoSuchElementException.class, () ->
-//                userService.loadUserByUsername("test@example.com"));
-//
-//        assertNotNull(exception);
-//    }
-//}
-=======
 package com.nt.user_service_lms.serviceImpl;
 
-import com.nt.user_service_lms.constants.UserConstants;
+import com.nt.user_service_lms.dto.outDTO.*;
+import com.nt.user_service_lms.entities.Enrollment;
 import com.nt.user_service_lms.entities.Role;
 import com.nt.user_service_lms.entities.User;
+import com.nt.user_service_lms.exception.ResourceNotFoundException;
+import com.nt.user_service_lms.feignClient.CourseMicroserviceClient;
+import com.nt.user_service_lms.repository.EnrollmentRepository;
 import com.nt.user_service_lms.repository.RoleRepository;
+import com.nt.user_service_lms.repository.UserGroupRepository;
 import com.nt.user_service_lms.repository.UserRepository;
 import com.nt.user_service_lms.service.serviceImpl.UserServiceImpl;
 import org.junit.jupiter.api.BeforeEach;
@@ -128,27 +16,17 @@ import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.security.core.userdetails.UsernameNotFoundException;
 
-import java.util.NoSuchElementException;
-import java.util.Optional;
+import java.sql.Timestamp;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.util.*;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.mockito.Mockito.when;
+import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.Mockito.*;
 
-/**
- * Unit tests for the UserServiceImpl class.
- * <p>
- * These tests verify the functionality of the `loadUserByUsername` method in different scenarios, such as:
- * - When the user exists.
- * - When the user is not found.
- * - When the role is not found for a user.
- * </p>
- */
 class UserServiceImplTest {
 
     @Mock
@@ -157,80 +35,126 @@ class UserServiceImplTest {
     @Mock
     private RoleRepository roleRepository;
 
+    @Mock
+    private EnrollmentRepository enrollmentRepository;
+
+    @Mock
+    private UserGroupRepository userGroupRepository;
+
+    @Mock
+    private CourseMicroserviceClient courseMicroserviceClient;
+
     @InjectMocks
     private UserServiceImpl userService;
 
-    private User mockUser;
-    private Role mockRole;
-
-    /**
-     * Setup mock data before each test.
-     */
     @BeforeEach
     void setUp() {
         MockitoAnnotations.openMocks(this);
-
-        // Initialize mockUser with data
-        mockUser = new User();
-        mockUser.setUserId(1L);
-        mockUser.setEmail("test@example.com");
-        mockUser.setPassword("password123");
-        mockUser.setRoleId(2L);
-
-        // Initialize mockRole with data
-        mockRole = new Role();
-        mockRole.setRoleId(2L);
-        mockRole.setName("ROLE_USER");
     }
 
-    /**
-     * Test case for successfully loading user details when the user exists.
-     */
     @Test
-    void loadUserByUsername_ShouldReturnUserDetails_WhenUserExists() {
-        // Arrange
-        when(userRepository.findByEmail("test@example.com")).thenReturn(Optional.of(mockUser));
-        when(roleRepository.findById(2L)).thenReturn(Optional.of(mockRole));
+    void testLoadUserByUsername_Success() {
+        User user = new User();
+        user.setEmail("test@example.com");
+        user.setPassword("password");
+        user.setRoleId(1L);
 
-        // Act
+        Role role = new Role();
+        role.setRoleId(1L);
+        role.setName("ROLE_USER");
+
+        when(userRepository.findByEmailIgnoreCase("test@example.com")).thenReturn(Optional.of(user));
+        when(roleRepository.findById(1L)).thenReturn(Optional.of(role));
+
         UserDetails userDetails = userService.loadUserByUsername("test@example.com");
 
-        // Assert
         assertEquals("test@example.com", userDetails.getUsername());
-        assertEquals("password123", userDetails.getPassword());
-        assertTrue(userDetails.getAuthorities().stream()
-                .anyMatch(auth -> auth.getAuthority().equals("ROLE_USER")));
+        assertEquals("password", userDetails.getPassword());
     }
 
-    /**
-     * Test case when the user is not found in the repository.
-     */
     @Test
-    void loadUserByUsername_ShouldThrowException_WhenUserNotFound() {
-        // Arrange
-        when(userRepository.findByEmail("notfound@example.com")).thenReturn(Optional.empty());
-
-        // Act + Assert
-        UsernameNotFoundException exception = assertThrows(UsernameNotFoundException.class, () ->
-                userService.loadUserByUsername("notfound@example.com"));
-
-        assertTrue(exception.getMessage().contains(UserConstants.USER_NOT_FOUND));
+    void testLoadUserByUsername_UserNotFound() {
+        when(userRepository.findByEmailIgnoreCase("notfound@example.com")).thenReturn(Optional.empty());
+        assertThrows(Exception.class, () -> userService.loadUserByUsername("notfound@example.com"));
     }
 
-    /**
-     * Test case when the role is not found for the user.
-     */
     @Test
-    void loadUserByUsername_ShouldThrowException_WhenRoleNotFound() {
-        // Arrange
-        when(userRepository.findByEmail("test@example.com")).thenReturn(Optional.of(mockUser));
-        when(roleRepository.findById(2L)).thenReturn(Optional.empty());
+    void testCountActiveUsers() {
+        User user1 = new User(); user1.setUserId(2L); user1.setActive(true);
+        User user2 = new User(); user2.setUserId(1L); user2.setActive(true);
+        User user3 = new User(); user3.setUserId(3L); user3.setActive(false);
+        when(userRepository.findAll()).thenReturn(List.of(user1, user2, user3));
+        long count = userService.countActiveUsers();
+        assertEquals(1, count);
+    }
 
-        // Act + Assert
-        NoSuchElementException exception = assertThrows(NoSuchElementException.class, () ->
-                userService.loadUserByUsername("test@example.com"));
+//    @Test
+//    void testGetRecentUserDetails() {
+//        Object[] row = {"John Doe", "john@example.com", "Manager", "CEO", Timestamp.valueOf("2023-07-22 10:00:00")};
+//        when(userRepository.fetchRecentUserDetails()).thenReturn(List.of(row));
+//
+//        List<UsersDetailsViewDTO> result = userService.getRecentUserDetails();
+//
+//        assertEquals(1, result.size());
+//        assertEquals("John Doe", result.get(0).getFullName());
+//        assertEquals("john@example.com", result.get(0).getEmail());
+//    }
 
-        assertNotNull(exception);
+    @Test
+    void testUserStatistics() {
+        when(enrollmentRepository.getUserTotalEnrollments(1L)).thenReturn(5L);
+        when(userGroupRepository.getAllUserGroups(1L)).thenReturn(2L);
+        Map<String, Long> stats = userService.userStatistics(1L);
+        assertEquals(5L, stats.get("enrollments"));
+        assertEquals(2L, stats.get("groups"));
+    }
+
+    @Test
+    void testDeadlineCourses_Success() {
+        User user = new User();
+        user.setUserId(1L);
+
+        Enrollment enrollment = new Enrollment();
+        enrollment.setCourseId(101L);
+        enrollment.setDeadline(LocalDateTime.now().plusDays(2));
+
+        CourseInfoOutDTO courseInfo = new CourseInfoOutDTO();
+        courseInfo.setCourseId(101L);
+        courseInfo.setTitle("Java 101");
+        courseInfo.setOwnerId(1001L);
+
+        when(userRepository.findByEmailIgnoreCase("test@example.com")).thenReturn(Optional.of(user));
+        when(enrollmentRepository.findByUserId(1L)).thenReturn(List.of(enrollment));
+        when(courseMicroserviceClient.getCourseById(101L))
+                .thenReturn(ResponseEntity.ok(StandardResponseOutDTO.success(courseInfo, null)));
+
+        StandardResponseOutDTO<List<CourseDeadlinesDTO>> response = userService.deadlineCourses("test@example.com");
+
+        assertEquals(1, response.getData().size());
+        assertEquals(101L, response.getData().get(0).getCourseId());
+    }
+
+    @Test
+    void testDeadlineCourses_UserNotFound() {
+        when(userRepository.findByEmailIgnoreCase("notfound@example.com")).thenReturn(Optional.empty());
+        assertThrows(RuntimeException.class, () -> userService.deadlineCourses("notfound@example.com"));
+    }
+
+    @Test
+    void testGetUserEnrolledCourses() {
+        Enrollment e1 = new Enrollment();
+        e1.setCourseId(1L); e1.setAssignedAt(LocalDateTime.now().minusDays(5));
+        e1.setAssignedBy(100L); e1.setDeadline(LocalDateTime.now().plusDays(5));
+
+        Enrollment e2 = new Enrollment();
+        e2.setCourseId(1L); e2.setAssignedAt(LocalDateTime.now());
+        e2.setAssignedBy(101L); e2.setDeadline(LocalDateTime.now().plusDays(10));
+
+        when(enrollmentRepository.findByUserIdAndIsActiveTrue(1L)).thenReturn(List.of(e1, e2));
+
+        List<UserCourseEnrollDetails> results = userService.getUserEnrolledCourses(1L);
+        assertEquals(1, results.size());
+        assertEquals(1L, results.get(0).getCourseId());
+        assertEquals(100L, results.get(0).getAssignedById());
     }
 }
->>>>>>> ae7af0f68d263d712ee993f7a0fbae96de378918

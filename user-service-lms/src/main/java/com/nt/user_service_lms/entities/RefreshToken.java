@@ -54,13 +54,23 @@ public class RefreshToken {
     @Column(nullable = false)
     private Instant expiryDate;
 
+    /**
+     * Checks if the object is equal.
+     *
+     * @param o
+     */
     @Override
-    public boolean equals(Object o) {
-        if (o == null || getClass() != o.getClass()) return false;
+    public boolean equals(final Object o) {
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
         RefreshToken that = (RefreshToken) o;
-        return Objects.equals(id, that.id) && Objects.equals(userId, that.userId) && Objects.equals(token, that.token) && Objects.equals(expiryDate, that.expiryDate);
+        return Objects.equals(id, that.id) && Objects.equals(userId, that.userId)
+                && Objects.equals(token, that.token) && Objects.equals(expiryDate, that.expiryDate);
     }
-
+    /**
+     * generates hashcode.
+     */
     @Override
     public int hashCode() {
         return Objects.hash(id, userId, token, expiryDate);

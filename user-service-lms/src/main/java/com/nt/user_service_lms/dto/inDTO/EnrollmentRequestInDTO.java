@@ -246,13 +246,26 @@ public class EnrollmentRequestInDTO {
         return hasTargets && hasContent && noConflicts;
     }
 
+    /**
+     * Checks if the object is equal.
+     *
+     * @param o
+     */
     @Override
-    public boolean equals(Object o) {
-        if (o == null || getClass() != o.getClass()) return false;
+    public boolean equals(final Object o) {
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
         EnrollmentRequestInDTO that = (EnrollmentRequestInDTO) o;
-        return Objects.equals(assignedBy, that.assignedBy) && Objects.equals(userIds, that.userIds) && Objects.equals(groupIds, that.groupIds) && Objects.equals(courseIds, that.courseIds) && Objects.equals(bundleIds, that.bundleIds) && Objects.equals(deadline, that.deadline) && Objects.equals(status, that.status);
+        return Objects.equals(assignedBy, that.assignedBy) && Objects.equals(userIds, that.userIds)
+                && Objects.equals(groupIds, that.groupIds) && Objects.equals(courseIds, that.courseIds)
+                && Objects.equals(bundleIds, that.bundleIds) && Objects.equals(deadline, that.deadline)
+                && Objects.equals(status, that.status);
     }
 
+    /**
+     * generates hashcode.
+     */
     @Override
     public int hashCode() {
         return Objects.hash(assignedBy, userIds, groupIds, courseIds, bundleIds, deadline, status);

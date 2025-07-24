@@ -1,68 +1,20 @@
-<<<<<<< HEAD
-//package com.nt.user_service_lms.serviceImpl;
-//
-//import com.nt.user_service_lms.constants.UserConstants;
-//import com.nt.user_service_lms.converter.UserDTOConverter;
-//import com.nt.user_service_lms.dto.RegisterDto;
-//import com.nt.user_service_lms.dto.MessageOutDto;
-//import com.nt.user_service_lms.dto.StandardResponseOutDTO;
-//import com.nt.user_service_lms.dto.UserOutDTO;
-//import com.nt.user_service_lms.entities.Role;
-//import com.nt.user_service_lms.entities.User;
-//import com.nt.user_service_lms.exception.ResourceConflictException;
-//import com.nt.user_service_lms.exception.ResourceNotFoundException;
-//import com.nt.user_service_lms.repository.RoleRepository;
-//import com.nt.user_service_lms.repository.UserRepository;
-//import com.nt.user_service_lms.service.serviceImpl.AdminServiceImpl;
-//import org.junit.jupiter.api.BeforeEach;
-//import org.junit.jupiter.api.Test;
-//import org.mockito.*;
-//import org.springframework.security.crypto.password.PasswordEncoder;
-//
-//import java.util.Arrays;
-//import java.util.Collections;
-//import java.util.List;
-//import java.util.Optional;
-//
-//import static com.nt.user_service_lms.constants.UserConstants.*;
-//import static org.junit.jupiter.api.Assertions.*;
-//import static org.mockito.Mockito.*;
-//
-//class AdminServiceImplTest {
-//
-//    @Mock
-//    private UserRepository userRepository;
-//
-//    @Mock
-//    private RoleRepository roleRepository;
-//
-//    @Mock
-//    private PasswordEncoder passwordEncoder;
-//
-//    @Mock
-//    private UserDTOConverter userDTOConverter;
-//
-//    @InjectMocks
-//    private AdminServiceImpl adminService;
-//
-//    @BeforeEach
-//    void setUp() {
-//        MockitoAnnotations.openMocks(this);
-//    }
-//
-=======
 package com.nt.user_service_lms.serviceImpl;
 
 import com.nt.user_service_lms.constants.UserConstants;
 import com.nt.user_service_lms.converter.UserDTOConverter;
-import com.nt.user_service_lms.dto.MessageOutDto;
 import com.nt.user_service_lms.dto.inDTO.RegisterDto;
-import com.nt.user_service_lms.dto.StandardResponseOutDTO;
-import com.nt.user_service_lms.dto.UserOutDTO;
+import com.nt.user_service_lms.dto.inDTO.UserInDTO;
+import com.nt.user_service_lms.dto.outDTO.MessageOutDTO;
+import com.nt.user_service_lms.dto.outDTO.StandardResponseOutDTO;
+import com.nt.user_service_lms.dto.outDTO.UserOutDTO;
+import com.nt.user_service_lms.entities.Enrollment;
 import com.nt.user_service_lms.entities.Role;
 import com.nt.user_service_lms.entities.User;
+import com.nt.user_service_lms.exception.InvalidRequestException;
 import com.nt.user_service_lms.exception.ResourceConflictException;
 import com.nt.user_service_lms.exception.ResourceNotFoundException;
+import com.nt.user_service_lms.feignClient.CourseMicroserviceClient;
+import com.nt.user_service_lms.repository.EnrollmentRepository;
 import com.nt.user_service_lms.repository.RoleRepository;
 import com.nt.user_service_lms.repository.UserRepository;
 import com.nt.user_service_lms.service.serviceImpl.AdminServiceImpl;
@@ -72,47 +24,23 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.http.ResponseEntity;
 
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 
-import static com.nt.user_service_lms.constants.UserConstants.DATABASE_ERROR;
-import static com.nt.user_service_lms.constants.UserConstants.INVALID_USER_ROLE;
-import static com.nt.user_service_lms.constants.UserConstants.UPDATED;
-import static com.nt.user_service_lms.constants.UserConstants.USERNAME_ALREADY_EXISTS;
-import static com.nt.user_service_lms.constants.UserConstants.USER_ALREADY_EXISTS;
-import static com.nt.user_service_lms.constants.UserConstants.USER_DELETION_MESSAGE;
-import static com.nt.user_service_lms.constants.UserConstants.USER_NOT_FOUND;
-import static com.nt.user_service_lms.constants.UserConstants.USER_REGISTRATION_SUCCESS;
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.mockito.Mockito.any;
-import static org.mockito.Mockito.anyString;
-import static org.mockito.Mockito.eq;
-import static org.mockito.Mockito.never;
-import static org.mockito.Mockito.times;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
+import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.Mockito.*;
 
-class AdminServiceImplTest {
+public class AdminServiceImplTest {
 
-    @Mock
-    private UserRepository userRepository;
+    @Mock private UserRepository userRepository;
+    @Mock private RoleRepository roleRepository;
+    @Mock private EnrollmentRepository enrollmentRepository;
+    @Mock private CourseMicroserviceClient courseMicroserviceClient;
+    @Mock private PasswordEncoder passwordEncoder;
+    @Mock private UserDTOConverter userDTOConverter;
 
-    @Mock
-    private RoleRepository roleRepository;
-
-    @Mock
-    private PasswordEncoder passwordEncoder;
-
-    @Mock
-    private UserDTOConverter userDTOConverter;
-
-    @InjectMocks
-    private AdminServiceImpl adminService;
+    @InjectMocks private AdminServiceImpl adminService;
 
     @BeforeEach
     void setUp() {
@@ -120,817 +48,114 @@ class AdminServiceImplTest {
     }
 
     @Test
-    void register_ShouldRegisterUserSuccessfully() {
-        RegisterDto registerDto = new RegisterDto();
-        registerDto.setFirstName("John");
-        registerDto.setLastName("Doe");
-        registerDto.setEmail("john@example.com");
-        registerDto.setUserName("johndoe");
-        registerDto.setPassword("password");
-        registerDto.setRoleId(1L);
+    void testRegisterSuccess() {
+        RegisterDto dto = new RegisterDto("John", "Doe", "john123", "john@example.com", "P@ssword1", 2L);
+        when(userRepository.findByEmailIgnoreCase(dto.getEmail())).thenReturn(Optional.empty());
+        when(userRepository.findByUserNameIgnoreCase(dto.getUserName())).thenReturn(Optional.empty());
+        when(roleRepository.findById(dto.getRoleId())).thenReturn(Optional.of(new Role()));
+        when(passwordEncoder.encode(dto.getPassword())).thenReturn("encoded");
 
-        when(userRepository.findByEmailIgnoreCase(registerDto.getEmail())).thenReturn(Optional.empty());
-        when(userRepository.findByUserNameIgnoreCase(registerDto.getUserName())).thenReturn(Optional.empty());
-        when(passwordEncoder.encode(registerDto.getPassword())).thenReturn("encodedPassword");
-
-        StandardResponseOutDTO result = adminService.register(registerDto);
-
-        assertEquals(USER_REGISTRATION_SUCCESS, result.getMessage());
-        verify(userRepository).save(any(User.class));
+        StandardResponseOutDTO<MessageOutDTO> response = adminService.register(dto);
+        assertEquals("User Registration Successfully", response.getMessage());
     }
 
     @Test
-    void register_ShouldThrowException_WhenEmailAlreadyExists() {
-        RegisterDto registerDto = new RegisterDto();
-        registerDto.setEmail("test@example.com");
-
-        when(userRepository.findByEmailIgnoreCase(registerDto.getEmail())).thenReturn(Optional.of(new User()));
-
-        ResourceConflictException ex = assertThrows(ResourceConflictException.class, () -> {
-            adminService.register(registerDto);
-        });
-
-        assertEquals(USER_ALREADY_EXISTS, ex.getMessage());
-    }
-
-    @Test
-    void register_ShouldThrowException_WhenUsernameAlreadyExists() {
-        RegisterDto registerDto = new RegisterDto();
-        registerDto.setEmail("unique@example.com");
-        registerDto.setUserName("existingUser");
-
-        when(userRepository.findByEmailIgnoreCase(registerDto.getEmail())).thenReturn(Optional.empty());
-        when(userRepository.findByUserNameIgnoreCase(registerDto.getUserName())).thenReturn(Optional.of(new User()));
-
-        ResourceConflictException ex = assertThrows(ResourceConflictException.class, () -> {
-            adminService.register(registerDto);
-        });
-
-        assertEquals(USERNAME_ALREADY_EXISTS, ex.getMessage());
-    }
-
-    // Add more tests here: changeUserRole, employeeDeletion, etc.
-
-    @Test
-    void changeUserRole_ShouldUpdateRoleSuccessfully() {
-        long userId = 6L;
-        String newRole = "manager";
-
-        Role role = new Role();
-        role.setRoleId(2L);
-        role.setName(newRole);
-
+    void testEmployeeDeletionForEmployee() {
         User user = new User();
-        user.setUserId(userId);
-        user.setRoleId(3L);
+        user.setUserId(2L);
+        user.setRoleId(2L);
+        user.setActive(true);
+        when(userRepository.findById(2L)).thenReturn(Optional.of(user));
+        when(roleRepository.findById(2L)).thenReturn(Optional.of(new Role(2L , "EMPLOYEE")));
 
-        when(roleRepository.findByName(newRole)).thenReturn(Optional.of(role));
-        when(userRepository.findById(userId)).thenReturn(Optional.of(user));
-        when(userRepository.save(any(User.class))).thenReturn(user);
-
-        StandardResponseOutDTO<MessageOutDto> result = adminService.changeUserRole(userId, newRole);
-
-        assertEquals(UPDATED, result.getData().getMessage());
-        assertEquals(2L, user.getRoleId());
+        StandardResponseOutDTO<MessageOutDTO> response = adminService.employeeDeletion(2L);
+        assertEquals("User deleted successfully", response.getData().getMessage());
     }
 
->>>>>>> ae7af0f68d263d712ee993f7a0fbae96de378918
 //    @Test
-//    void register_ShouldRegisterUserSuccessfully() {
-//        RegisterDto registerDto = new RegisterDto();
-//        registerDto.setFirstName("John");
-//        registerDto.setLastName("Doe");
-//        registerDto.setEmail("john@example.com");
-//        registerDto.setUserName("johndoe");
-//        registerDto.setPassword("password");
-//        registerDto.setRoleId(1L);
-//
-//        when(userRepository.findByEmailIgnoreCase(registerDto.getEmail())).thenReturn(Optional.empty());
-//        when(userRepository.findByUserNameIgnoreCase(registerDto.getUserName())).thenReturn(Optional.empty());
-//        when(passwordEncoder.encode(registerDto.getPassword())).thenReturn("encodedPassword");
-//
-//        StandardResponseOutDTO result = adminService.register(registerDto);
-//
-//        assertEquals(USER_REGISTRATION_SUCCESS, result.getMessage());
-//        verify(userRepository).save(any(User.class));
-//    }
-//
-//    @Test
-//    void register_ShouldThrowException_WhenEmailAlreadyExists() {
-//        RegisterDto registerDto = new RegisterDto();
-//        registerDto.setEmail("test@example.com");
-//
-//        when(userRepository.findByEmailIgnoreCase(registerDto.getEmail())).thenReturn(Optional.of(new User()));
-//
-//        ResourceConflictException ex = assertThrows(ResourceConflictException.class, () -> {
-//            adminService.register(registerDto);
-//        });
-//
-//        assertEquals(USER_ALREADY_EXISTS, ex.getMessage());
-//    }
-<<<<<<< HEAD
-//
-//    @Test
-//    void register_ShouldThrowException_WhenUsernameAlreadyExists() {
-//        RegisterDto registerDto = new RegisterDto();
-//        registerDto.setEmail("unique@example.com");
-//        registerDto.setUserName("existingUser");
-//
-//        when(userRepository.findByEmailIgnoreCase(registerDto.getEmail())).thenReturn(Optional.empty());
-//        when(userRepository.findByUserNameIgnoreCase(registerDto.getUserName())).thenReturn(Optional.of(new User()));
-//
-//        ResourceConflictException ex = assertThrows(ResourceConflictException.class, () -> {
-//            adminService.register(registerDto);
-//        });
-//
-//        assertEquals(USERNAME_ALREADY_EXISTS, ex.getMessage());
-//    }
-//
-//    // Add more tests here: changeUserRole, employeeDeletion, etc.
-//
-//    @Test
-//    void changeUserRole_ShouldUpdateRoleSuccessfully() {
-//        long userId = 6L;
-//        String newRole = "manager";
-//
-//        Role role = new Role();
-//        role.setRoleId(2L);
-//        role.setName(newRole);
-//
+//    void testGetAllActiveUsers() {
 //        User user = new User();
-//        user.setUserId(userId);
+//        user.setActive(true);
+//        user.setUserId(2L);
+//        user.setManagerId(3L);
 //        user.setRoleId(3L);
 //
-//        when(roleRepository.findByName(newRole)).thenReturn(Optional.of(role));
-//        when(userRepository.findById(userId)).thenReturn(Optional.of(user));
-//        when(userRepository.save(any(User.class))).thenReturn(user);
-//
-//        StandardResponseOutDTO<MessageOutDto> result = adminService.changeUserRole(userId, newRole);
-//
-//        assertEquals(UPDATED, result.getData().getMessage());
-//        assertEquals(2L, user.getRoleId());
-//    }
-//
-////    @Test
-////    void changeUserRole_ShouldThrowException_WhenRoleNotFound() {
-////        when(roleRepository.findByName("fakeRole")).thenReturn(Optional.empty());
-////
-////        User user = new User();
-////        user.setUserId(1L);
-////        user.setRoleId(1L);
-////
-////        when(userRepository.findById(1L)).thenReturn(Optional.of(user));
-////
-////        Exception ex = assertThrows(RuntimeException.class, () -> {
-////            adminService.changeUserRole(1L, "fakeRole");
-////        });
-////
-//////        assertTrue(ex.getCause() instanceof IllegalArgumentException);
-////        assertEquals(INVALID_USER_ROLE, ex.getCause().getMessage());
-////
-////    }
-//
-//    @Test
-//    void changeUserRole_ShouldThrowException_WhenUserNotFound(){
-//        when(userRepository.findById(45L)).thenReturn(Optional.empty());
-//
-//        Role role = new Role();
-//        role.setRoleId(2L);
-//        role.setName("manager");
-//
-//        when(roleRepository.findByName("manager")).thenReturn(Optional.of(role));
-//
-//        Exception ex = assertThrows(RuntimeException.class , () ->{
-//           adminService.changeUserRole(45L,"manager");
-//        });
-//
-//        assertTrue(ex.getCause() instanceof ResourceNotFoundException);
-//        assertEquals(USER_NOT_FOUND , ex.getCause().getMessage());
-//    }
-//
-//    // ---------------------------
-//    // employeeDeletion
-//    // ---------------------------
-//    @Test
-//    void employeeDeletion_ShouldDeleteEmployeeSuccessfully() {
-//        long userId = 1L;
-//
-//        User user = new User();
-//        user.setUserId(userId);
-//        user.setRoleId(1L);
-//
-//        Role role = new Role();
-//        role.setRoleId(1L);
-//        role.setName("employee");
-//
-//        when(userRepository.findById(userId)).thenReturn(Optional.of(user));
-//        when(roleRepository.findById(1L)).thenReturn(Optional.of(role));
-//
-//        StandardResponseOutDTO<MessageOutDto> result = adminService.employeeDeletion(userId);
-//
-//        assertEquals(USER_DELETION_MESSAGE, result.getMessage());
-//        verify(userRepository).deleteById(userId);
-//    }
-//
-//    @Test
-//    void employeeDeletion_ShouldDeleteManagerAndReassignSubordinates() {
-//        // Arrange
-//        long userId = 2L;
 //        User manager = new User();
-//        manager.setUserId(userId);
-//        manager.setRoleId(2L); // Assume 2L corresponds to 'manager' role.
+//        manager.setActive(true);
+//        manager.setUserId(3L);
+//        manager.setFirstName("Manager");
+//        manager.setLastName("first");
+//        manager.setRoleId(2L);
 //
-//        Role role = new Role();
-//        role.setRoleId(2L);
-//        role.setName("manager");
-//
-//        User subordinate = new User();
-//        subordinate.setUserId(3L);
-//        subordinate.setManagerId(userId); // The manager is currently assigned as their manager.
-//
-//        List<User> subordinates = Arrays.asList(subordinate);
-//
-//        when(userRepository.findById(userId)).thenReturn(Optional.of(manager));
-//        when(roleRepository.findById(manager.getRoleId())).thenReturn(Optional.of(role));
-//        when(userRepository.findByManagerId(userId)).thenReturn(subordinates);
-//
-//        // Act
-//        StandardResponseOutDTO<MessageOutDto> result = adminService.employeeDeletion(userId);
-//
-//        // Assert
-//        assertEquals(USER_DELETION_MESSAGE, result.getMessage());
-//        verify(userRepository).deleteById(userId);
-//        verify(userRepository).saveAll(subordinates);
-//        assertEquals(UserConstants.getAdminId(), subordinate.getManagerId());  // Subordinate should now be assigned to admin
-//    }
-//
-//
-//    @Test
-//    void employeeDeletion_ShouldThrowException_WhenUserNotFound() {
-//        long userId = 2L;
-//        User manager = new User();
-//        manager.setUserId(userId);
-//        manager.setRoleId(2L); // Assume 2L corresponds to 'manager' role.
-//
-//        Role role = new Role();
-//        role.setRoleId(2L);
-//        role.setName("manager");
-//
-//        when(roleRepository.findById(2L)).thenReturn(Optional.of(role));
-//
-//        when(userRepository.findById(100L)).thenReturn(Optional.empty());
-//
-//        assertThrows(ResourceNotFoundException.class, () -> {
-//            adminService.employeeDeletion(100L);
-//        });
-//    }
-//
-//    @Test
-//    void employeeDeletion_ShouldThrowException_WhenInvalidRole() {
-//        // Arrange
-//        long userId = 3L;
-//        User user = new User();
-//        user.setUserId(userId);
-//        user.setRoleId(3L); // Assume 3L corresponds to an invalid role.
 //
 //        Role role = new Role();
 //        role.setRoleId(3L);
-//        role.setName("invalidRole");
+//        role.setName("Employee");
 //
-//        when(userRepository.findById(userId)).thenReturn(Optional.of(user));
-//        when(roleRepository.findById(user.getRoleId())).thenReturn(Optional.of(role));
+//        List<User> users = List.of(user);
+//        when(userRepository.findAll()).thenReturn(users);
+//        when(userRepository.findById(3L)).thenReturn(Optional.of(manager));
+//        when(roleRepository.findById(3L)).thenReturn(Optional.of(role));
+//        when(userDTOConverter.userToOutDto(any(), any(), any())).thenReturn(new UserOutDTO());
 //
-//        // Act & Assert
-//        IllegalStateException ex = assertThrows(IllegalStateException.class, () -> {
-//            adminService.employeeDeletion(userId);
-//        });
-//
-//        assertEquals(INVALID_USER_ROLE, ex.getMessage());
+//         var response = adminService.getAllActiveUsers();
+//        assertEquals("User fetched Successfully", response.getMessage());
 //    }
-//
-//
+////
 //    @Test
-//    void employeeDeletion_ShouldDeleteManagerWithNoSubordinates() {
-//        // Arrange
-//        long userId = 2L;
-//        User manager = new User();
-//        manager.setUserId(userId);
-//        manager.setRoleId(2L); // Assume 2L corresponds to 'manager'.
+//    void testChangeUserRole() {
+//        User user = new User();
+//        user.setUserId(2L);
+//        when(userRepository.findById(2L)).thenReturn(Optional.of(user));
+//        when(roleRepository.findByName("manager")).thenReturn(Optional.of(new Role(2L, "manager")));
 //
-//        // Create the role object
-//        Role role = new Role();
-//        role.setRoleId(2L);
-//        role.setName("manager");
-//
-//        // Mock the userRepository.findById to return the manager object
-//        when(userRepository.findById(userId)).thenReturn(Optional.of(manager));
-//
-//        // Mock the roleRepository.findById to return the 'manager' role
-//        when(roleRepository.findById(manager.getRoleId())).thenReturn(Optional.of(role));
-//
-//        // Mock the userRepository.findByManagerId to return an empty list (no subordinates)
-//        when(userRepository.findByManagerId(userId)).thenReturn(Collections.emptyList());
-//
-//        // Act
-//        StandardResponseOutDTO<MessageOutDto> result = adminService.employeeDeletion(userId);
-//
-//        // Assert
-//        assertEquals(USER_DELETION_MESSAGE, result.getMessage());
-//
-//        // Verify that deleteById was called for the manager
-//        verify(userRepository).deleteById(userId);
-//
-//        // Verify that saveAll was not called because there are no subordinates
-//        verify(userRepository, never()).saveAll(any());
+//        var response = adminService.changeUserRole(2L, "manager");
+//        assertEquals("Updated", response.getMessage());
 //    }
-////----------------------
-//    //getAllUsers
-//    //-----------------------
-//
-//    @Test
-//    void getAllUsers_ShouldReturnUserDtos_WhenUsersExist() {
-//        // Arrange
-//        User user1 = new User(1L,"John", "John", "Doe","JohnDoe@gmail.com","JohnDoe", 2L,3L,null ,null,true); // User with manager ID 2
-//        User user2 = new User(2L, "Jane","Jane", "Doe","JaneDoe@gmail.com","JaneDoe", 3L,3L,null,null ,true); // User with manager ID 3
-//        User manager1 = new User(2L, "Manager" , "Manager", "One","ManagerOne@gmail.com","ManagerOne", 1L,2L,null,null,true); // Manager for user1
-//        User manager2 = new User(3L, "Manager" , "Manager", "Two", "ManagerTwo@gmail.com","ManagerTwo",1L,2L,null,null,true); // Manager for user2
-//
-//        // Create corresponding UserOutDTOs
-//        UserOutDTO userDto1 = new UserOutDTO(1L, "John","John", "Doe","JohnDoe@gmail.com", "Manager One" ,"Employee",null);
-//        UserOutDTO userDto2 = new UserOutDTO(2L,"Jane", "Jane", "Doe","JaneDoe@gmail.com", "Manager Two","Employee", null);
-//
-//        // Mock repository behavior
-//        when(userRepository.findAll()).thenReturn(Arrays.asList(user1, user2));
-//        when(userRepository.findById(user1.getManagerId())).thenReturn(Optional.of(manager1));
-//        when(userRepository.findById(user2.getManagerId())).thenReturn(Optional.of(manager2));
-//
-//        // Mock userDTOConverter behavior
-//        when(userDTOConverter.userToOutDto(user1, "Manager One","Employee")).thenReturn(userDto1);
-//        when(userDTOConverter.userToOutDto(user2, "Manager Two","Employee")).thenReturn(userDto2);
-//
-//        // Act
-//        StandardResponseOutDTO<List<UserOutDTO>> result = adminService.getAllActiveUsers();
-//
-//        // Assert
-//        assertEquals(2, result.getData().size());
-//        assertTrue(result.getData().contains(userDto1));
-//        assertTrue(result.getData().contains(userDto2));
-//
-//        verify(userRepository).findAll();
-//        verify(userRepository).findById(user1.getManagerId());
-//        verify(userRepository).findById(user2.getManagerId());
-//        verify(userDTOConverter).userToOutDto(user1, "Manager One","Employee");
-//        verify(userDTOConverter).userToOutDto(user2, "Manager Two","Employee");
-//    }
-//
-//    @Test
-//    void getAllUsers_ShouldReturnEmptyList_WhenNoUsersExist() {
-//        // Arrange
-//        when(userRepository.findAll()).thenReturn(Collections.emptyList());
-//
-//        // Act
-//        StandardResponseOutDTO<List<UserOutDTO>> result = adminService.getAllActiveUsers();
-//
-//        // Assert
-//        assertTrue(result.getData().isEmpty());
-//
-//        verify(userRepository).findAll();
-//        verify(userDTOConverter, never()).userToOutDto(any(), any(),any()); // Ensure converter is not called
-//    }
-//
-//    @Test
-//    void getAllUsers_ShouldThrowException_WhenManagerNotFound() {
-//        // Arrange
-//        User user = new User(1L,"John", "John", "Doe","JohnDoe@gmail.com","JohnDoe", 2L,3L,null ,null,true); // User with manager ID 2
-//
-//        // Mock repository behavior
-//        when(userRepository.findAll()).thenReturn(Collections.singletonList(user));
-//        when(userRepository.findById(user.getManagerId())).thenReturn(Optional.empty()); // No manager found
-//
-//        // Act & Assert
-//        Exception ex = assertThrows(RuntimeException.class, () -> {
-//            adminService.getAllActiveUsers();
-//        });
-//
-//        assertTrue(ex.getCause() instanceof  ResourceNotFoundException);
-//        assertEquals(USER_NOT_FOUND, ex.getCause().getMessage());
-//
-//        verify(userRepository).findAll();
-//        verify(userRepository).findById(user.getManagerId());
-//        verify(userDTOConverter, never()).userToOutDto(any(), any(),any());
-//    }
-//
-//    @Test
-//    void getAllUsers_ShouldThrowException_WhenDatabaseErrorOccurs() {
-//        // Arrange
-//        when(userRepository.findAll()).thenThrow(new RuntimeException("Database error"));
-//
-//        // Act & Assert
-//        RuntimeException ex = assertThrows(RuntimeException.class, () -> {
-//            adminService.getAllActiveUsers();
-//        });
-//
-//        assertEquals(DATABASE_ERROR, ex.getMessage());
-//
-//        verify(userRepository).findAll();
-//        verify(userDTOConverter, never()).userToOutDto(any(), any(),any());
-//    }
-//
-//    @Test
-//    void getAllUsers_ShouldHandleMixedValidAndInvalidManagers() {
-//        // Arrange
-//        User user1 = new User(1L, "John", "John", "Doe", "JohnDoe@gmail.com", "JohnDoe", 2L, 3L, null, null,true);
-//        User user2 = new User(3L, "Jane", "Jane", "Doe", "JaneDoe@gmail.com", "JaneDoe", 3L, 4L, null, null,true);
-//
-//        User manager1 = new User(2L, "Manager", "Manager", "One", "ManagerOne@gmail.com", "ManagerOne", 1L, 2L, null, null,true);
-//
-//        when(userRepository.findAll()).thenReturn(Arrays.asList(user1, user2));
-//        when(userRepository.findById(user1.getManagerId())).thenReturn(Optional.of(manager1));
-//        when(userRepository.findById(user2.getManagerId())).thenReturn(Optional.empty());
-//
-//        // You may want to mock converter for user1
-//        when(userDTOConverter.userToOutDto(eq(user1), eq("Manager One"),eq("Employee"))).thenReturn(new UserOutDTO());
-//
-//        // Act & Assert
-//        Exception ex = assertThrows(RuntimeException.class, () -> {
-//            adminService.getAllActiveUsers();
-//        });
-//
-//        assertTrue(ex.getCause() instanceof ResourceNotFoundException);
-//        assertEquals(USER_NOT_FOUND, ex.getCause().getMessage());
-//
-//        verify(userDTOConverter, times(1)).userToOutDto(eq(user1), eq("Manager One"),eq("Employee"));
-//    }
-//
-//
-//
-//
-//    // ---------------------------
-//    // getManagerEmployee
-//    // ---------------------------
-//    @Test
-//    void getManagerEmployee_ShouldReturnUserList() {
-//        long managerId = 1L;
-//
-//        User manager = new User();
-//        manager.setUserId(managerId);
-//        manager.setFirstName("Jane");
-//        manager.setLastName("Smith");
-//
-//        User emp = new User();
-//        emp.setUserId(2L);
-//        emp.setManagerId(managerId);
-//
-//        UserOutDTO userOutDTO = new UserOutDTO(); // populate as needed
-//
-//        when(userRepository.findById(managerId)).thenReturn(Optional.of(manager));
-//        when(userRepository.findByManagerId(managerId)).thenReturn(List.of(emp));
-//        when(userDTOConverter.userToOutDto(eq(emp), anyString(),eq("Employee"))).thenReturn(userOutDTO);
-//
-//        StandardResponseOutDTO<List<UserOutDTO>> result = adminService.getManagerEmployee(managerId);
-//
-//        assertFalse(result.getData().isEmpty());
-//        assertEquals(1, result.getData().size());
-//        verify(userDTOConverter).userToOutDto(emp, "JaneSmith","Employee");
-//    }
-//
-//    @Test
-//    void getManagerEmployee_ShouldThrowException_WhenManagerNotFound() {
-//        long managerId = 99L;
-//        when(userRepository.findById(managerId)).thenReturn(Optional.empty());
-//
-//        assertThrows(RuntimeException.class, () -> {
-//            adminService.getManagerEmployee(managerId);
-//        });
-//    }
-//
-//
-//    //--------------------
-//    //GetEmployees
-//    //---------------------
-//
-//
-//
-//}
-=======
 
     @Test
-    void changeUserRole_ShouldThrowException_WhenUserNotFound() {
-        when(userRepository.findById(45L)).thenReturn(Optional.empty());
-
-        Role role = new Role();
-        role.setRoleId(2L);
-        role.setName("manager");
-
-        when(roleRepository.findByName("manager")).thenReturn(Optional.of(role));
-
-        Exception ex = assertThrows(RuntimeException.class, () -> {
-            adminService.changeUserRole(45L, "manager");
-        });
-
-        assertTrue(ex.getCause() instanceof ResourceNotFoundException);
-        assertEquals(USER_NOT_FOUND, ex.getCause().getMessage());
-    }
-
-    // ---------------------------
-    // employeeDeletion
-    // ---------------------------
-    @Test
-    void employeeDeletion_ShouldDeleteEmployeeSuccessfully() {
-        long userId = 1L;
-
+    void testGetManagerEmployee() {
         User user = new User();
-        user.setUserId(userId);
-        user.setRoleId(1L);
+        user.setUserId(3L);
+        when(userRepository.findById(3L)).thenReturn(Optional.of(new User()));
+        when(userRepository.findByManagerId(3L)).thenReturn(List.of(user));
+        when(userDTOConverter.userToOutDto(any(), any(), any())).thenReturn(new UserOutDTO());
 
-        Role role = new Role();
-        role.setRoleId(1L);
-        role.setName("employee");
-
-        when(userRepository.findById(userId)).thenReturn(Optional.of(user));
-        when(roleRepository.findById(1L)).thenReturn(Optional.of(role));
-
-        StandardResponseOutDTO<MessageOutDto> result = adminService.employeeDeletion(userId);
-
-        assertEquals(USER_DELETION_MESSAGE, result.getMessage());
-        verify(userRepository).deleteById(userId);
+        var response = adminService.getManagerEmployee(3L);
+        assertEquals("Successfully fetched employee for Manager", response.getMessage());
     }
 
     @Test
-    void employeeDeletion_ShouldDeleteManagerAndReassignSubordinates() {
-        // Arrange
-        long userId = 2L;
-        User manager = new User();
-        manager.setUserId(userId);
-        manager.setRoleId(2L); // Assume 2L corresponds to 'manager' role.
-
-        Role role = new Role();
-        role.setRoleId(2L);
-        role.setName("manager");
-
-        User subordinate = new User();
-        subordinate.setUserId(3L);
-        subordinate.setManagerId(userId); // The manager is currently assigned as their manager.
-
-        List<User> subordinates = Arrays.asList(subordinate);
-
-        when(userRepository.findById(userId)).thenReturn(Optional.of(manager));
-        when(roleRepository.findById(manager.getRoleId())).thenReturn(Optional.of(role));
-        when(userRepository.findByManagerId(userId)).thenReturn(subordinates);
-
-        // Act
-        StandardResponseOutDTO<MessageOutDto> result = adminService.employeeDeletion(userId);
-
-        // Assert
-        assertEquals(USER_DELETION_MESSAGE, result.getMessage());
-        verify(userRepository).deleteById(userId);
-        verify(userRepository).saveAll(subordinates);
-        assertEquals(UserConstants.getAdminId(), subordinate.getManagerId());  // Subordinate should now be assigned to admin
-    }
-
-
-    @Test
-    void employeeDeletion_ShouldThrowException_WhenUserNotFound() {
-        long userId = 2L;
-        User manager = new User();
-        manager.setUserId(userId);
-        manager.setRoleId(2L); // Assume 2L corresponds to 'manager' role.
-
-        Role role = new Role();
-        role.setRoleId(2L);
-        role.setName("manager");
-
-        when(roleRepository.findById(2L)).thenReturn(Optional.of(role));
-
-        when(userRepository.findById(100L)).thenReturn(Optional.empty());
-
-        assertThrows(ResourceNotFoundException.class, () -> {
-            adminService.employeeDeletion(100L);
-        });
-    }
-
-    @Test
-    void employeeDeletion_ShouldThrowException_WhenInvalidRole() {
-        // Arrange
-        long userId = 3L;
+    void testUpdateUserDetails() {
         User user = new User();
-        user.setUserId(userId);
-        user.setRoleId(3L); // Assume 3L corresponds to an invalid role.
+        user.setUserId(2L);
+        when(userRepository.findById(2L)).thenReturn(Optional.of(user));
+        when(roleRepository.findByName("employee")).thenReturn(Optional.of(new Role(2L, "employee")));
 
-        Role role = new Role();
-        role.setRoleId(3L);
-        role.setName("invalidRole");
-
-        when(userRepository.findById(userId)).thenReturn(Optional.of(user));
-        when(roleRepository.findById(user.getRoleId())).thenReturn(Optional.of(role));
-
-        // Act & Assert
-        IllegalStateException ex = assertThrows(IllegalStateException.class, () -> {
-            adminService.employeeDeletion(userId);
-        });
-
-        assertEquals(INVALID_USER_ROLE, ex.getMessage());
-    }
-
-
-    @Test
-    void employeeDeletion_ShouldDeleteManagerWithNoSubordinates() {
-        // Arrange
-        long userId = 2L;
-        User manager = new User();
-        manager.setUserId(userId);
-        manager.setRoleId(2L); // Assume 2L corresponds to 'manager'.
-
-        // Create the role object
-        Role role = new Role();
-        role.setRoleId(2L);
-        role.setName("manager");
-
-        // Mock the userRepository.findById to return the manager object
-        when(userRepository.findById(userId)).thenReturn(Optional.of(manager));
-
-        // Mock the roleRepository.findById to return the 'manager' role
-        when(roleRepository.findById(manager.getRoleId())).thenReturn(Optional.of(role));
-
-        // Mock the userRepository.findByManagerId to return an empty list (no subordinates)
-        when(userRepository.findByManagerId(userId)).thenReturn(Collections.emptyList());
-
-        // Act
-        StandardResponseOutDTO<MessageOutDto> result = adminService.employeeDeletion(userId);
-
-        // Assert
-        assertEquals(USER_DELETION_MESSAGE, result.getMessage());
-
-        // Verify that deleteById was called for the manager
-        verify(userRepository).deleteById(userId);
-
-        // Verify that saveAll was not called because there are no subordinates
-        verify(userRepository, never()).saveAll(any());
-    }
-//----------------------
-    //getAllUsers
-    //-----------------------
-
-    @Test
-    void getAllUsers_ShouldReturnUserDtos_WhenUsersExist() {
-        // Arrange
-        User user1 = new User(1L, "John", "John", "Doe", "JohnDoe@gmail.com", "JohnDoe", 2L, 3L, null, null, true); // User with manager ID 2
-        User user2 = new User(2L, "Jane", "Jane", "Doe", "JaneDoe@gmail.com", "JaneDoe", 3L, 3L, null, null, true); // User with manager ID 3
-        User manager1 = new User(2L, "Manager", "Manager", "One", "ManagerOne@gmail.com", "ManagerOne", 1L, 2L, null, null, true); // Manager for user1
-        User manager2 = new User(3L, "Manager", "Manager", "Two", "ManagerTwo@gmail.com", "ManagerTwo", 1L, 2L, null, null, true); // Manager for user2
-
-        // Create corresponding UserOutDTOs
-        UserOutDTO userDto1 = new UserOutDTO(1L, "John", "John", "Doe", "JohnDoe@gmail.com", "Manager One", "Employee", null);
-        UserOutDTO userDto2 = new UserOutDTO(2L, "Jane", "Jane", "Doe", "JaneDoe@gmail.com", "Manager Two", "Employee", null);
-
-        // Mock repository behavior
-        when(userRepository.findAll()).thenReturn(Arrays.asList(user1, user2));
-        when(userRepository.findById(user1.getManagerId())).thenReturn(Optional.of(manager1));
-        when(userRepository.findById(user2.getManagerId())).thenReturn(Optional.of(manager2));
-
-        // Mock userDTOConverter behavior
-        when(userDTOConverter.userToOutDto(user1, "Manager One", "Employee")).thenReturn(userDto1);
-        when(userDTOConverter.userToOutDto(user2, "Manager Two", "Employee")).thenReturn(userDto2);
-
-        // Act
-        StandardResponseOutDTO<List<UserOutDTO>> result = adminService.getAllActiveUsers();
-
-        // Assert
-        assertEquals(2, result.getData().size());
-        assertTrue(result.getData().contains(userDto1));
-        assertTrue(result.getData().contains(userDto2));
-
-        verify(userRepository).findAll();
-        verify(userRepository).findById(user1.getManagerId());
-        verify(userRepository).findById(user2.getManagerId());
-        verify(userDTOConverter).userToOutDto(user1, "Manager One", "Employee");
-        verify(userDTOConverter).userToOutDto(user2, "Manager Two", "Employee");
+        UserInDTO dto = new UserInDTO(2L,"John", "Doe", "johnny", "john@example.com", "employee");
+        MessageOutDTO result = adminService.updateUserDetails(dto, 2L);
+        assertEquals(UserConstants.USER_UPDATED_SUCCESSFULLY, result.getMessage());
     }
 
     @Test
-    void getAllUsers_ShouldReturnEmptyList_WhenNoUsersExist() {
-        // Arrange
-        when(userRepository.findAll()).thenReturn(Collections.emptyList());
+    void testDeleteBundle() {
+        Enrollment enrollment = new Enrollment();
+        when(enrollmentRepository.findByBundleId(1L)).thenReturn(List.of(enrollment));
+        when(courseMicroserviceClient.deleteBundle(1L)).thenReturn(null);
 
-        // Act
-        StandardResponseOutDTO<List<UserOutDTO>> result = adminService.getAllActiveUsers();
-
-        // Assert
-        assertTrue(result.getData().isEmpty());
-
-        verify(userRepository).findAll();
-        verify(userDTOConverter, never()).userToOutDto(any(), any(), any()); // Ensure converter is not called
+        var result = adminService.deleteBundle(1L);
+        assertEquals("Bundle Deleted", result.getMessage());
     }
 
     @Test
-    void getAllUsers_ShouldThrowException_WhenManagerNotFound() {
-        // Arrange
-        User user = new User(1L, "John", "John", "Doe", "JohnDoe@gmail.com", "JohnDoe", 2L, 3L, null, null, true); // User with manager ID 2
+    void testRemoveCourseFromBundle() {
+        Enrollment enrollment = new Enrollment();
+        when(enrollmentRepository.findByBundleIdAndCourseId(1L, 2L)).thenReturn(List.of(enrollment));
 
-        // Mock repository behavior
-        when(userRepository.findAll()).thenReturn(Collections.singletonList(user));
-        when(userRepository.findById(user.getManagerId())).thenReturn(Optional.empty()); // No manager found
+        MessageOutDTO message = new MessageOutDTO("Removed");
+        when(courseMicroserviceClient.removeCourseFromBundle(1L, 2L)).thenReturn(ResponseEntity.ok(StandardResponseOutDTO.success(message, "Removed")));
 
-        // Act & Assert
-        Exception ex = assertThrows(RuntimeException.class, () -> {
-            adminService.getAllActiveUsers();
-        });
-
-        assertTrue(ex.getCause() instanceof ResourceNotFoundException);
-        assertEquals(USER_NOT_FOUND, ex.getCause().getMessage());
-
-        verify(userRepository).findAll();
-        verify(userRepository).findById(user.getManagerId());
-        verify(userDTOConverter, never()).userToOutDto(any(), any(), any());
+        var result = adminService.removeCourseFromBundle(1L, 2L);
+        assertEquals("Removed", result.getData().getMessage());
     }
-
-    @Test
-    void getAllUsers_ShouldThrowException_WhenDatabaseErrorOccurs() {
-        // Arrange
-        when(userRepository.findAll()).thenThrow(new RuntimeException("Database error"));
-
-        // Act & Assert
-        RuntimeException ex = assertThrows(RuntimeException.class, () -> {
-            adminService.getAllActiveUsers();
-        });
-
-        assertEquals(DATABASE_ERROR, ex.getMessage());
-
-        verify(userRepository).findAll();
-        verify(userDTOConverter, never()).userToOutDto(any(), any(), any());
-    }
-
-    @Test
-    void getAllUsers_ShouldHandleMixedValidAndInvalidManagers() {
-        // Arrange
-        User user1 = new User(1L, "John", "John", "Doe", "JohnDoe@gmail.com", "JohnDoe", 2L, 3L, null, null, true);
-        User user2 = new User(3L, "Jane", "Jane", "Doe", "JaneDoe@gmail.com", "JaneDoe", 3L, 4L, null, null, true);
-
-        User manager1 = new User(2L, "Manager", "Manager", "One", "ManagerOne@gmail.com", "ManagerOne", 1L, 2L, null, null, true);
-
-        when(userRepository.findAll()).thenReturn(Arrays.asList(user1, user2));
-        when(userRepository.findById(user1.getManagerId())).thenReturn(Optional.of(manager1));
-        when(userRepository.findById(user2.getManagerId())).thenReturn(Optional.empty());
-
-        // You may want to mock converter for user1
-        when(userDTOConverter.userToOutDto(eq(user1), eq("Manager One"), eq("Employee"))).thenReturn(new UserOutDTO());
-
-        // Act & Assert
-        Exception ex = assertThrows(RuntimeException.class, () -> {
-            adminService.getAllActiveUsers();
-        });
-
-        assertTrue(ex.getCause() instanceof ResourceNotFoundException);
-        assertEquals(USER_NOT_FOUND, ex.getCause().getMessage());
-
-        verify(userDTOConverter, times(1)).userToOutDto(eq(user1), eq("Manager One"), eq("Employee"));
-    }
-
-
-    // ---------------------------
-    // getManagerEmployee
-    // ---------------------------
-    @Test
-    void getManagerEmployee_ShouldReturnUserList() {
-        long managerId = 1L;
-
-        User manager = new User();
-        manager.setUserId(managerId);
-        manager.setFirstName("Jane");
-        manager.setLastName("Smith");
-
-        User emp = new User();
-        emp.setUserId(2L);
-        emp.setManagerId(managerId);
-
-        UserOutDTO userOutDTO = new UserOutDTO(); // populate as needed
-
-        when(userRepository.findById(managerId)).thenReturn(Optional.of(manager));
-        when(userRepository.findByManagerId(managerId)).thenReturn(List.of(emp));
-        when(userDTOConverter.userToOutDto(eq(emp), anyString(), eq("Employee"))).thenReturn(userOutDTO);
-
-        StandardResponseOutDTO<List<UserOutDTO>> result = adminService.getManagerEmployee(managerId);
-
-        assertFalse(result.getData().isEmpty());
-        assertEquals(1, result.getData().size());
-        verify(userDTOConverter).userToOutDto(emp, "JaneSmith", "Employee");
-    }
-
-    @Test
-    void getManagerEmployee_ShouldThrowException_WhenManagerNotFound() {
-        long managerId = 99L;
-        when(userRepository.findById(managerId)).thenReturn(Optional.empty());
-
-        assertThrows(RuntimeException.class, () -> {
-            adminService.getManagerEmployee(managerId);
-        });
-    }
-
-
-    //--------------------
-    //GetEmployees
-    //---------------------
-
-
 }
->>>>>>> ae7af0f68d263d712ee993f7a0fbae96de378918

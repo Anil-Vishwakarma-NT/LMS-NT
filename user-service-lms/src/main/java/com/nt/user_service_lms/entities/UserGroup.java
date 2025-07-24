@@ -60,13 +60,25 @@ public class UserGroup {
         this.groupId = groupId;
     }
 
+
+    /**
+     * Checks if the object is equal.
+     *
+     * @param o
+     */
     @Override
-    public boolean equals(Object o) {
-        if (o == null || getClass() != o.getClass()) return false;
+    public boolean equals(final Object o) {
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
         UserGroup userGroup = (UserGroup) o;
-        return isActive == userGroup.isActive && Objects.equals(id, userGroup.id) && Objects.equals(userId, userGroup.userId) && Objects.equals(groupId, userGroup.groupId);
+        return isActive == userGroup.isActive && Objects.equals(id, userGroup.id)
+                && Objects.equals(userId, userGroup.userId) && Objects.equals(groupId, userGroup.groupId);
     }
 
+    /**
+     * generates hashcode.
+     */
     @Override
     public int hashCode() {
         return Objects.hash(id, userId, groupId, isActive);

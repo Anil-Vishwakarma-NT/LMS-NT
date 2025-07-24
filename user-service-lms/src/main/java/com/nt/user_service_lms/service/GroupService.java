@@ -1,8 +1,17 @@
 package com.nt.user_service_lms.service;
 
 import com.nt.user_service_lms.dto.inDTO.GroupInDTO;
-import com.nt.user_service_lms.dto.outDTO.*;
+//import com.nt.user_service_lms.dto.outDTO.*;
+import com.nt.user_service_lms.dto.outDTO.BundleOutDTO;
+import com.nt.user_service_lms.dto.outDTO.GroupOutDTO;
 import com.nt.user_service_lms.dto.outDTO.MessageOutDTO;
+import com.nt.user_service_lms.dto.outDTO.StandardResponseOutDTO;
+import com.nt.user_service_lms.dto.outDTO.CourseInfoOutDTO;
+import com.nt.user_service_lms.dto.outDTO.GroupSummaryOutDTO;
+import com.nt.user_service_lms.dto.outDTO.GroupCourseOutDTO;
+import com.nt.user_service_lms.dto.outDTO.GroupUserOutDTO;
+import com.nt.user_service_lms.dto.outDTO.UserGroupOutDTO;
+import com.nt.user_service_lms.dto.outDTO.GroupBundleOutDTO;
 
 import java.util.List;
 
@@ -56,6 +65,13 @@ public interface GroupService {
      */
     StandardResponseOutDTO<MessageOutDTO> removeUserFromGroup(long userId, long groupId);
 
+    /**
+     * Retrieves bundle details a user is enrolled in.
+     *
+     * @param userId the ID of the user
+     * @param groupId
+     * @return a StandardResponseOutDTO containing a list of BundleOutDTO
+     */
     StandardResponseOutDTO<List<BundleOutDTO>> getUserBundles(long groupId, long userId);
 
     /**
@@ -119,11 +135,27 @@ public interface GroupService {
      */
     StandardResponseOutDTO<List<GroupUserOutDTO>> getUserDetail(long groupId);
 
-    public StandardResponseOutDTO<List<UserGroupOutDTO>> getUserGroupDetail(String email);
+    /**
+     * Retrieves group details a user is enrolled in.
+     *
+     * @param email the ID of the user
+     * @return a StandardResponseOutDTO containing a list of UserGroupOutDTO
+     */
+    StandardResponseOutDTO<List<UserGroupOutDTO>> getUserGroupDetail(String email);
 
-//    public StandardResponseOutDTO<List<GroupUserOutDTO>> getUserDetailEmp(long groupId);
+    /**
+     * Retrieves course details of a group  .
+     *
+     * @param groupId the ID of the user
+     * @return a StandardResponseOutDTO containing a list of GroupCourseOutDTO
+     */
+    StandardResponseOutDTO<List<GroupCourseOutDTO>> getCourseEmpDetail(long groupId);
 
-    public StandardResponseOutDTO<List<GroupCourseOutDTO>> getCourseEmpDetail(long groupId);
-
+    /**
+     * Retrieves bundle details of a group.
+     *
+     * @param groupId the ID of the user
+     * @return a StandardResponseOutDTO containing a list of GroupBundleOutDTO
+     */
     StandardResponseOutDTO<List<GroupBundleOutDTO>> getGroupBundles(Long groupId);
 }

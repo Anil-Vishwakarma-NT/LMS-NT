@@ -59,10 +59,21 @@ public interface AdminService {
      */
     StandardResponseOutDTO<List<UserOutDTO>> getManagerEmployee(long userId);
 
-
+    /**
+     * Deletes bundle .
+     *
+     * @param bundleId id of the bundle.
+     * @return list of user DTOs
+     */
     StandardResponseOutDTO<MessageOutDTO> deleteBundle(long bundleId);
 
-
+    /**
+     * Remove course from the bundle.
+     *
+     * @param bundleId
+     * @param courseId
+     * @return list of user DTOs
+     */
     StandardResponseOutDTO<MessageOutDTO> removeCourseFromBundle(Long bundleId, Long courseId);
 
    }

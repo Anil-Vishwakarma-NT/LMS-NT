@@ -204,18 +204,31 @@ public class AdminController {
                 .success(usersDetailsViewDTOS, "Fetched Recent Users");
         return ResponseEntity.ok(standardResponseOutDTO);
     }
+    /**
+     * Deletes registered users in the system.
+     *
+     * @param bundleId
+     * @return ResponseEntity containing the message with HTTP 200 status
+     */
 
     @DeleteMapping("/bundle")
-    public ResponseEntity<StandardResponseOutDTO<MessageOutDTO>> deleteBundle(@RequestParam Long bundleId){
+    public ResponseEntity<StandardResponseOutDTO<MessageOutDTO>> deleteBundle(@RequestParam final Long bundleId) {
          StandardResponseOutDTO<MessageOutDTO> response = adminService.deleteBundle(bundleId);
-         return  new ResponseEntity<>(response,HttpStatus.OK);
+         return  new ResponseEntity<>(response, HttpStatus.OK);
     }
 
-
+    /**
+     * Deletes registered courses from the bundle in the system.
+     *
+     * @param bundleId
+     * @param courseId
+     * @return ResponseEntity containing the message with HTTP 200 status
+     */
     @DeleteMapping("/bundle/removecourse")
-    public ResponseEntity<StandardResponseOutDTO<MessageOutDTO>> removeCourseFromBundle(@RequestParam Long bundleId , @RequestParam Long courseId){
+    public ResponseEntity<StandardResponseOutDTO<MessageOutDTO>> removeCourseFromBundle(@RequestParam final Long bundleId,
+                                                                                        @RequestParam final Long courseId) {
         StandardResponseOutDTO<MessageOutDTO> message = adminService.removeCourseFromBundle(bundleId, courseId);
-        return new ResponseEntity<>(message , HttpStatus.OK);
+        return new ResponseEntity<>(message, HttpStatus.OK);
     }
 
 

@@ -41,5 +41,8 @@ public class GroupBundleOutDTO {
      */
     private double progress;
 
+    /**
+     * enrollments in the bundle.
+     */
     private Long enrols;
 }
