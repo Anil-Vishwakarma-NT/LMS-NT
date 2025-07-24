@@ -552,6 +552,10 @@ public class QuizAttemptServiceImpl implements QuizAttemptService {
             Map<Long, String> correctAnswersByQuestionId = allQuizQuestions.stream()
                     .collect(Collectors.toMap(QuizQuestion::getQuestionId, QuizQuestion::getCorrectAnswer));
 
+            // Create a map of questionId to question text for quick lookup
+            Map<Long, String> questionTextByQuestionId = allQuizQuestions.stream()
+                    .collect(Collectors.toMap(QuizQuestion::getQuestionId, QuizQuestion::getQuestionText));
+
             // Pre-calculate max scores for each quiz to avoid repeated calculations
             Map<Long, BigDecimal> maxScoresByQuiz = questionsByQuiz.entrySet().stream()
                     .collect(Collectors.toMap(
@@ -613,9 +617,9 @@ public class QuizAttemptServiceImpl implements QuizAttemptService {
                         .divide(maxPossibleScore, 2, RoundingMode.HALF_UP)
                         : BigDecimal.ZERO;
 
-                // Convert responses to DTOs with correct answers
+                // Convert responses to DTOs with correct answers and question text
                 List<UserResponseWithCorrectAnswerOutDTO> responseOutDTOs = attemptResponses.stream()
-                        .map(response -> convertToUserResponseWithCorrectAnswerOutDTO(response, correctAnswersByQuestionId))
+                        .map(response -> convertToUserResponseWithCorrectAnswerOutDTO(response, correctAnswersByQuestionId, questionTextByQuestionId))
                         .collect(Collectors.toList());
 
                 // Build QuizAttemptOutDTO from query data
@@ -666,15 +670,17 @@ public class QuizAttemptServiceImpl implements QuizAttemptService {
      * Convert UserResponse entity to UserResponseWithCorrectAnswerOutDTO
      */
     private UserResponseWithCorrectAnswerOutDTO convertToUserResponseWithCorrectAnswerOutDTO(
-            UserResponse userResponse, Map<Long, String> correctAnswersByQuestionId) {
+            UserResponse userResponse, Map<Long, String> correctAnswersByQuestionId, Map<Long, String> questionTextByQuestionId) {
 
         String correctAnswer = correctAnswersByQuestionId.get(userResponse.getQuestionId());
+        String questionText = questionTextByQuestionId.get(userResponse.getQuestionId());
 
         return UserResponseWithCorrectAnswerOutDTO.builder()
                 .responseId(userResponse.getResponseId())
                 .userId(userResponse.getUserId())
                 .quizId(userResponse.getQuizId())
                 .questionId(userResponse.getQuestionId())
+                .questionText(questionText)
                 .attempt(userResponse.getAttempt())
                 .userAnswer(userResponse.getUserAnswer())
                 .correctAnswer(correctAnswer)
@@ -699,23 +705,6 @@ public class QuizAttemptServiceImpl implements QuizAttemptService {
         } else {
             throw new IllegalArgumentException("Unsupported timestamp type: " + timestamp.getClass());
         }
-    }
-
-    /**
-     * Convert UserResponse entity to UserResponseOutDTO
-     */
-    private UserResponseOutDTO convertToUserResponseOutDTO(UserResponse userResponse) {
-        return UserResponseOutDTO.builder()
-                .responseId(userResponse.getResponseId())
-                .userId(userResponse.getUserId())
-                .quizId(userResponse.getQuizId())
-                .questionId(userResponse.getQuestionId())
-                .attempt(userResponse.getAttempt())
-                .userAnswer(userResponse.getUserAnswer())
-                .isCorrect(userResponse.getIsCorrect())
-                .pointsEarned(userResponse.getPointsEarned())
-                .answeredAt(userResponse.getAnsweredAt())
-                .build();
     }
 
     /**

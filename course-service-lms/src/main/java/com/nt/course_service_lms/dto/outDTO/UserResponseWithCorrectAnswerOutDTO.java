@@ -43,6 +43,8 @@ public class UserResponseWithCorrectAnswerOutDTO {
      */
     private Long questionId;
 
+    private String questionText;
+
     /**
      * The attempt number for this quiz by the user.
      */
