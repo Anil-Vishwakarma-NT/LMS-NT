@@ -1,0 +1,85 @@
+package com.nt.user_service_lms.controller;
+
+import com.nt.user_service_lms.dto.outDTO.UserOutDTO;
+import com.nt.user_service_lms.service.serviceImpl.AdminServiceImpl;
+import com.nt.user_service_lms.service.serviceImpl.GroupServiceImpl;
+import com.nt.user_service_lms.service.serviceImpl.ManagerServiceImpl;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.MockitoAnnotations;
+import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
+import org.springframework.context.annotation.Import;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContext;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.web.servlet.setup.MockMvcBuilders;
+
+import java.util.Collections;
+import java.util.List;
+
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+
+
+@Import({ManagerController.class})
+@AutoConfigureMockMvc(addFilters = false)
+class ManagerControllerTest {
+
+    @InjectMocks
+    private ManagerController managerController;
+
+    @Mock
+    private AdminServiceImpl adminService;
+
+    @Mock
+    private ManagerServiceImpl managerService;
+
+    @Mock
+    private GroupServiceImpl groupService;
+
+    private MockMvc mockMvc;
+
+    @BeforeEach
+    void setUp() {
+        MockitoAnnotations.openMocks(this);
+        mockMvc = MockMvcBuilders.standaloneSetup(managerController).build();
+
+        // Mock authenticated user
+        Authentication authentication = mock(Authentication.class);
+        when(authentication.getName()).thenReturn("manager@example.com");
+
+        SecurityContext context = mock(SecurityContext.class);
+        when(context.getAuthentication()).thenReturn(authentication);
+
+        SecurityContextHolder.setContext(context);
+    }
+
+    @Test
+    void testGetManagerEmp_WhenEmployeesExist() throws Exception {
+        UserOutDTO employee = new UserOutDTO();
+        employee.setUserId(1L);
+        employee.setEmail("employee@example.com");
+//        employee.setRole("employee");
+
+        when(managerService.getEmployees("manager@example.com")).thenReturn(List.of(employee));
+
+        mockMvc.perform(get("/manager/manager-employees"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.size()").value(1))
+                .andExpect(jsonPath("$[0].email").value("employee@example.com"));
+    }
+
+    @Test
+    void testGetManagerEmp_WhenNoEmployees() throws Exception {
+        when(managerService.getEmployees("manager@example.com")).thenReturn(Collections.emptyList());
+
+        mockMvc.perform(get("/manager/manager-employees"))
+                .andExpect(status().isNoContent());
+    }
+}
