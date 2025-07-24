@@ -1,200 +1,291 @@
 package com.nt.course_service_lms.controllerTest;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.nt.course_service_lms.controller.CourseController;
 import com.nt.course_service_lms.dto.inDTO.CourseInDTO;
 import com.nt.course_service_lms.dto.inDTO.UpdateCourseInDTO;
-import com.nt.course_service_lms.dto.outDTO.*;
+import com.nt.course_service_lms.dto.outDTO.CourseInfoOutDTO;
+import com.nt.course_service_lms.dto.outDTO.CourseOutDTO;
+import com.nt.course_service_lms.dto.outDTO.CourseSummaryOutDTO;
+import com.nt.course_service_lms.exception.ResourceNotFoundException;
 import com.nt.course_service_lms.service.CourseService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.mockito.InjectMocks;
-import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
-import org.springframework.http.ResponseEntity;
+import org.mockito.Mockito;
+import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
+import org.springframework.boot.test.context.TestConfiguration;
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Import;
+import org.springframework.http.MediaType;
+import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.beans.factory.annotation.Autowired;
 
+import java.time.LocalDateTime;
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.List;
 
-import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.Mockito.*;
+import static org.hamcrest.Matchers.containsString;
+import static org.mockito.ArgumentMatchers.*;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
-public class CourseControllerTest {
+@WebMvcTest(CourseController.class)
+@Import(CourseControllerTest.TestConfig.class)
+class CourseControllerTest {
 
-    @InjectMocks
-    private CourseController courseController;
+    @TestConfiguration
+    static class TestConfig {
+        @Bean
+        public CourseService courseService() {
+            return Mockito.mock(CourseService.class);
+        }
+    }
 
-    @Mock
+    @Autowired
+    private MockMvc mockMvc;
+
+    @Autowired
     private CourseService courseService;
 
+    private final ObjectMapper objectMapper = new ObjectMapper();
+
+    private CourseOutDTO sampleCourse;
+
     @BeforeEach
-    void setUp() {
-        MockitoAnnotations.openMocks(this);
+    void setup() {
+        sampleCourse = CourseOutDTO.builder()
+                .courseId(1L)
+                .ownerId(101L)
+                .title("Java Basics")
+                .description("Learn Java")
+                .level("BEGINNER")
+                .active(true)
+                .createdAt(LocalDateTime.now())
+                .updatedAt(LocalDateTime.now())
+                .build();
     }
 
     @Test
-    void testCreateCourse() {
-        CourseInDTO input = new CourseInDTO();
-        input.setTitle("Java 101");
+    void testCreateCourse_Success() throws Exception {
+        CourseInDTO input = CourseInDTO.builder()
+                .title("Java Basics")
+                .ownerId(101L)
+                .description("Learn Java")
+                .courseLevel("BEGINNER")
+                .Active(true)
+                .build();
 
-        CourseOutDTO output = new CourseOutDTO();
-        output.setTitle("Java 101");
+        Mockito.when(courseService.createCourse(any())).thenReturn(sampleCourse);
 
-        when(courseService.createCourse(input)).thenReturn(output);
-
-        ResponseEntity<StandardResponseOutDTO<CourseOutDTO>> response = courseController.createCourse(input);
-
-        assertEquals(200, response.getStatusCodeValue());
-        assertEquals("Java 101", response.getBody().getData().getTitle());
+        mockMvc.perform(post("/api/v1/courses")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(input)))
+                .andExpect(status().isCreated())
+                .andExpect(jsonPath("$.status").value("success"))
+                .andExpect(jsonPath("$.message").value("Course created successfully"))
+                .andExpect(jsonPath("$.data.title").value("Java Basics"));
     }
 
     @Test
-    void testGetAllCourses() {
-        CourseOutDTO c1 = new CourseOutDTO(); c1.setTitle("A");
-        CourseOutDTO c2 = new CourseOutDTO(); c2.setTitle("B");
+    void testGetAllCourses() throws Exception {
+        Mockito.when(courseService.getAllCourses()).thenReturn(Arrays.asList(sampleCourse));
 
-        when(courseService.getAllCourses()).thenReturn(Arrays.asList(c1, c2));
-
-        ResponseEntity<StandardResponseOutDTO<List<CourseOutDTO>>> response = courseController.getAllCourses();
-
-        assertEquals(200, response.getStatusCodeValue());
-        assertEquals(2, response.getBody().getData().size());
+        mockMvc.perform(get("/api/v1/courses"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.status").value("success"))
+                .andExpect(jsonPath("$.data[0].courseId").value(1L));
     }
 
     @Test
-    void testGetAllCoursesEmpty() {
-        when(courseService.getAllCourses()).thenReturn(Collections.emptyList());
+    void testGetCourseById_Success() throws Exception {
+        CourseInfoOutDTO info = new CourseInfoOutDTO();
+        Mockito.when(courseService.getCourseById(1L)).thenReturn(info);
 
-        ResponseEntity<StandardResponseOutDTO<List<CourseOutDTO>>> response = courseController.getAllCourses();
-
-        assertEquals(200, response.getStatusCodeValue());
-        assertTrue(response.getBody().getData().isEmpty());
+        mockMvc.perform(get("/api/v1/courses/1"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.status").value("success"));
     }
 
     @Test
-    void testGetCourseById() {
-        Long id = 1L;
-        CourseInfoOutDTO dto = new CourseInfoOutDTO();
-        dto.setCourseId(id);
+    void testUpdateCourse_Success() throws Exception {
+        UpdateCourseInDTO update = UpdateCourseInDTO.builder()
+                .title("Advanced Java")
+                .ownerId(101L)
+                .description("Deep Dive")
+                .courseLevel("ADVANCED")
+                .Active(true)
+                .build();
 
-        when(courseService.getCourseById(id)).thenReturn(dto);
+        Mockito.when(courseService.updateCourse(eq(1L), any())).thenReturn(sampleCourse);
 
-        ResponseEntity<StandardResponseOutDTO<CourseInfoOutDTO>> response = courseController.getCourseById(id);
-
-        assertEquals(200, response.getStatusCodeValue());
-        assertEquals(id, response.getBody().getData().getCourseId());
+        mockMvc.perform(put("/api/v1/courses/1")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(update)))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.status").value("success"))
+                .andExpect(jsonPath("$.data.title").value("Java Basics"));
     }
 
     @Test
-    void testDeleteCourse() {
-        Long id = 5L;
+    void testDeleteCourse_Success() throws Exception {
+        Mockito.when(courseService.deleteCourse(1L)).thenReturn("Course deleted successfully");
 
-        when(courseService.deleteCourse(id)).thenReturn("Deleted");
-
-        ResponseEntity<StandardResponseOutDTO<Void>> response = courseController.deleteCourse(id);
-
-        assertEquals(200, response.getStatusCodeValue());
-        assertEquals("Deleted", response.getBody().getMessage());
-        verify(courseService, times(1)).deleteCourse(id);
+        mockMvc.perform(delete("/api/v1/courses/1"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.status").value("success"))
+                .andExpect(jsonPath("$.message").value("Course deleted successfully"));
     }
 
     @Test
-    void testUpdateCourse() {
-        Long id = 7L;
-        UpdateCourseInDTO update = new UpdateCourseInDTO();
-        update.setTitle("Updated Course");
+    void testCreateCourse_InvalidInput() throws Exception {
+        CourseInDTO invalid = new CourseInDTO();
 
-        CourseOutDTO updated = new CourseOutDTO();
-        updated.setTitle("Updated Course");
-
-        when(courseService.updateCourse(id, update)).thenReturn(updated);
-
-        ResponseEntity<StandardResponseOutDTO<CourseOutDTO>> response = courseController.updateCourse(id, update);
-
-        assertEquals(200, response.getStatusCodeValue());
-        assertEquals("Updated Course", response.getBody().getData().getTitle());
+        mockMvc.perform(post("/api/v1/courses")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(invalid)))
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.status").value("error"))
+                .andExpect(jsonPath("$.data.title").exists())
+                .andExpect(jsonPath("$.data.ownerId").exists());
     }
 
     @Test
-    void testCheckIfCourseExists_True() {
-        Long id = 10L;
-        when(courseService.courseExistsById(id)).thenReturn(true);
+    void testGetCourseById_NotFound() throws Exception {
+        Mockito.when(courseService.getCourseById(999L))
+                .thenThrow(new ResourceNotFoundException("Course not found"));
 
-        ResponseEntity<Boolean> response = courseController.checkIfCourseExists(id);
-
-        assertTrue(response.getBody());
+        mockMvc.perform(get("/api/v1/courses/999"))
+                .andExpect(status().isNotFound())
+                .andExpect(jsonPath("$.status").value("error"))
+                .andExpect(jsonPath("$.message").value("Course not found"));
     }
 
     @Test
-    void testCheckIfCourseExists_False() {
-        Long id = 11L;
-        when(courseService.courseExistsById(id)).thenReturn(false);
-
-        ResponseEntity<Boolean> response = courseController.checkIfCourseExists(id);
-
-        assertFalse(response.getBody());
+    void testUpdateCourse_TypeMismatch() throws Exception {
+        mockMvc.perform(put("/api/v1/courses/invalid-id")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content("{}"))
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.status").value("error"))
+                .andExpect(jsonPath("$.message", containsString("Failed to convert")));
     }
 
     @Test
-    void testGetCourseCount() {
-        when(courseService.countCourses()).thenReturn(42L);
+    void testDeleteCourse_UncaughtException() throws Exception {
+        Mockito.when(courseService.deleteCourse(1L)).thenThrow(new RuntimeException("Unexpected error"));
 
-        ResponseEntity<StandardResponseOutDTO<Long>> response = courseController.getCourseCount();
-
-        assertEquals(200, response.getStatusCodeValue());
-        assertEquals(42L, response.getBody().getData());
+        mockMvc.perform(delete("/api/v1/courses/1"))
+                .andExpect(status().isInternalServerError())
+                .andExpect(jsonPath("$.status").value("error"))
+                .andExpect(jsonPath("$.message").value("Unexpected error"));
     }
 
     @Test
-    void testGetRecentCourses() {
-        CourseSummaryOutDTO dto1 = new CourseSummaryOutDTO();
-        dto1.setTitle("Summary 1");
+    void testUpdateCourse_NotFound() throws Exception {
+        UpdateCourseInDTO update = UpdateCourseInDTO.builder()
+                .title("Advanced Java")
+                .ownerId(101L)
+                .description("Deep Dive")
+                .courseLevel("ADVANCED")
+                .Active(true)
+                .build();
 
-        when(courseService.getRecentCourseSummaries()).thenReturn(Collections.singletonList(dto1));
+        Mockito.when(courseService.updateCourse(eq(999L), any()))
+                .thenThrow(new ResourceNotFoundException("Course not found"));
 
-        ResponseEntity<StandardResponseOutDTO<List<CourseSummaryOutDTO>>> response = courseController.getRecentCourses();
-
-        assertEquals(200, response.getStatusCodeValue());
-        assertEquals(1, response.getBody().getData().size());
-        assertEquals("Summary 1", response.getBody().getData().get(0).getTitle());
+        mockMvc.perform(put("/api/v1/courses/999")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(update)))
+                .andExpect(status().isNotFound())
+                .andExpect(jsonPath("$.status").value("error"))
+                .andExpect(jsonPath("$.message").value("Course not found"));
     }
 
     @Test
-    void testGetCourseNameById() {
-        Long id = 100L;
-        when(courseService.getCourseNameById(id)).thenReturn("Course Name");
+    void testCountCourses() throws Exception {
+        Mockito.when(courseService.countCourses()).thenReturn(42L);
 
-        ResponseEntity<String> response = courseController.getCourseNameById(id);
-
-        assertEquals(200, response.getStatusCodeValue());
-        assertEquals("Course Name", response.getBody());
+        mockMvc.perform(get("/api/v1/courses/count"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.status").value("success"))
+                .andExpect(jsonPath("$.data").value(42));
     }
 
     @Test
-    void testGetCoursesInfo() {
-        CourseInfoOutDTO courseInfo = new CourseInfoOutDTO();
-        courseInfo.setTitle("Full Info");
+    void testGetCoursesInfo() throws Exception {
+        CourseInfoOutDTO info1 = new CourseInfoOutDTO();
+        CourseInfoOutDTO info2 = new CourseInfoOutDTO();
 
-        when(courseService.getCoursesInfo()).thenReturn(Collections.singletonList(courseInfo));
+        Mockito.when(courseService.getCoursesInfo()).thenReturn(Arrays.asList(info1, info2));
 
-        ResponseEntity<StandardResponseOutDTO<List<CourseInfoOutDTO>>> response = courseController.getCoursesInfo();
-
-        assertEquals(200, response.getStatusCodeValue());
-        assertEquals("Full Info", response.getBody().getData().get(0).getTitle());
+        mockMvc.perform(get("/api/v1/courses/info"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.status").value("success"))
+                .andExpect(jsonPath("$.data.length()").value(2));
     }
 
     @Test
-    void testGetExistingCourseIds() {
-        List<Long> inputIds = Arrays.asList(1L, 2L, 3L);
+    void testGetRecentCourseSummaries() throws Exception {
+        CourseSummaryOutDTO recent1 = CourseSummaryOutDTO.builder()
+                .title("Python")
+                .description("Intro")
+                .level("Beginner")
+                .createdAt(LocalDateTime.now())
+                .updatedAt(LocalDateTime.now())
+                .build();
+
+        CourseSummaryOutDTO recent2 = CourseSummaryOutDTO.builder()
+                .title("JavaScript")
+                .description("Web basics")
+                .level("Beginner")
+                .createdAt(LocalDateTime.now())
+                .updatedAt(LocalDateTime.now())
+                .build();
+
+        Mockito.when(courseService.getRecentCourseSummaries()).thenReturn(Arrays.asList(recent1, recent2));
+
+        mockMvc.perform(get("/api/v1/courses/recent"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.status").value("success"))
+                .andExpect(jsonPath("$.data.length()").value(2))
+                .andExpect(jsonPath("$.data[0].title").value("Python"));
+    }
+
+    @Test
+    void testFindExistingIds() throws Exception {
+        List<Long> inputIds = Arrays.asList(1L, 2L, 3L, 999L);
         List<Long> existing = Arrays.asList(1L, 3L);
 
-        when(courseService.findExistingIds(inputIds)).thenReturn(existing);
+        Mockito.when(courseService.findExistingIds(inputIds)).thenReturn(existing);
 
-        ResponseEntity<List<Long>> response = courseController.getExistingCourseIds(inputIds);
+        mockMvc.perform(post("/api/v1/courses/existing-ids")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(inputIds)))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.status").value("success"))
+                .andExpect(jsonPath("$.data.length()").value(2))
+                .andExpect(jsonPath("$.data[0]").value(1));
+    }
 
-        assertEquals(200, response.getStatusCodeValue());
-        assertEquals(2, response.getBody().size());
-        assertTrue(response.getBody().contains(1L));
-        assertFalse(response.getBody().contains(2L));
+    @Test
+    void testCourseExistsById_True() throws Exception {
+        Mockito.when(courseService.courseExistsById(1L)).thenReturn(true);
+
+        mockMvc.perform(get("/api/v1/courses/1/exists"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.status").value("success"))
+                .andExpect(jsonPath("$.data").value(true));
+    }
+
+    @Test
+    void testCourseExistsById_False() throws Exception {
+        Mockito.when(courseService.courseExistsById(999L)).thenReturn(false);
+
+        mockMvc.perform(get("/api/v1/courses/999/exists"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.status").value("success"))
+                .andExpect(jsonPath("$.data").value(false));
     }
 }
+
+

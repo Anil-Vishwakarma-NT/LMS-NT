@@ -1,0 +1,43 @@
+spring:
+  application:
+    name: course-service-lms
+
+  datasource:
+    url: jdbc:h2:mem:testdb
+    driver-class-name: org.h2.Driver
+    username: sa
+    password:
+
+  jpa:
+    database-platform: org.hibernate.dialect.H2Dialect
+    show-sql: true
+    hibernate:
+      ddl-auto: update
+    h2:
+      console:
+        enabled: true
+        path: /h2-console
+        settings:
+          web-allow-others: true  # Allow remote connections
+          trace: false
+
+server:
+  port: 8080  # random port for integration testing
+
+jwt:
+  secret: test_jwt_secret_for_testing_purposes_only
+  issuer: http://test-issuer
+
+gateway:
+  validation:
+    enabled: true
+  secret:
+    header: X-Gateway-Secret
+    value: test-gateway-secret
+  signature:
+    header: X-Gateway-Signature
+
+direct:
+  secret:
+    header: X-Direct-Secret
+    value: test-direct-secret

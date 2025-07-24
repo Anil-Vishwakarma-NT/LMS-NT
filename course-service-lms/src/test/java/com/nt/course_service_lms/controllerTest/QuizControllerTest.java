@@ -5,143 +5,214 @@ import com.nt.course_service_lms.controller.QuizController;
 import com.nt.course_service_lms.dto.inDTO.QuizCreateInDTO;
 import com.nt.course_service_lms.dto.inDTO.QuizUpdateInDTO;
 import com.nt.course_service_lms.dto.outDTO.QuizOutDTO;
-import com.nt.course_service_lms.dto.outDTO.StandardResponseOutDTO;
 import com.nt.course_service_lms.service.QuizService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.mockito.InjectMocks;
-import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
-import org.springframework.http.ResponseEntity;
+import org.mockito.Mockito;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
+import org.springframework.boot.test.context.TestConfiguration;
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Import;
+import org.springframework.http.MediaType;
+import org.springframework.test.web.servlet.MockMvc;
 
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.List;
+import java.util.Optional;
 
-import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.Mockito.*;
+import static org.hamcrest.Matchers.*;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
-public class QuizControllerTest {
+@WebMvcTest(QuizController.class)
+@Import(QuizControllerTest.TestConfig.class)
+class QuizControllerTest {
 
-    @InjectMocks
-    private QuizController quizController;
+    @TestConfiguration
+    static class TestConfig {
+        @Bean
+        public QuizService quizService() {
+            return Mockito.mock(QuizService.class);
+        }
+    }
 
-    @Mock
+    @Autowired
+    private MockMvc mockMvc;
+
+    @Autowired
     private QuizService quizService;
 
-    @BeforeEach
-    void setUp() {
-        MockitoAnnotations.openMocks(this);
+    private final ObjectMapper objectMapper = new ObjectMapper();
+
+    private QuizOutDTO getMockQuizOutDTO(Long id) {
+        return QuizOutDTO.builder()
+                .quizId(id)
+                .title("Sample Quiz")
+                .description("This is a sample quiz.")
+                .parentType("course")
+                .parentId(1L)
+                .isActive(true)
+                .build();
     }
 
     @Test
-    void testCreateQuiz() {
-        QuizCreateInDTO input = new QuizCreateInDTO();
-        input.setTitle("Quiz 1");
+    void testCreateQuizSuccess() throws Exception {
+        QuizCreateInDTO dto = QuizCreateInDTO.builder()
+                .title("New Quiz")
+                .description("Quiz Description")
+                .parentType("course")
+                .parentId(1L)
+                .build();
 
-        QuizOutDTO output = new QuizOutDTO();
-        output.setTitle("Quiz 1");
+        QuizOutDTO response = getMockQuizOutDTO(1L);
+        Mockito.when(quizService.createQuiz(any())).thenReturn(response);
 
-        when(quizService.createQuiz(input)).thenReturn(output);
-
-        ResponseEntity<StandardResponseOutDTO<QuizOutDTO>> response = quizController.createQuiz(input);
-
-        assertEquals(201, response.getStatusCodeValue());
-        assertEquals("Quiz 1", response.getBody().getData().getTitle());
+        mockMvc.perform(post("/api/service-api/quizzes")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(dto)))
+                .andExpect(status().isCreated())
+                .andExpect(jsonPath("$.data.quizId", is(1)));
     }
 
     @Test
-    void testGetAllQuizzes() {
-        QuizOutDTO q1 = new QuizOutDTO(); q1.setTitle("Q1");
-        QuizOutDTO q2 = new QuizOutDTO(); q2.setTitle("Q2");
+    void testCreateQuizValidationFail() throws Exception {
+        QuizCreateInDTO dto = new QuizCreateInDTO();
 
-        when(quizService.getAllQuizzes()).thenReturn(Arrays.asList(q1, q2));
-
-        ResponseEntity<StandardResponseOutDTO<List<QuizOutDTO>>> response = quizController.getAllQuizzes();
-
-        assertEquals(200, response.getStatusCodeValue());
-        assertEquals(2, response.getBody().getData().size());
+        mockMvc.perform(post("/api/service-api/quizzes")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(dto)))
+                .andExpect(status().isBadRequest());
     }
 
     @Test
-    void testGetAllQuizzesEmpty() {
-        when(quizService.getAllQuizzes()).thenReturn(Collections.emptyList());
+    void testGetAllQuizzesSuccess() throws Exception {
+        List<QuizOutDTO> quizzes = Arrays.asList(getMockQuizOutDTO(1L), getMockQuizOutDTO(2L));
+        Mockito.when(quizService.getAllQuizzes()).thenReturn(quizzes);
 
-        ResponseEntity<StandardResponseOutDTO<List<QuizOutDTO>>> response = quizController.getAllQuizzes();
-
-        assertEquals(200, response.getStatusCodeValue());
-        assertTrue(response.getBody().getData().isEmpty());
+        mockMvc.perform(get("/api/service-api/quizzes"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.data", hasSize(2)))
+                .andExpect(jsonPath("$.data[0].quizId", is(1)))
+                .andExpect(jsonPath("$.data[1].quizId", is(2)));
     }
 
     @Test
-    void testGetQuizById() {
-        Long id = 1L;
-        QuizOutDTO dto = new QuizOutDTO();
-        dto.setQuizId(id);
+    void testGetQuizByIdSuccess() throws Exception {
+        Mockito.when(quizService.getQuizById(1L)).thenReturn(getMockQuizOutDTO(1L));
 
-        when(quizService.getQuizById(id)).thenReturn(dto);
-
-        ResponseEntity<StandardResponseOutDTO<QuizOutDTO>> response = quizController.getQuizById(id);
-
-        assertEquals(200, response.getStatusCodeValue());
-        assertEquals(id, response.getBody().getData().getQuizId());
+        mockMvc.perform(get("/api/service-api/quizzes/1"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.data.quizId", is(1)));
     }
 
     @Test
-    void testGetQuizzesByCourse() {
-        Long courseId = 5L;
-        QuizOutDTO dto = new QuizOutDTO();
-        dto.setTitle("Course Quiz");
+    void testGetQuizByIdNotFound() throws Exception {
+        Mockito.when(quizService.getQuizById(999L)).thenReturn(null);
 
-        when(quizService.getQuizzesByCourse(courseId)).thenReturn(Collections.singletonList(dto));
-
-        ResponseEntity<StandardResponseOutDTO<List<QuizOutDTO>>> response = quizController.getQuizzesByCourse(courseId);
-
-        assertEquals(200, response.getStatusCodeValue());
-        assertEquals("Course Quiz", response.getBody().getData().get(0).getTitle());
+        mockMvc.perform(get("/api/service-api/quizzes/999"))
+                .andExpect(status().isNotFound());
     }
 
     @Test
-    void testGetQuizzesByCourseContent() {
-        Long contentId = 10L;
-        QuizOutDTO dto = new QuizOutDTO();
-        dto.setTitle("Content Quiz");
+    void testGetQuizzesByCourseSuccess() throws Exception {
+        Mockito.when(quizService.getQuizzesByCourse(1L)).thenReturn(Arrays.asList(getMockQuizOutDTO(1L)));
 
-        when(quizService.getQuizzesByCourseContent(contentId)).thenReturn(Collections.singletonList(dto));
-
-        ResponseEntity<StandardResponseOutDTO<List<QuizOutDTO>>> response = quizController.getQuizzesByCourseContent(contentId);
-
-        assertEquals(200, response.getStatusCodeValue());
-        assertEquals("Content Quiz", response.getBody().getData().get(0).getTitle());
+        mockMvc.perform(get("/api/service-api/quizzes/course/1"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.data[0].parentType", is("course")));
     }
 
     @Test
-    void testUpdateQuiz() {
-        Long id = 3L;
-        QuizUpdateInDTO update = new QuizUpdateInDTO();
-        update.setTitle("Updated Title");
+    void testGetQuizzesByCourseContentSuccess() throws Exception {
+        QuizOutDTO quiz = getMockQuizOutDTO(2L);
+        quiz.setParentType("course-content");
 
-        QuizOutDTO updated = new QuizOutDTO();
-        updated.setTitle("Updated Title");
+        Mockito.when(quizService.getQuizzesByCourseContent(1L)).thenReturn(Arrays.asList(quiz));
 
-        when(quizService.updateQuiz(id, update)).thenReturn(updated);
-
-        ResponseEntity<StandardResponseOutDTO<QuizOutDTO>> response = quizController.updateQuiz(id, update);
-
-        assertEquals(200, response.getStatusCodeValue());
-        assertEquals("Updated Title", response.getBody().getData().getTitle());
+        mockMvc.perform(get("/api/service-api/quizzes/course-content/1"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.data[0].parentType", is("course-content")));
     }
 
     @Test
-    void testDeleteQuiz() {
-        Long id = 9L;
+    void testUpdateQuizSuccess() throws Exception {
+        QuizUpdateInDTO updateDTO = QuizUpdateInDTO.builder()
+                .title("Updated Quiz")
+                .description("Updated Desc")
+                .build();
 
-        doNothing().when(quizService).deleteQuiz(id);
+        QuizOutDTO updated = getMockQuizOutDTO(1L);
+        updated.setTitle("Updated Quiz");
 
-        ResponseEntity<StandardResponseOutDTO<String>> response = quizController.deleteQuiz(id);
+        Mockito.when(quizService.updateQuiz(eq(1L), any())).thenReturn(updated);
 
-        assertEquals(200, response.getStatusCodeValue());
-        assertEquals("Quiz deleted successfully", response.getBody().getData());
-        verify(quizService, times(1)).deleteQuiz(id);
+        mockMvc.perform(put("/api/service-api/quizzes/1")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(updateDTO)))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.data.title", is("Updated Quiz")));
     }
+
+    @Test
+    void testUpdateQuizValidationFail() throws Exception {
+        QuizUpdateInDTO invalidDTO = new QuizUpdateInDTO();
+
+        mockMvc.perform(put("/api/service-api/quizzes/1")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(invalidDTO)))
+                .andExpect(status().isBadRequest());
+    }
+
+    @Test
+    void testDeleteQuizSuccess() throws Exception {
+        Mockito.doNothing().when(quizService).deleteQuiz(1L);
+
+        mockMvc.perform(delete("/api/service-api/quizzes/1"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.message", containsString("deleted")));
+    }
+
+    @Test
+    void testDeleteQuizNotFound() throws Exception {
+        Mockito.doThrow(new RuntimeException("Quiz not found")).when(quizService).deleteQuiz(999L);
+
+        mockMvc.perform(delete("/api/service-api/quizzes/999"))
+                .andExpect(status().isInternalServerError());
+    }
+    @Test
+    void testUpdateQuizNotFound() throws Exception {
+        QuizUpdateInDTO dto = QuizUpdateInDTO.builder()
+                .title("Update")
+                .description("Desc")
+                .build();
+
+        Mockito.when(quizService.updateQuiz(eq(999L), any()))
+                .thenThrow(new RuntimeException("Quiz not found"));
+
+        mockMvc.perform(put("/api/service-api/quizzes/999")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(dto)))
+                .andExpect(status().isInternalServerError());
+    }
+    @Test
+    void testGetQuizzesByCourseEmpty() throws Exception {
+        Mockito.when(quizService.getQuizzesByCourse(1L)).thenReturn(Arrays.asList());
+
+        mockMvc.perform(get("/api/service-api/quizzes/course/1"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.data", hasSize(0)));
+    }
+    @Test
+    void testGetQuizzesByCourseContentEmpty() throws Exception {
+        Mockito.when(quizService.getQuizzesByCourseContent(1L)).thenReturn(Arrays.asList());
+
+        mockMvc.perform(get("/api/service-api/quizzes/course-content/1"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.data", hasSize(0)));
+    }
+
 }
+
