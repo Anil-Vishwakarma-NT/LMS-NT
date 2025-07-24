@@ -113,7 +113,7 @@ public class ServiceAuthenticationFilter extends OncePerRequestFilter {
                                     final HttpServletResponse response,
                                     final FilterChain filterChain) throws ServletException, IOException {
 
-        System.out.println(request.getRequestURL());
+
         try {
             String path = request.getRequestURI();
             if (path.startsWith("/video/") || path.startsWith("/pdf/")) {

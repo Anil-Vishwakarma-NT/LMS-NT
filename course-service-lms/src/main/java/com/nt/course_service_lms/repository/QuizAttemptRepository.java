@@ -1,6 +1,8 @@
 package com.nt.course_service_lms.repository;
 
 import com.nt.course_service_lms.entity.QuizAttempt;
+import com.nt.course_service_lms.entity.QuizQuestion;
+import com.nt.course_service_lms.entity.UserResponse;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -106,4 +108,24 @@ public interface QuizAttemptRepository extends JpaRepository<QuizAttempt, Long> 
      */
     @Query("SELECT qa FROM QuizAttempt qa WHERE qa.userId = :userId AND qa.quizId = :quizId AND qa.status IN ('IN_PROGRESS')")
     Optional<QuizAttempt> findActiveAttemptByUserAndQuiz(@Param("userId") Long userId, @Param("quizId") Long quizId);
+
+    // QuizAttemptRepository - Custom query with JOIN
+    @Query(value = """
+    SELECT qa.quiz_attempt_id, qa.attempt, qa.quiz_id, qa.started_at, qa.finished_at, 
+           qa.score_details, qa.status, qa.created_at, qa.updated_at,
+           q.title, q.description, q.time_limit, q.attempts_allowed, q.passing_score
+    FROM quiz_attempt qa 
+    JOIN quiz q ON qa.quiz_id = q.quiz_id 
+    WHERE qa.user_id = :userId 
+      AND q.parent_type = 'course' 
+      AND q.parent_id = :courseId 
+      AND q.is_active = true
+    ORDER BY qa.attempt DESC
+    """, nativeQuery = true)
+    List<Object[]> findUserAttemptDetailsWithQuizInfo(@Param("userId") Long userId,
+                                                      @Param("courseId") Long courseId);
+
+
+
+
 }
