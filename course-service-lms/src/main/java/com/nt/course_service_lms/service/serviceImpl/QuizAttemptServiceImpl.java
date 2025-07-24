@@ -4,12 +4,17 @@ import com.nt.course_service_lms.dto.inDTO.QuizAttemptCreateInDTO;
 import com.nt.course_service_lms.dto.inDTO.QuizAttemptUpdateInDTO;
 import com.nt.course_service_lms.dto.outDTO.QuizAttemptOutDTO;
 import com.nt.course_service_lms.dto.outDTO.QuizSubmissionResultOutDTO;
+import com.nt.course_service_lms.dto.outDTO.UserResponseOutDTO;
 import com.nt.course_service_lms.entity.Quiz;
 import com.nt.course_service_lms.entity.QuizAttempt;
+import com.nt.course_service_lms.entity.QuizQuestion;
+import com.nt.course_service_lms.entity.UserResponse;
 import com.nt.course_service_lms.exception.ResourceNotFoundException;
 import com.nt.course_service_lms.exception.ResourceNotValidException;
 import com.nt.course_service_lms.repository.QuizAttemptRepository;
+import com.nt.course_service_lms.repository.QuizQuestionRepository;
 import com.nt.course_service_lms.repository.QuizRepository;
+import com.nt.course_service_lms.repository.UserResponseRepository;
 import com.nt.course_service_lms.service.QuizAttemptService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -19,9 +24,15 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 /**
@@ -61,6 +72,10 @@ public class QuizAttemptServiceImpl implements QuizAttemptService {
      * Used to validate quiz existence and retrieve quiz configuration.
      */
     private final QuizRepository quizRepository;
+
+    private final UserResponseRepository userResponseRepository;
+
+    private final QuizQuestionRepository quizQuestionRepository;
 
     /**
      * Creates a new quiz attempt for a user and quiz combination.
@@ -494,9 +509,202 @@ public class QuizAttemptServiceImpl implements QuizAttemptService {
     }
 
     @Override
-    public List<QuizSubmissionResultOutDTO> getUserAttemptDetails(Long userId) {
+    public List<QuizSubmissionResultOutDTO> getUserAttemptDetails(Long userId, Long courseId) {
         try {
+            // Single query to get all quiz attempts for user in the course with quiz details
+            // This replaces multiple separate queries
+            List<Object[]> attemptData = quizAttemptRepository.findUserAttemptDetailsWithQuizInfo(userId, courseId);
 
+            if (attemptData.isEmpty()) {
+                return new ArrayList<>();
+            }
+
+            // Extract unique quiz IDs and attempt info for bulk queries
+            Set<Long> quizIds = new HashSet<>();
+            Set<String> attemptKeys = new HashSet<>();
+
+            for (Object[] data : attemptData) {
+                Long quizId = (Long) data[2]; // quiz_id from the query
+                Long attempt = (Long) data[1]; // attempt from the query
+                quizIds.add(quizId);
+                attemptKeys.add(userId + "_" + quizId + "_" + attempt);
+            }
+
+            // Bulk fetch all user responses for all attempts in one query
+            List<UserResponse> allUserResponses = userResponseRepository
+                    .findByUserIdAndQuizIdInAndAttemptIn(userId, new ArrayList<>(quizIds),
+                            attemptData.stream().map(data -> (Long) data[1]).collect(Collectors.toList()));
+
+            // Bulk fetch all quiz questions for all quizzes in one query
+            List<QuizQuestion> allQuizQuestions = quizQuestionRepository
+                    .findByQuizIdInOrderByQuizIdAscPositionAsc(new ArrayList<>(quizIds));
+
+            // Group data by quiz_id and attempt for efficient processing
+            Map<String, List<UserResponse>> responsesByAttempt = allUserResponses.stream()
+                    .collect(Collectors.groupingBy(r -> r.getUserId() + "_" + r.getQuizId() + "_" + r.getAttempt()));
+
+            Map<Long, List<QuizQuestion>> questionsByQuiz = allQuizQuestions.stream()
+                    .collect(Collectors.groupingBy(QuizQuestion::getQuizId));
+
+            // Pre-calculate max scores for each quiz to avoid repeated calculations
+            Map<Long, BigDecimal> maxScoresByQuiz = questionsByQuiz.entrySet().stream()
+                    .collect(Collectors.toMap(
+                            Map.Entry::getKey,
+                            entry -> entry.getValue().stream()
+                                    .map(QuizQuestion::getPoints)
+                                    .reduce(BigDecimal.ZERO, BigDecimal::add)
+                    ));
+
+            List<QuizSubmissionResultOutDTO> results = new ArrayList<>();
+
+            // Process each attempt
+            for (Object[] data : attemptData) {
+                // Extract data from the joined query result with proper type conversion
+                Long quizAttemptId = (Long) data[0];
+                Long attempt = (Long) data[1];
+                Long quizId = (Long) data[2];
+
+                // Convert Timestamp to LocalDateTime safely
+                LocalDateTime startedAt = convertTimestampToLocalDateTime(data[3]);
+                LocalDateTime finishedAt = convertTimestampToLocalDateTime(data[4]);
+
+                String scoreDetails = (String) data[5];
+                String status = (String) data[6];
+
+                // Convert Timestamp to LocalDateTime safely
+                LocalDateTime createdAt = convertTimestampToLocalDateTime(data[7]);
+                LocalDateTime updatedAt = convertTimestampToLocalDateTime(data[8]);
+
+                String quizTitle = (String) data[9];
+                String quizDescription = (String) data[10];
+                Integer timeLimit = (Integer) data[11];
+                Integer attemptsAllowed = (Integer) data[12];
+                BigDecimal passingScore = (BigDecimal) data[13];
+
+                String attemptKey = userId + "_" + quizId + "_" + attempt;
+
+                // Get responses for this specific attempt
+                List<UserResponse> attemptResponses = responsesByAttempt.getOrDefault(attemptKey, new ArrayList<>());
+
+                // Get questions for this quiz
+                List<QuizQuestion> quizQuestions = questionsByQuiz.getOrDefault(quizId, new ArrayList<>());
+
+                // Calculate scores and statistics
+                BigDecimal totalScore = attemptResponses.stream()
+                        .map(UserResponse::getPointsEarned)
+                        .reduce(BigDecimal.ZERO, BigDecimal::add);
+
+                BigDecimal maxPossibleScore = maxScoresByQuiz.getOrDefault(quizId, BigDecimal.ZERO);
+
+                long correctAnswers = attemptResponses.stream()
+                        .mapToLong(response -> response.getIsCorrect() ? 1L : 0L)
+                        .sum();
+
+                long totalQuestions = quizQuestions.size();
+
+                BigDecimal percentageScore = maxPossibleScore.compareTo(BigDecimal.ZERO) > 0
+                        ? totalScore.multiply(BigDecimal.valueOf(100))
+                        .divide(maxPossibleScore, 2, RoundingMode.HALF_UP)
+                        : BigDecimal.ZERO;
+
+                // Convert responses to DTOs
+                List<UserResponseOutDTO> responseOutDTOs = attemptResponses.stream()
+                        .map(this::convertToUserResponseOutDTO)
+                        .collect(Collectors.toList());
+
+                // Build QuizAttemptOutDTO from query data
+                QuizAttemptOutDTO attemptOutDTO = QuizAttemptOutDTO.builder()
+                        .quizAttemptId(quizAttemptId)
+                        .attempt(attempt)
+                        .quizId(quizId)
+                        .userId(userId)
+                        .startedAt(startedAt)
+                        .finishedAt(finishedAt)
+                        .scoreDetails(scoreDetails)
+                        .status(status)
+                        .createdAt(createdAt)
+                        .updatedAt(updatedAt)
+                        .build();
+
+                // Determine submission type
+                String submissionType = determineSubmissionType(status);
+
+                // Build the result DTO
+                QuizSubmissionResultOutDTO resultDTO = QuizSubmissionResultOutDTO.builder()
+                        .quizAttempt(attemptOutDTO)
+                        .userResponses(responseOutDTOs)
+                        .totalScore(totalScore)
+                        .maxPossibleScore(maxPossibleScore)
+                        .correctAnswers(correctAnswers)
+                        .totalQuestions(totalQuestions)
+                        .percentageScore(percentageScore)
+                        .submissionType(submissionType)
+                        .submittedAt(finishedAt)
+                        .build();
+
+                results.add(resultDTO);
+            }
+
+            // Sort results by attempt number (most recent first)
+            results.sort((a, b) -> b.getQuizAttempt().getAttempt().compareTo(a.getQuizAttempt().getAttempt()));
+
+            return results;
+
+        } catch (Exception e) {
+            log.error("Error fetching user attempt details for userId: {} and courseId: {}", userId, courseId, e);
+            throw new RuntimeException("Failed to fetch user attempt details", e);
+        }
+    }
+
+    /**
+     * Safely convert Timestamp or LocalDateTime objects to LocalDateTime
+     */
+    private LocalDateTime convertTimestampToLocalDateTime(Object timestamp) {
+        if (timestamp == null) {
+            return null;
+        }
+
+        if (timestamp instanceof java.sql.Timestamp) {
+            return ((java.sql.Timestamp) timestamp).toLocalDateTime();
+        } else if (timestamp instanceof java.time.LocalDateTime) {
+            return (java.time.LocalDateTime) timestamp;
+        } else {
+            throw new IllegalArgumentException("Unsupported timestamp type: " + timestamp.getClass());
+        }
+    }
+
+    /**
+     * Convert UserResponse entity to UserResponseOutDTO
+     */
+    private UserResponseOutDTO convertToUserResponseOutDTO(UserResponse userResponse) {
+        return UserResponseOutDTO.builder()
+                .responseId(userResponse.getResponseId())
+                .userId(userResponse.getUserId())
+                .quizId(userResponse.getQuizId())
+                .questionId(userResponse.getQuestionId())
+                .attempt(userResponse.getAttempt())
+                .userAnswer(userResponse.getUserAnswer())
+                .isCorrect(userResponse.getIsCorrect())
+                .pointsEarned(userResponse.getPointsEarned())
+                .answeredAt(userResponse.getAnsweredAt())
+                .build();
+    }
+
+    /**
+     * Determine submission type based on attempt status
+     */
+    private String determineSubmissionType(String status) {
+        switch (status) {
+            case "COMPLETED":
+                return "MANUAL_SUBMIT";
+            case "TIMED_OUT":
+                return "AUTO_SUBMIT";
+            case "ABANDONED":
+                return "ABANDONED";
+            case "IN_PROGRESS":
+                return "IN_PROGRESS";
+            default:
+                return "UNKNOWN";
         }
     }
 

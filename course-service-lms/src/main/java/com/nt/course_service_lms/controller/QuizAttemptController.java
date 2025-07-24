@@ -4,6 +4,8 @@ import com.nt.course_service_lms.constants.CommonConstants;
 import com.nt.course_service_lms.dto.inDTO.QuizAttemptCreateInDTO;
 import com.nt.course_service_lms.dto.inDTO.QuizAttemptUpdateInDTO;
 import com.nt.course_service_lms.dto.outDTO.QuizAttemptOutDTO;
+import com.nt.course_service_lms.dto.outDTO.QuizSubmissionResultOutDTO;
+import com.nt.course_service_lms.dto.outDTO.StandardResponseOutDTO;
 import com.nt.course_service_lms.service.QuizAttemptService;
 import jakarta.validation.Valid;
 import lombok.extern.slf4j.Slf4j;
@@ -13,6 +15,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PageableDefault;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.method.P;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
@@ -278,5 +281,12 @@ public class QuizAttemptController {
     @GetMapping("/health")
     public ResponseEntity<String> healthCheck() {
         return ResponseEntity.ok("QuizAttempt Controller is healthy");
+    }
+
+    @GetMapping("/user/{userId}/quiz/course/{courseId}")
+    public StandardResponseOutDTO<List<QuizSubmissionResultOutDTO>> getUserAttemptDetails(@PathVariable Long userId, @PathVariable Long courseId) {
+        List<QuizSubmissionResultOutDTO> quizSubmissionResultOutDTOS = quizAttemptService.getUserAttemptDetails(userId,courseId);
+        StandardResponseOutDTO<List<QuizSubmissionResultOutDTO>> standardResponseOutDTO = StandardResponseOutDTO.success(quizSubmissionResultOutDTOS, "Fetched user attempt details");
+        return standardResponseOutDTO;
     }
 }

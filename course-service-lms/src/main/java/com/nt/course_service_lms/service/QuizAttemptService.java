@@ -213,7 +213,7 @@ public interface QuizAttemptService {
      */
     QuizAttemptOutDTO timeOutAttempt(Long quizAttemptId);
 
-    List<QuizSubmissionResultOutDTO> getUserAttemptDetails(Long userId);
+    List<QuizSubmissionResultOutDTO> getUserAttemptDetails(Long userId, Long courseId);
 
     /**
      * Checks whether a quiz attempt exists with the given identifier.
