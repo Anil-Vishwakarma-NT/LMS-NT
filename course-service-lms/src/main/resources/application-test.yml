@@ -13,16 +13,17 @@ spring:
     show-sql: true
     hibernate:
       ddl-auto: update
-    h2:
-      console:
-        enabled: true
-        path: /h2-console
-        settings:
-          web-allow-others: true  # Allow remote connections
-          trace: false
+
+  h2:
+    console:
+      enabled: true
+      path: /h2-console
+      settings:
+        web-allow-others: true
+        trace: false
 
 server:
-  port: 8080  # random port for integration testing
+  port: 8080
 
 jwt:
   secret: test_jwt_secret_for_testing_purposes_only
@@ -30,7 +31,7 @@ jwt:
 
 gateway:
   validation:
-    enabled: true
+    enabled: false  # Disable for H2 console testing
   secret:
     header: X-Gateway-Secret
     value: test-gateway-secret

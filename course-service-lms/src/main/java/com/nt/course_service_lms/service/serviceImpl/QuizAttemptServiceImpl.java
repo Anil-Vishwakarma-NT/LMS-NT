@@ -493,12 +493,12 @@ public class QuizAttemptServiceImpl implements QuizAttemptService {
         return convertToOutDTO(savedAttempt);
     }
 
-    @Override
-    public List<QuizSubmissionResultOutDTO> getUserAttemptDetails(Long userId) {
-        try {
-
-        }
-    }
+//    @Override
+//    public List<QuizSubmissionResultOutDTO> getUserAttemptDetails(Long userId) {
+//        try {
+//
+//        }
+//    }
 
     /**
      * Checks if a quiz attempt exists with the given ID.

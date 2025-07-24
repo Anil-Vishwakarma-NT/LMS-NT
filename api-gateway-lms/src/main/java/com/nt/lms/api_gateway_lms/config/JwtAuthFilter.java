@@ -361,6 +361,9 @@ public class JwtAuthFilter implements WebFilter {
         if (path.startsWith("/lms/course/")) {
             return COURSE_SERVICE;
         }
+        if (path.startsWith("/course/")) {
+            return COURSE_SERVICE;
+        }
         return UNKNOWN_SERVICE;
     }
 
