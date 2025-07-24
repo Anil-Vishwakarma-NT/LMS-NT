@@ -16,8 +16,7 @@ import software.amazon.awssdk.services.secretsmanager.model.GetSecretValueRespon
 import javax.sql.DataSource;
 
 @Configuration
-//@Profile({"!local","!test"})
-@Profile("prod")
+@Profile("!local")
 public class DatabaseConfig {
 
     @Autowired
