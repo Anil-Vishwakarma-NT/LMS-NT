@@ -25,8 +25,9 @@ public class SecurityConfig {
 
     /**
      * Custom authentication filter for service-to-service authentication.
+     * This is now optional and will only be injected if the active profile is NOT 'test'.
      */
-    @Autowired
+    @Autowired(required = false) // <-- STEP 1: MAKE IT OPTIONAL
     private ServiceAuthenticationFilter serviceAuthenticationFilter;
 
     /**
@@ -51,25 +52,30 @@ public class SecurityConfig {
                 .headers(headers -> headers
                         .frameOptions(HeadersConfigurer.FrameOptionsConfig::sameOrigin)
 
-                )
-
-                .addFilterBefore(serviceAuthenticationFilter, UsernamePasswordAuthenticationFilter.class)
-                .exceptionHandling(exceptions -> exceptions
-                        .authenticationEntryPoint((request, response, authException) -> {
-                            response.setStatus(HttpStatus.UNAUTHORIZED.value());
-                            response.setContentType("application/json");
-                            response.getWriter().write(
-                                    "{\"error\": \"Unauthorized\", \"message\": \"Authentication required\"}"
-                            );
-                        })
-                        .accessDeniedHandler((request, response, accessDeniedException) -> {
-                            response.setStatus(HttpStatus.FORBIDDEN.value());
-                            response.setContentType("application/json");
-                            response.getWriter().write(
-                                    "{\"error\": \"Forbidden\", \"message\": \"Access denied\"}"
-                            );
-                        })
                 );
+
+        // <-- STEP 2: ADD A NULL CHECK
+        // Only add the filter if it has been instantiated (i.e., not in a 'test' profile)
+        if (serviceAuthenticationFilter != null) {
+            http.addFilterBefore(serviceAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);
+        }
+
+        http.exceptionHandling(exceptions -> exceptions
+                .authenticationEntryPoint((request, response, authException) -> {
+                    response.setStatus(HttpStatus.UNAUTHORIZED.value());
+                    response.setContentType("application/json");
+                    response.getWriter().write(
+                            "{\"error\": \"Unauthorized\", \"message\": \"Authentication required\"}"
+                    );
+                })
+                .accessDeniedHandler((request, response, accessDeniedException) -> {
+                    response.setStatus(HttpStatus.FORBIDDEN.value());
+                    response.setContentType("application/json");
+                    response.getWriter().write(
+                            "{\"error\": \"Forbidden\", \"message\": \"Access denied\"}"
+                    );
+                })
+        );
 
         return http.build();
     }

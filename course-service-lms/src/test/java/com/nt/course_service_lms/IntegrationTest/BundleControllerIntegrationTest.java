@@ -2,11 +2,14 @@ package com.nt.course_service_lms.IntegrationTest;
 
 import com.nt.course_service_lms.dto.inDTO.BundleInDTO;
 import com.nt.course_service_lms.dto.outDTO.BundleOutDTO;
+import com.nt.course_service_lms.dto.outDTO.StandardResponseOutDTO;
 import org.junit.jupiter.api.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.web.server.LocalServerPort;
+import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.http.*;
+import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.boot.test.web.client.TestRestTemplate;
 
@@ -15,6 +18,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @ActiveProfiles("test")
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
+@WithMockUser(roles = "ADMIN")
 class BundleControllerIntegrationTest {
 
     @LocalServerPort
@@ -26,7 +30,7 @@ class BundleControllerIntegrationTest {
     private static Long createdBundleId;
 
     private String getBaseUrl() {
-        return "http://localhost:" + port + "/api/v1/bundle";
+        return "http://localhost:" + port + "/api/service-api/bundles";
     }
 
 
@@ -42,13 +46,23 @@ class BundleControllerIntegrationTest {
 
         HttpEntity<BundleInDTO> entity = new HttpEntity<>(request, headers);
 
-        ResponseEntity<BundleOutDTO> response = restTemplate.postForEntity(getBaseUrl(), entity, BundleOutDTO.class);
+        ParameterizedTypeReference<StandardResponseOutDTO<BundleOutDTO>> responseType =
+                new ParameterizedTypeReference<>() {};
+
+        ResponseEntity<StandardResponseOutDTO<BundleOutDTO>> response = restTemplate.exchange(
+                getBaseUrl(),
+                HttpMethod.POST,
+                entity,
+                responseType
+        );
 
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.CREATED);
         assertThat(response.getBody()).isNotNull();
-        assertThat(response.getBody().getBundleName()).isEqualTo("Integration Bundle");
+        assertThat(response.getBody().getData()).isNotNull();
+        assertThat(response.getBody().getData().getBundleName()).isEqualTo("Integration Bundle");
 
-        createdBundleId = response.getBody().getBundleId();
+        // Store the ID from the nested data object
+        createdBundleId = response.getBody().getData().getBundleId();
     }
 
     @Test
