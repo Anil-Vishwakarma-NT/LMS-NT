@@ -556,6 +556,11 @@ public class QuizAttemptServiceImpl implements QuizAttemptService {
             Map<Long, String> questionTextByQuestionId = allQuizQuestions.stream()
                     .collect(Collectors.toMap(QuizQuestion::getQuestionId, QuizQuestion::getQuestionText));
 
+            // Create a map of questionId to options for quick lookup
+            Map<Long, String> optionsByQuestionId = allQuizQuestions.stream()
+                    .collect(Collectors.toMap(QuizQuestion::getQuestionId,
+                            q -> q.getOptions() != null ? q.getOptions() : ""));
+
             // Pre-calculate max scores for each quiz to avoid repeated calculations
             Map<Long, BigDecimal> maxScoresByQuiz = questionsByQuiz.entrySet().stream()
                     .collect(Collectors.toMap(
@@ -617,9 +622,9 @@ public class QuizAttemptServiceImpl implements QuizAttemptService {
                         .divide(maxPossibleScore, 2, RoundingMode.HALF_UP)
                         : BigDecimal.ZERO;
 
-                // Convert responses to DTOs with correct answers and question text
+                // Convert responses to DTOs with correct answers, question text, and options
                 List<UserResponseWithCorrectAnswerOutDTO> responseOutDTOs = attemptResponses.stream()
-                        .map(response -> convertToUserResponseWithCorrectAnswerOutDTO(response, correctAnswersByQuestionId, questionTextByQuestionId))
+                        .map(response -> convertToUserResponseWithCorrectAnswerOutDTO(response, correctAnswersByQuestionId, questionTextByQuestionId, optionsByQuestionId))
                         .collect(Collectors.toList());
 
                 // Build QuizAttemptOutDTO from query data
@@ -670,10 +675,12 @@ public class QuizAttemptServiceImpl implements QuizAttemptService {
      * Convert UserResponse entity to UserResponseWithCorrectAnswerOutDTO
      */
     private UserResponseWithCorrectAnswerOutDTO convertToUserResponseWithCorrectAnswerOutDTO(
-            UserResponse userResponse, Map<Long, String> correctAnswersByQuestionId, Map<Long, String> questionTextByQuestionId) {
+            UserResponse userResponse, Map<Long, String> correctAnswersByQuestionId,
+            Map<Long, String> questionTextByQuestionId, Map<Long, String> optionsByQuestionId) {
 
         String correctAnswer = correctAnswersByQuestionId.get(userResponse.getQuestionId());
         String questionText = questionTextByQuestionId.get(userResponse.getQuestionId());
+        String options = optionsByQuestionId.get(userResponse.getQuestionId());
 
         return UserResponseWithCorrectAnswerOutDTO.builder()
                 .responseId(userResponse.getResponseId())
@@ -682,6 +689,7 @@ public class QuizAttemptServiceImpl implements QuizAttemptService {
                 .questionId(userResponse.getQuestionId())
                 .questionText(questionText)
                 .attempt(userResponse.getAttempt())
+                .options(options)
                 .userAnswer(userResponse.getUserAnswer())
                 .correctAnswer(correctAnswer)
                 .isCorrect(userResponse.getIsCorrect())

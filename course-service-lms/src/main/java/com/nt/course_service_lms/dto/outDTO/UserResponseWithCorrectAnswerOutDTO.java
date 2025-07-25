@@ -45,11 +45,13 @@ public class UserResponseWithCorrectAnswerOutDTO {
 
     private String questionText;
 
+
     /**
      * The attempt number for this quiz by the user.
      */
     private Long attempt;
 
+    private String options;
     /**
      * The user's answer in JSON format.
      * Contains the actual response data which can vary based on question type.
