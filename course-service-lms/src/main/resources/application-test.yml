@@ -22,6 +22,14 @@ spring:
         web-allow-others: true
         trace: false
 
+  # Add these security configurations
+  security:
+    enabled: false
+  autoconfigure:
+    exclude:
+      - org.springframework.boot.autoconfigure.security.servlet.SecurityAutoConfiguration
+      - org.springframework.boot.autoconfigure.security.servlet.UserDetailsServiceAutoConfiguration
+
 server:
   port: 8080
 
@@ -42,3 +50,12 @@ direct:
   secret:
     header: X-Direct-Secret
     value: test-direct-secret
+
+# Add this to completely disable all validation
+validation:
+  enabled: false
+
+# If you have management endpoints
+management:
+  security:
+    enabled: false

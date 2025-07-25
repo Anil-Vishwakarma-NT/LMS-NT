@@ -67,6 +67,8 @@ dependencies {
 	testImplementation 'org.hibernate.validator:hibernate-validator:8.0.1.Final'
 	testImplementation 'jakarta.validation:jakarta.validation-api:3.0.2'
     testImplementation 'com.h2database:h2'
+    testImplementation 'org.springframework.boot:spring-boot-test'
+
 }
 
 tasks.named('test') {

@@ -55,7 +55,7 @@ class BundleControllerTest {
         sampleBundle = BundleOutDTO.builder()
                 .bundleId(1L)
                 .bundleName("JavaBundle")
-                .isActive(true)
+                .active(true)
                 .createdAt(LocalDateTime.now())
                 .updatedAt(LocalDateTime.now())
                 .build();
