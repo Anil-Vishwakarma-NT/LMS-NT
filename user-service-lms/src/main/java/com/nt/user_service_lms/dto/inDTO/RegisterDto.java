@@ -87,13 +87,27 @@ public class RegisterDto {
     @NotNull(message = "Role is required")
     private Long roleId;
 
+
+    /**
+     * Checks if the object is equal.
+     *
+     * @param o
+     */
     @Override
-    public boolean equals(Object o) {
-        if (o == null || getClass() != o.getClass()) return false;
+    public boolean equals(final Object o) {
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
         RegisterDto that = (RegisterDto) o;
-        return Objects.equals(firstName, that.firstName) && Objects.equals(lastName, that.lastName) && Objects.equals(userName, that.userName) && Objects.equals(email, that.email) && Objects.equals(password, that.password) && Objects.equals(roleId, that.roleId);
+        return Objects.equals(firstName, that.firstName)
+                && Objects.equals(lastName, that.lastName) && Objects.equals(userName, that.userName)
+                && Objects.equals(email, that.email) && Objects.equals(password, that.password)
+                && Objects.equals(roleId, that.roleId);
     }
 
+    /**
+     * generates hashcode.
+     */
     @Override
     public int hashCode() {
         return Objects.hash(firstName, lastName, userName, email, password, roleId);

@@ -60,6 +60,27 @@ public final class CommonConstants {
      */
     public static final int NUMBER_ONE_HUNDRED_FIFTY = 150;
 
+
+    /**
+     * Constant representing the status.
+     */
+    public static final String STATUS_ACTIVE = "ACTIVE";
+
+    /**
+     * Constant representing the inactive status.
+     */
+    public static final String STATUS_INACTIVE = "INACTIVE";
+
+    /**
+     * Constant representing the enrollment type for group.
+     */
+    public static final String GROUP_ENROL = "GROUP";
+
+    /**
+     * Constant representing the enrollment type bundle to group.
+     */
+    public static final String  GROUP_BUNDLE_ENROL = "GROUP_BUNDLE";
+
     private CommonConstants() {
         // Prevent instantiation
     }

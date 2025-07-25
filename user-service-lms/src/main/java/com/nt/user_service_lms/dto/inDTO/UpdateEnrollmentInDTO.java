@@ -73,13 +73,27 @@ public class UpdateEnrollmentInDTO {
      */
     private LocalDateTime deadline;
 
+
+    /**
+     * Checks if the object is equal.
+     *
+     * @param o
+     */
     @Override
-    public boolean equals(Object o) {
-        if (o == null || getClass() != o.getClass()) return false;
+    public boolean equals(final Object o) {
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
         UpdateEnrollmentInDTO that = (UpdateEnrollmentInDTO) o;
-        return Objects.equals(userId, that.userId) && Objects.equals(groupId, that.groupId) && Objects.equals(courseId, that.courseId) && Objects.equals(bundleId, that.bundleId) && Objects.equals(managerId, that.managerId) && Objects.equals(status, that.status) && Objects.equals(deadline, that.deadline);
+        return Objects.equals(userId, that.userId) && Objects.equals(groupId, that.groupId)
+                && Objects.equals(courseId, that.courseId) && Objects.equals(bundleId, that.bundleId)
+                && Objects.equals(managerId, that.managerId) && Objects.equals(status, that.status)
+                && Objects.equals(deadline, that.deadline);
     }
 
+    /**
+     * generates hashcode.
+     */
     @Override
     public int hashCode() {
         return Objects.hash(userId, groupId, courseId, bundleId, managerId, status, deadline);

@@ -51,4 +51,9 @@ public interface BundleRepository extends JpaRepository<Bundle, Long> {
      */
     @Query("SELECT b.bundleId FROM Bundle b WHERE b.bundleId IN :bundleIds")
     List<Long> findExistingIds(@Param("bundleIds") List<Long> bundleIds);
+
+
+    List<Bundle> findByBundleIdIn(List<Long> bundleIds);
+
+
 }

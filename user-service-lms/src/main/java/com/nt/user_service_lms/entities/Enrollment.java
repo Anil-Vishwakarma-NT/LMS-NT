@@ -169,15 +169,34 @@ public class Enrollment {
         isActive = active;
     }
 
+    /**
+     * Checks if the object is equal.
+     *
+     * @param o
+     */
     @Override
-    public boolean equals(Object o) {
-        if (o == null || getClass() != o.getClass()) return false;
+    public boolean equals(final Object o) {
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
         Enrollment that = (Enrollment) o;
-        return Objects.equals(enrollmentId, that.enrollmentId) && Objects.equals(userId, that.userId) && Objects.equals(groupId, that.groupId) && Objects.equals(courseId, that.courseId) && Objects.equals(bundleId, that.bundleId) && Objects.equals(assignedBy, that.assignedBy) && Objects.equals(assignedAt, that.assignedAt) && Objects.equals(deadline, that.deadline) && Objects.equals(status, that.status) && Objects.equals(enrollmentSource, that.enrollmentSource) && Objects.equals(startedAt, that.startedAt) && Objects.equals(completedAt, that.completedAt) && Objects.equals(createdAt, that.createdAt) && Objects.equals(updatedAt, that.updatedAt) && Objects.equals(isActive, that.isActive);
+        return Objects.equals(enrollmentId, that.enrollmentId) && Objects.equals(userId, that.userId)
+                && Objects.equals(groupId, that.groupId) && Objects.equals(courseId, that.courseId)
+                && Objects.equals(bundleId, that.bundleId) && Objects.equals(assignedBy, that.assignedBy)
+                && Objects.equals(assignedAt, that.assignedAt) && Objects.equals(deadline, that.deadline)
+                && Objects.equals(status, that.status) && Objects.equals(enrollmentSource, that.enrollmentSource)
+                && Objects.equals(startedAt, that.startedAt) && Objects.equals(completedAt, that.completedAt)
+                && Objects.equals(createdAt, that.createdAt) && Objects.equals(updatedAt, that.updatedAt)
+                && Objects.equals(isActive, that.isActive);
     }
 
+    /**
+     * Checks hashcode for the objects.
+     *
+     */
     @Override
     public int hashCode() {
-        return Objects.hash(enrollmentId, userId, groupId, courseId, bundleId, assignedBy, assignedAt, deadline, status, enrollmentSource, startedAt, completedAt, createdAt, updatedAt, isActive);
+        return Objects.hash(enrollmentId, userId, groupId, courseId, bundleId, assignedBy,
+                assignedAt, deadline, status, enrollmentSource, startedAt, completedAt, createdAt, updatedAt, isActive);
     }
 }

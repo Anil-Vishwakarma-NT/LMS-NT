@@ -166,10 +166,16 @@ public class UserController {
         return ResponseEntity.ok(StandardResponseOutDTO.success(enrolledCourses, "Fetched enrolled courses successfully"));
     }
 
+    /**
+     * Retrieves user statistics like total enrollments and groups.
+     * @param userId
+     * @return Map of String and long.
+     */
     @GetMapping("/{userId}/statistics")
-    public ResponseEntity<StandardResponseOutDTO<Map<String, Long>>> getUserEnrollments(@PathVariable Long userId) {
+    public ResponseEntity<StandardResponseOutDTO<Map<String, Long>>> getUserEnrollments(@PathVariable final Long userId) {
         Map<String, Long> stats = userService.userStatistics(userId);
-        StandardResponseOutDTO<Map<String, Long>> standardResponseOutDTO = StandardResponseOutDTO.success(stats, "Fetched Users Enrolled");
+        StandardResponseOutDTO<Map<String, Long>> standardResponseOutDTO = StandardResponseOutDTO.success(stats,
+                "Fetched Users Enrolled");
         return ResponseEntity.ok(standardResponseOutDTO);
     }
 

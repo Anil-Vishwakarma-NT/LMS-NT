@@ -1,14 +1,17 @@
 package com.nt.user_service_lms.service;
 
 import com.nt.user_service_lms.dto.inDTO.GroupInDTO;
-import com.nt.user_service_lms.dto.outDTO.CourseInfoOutDTO;
-import com.nt.user_service_lms.dto.outDTO.GroupCourseOutDTO;
+//import com.nt.user_service_lms.dto.outDTO.*;
+import com.nt.user_service_lms.dto.outDTO.BundleOutDTO;
 import com.nt.user_service_lms.dto.outDTO.GroupOutDTO;
-import com.nt.user_service_lms.dto.outDTO.GroupSummaryOutDTO;
-import com.nt.user_service_lms.dto.outDTO.GroupUserOutDTO;
-import com.nt.user_service_lms.dto.outDTO.MessageOutDto;
+import com.nt.user_service_lms.dto.outDTO.MessageOutDTO;
 import com.nt.user_service_lms.dto.outDTO.StandardResponseOutDTO;
+import com.nt.user_service_lms.dto.outDTO.CourseInfoOutDTO;
+import com.nt.user_service_lms.dto.outDTO.GroupSummaryOutDTO;
+import com.nt.user_service_lms.dto.outDTO.GroupCourseOutDTO;
+import com.nt.user_service_lms.dto.outDTO.GroupUserOutDTO;
 import com.nt.user_service_lms.dto.outDTO.UserGroupOutDTO;
+import com.nt.user_service_lms.dto.outDTO.GroupBundleOutDTO;
 
 import java.util.List;
 
@@ -25,7 +28,7 @@ public interface GroupService {
      * @param employeeId the list of employee IDs to be added to the group
      * @return a StandardResponseOutDTO containing a MessageOutDto indicating the result
      */
-    StandardResponseOutDTO<MessageOutDto> createGroup(String groupName, String username, List<Long> employeeId);
+    StandardResponseOutDTO<MessageOutDTO> createGroup(String groupName, String username, List<Long> employeeId);
 
     /**
      * Deletes a group.
@@ -33,7 +36,7 @@ public interface GroupService {
      * @param groupId the ID of the group to be deleted
      * @return a StandardResponseOutDTO containing a MessageOutDto indicating the result
      */
-    StandardResponseOutDTO<MessageOutDto> deleteGroup(long groupId);
+    StandardResponseOutDTO<MessageOutDTO> deleteGroup(long groupId);
 
     /**
      * Adds a user to a group.
@@ -42,7 +45,7 @@ public interface GroupService {
      * @param username   the username of the user to be added
      * @return a StandardResponseOutDTO containing a MessageOutDto indicating the result
      */
-    StandardResponseOutDTO<MessageOutDto> addUserToGroup(GroupInDTO groupInDTO, String username);
+    StandardResponseOutDTO<MessageOutDTO> addUserToGroup(GroupInDTO groupInDTO, String username);
 
     /**
      * Updates the name of a group.
@@ -51,7 +54,7 @@ public interface GroupService {
      * @param groupName the new name for the group
      * @return a StandardResponseOutDTO containing a MessageOutDto indicating the result
      */
-    StandardResponseOutDTO<MessageOutDto> updateGroup(long groupId, String groupName);
+    StandardResponseOutDTO<MessageOutDTO> updateGroup(long groupId, String groupName);
 
     /**
      * Removes a user from a group.
@@ -60,7 +63,16 @@ public interface GroupService {
      * @param groupId the ID of the group to remove the user from
      * @return a StandardResponseOutDTO containing a MessageOutDto indicating the result
      */
-    StandardResponseOutDTO<MessageOutDto> removeUserFromGroup(long userId, long groupId);
+    StandardResponseOutDTO<MessageOutDTO> removeUserFromGroup(long userId, long groupId);
+
+    /**
+     * Retrieves bundle details a user is enrolled in.
+     *
+     * @param userId the ID of the user
+     * @param groupId
+     * @return a StandardResponseOutDTO containing a list of BundleOutDTO
+     */
+    StandardResponseOutDTO<List<BundleOutDTO>> getUserBundles(long groupId, long userId);
 
     /**
      * Retrieves all groups associated with a specific email.
@@ -123,9 +135,27 @@ public interface GroupService {
      */
     StandardResponseOutDTO<List<GroupUserOutDTO>> getUserDetail(long groupId);
 
-    public StandardResponseOutDTO<List<UserGroupOutDTO>> getUserGroupDetail(String email);
+    /**
+     * Retrieves group details a user is enrolled in.
+     *
+     * @param email the ID of the user
+     * @return a StandardResponseOutDTO containing a list of UserGroupOutDTO
+     */
+    StandardResponseOutDTO<List<UserGroupOutDTO>> getUserGroupDetail(String email);
 
-//    public StandardResponseOutDTO<List<GroupUserOutDTO>> getUserDetailEmp(long groupId);
+    /**
+     * Retrieves course details of a group  .
+     *
+     * @param groupId the ID of the user
+     * @return a StandardResponseOutDTO containing a list of GroupCourseOutDTO
+     */
+    StandardResponseOutDTO<List<GroupCourseOutDTO>> getCourseEmpDetail(long groupId);
 
-    public StandardResponseOutDTO<List<GroupCourseOutDTO>> getCourseEmpDetail(long groupId);
+    /**
+     * Retrieves bundle details of a group.
+     *
+     * @param groupId the ID of the user
+     * @return a StandardResponseOutDTO containing a list of GroupBundleOutDTO
+     */
+    StandardResponseOutDTO<List<GroupBundleOutDTO>> getGroupBundles(Long groupId);
 }

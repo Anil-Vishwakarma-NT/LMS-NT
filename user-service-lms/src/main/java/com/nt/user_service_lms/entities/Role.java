@@ -37,13 +37,24 @@ public class Role {
     @Column(nullable = false, unique = true)
     private String name;
 
+
+    /**
+     * Checks if the object is equal.
+     *
+     * @param o
+     */
     @Override
-    public boolean equals(Object o) {
-        if (o == null || getClass() != o.getClass()) return false;
+    public boolean equals(final Object o) {
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
         Role role = (Role) o;
         return Objects.equals(roleId, role.roleId) && Objects.equals(name, role.name);
     }
 
+    /**
+     * generates hashcode.
+     */
     @Override
     public int hashCode() {
         return Objects.hash(roleId, name);

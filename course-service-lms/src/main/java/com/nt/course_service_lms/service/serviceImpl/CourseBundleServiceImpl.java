@@ -1,5 +1,8 @@
 package com.nt.course_service_lms.service.serviceImpl;
 
+import com.nt.course_service_lms.converters.CourseConvertors;
+import com.nt.course_service_lms.dto.inDTO.AddCourseToBundleInDTO;
+import com.nt.course_service_lms.dto.outDTO.*;
 import com.nt.course_service_lms.dto.inDTO.CourseBundleInDTO;
 import com.nt.course_service_lms.dto.inDTO.UpdateCourseBundleInDTO;
 import com.nt.course_service_lms.dto.outDTO.BundleInfoOutDTO;
@@ -11,6 +14,8 @@ import com.nt.course_service_lms.entity.CourseBundle;
 import com.nt.course_service_lms.exception.ResourceAlreadyExistsException;
 import com.nt.course_service_lms.exception.ResourceNotFoundException;
 import com.nt.course_service_lms.exception.ResourceNotValidException;
+import com.nt.course_service_lms.dto.inDTO.CourseBundleInDTO;
+import com.nt.course_service_lms.dto.inDTO.UpdateCourseBundleInDTO;
 import com.nt.course_service_lms.repository.BundleRepository;
 import com.nt.course_service_lms.repository.CourseBundleRepository;
 import com.nt.course_service_lms.repository.CourseRepository;
@@ -24,6 +29,7 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 import static com.nt.course_service_lms.constants.CourseBundleConstants.BUNDLE_NOT_FOUND;
@@ -344,13 +350,25 @@ public class CourseBundleServiceImpl implements CourseBundleService {
      * @throws RuntimeException          if an unexpected error occurs during the process
      */
     @Override
-    public List<CourseBundle> getAllCoursesByBundle(final Long bundleId) {
+    public List<CourseInfoOutDTO> getAllCoursesByBundle(final Long bundleId) {
         try {
             List<CourseBundle> courseBundles = courseBundleRepository.findByBundleId(bundleId);
             if (courseBundles.isEmpty()) {
                 throw new ResourceNotFoundException("No courses in the bundle");
             }
-            return courseBundles;
+            List<CourseInfoOutDTO> coursesInfo = new ArrayList<>();
+            for(CourseBundle courseBundle : courseBundles){
+                Optional<Course> course = courseRepository.findById(courseBundle.getCourseId());
+                if(course.isPresent() ){
+                    CourseInfoOutDTO courseInfoOutDTO = new CourseInfoOutDTO();
+                    courseInfoOutDTO.setCourseId(course.get().getCourseId());
+                    courseInfoOutDTO.setTitle(course.get().getTitle());
+                    courseInfoOutDTO.setCourseLevel(course.get().getLevel());
+                    courseInfoOutDTO.setActive(course.get().isActive());
+                    coursesInfo.add(courseInfoOutDTO);
+                }
+            }
+            return coursesInfo;
         } catch (ResourceNotFoundException e) {
             throw e;
         } catch (Exception e) {
@@ -407,4 +425,97 @@ public class CourseBundleServiceImpl implements CourseBundleService {
             throw new RuntimeException("SERVER ERROR");
         }
     }
+
+
+    @Override
+    public List<CourseInfoOutDTO> getCoursesToAdd(Long bundleId){
+         List<CourseBundle> courseBundles = courseBundleRepository.findByBundleId(bundleId);
+
+        Set<Long> coursesIds = courseBundles.stream().filter(CourseBundle::isActive).map(CourseBundle::getCourseId).collect(Collectors.toSet());
+
+        List<Course> courses = courseRepository.findAll();
+        List<CourseInfoOutDTO> courseToAdd = courses.stream().filter(course ->
+                !coursesIds.contains(course.getCourseId()) && course.isActive())
+                .map(CourseConvertors::courseToCourseInfoOutDTO).collect(Collectors.toList());
+
+
+        return courseToAdd;
+
+
+    }
+
+
+    @Override
+    public StandardResponseOutDTO<MessageOutDTO> addCourseToBundle(AddCourseToBundleInDTO addCourseToBundleInDTO){
+       Optional<Bundle> bundle = bundleRepository.findById(addCourseToBundleInDTO.getBundleId());
+        if(bundle.isPresent()){
+            Long bundleId = bundle.get().getBundleId();
+
+            for(Long courseId : addCourseToBundleInDTO.getCourses()){
+                if(!courseBundleRepository.existsByBundleIdAndCourseId(bundleId,courseId)) {
+                    CourseBundle courseBundle = new CourseBundle();
+                    courseBundle.setCourseId(courseId);
+                    courseBundle.setBundleId(bundleId);
+                    courseBundle.setActive(true);
+                    courseBundle.setCreatedAt(LocalDateTime.now());
+                    courseBundle.setUpdatedAt(LocalDateTime.now());
+                    courseBundleRepository.save(courseBundle);
+                }
+                else{
+                    Optional<CourseBundle> coursebundle = courseBundleRepository.findByBundleIdAndCourseId(bundleId,courseId);
+                    coursebundle.get().setActive(true);
+                    courseBundleRepository.save(coursebundle.get());
+
+                }
+            }
+
+        }
+        else{
+            log.warn("Bundle with the given id {} not found",addCourseToBundleInDTO.getBundleId());
+            throw new ResourceNotFoundException("Bundle not found");
+        }
+        MessageOutDTO message = new MessageOutDTO("Courses added to bundle");
+        return StandardResponseOutDTO.success(message , "Course added to Bundle.");
+    }
+
+
+
+    @Override
+    public StandardResponseOutDTO<MessageOutDTO> removeCourse(Long bundleId, Long courseId){
+            Optional<CourseBundle> courseBundle = courseBundleRepository.findByBundleIdAndCourseId(bundleId ,courseId);
+            if(courseBundle.isPresent()){
+                courseBundle.get().setActive(false);
+                courseBundleRepository.save(courseBundle.get());
+            }
+            else{
+                log.warn("Course not present in the bundle");
+                throw new ResourceNotFoundException("Course not found in bundle");
+            }
+            MessageOutDTO message = new MessageOutDTO("Course Removed");
+            return StandardResponseOutDTO.success(message , "Course Removed");
+    }
+
+    @Override
+    public StandardResponseOutDTO<List<CourseInfoOutDTO>> getBundleCourses(Long bundleId){
+        if(!bundleRepository.existsById(bundleId)){
+            throw new ResourceNotFoundException("Bundle not found");
+        }
+        List<CourseInfoOutDTO> courseInfo = new ArrayList<>();
+        List<CourseBundle> courseBundles = courseBundleRepository.findByBundleId(bundleId);
+        for(CourseBundle courseBundle :courseBundles){
+            Optional<Course> course = courseRepository.findById(courseBundle.getCourseId());
+            if(course.isPresent()){
+            CourseInfoOutDTO courseInfoOutDTO = new CourseInfoOutDTO();
+            courseInfoOutDTO.setCourseId(course.get().getCourseId());
+            courseInfoOutDTO.setCourseLevel(course.get().getLevel());
+            courseInfoOutDTO.setTitle(course.get().getTitle());
+            courseInfoOutDTO.setActive(courseBundle.isActive());
+            courseInfo.add(courseInfoOutDTO);
+        }
+        }
+
+        return StandardResponseOutDTO.success(courseInfo,"Courses fetched.");
+
+    }
+
 }

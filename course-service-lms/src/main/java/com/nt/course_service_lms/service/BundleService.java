@@ -3,6 +3,8 @@ package com.nt.course_service_lms.service;
 import com.nt.course_service_lms.dto.inDTO.BundleInDTO;
 import com.nt.course_service_lms.dto.inDTO.UpdateBundleInDTO;
 import com.nt.course_service_lms.dto.outDTO.BundleOutDTO;
+import com.nt.course_service_lms.dto.outDTO.StandardResponseOutDTO;
+import com.nt.course_service_lms.exception.ResourceNotFoundException;
 
 import java.util.List;
 
@@ -21,7 +23,7 @@ public interface BundleService {
      * @param bundleInDTO the data transfer object containing bundle details
      * @return the newly created {@link BundleOutDTO}
      */
-    BundleOutDTO createBundle(BundleInDTO bundleInDTO);
+    StandardResponseOutDTO<BundleOutDTO> createBundle(BundleInDTO bundleInDTO);
 
     /**
      * Retrieves all existing bundles.
@@ -84,4 +86,6 @@ public interface BundleService {
      * @return a list of existing bundle IDs
      */
     List<Long> findExistingIds(List<Long> bundleIds);
+
+    StandardResponseOutDTO<List<BundleOutDTO>> getBundlesByIds(List<Long> bundleIds);
 }
