@@ -164,7 +164,7 @@ class CourseBundleControllerTest {
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(updateDTO)))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.message").value("CourseBundle updated successfully"));
+                .andExpect(jsonPath("$.message").value("Course bundle with id1 updated successfully."));
     }
 
     @Test
@@ -186,7 +186,7 @@ class CourseBundleControllerTest {
     void deleteCourseBundle_ReturnsOk() throws Exception {
         mockMvc.perform(delete("/api/service-api/course-bundles/1"))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.message").value("CourseBundle deleted successfully"));
+                .andExpect(jsonPath("$.message").value("Course-bundle with ID 1 deleted successfully."));
     }
 
     @Test
