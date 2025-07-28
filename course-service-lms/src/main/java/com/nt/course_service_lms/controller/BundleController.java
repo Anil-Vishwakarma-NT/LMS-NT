@@ -117,6 +117,7 @@ public class BundleController {
      * and HTTP status 200 (OK) on successful deletion
      */
     @DeleteMapping("/{id}")
+    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<StandardResponseOutDTO<Void>> deleteBundle(@PathVariable final Long id) {
         log.info("Received request to delete bundle with ID: {}", id);
         bundleService.deleteBundle(id);
