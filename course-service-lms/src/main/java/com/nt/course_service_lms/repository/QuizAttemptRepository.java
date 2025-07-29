@@ -185,4 +185,48 @@ public interface QuizAttemptRepository extends JpaRepository<QuizAttempt, Long> 
         ur.answered_at
     """, nativeQuery = true)
     List<Object[]> findQuizAttemptDetailsByUserId(@Param("userId") Long userId);
+
+    @Query(value = """
+    SELECT
+        qa.quiz_attempt_id,
+        qa.attempt,
+        qa.quiz_id,
+        q.title AS quiz_title,
+        qa.user_id,
+        u.username,
+        u.email,
+        u.firstname,
+        u.lastname,
+        qa.started_at,
+        qa.finished_at,
+        qa.score_details,
+        qa.status AS attempt_status,
+        ur.response_id,
+        ur.question_id,
+        qq.question_text,
+        qq.question_type,
+        ur.user_answer,
+        ur.is_correct,
+        ur.points_earned,
+        ur.answered_at,
+        qq.options,
+        qq.correct_answer
+    FROM quiz q
+    INNER JOIN quiz_attempt qa ON q.quiz_id = qa.quiz_id
+    INNER JOIN users u ON qa.user_id = u.user_id
+    LEFT JOIN user_response ur ON qa.quiz_id = ur.quiz_id
+        AND qa.user_id = ur.user_id
+        AND qa.attempt = ur.attempt
+    LEFT JOIN quiz_question qq ON ur.question_id = qq.question_id
+    WHERE q.parent_type = 'course'
+        AND q.parent_id = :courseId
+        AND q.is_active = TRUE
+        AND qa.status = 'COMPLETED'
+    ORDER BY
+        qa.quiz_attempt_id,
+        qa.attempt,
+        qq.question_position,
+        ur.answered_at
+    """, nativeQuery = true)
+    List<Object[]> findQuizAttemptDetailsByCourseId(@Param("courseId") Long courseId);
 }

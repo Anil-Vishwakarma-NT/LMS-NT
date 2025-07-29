@@ -3,6 +3,7 @@ package com.nt.course_service_lms.controller;
 import com.nt.course_service_lms.constants.CommonConstants;
 import com.nt.course_service_lms.dto.inDTO.QuizAttemptCreateInDTO;
 import com.nt.course_service_lms.dto.inDTO.QuizAttemptUpdateInDTO;
+import com.nt.course_service_lms.dto.outDTO.QuizAttemptDetailsByCourseIDOutDTO;
 import com.nt.course_service_lms.dto.outDTO.QuizAttemptDetailsByUserIDOutDTO;
 import com.nt.course_service_lms.dto.outDTO.QuizAttemptOutDTO;
 import com.nt.course_service_lms.dto.outDTO.QuizSubmissionResultOutDTO;
@@ -296,6 +297,13 @@ public class QuizAttemptController {
     public StandardResponseOutDTO<List<QuizAttemptDetailsByUserIDOutDTO>> getQuizAttemptDetailsByUserId(@PathVariable Long userId) {
         List<QuizAttemptDetailsByUserIDOutDTO> quizAttemptDetailsByUserIDOutDTOS = quizAttemptService.getQuizAttemptDetailsByUserID(userId);
         StandardResponseOutDTO<List<QuizAttemptDetailsByUserIDOutDTO>> standardResponseOutDTO = StandardResponseOutDTO.success(quizAttemptDetailsByUserIDOutDTOS, "User Attempt Details Fetched Successfully");
+        return standardResponseOutDTO;
+    }
+
+    @GetMapping("/quiz-attempt-details/course/{courseId}")
+    public StandardResponseOutDTO<List<QuizAttemptDetailsByCourseIDOutDTO>> getQuizAttemptDetailsByCourseId(@PathVariable Long courseId) {
+        List<QuizAttemptDetailsByCourseIDOutDTO> quizAttemptDetailsByUserIDOutDTOS = quizAttemptService.getQuizAttemptDetailsByCourseID(courseId);
+        StandardResponseOutDTO<List<QuizAttemptDetailsByCourseIDOutDTO>> standardResponseOutDTO = StandardResponseOutDTO.success(quizAttemptDetailsByUserIDOutDTOS, "User Attempt Details Fetched Successfully");
         return standardResponseOutDTO;
     }
 }

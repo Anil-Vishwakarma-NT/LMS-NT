@@ -1,8 +1,11 @@
 package com.nt.course_service_lms.service.serviceImpl;
 
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.nt.course_service_lms.dto.inDTO.QuizAttemptCreateInDTO;
 import com.nt.course_service_lms.dto.inDTO.QuizAttemptUpdateInDTO;
 import com.nt.course_service_lms.dto.outDTO.CourseOutDTO;
+import com.nt.course_service_lms.dto.outDTO.QuizAttemptDetailsByCourseIDOutDTO;
 import com.nt.course_service_lms.dto.outDTO.QuizAttemptDetailsByUserIDOutDTO;
 import com.nt.course_service_lms.dto.outDTO.QuizAttemptOutDTO;
 import com.nt.course_service_lms.dto.outDTO.QuizSubmissionResultOutDTO;
@@ -32,9 +35,12 @@ import org.springframework.transaction.annotation.Transactional;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.sql.Timestamp;
+import java.time.Instant;
 import java.time.LocalDateTime;
+import java.time.ZoneOffset;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -814,6 +820,168 @@ public class QuizAttemptServiceImpl implements QuizAttemptService {
                             .build();
                 })
                 .collect(Collectors.toList());
+    }
+
+    public List<QuizAttemptDetailsByCourseIDOutDTO> getQuizAttemptDetailsByCourseID(Long courseId) {
+        List<Object[]> results = quizAttemptRepository.findQuizAttemptDetailsByCourseId(courseId);
+
+        if (results.isEmpty()) {
+            return new ArrayList<>();
+        }
+
+        Map<Long, QuizAttemptDetailsByCourseIDOutDTO> userGroupedData = new LinkedHashMap<>();
+        Map<String, UserQuizAttemptDetailsOutDTO> attemptDetailsMap = new HashMap<>();
+
+        for (Object[] row : results) {
+            Long userId = ((Number) row[4]).longValue();
+            Long quizAttemptId = ((Number) row[0]).longValue();
+            Long attempt = ((Number) row[1]).longValue();
+
+            // Create unique key for attempt
+            String attemptKey = userId + "_" + quizAttemptId + "_" + attempt;
+
+            // Create or get user DTO (only once per user)
+            QuizAttemptDetailsByCourseIDOutDTO userDto = userGroupedData.computeIfAbsent(userId, k ->
+                    QuizAttemptDetailsByCourseIDOutDTO.builder()
+                            .userId(userId)
+                            .userName((String) row[5])
+                            .firstName((String) row[7])
+                            .lastName((String) row[8])
+                            .userQuizAttemptDetailsOutDTOS(new ArrayList<>())
+                            .build()
+            );
+
+            // Create or get attempt details (only once per attempt)
+            UserQuizAttemptDetailsOutDTO attemptDetails = attemptDetailsMap.computeIfAbsent(attemptKey, k -> {
+                // Parse score_details JSON to extract pre-calculated values
+                String scoreDetailsJson = (String) row[11];
+                ScoreDetails scoreDetails = parseScoreDetails(scoreDetailsJson);
+
+                QuizAttemptOutDTO quizAttempt = QuizAttemptOutDTO.builder()
+                        .quizAttemptId(quizAttemptId)
+                        .attempt(attempt)
+                        .quizId(((Number) row[2]).longValue())
+                        .userId(userId)
+                        .startedAt(convertToLocalDateTime(row[9]))
+                        .finishedAt(convertToLocalDateTime(row[10]))
+                        .scoreDetails(scoreDetailsJson)
+                        .status((String) row[12])
+                        .createdAt(null) // Not in your current query
+                        .updatedAt(null) // Not in your current query
+                        .build();
+
+                UserQuizAttemptDetailsOutDTO details = UserQuizAttemptDetailsOutDTO.builder()
+                        .quizAttempt(quizAttempt)
+                        .userResponses(new ArrayList<>())
+                        // Use pre-calculated values from score_details
+                        .totalScore(scoreDetails.totalScore)
+                        .maxPossibleScore(scoreDetails.maxPossibleScore)
+                        .correctAnswers(scoreDetails.correctAnswers)
+                        .totalQuestions(scoreDetails.totalQuestions)
+                        .percentageScore(scoreDetails.percentageScore)
+                        .submissionType(scoreDetails.submissionType)
+                        .submittedAt(scoreDetails.submittedAt)
+                        .build();
+
+                userDto.getUserQuizAttemptDetailsOutDTOS().add(details);
+                return details;
+            });
+
+            // Add response data if present (only create response objects)
+            if (row[13] != null) { // response_id is not null
+                UserResponseWithCorrectAnswerOutDTO response = UserResponseWithCorrectAnswerOutDTO.builder()
+                        .responseId(((Number) row[13]).longValue())
+                        .userId(userId)
+                        .quizId(((Number) row[2]).longValue())
+                        .questionId(row[14] != null ? ((Number) row[14]).longValue() : null)
+                        .attempt(attempt)
+                        .questionText((String) row[15])
+                        .options((String) row[21]) // Updated index for options
+                        .userAnswer((String) row[17])
+                        .correctAnswer((String) row[22]) // Updated index for correct_answer
+                        .isCorrect((Boolean) row[18])
+                        .pointsEarned(row[19] != null ? (BigDecimal) row[19] : BigDecimal.ZERO)
+                        .answeredAt(convertToLocalDateTime(row[20]))
+                        .build();
+
+                attemptDetails.getUserResponses().add(response);
+            }
+        }
+
+        return new ArrayList<>(userGroupedData.values());
+    }
+
+    // Helper class to parse score_details JSON
+    private static class ScoreDetails {
+        BigDecimal totalScore = BigDecimal.ZERO;
+        BigDecimal maxPossibleScore = BigDecimal.ZERO;
+        BigDecimal percentageScore = BigDecimal.ZERO;
+        Long correctAnswers = 0L;
+        Long totalQuestions = 0L;
+        String submissionType = "MANUAL";
+        LocalDateTime submittedAt;
+    }
+
+    // Helper method to safely convert various timestamp types to LocalDateTime
+    private LocalDateTime convertToLocalDateTime(Object value) {
+        if (value == null) {
+            return null;
+        }
+
+        if (value instanceof Timestamp) {
+            return ((Timestamp) value).toLocalDateTime();
+        } else if (value instanceof String) {
+            try {
+                // Handle string timestamps like "2025-07-16 16:33:09.651786"
+                String timestampStr = (String) value;
+                // Remove potential microseconds if present
+                if (timestampStr.contains(".") && timestampStr.length() > 23) {
+                    timestampStr = timestampStr.substring(0, 23);
+                }
+                return LocalDateTime.parse(timestampStr.replace(" ", "T"));
+            } catch (Exception e) {
+                log.warn("Failed to parse timestamp string: {}", value, e);
+                return null;
+            }
+        } else if (value instanceof Long) {
+            // Handle Unix timestamp (milliseconds)
+            return LocalDateTime.ofInstant(Instant.ofEpochMilli((Long) value), ZoneOffset.UTC);
+        }
+
+        log.warn("Unexpected timestamp type: {} for value: {}", value.getClass().getName(), value);
+        return null;
+    }
+
+    // Helper method to parse score_details JSON
+    private ScoreDetails parseScoreDetails(String scoreDetailsJson) {
+        ScoreDetails details = new ScoreDetails();
+
+        if (scoreDetailsJson == null || scoreDetailsJson.trim().isEmpty()) {
+            return details;
+        }
+
+        try {
+            // Simple JSON parsing - you might want to use Jackson or Gson for production
+            ObjectMapper mapper = new ObjectMapper();
+            JsonNode jsonNode = mapper.readTree(scoreDetailsJson);
+
+            details.totalScore = new BigDecimal(jsonNode.get("totalScore").asText());
+            details.maxPossibleScore = new BigDecimal(jsonNode.get("maxPossibleScore").asText());
+            details.percentageScore = new BigDecimal(jsonNode.get("percentageScore").asText());
+            details.correctAnswers = jsonNode.get("correctAnswers").asLong();
+            details.totalQuestions = jsonNode.get("totalQuestions").asLong();
+            details.submissionType = jsonNode.get("submissionType").asText();
+
+            if (jsonNode.has("submittedAt") && !jsonNode.get("submittedAt").isNull()) {
+                details.submittedAt = LocalDateTime.parse(jsonNode.get("submittedAt").asText());
+            }
+
+        } catch (Exception e) {
+            // Log the error and use default values
+            log.warn("Failed to parse score_details JSON: {}", scoreDetailsJson, e);
+        }
+
+        return details;
     }
 
     private CourseOutDTO buildCourseOutDTO(Object[] row) {

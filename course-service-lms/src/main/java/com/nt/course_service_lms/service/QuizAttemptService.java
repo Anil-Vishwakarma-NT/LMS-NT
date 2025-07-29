@@ -2,6 +2,7 @@ package com.nt.course_service_lms.service;
 
 import com.nt.course_service_lms.dto.inDTO.QuizAttemptCreateInDTO;
 import com.nt.course_service_lms.dto.inDTO.QuizAttemptUpdateInDTO;
+import com.nt.course_service_lms.dto.outDTO.QuizAttemptDetailsByCourseIDOutDTO;
 import com.nt.course_service_lms.dto.outDTO.QuizAttemptDetailsByUserIDOutDTO;
 import com.nt.course_service_lms.dto.outDTO.QuizAttemptOutDTO;
 import com.nt.course_service_lms.dto.outDTO.QuizSubmissionResultOutDTO;
@@ -218,6 +219,8 @@ public interface QuizAttemptService {
     List<UserQuizAttemptDetailsOutDTO> getUserAttemptDetails(Long userId, Long courseId);
 
     List<QuizAttemptDetailsByUserIDOutDTO> getQuizAttemptDetailsByUserID(Long userId);
+
+    List<QuizAttemptDetailsByCourseIDOutDTO> getQuizAttemptDetailsByCourseID(Long courseId);
 
     /**
      * Checks whether a quiz attempt exists with the given identifier.
