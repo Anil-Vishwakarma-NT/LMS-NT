@@ -2,11 +2,14 @@ package com.nt.course_service_lms.service.serviceImpl;
 
 import com.nt.course_service_lms.dto.inDTO.QuizAttemptCreateInDTO;
 import com.nt.course_service_lms.dto.inDTO.QuizAttemptUpdateInDTO;
+import com.nt.course_service_lms.dto.outDTO.CourseOutDTO;
+import com.nt.course_service_lms.dto.outDTO.QuizAttemptDetailsByUserIDOutDTO;
 import com.nt.course_service_lms.dto.outDTO.QuizAttemptOutDTO;
 import com.nt.course_service_lms.dto.outDTO.QuizSubmissionResultOutDTO;
 import com.nt.course_service_lms.dto.outDTO.UserQuizAttemptDetailsOutDTO;
 import com.nt.course_service_lms.dto.outDTO.UserResponseOutDTO;
 import com.nt.course_service_lms.dto.outDTO.UserResponseWithCorrectAnswerOutDTO;
+import com.nt.course_service_lms.entity.Course;
 import com.nt.course_service_lms.entity.Quiz;
 import com.nt.course_service_lms.entity.QuizAttempt;
 import com.nt.course_service_lms.entity.QuizQuestion;
@@ -28,11 +31,15 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
+import java.sql.Timestamp;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashSet;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -768,6 +775,132 @@ public class QuizAttemptServiceImpl implements QuizAttemptService {
         }
 
         return quizAttemptRepository.countByUserIdAndQuizId(userId, quizId);
+    }
+
+    @Transactional(readOnly = true)
+    public List<QuizAttemptDetailsByUserIDOutDTO> getQuizAttemptDetailsByUserID(Long userId) {
+        List<Object[]> results = quizAttemptRepository.findQuizAttemptDetailsByUserId(userId);
+
+        if (results.isEmpty()) {
+            return Collections.emptyList();
+        }
+
+        // Group results by course - using correct index for c.course_id
+        Map<Long, List<Object[]>> groupedByCourse = results.stream()
+                .filter(row -> row[23] != null) // Ensure c.course_id is not null
+                .collect(Collectors.groupingBy(row -> ((Number) row[23]).longValue())); // c.course_id is at index 23
+
+        return groupedByCourse.entrySet().stream()
+                .map(courseEntry -> {
+                    Long courseId = courseEntry.getKey();
+                    List<Object[]> courseResults = courseEntry.getValue();
+
+                    // Build course DTO from first row
+                    Object[] firstRow = courseResults.get(0);
+                    CourseOutDTO courseOutDTO = buildCourseOutDTO(firstRow);
+
+                    // Group by quiz attempt
+                    Map<String, List<Object[]>> groupedByAttempt = courseResults.stream()
+                            .collect(Collectors.groupingBy(row ->
+                                    row[0] + "_" + row[1] + "_" + row[2])); // quiz_attempt_id + attempt + quiz_id
+
+                    List<UserQuizAttemptDetailsOutDTO> attemptDetails = groupedByAttempt.entrySet().stream()
+                            .map(attemptEntry -> buildUserQuizAttemptDetailsOutDTO(attemptEntry.getValue()))
+                            .collect(Collectors.toList());
+
+                    return QuizAttemptDetailsByUserIDOutDTO.builder()
+                            .courseOutDTO(courseOutDTO)
+                            .userQuizAttemptDetailsOutDTOS(attemptDetails)
+                            .build();
+                })
+                .collect(Collectors.toList());
+    }
+
+    private CourseOutDTO buildCourseOutDTO(Object[] row) {
+        return CourseOutDTO.builder()
+                .courseId(((Number) row[23]).longValue())        // c.course_id - index 23
+                .ownerId(((Number) row[24]).longValue())         // c.owner_id - index 24
+                .title((String) row[25])                         // c.title as course_title - index 25
+                .description((String) row[26])                   // c.description as course_description - index 26
+                .level((String) row[27])                         // c.level as course_level - index 27
+                .active((Boolean) row[28])                       // c.is_active as course_active - index 28
+                .createdAt(row[29] != null ? ((Timestamp) row[29]).toLocalDateTime() : null) // c.created_at - index 29
+                .updatedAt(row[30] != null ? ((Timestamp) row[30]).toLocalDateTime() : null) // c.updated_at - index 30
+                .build();
+    }
+
+    private UserQuizAttemptDetailsOutDTO buildUserQuizAttemptDetailsOutDTO(List<Object[]> attemptRows) {
+        Object[] firstRow = attemptRows.get(0);
+
+        // Build QuizAttemptOutDTO
+        QuizAttemptOutDTO quizAttemptOutDTO = QuizAttemptOutDTO.builder()
+                .quizAttemptId(((Number) firstRow[0]).longValue())   // qa.quiz_attempt_id
+                .attempt(((Number) firstRow[1]).longValue())         // qa.attempt
+                .quizId(((Number) firstRow[2]).longValue())          // qa.quiz_id
+                .userId(((Number) firstRow[3]).longValue())          // qa.user_id
+                .startedAt(firstRow[4] != null ? ((Timestamp) firstRow[4]).toLocalDateTime() : null)  // qa.started_at
+                .finishedAt(firstRow[5] != null ? ((Timestamp) firstRow[5]).toLocalDateTime() : null) // qa.finished_at
+                .scoreDetails((String) firstRow[6])                  // qa.score_details
+                .status((String) firstRow[7])                        // qa.status as attempt_status
+                .createdAt(firstRow[8] != null ? ((Timestamp) firstRow[8]).toLocalDateTime() : null)  // qa.created_at
+                .updatedAt(firstRow[9] != null ? ((Timestamp) firstRow[9]).toLocalDateTime() : null)  // qa.updated_at
+                .build();
+
+        // Build user responses (filter out null responses)
+        List<UserResponseWithCorrectAnswerOutDTO> userResponses = attemptRows.stream()
+                .filter(row -> row[10] != null) // response_id is not null
+                .map(this::buildUserResponseWithCorrectAnswerOutDTO)
+                .collect(Collectors.toList());
+
+        // Calculate statistics
+        BigDecimal totalScore = userResponses.stream()
+                .map(UserResponseWithCorrectAnswerOutDTO::getPointsEarned)
+                .filter(Objects::nonNull)
+                .reduce(BigDecimal.ZERO, BigDecimal::add);
+
+        BigDecimal maxPossibleScore = attemptRows.stream()
+                .filter(row -> row[20] != null) // qq.points as max_points - index 20
+                .map(row -> (BigDecimal) row[20])
+                .reduce(BigDecimal.ZERO, BigDecimal::add);
+
+        long correctAnswers = userResponses.stream()
+                .mapToLong(response -> Boolean.TRUE.equals(response.getIsCorrect()) ? 1 : 0)
+                .sum();
+
+        long totalQuestions = userResponses.size();
+
+        BigDecimal percentageScore = maxPossibleScore.compareTo(BigDecimal.ZERO) > 0
+                ? totalScore.divide(maxPossibleScore, 4, RoundingMode.HALF_UP).multiply(BigDecimal.valueOf(100))
+                : BigDecimal.ZERO;
+
+        return UserQuizAttemptDetailsOutDTO.builder()
+                .quizAttempt(quizAttemptOutDTO)
+                .userResponses(userResponses)
+                .totalScore(totalScore)
+                .maxPossibleScore(maxPossibleScore)
+                .correctAnswers(correctAnswers)
+                .totalQuestions(totalQuestions)
+                .percentageScore(percentageScore)
+                .submissionType("COMPLETED")
+                .submittedAt(quizAttemptOutDTO.getFinishedAt())
+                .build();
+    }
+
+    private UserResponseWithCorrectAnswerOutDTO buildUserResponseWithCorrectAnswerOutDTO(Object[] row) {
+        return UserResponseWithCorrectAnswerOutDTO.builder()
+                .responseId(((Number) row[10]).longValue())       // ur.response_id
+                .userId(((Number) row[3]).longValue())            // qa.user_id
+                .quizId(((Number) row[2]).longValue())            // qa.quiz_id
+                .questionId(row[11] != null ? ((Number) row[11]).longValue() : null) // ur.question_id
+                .questionText((String) row[18])                   // qq.question_text - index 18
+                .attempt(((Number) row[1]).longValue())           // qa.attempt
+                .options((String) row[21])                        // qq.options - index 21
+                .userAnswer((String) row[12])                     // ur.user_answer
+                .correctAnswer((String) row[22])                  // qq.correct_answer - index 22
+                .isCorrect((Boolean) row[13])                     // ur.is_correct
+                .pointsEarned(row[14] != null ? (BigDecimal) row[14] : BigDecimal.ZERO) // ur.points_earned
+                .answeredAt(row[15] != null ? ((Timestamp) row[15]).toLocalDateTime() : null) // ur.answered_at
+                .build();
     }
 
     /**

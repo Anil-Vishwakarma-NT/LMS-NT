@@ -5,6 +5,7 @@ import com.nt.course_service_lms.dto.inDTO.UpdateCourseInDTO;
 import com.nt.course_service_lms.dto.outDTO.CourseInfoOutDTO;
 import com.nt.course_service_lms.dto.outDTO.CourseOutDTO;
 import com.nt.course_service_lms.dto.outDTO.CourseSummaryOutDTO;
+import com.nt.course_service_lms.dto.outDTO.DashboardDataOutDTO;
 import com.nt.course_service_lms.dto.outDTO.StandardResponseOutDTO;
 import com.nt.course_service_lms.service.CourseService;
 import jakarta.validation.Valid;
@@ -168,6 +169,14 @@ public class CourseController {
                 recentCourses, "Fetched Recent Courses"
         );
         return ResponseEntity.ok(standardResponseOutDTO);
+    }
+
+    @GetMapping("/recent-course-and-bundle")
+    @PreAuthorize("hasRole('ADMIN')")
+    public ResponseEntity<DashboardDataOutDTO> getRecentDashboardData() {
+        log.info("Request received to fetch recent dashboard data");
+        DashboardDataOutDTO dashboardData = courseService.getRecentDashboardData();
+        return ResponseEntity.ok(dashboardData);
     }
 
     /**

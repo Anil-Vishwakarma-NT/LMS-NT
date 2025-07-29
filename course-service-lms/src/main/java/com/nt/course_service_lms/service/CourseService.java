@@ -5,6 +5,7 @@ import com.nt.course_service_lms.dto.inDTO.UpdateCourseInDTO;
 import com.nt.course_service_lms.dto.outDTO.CourseInfoOutDTO;
 import com.nt.course_service_lms.dto.outDTO.CourseOutDTO;
 import com.nt.course_service_lms.dto.outDTO.CourseSummaryOutDTO;
+import com.nt.course_service_lms.dto.outDTO.DashboardDataOutDTO;
 
 import java.util.List;
 
@@ -111,4 +112,11 @@ public interface CourseService {
      * @throws IllegalArgumentException if courseIds is null
      */
     List<Long> findExistingIds(List<Long> courseIds);
+
+    /**
+     * Retrieves recent courses and bundles for dashboard display.
+     *
+     * @return DashboardDataOutDTO containing both recent courses and bundles
+     */
+    DashboardDataOutDTO getRecentDashboardData();
 }

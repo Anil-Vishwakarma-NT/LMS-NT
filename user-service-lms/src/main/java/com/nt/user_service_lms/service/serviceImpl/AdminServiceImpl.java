@@ -4,6 +4,7 @@ import com.nt.user_service_lms.constants.UserConstants;
 import com.nt.user_service_lms.converter.UserDTOConverter;
 import com.nt.user_service_lms.dto.inDTO.RegisterDto;
 import com.nt.user_service_lms.dto.inDTO.UserInDTO;
+import com.nt.user_service_lms.dto.outDTO.AdminDashboardStatsOutDTO;
 import com.nt.user_service_lms.dto.outDTO.MessageOutDto;
 import com.nt.user_service_lms.dto.outDTO.StandardResponseOutDTO;
 import com.nt.user_service_lms.dto.outDTO.UserOutDTO;
@@ -297,6 +298,18 @@ public class AdminServiceImpl implements AdminService {
         } catch (Exception e) {
             log.error("Error fetching employees for manager with ID: {}", userId, e);
             throw new RuntimeException(UserConstants.ERROR, e);
+        }
+    }
+
+    @Override
+    public StandardResponseOutDTO<AdminDashboardStatsOutDTO> getAdminStats() {
+        log.info("Fetching admin dashboard statistics");
+        try {
+            AdminDashboardStatsOutDTO adminDashboardStatsOutDTO = userRepository.getAdminDashboardStats();
+            return StandardResponseOutDTO.success(adminDashboardStatsOutDTO, "Dashboard data fetched.");
+        } catch(Exception e) {
+            log.error("Unexpected error : ",e);
+            throw new RuntimeException("Unexpected error occurred");
         }
     }
 
