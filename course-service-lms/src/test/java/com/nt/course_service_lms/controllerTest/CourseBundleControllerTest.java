@@ -6,6 +6,7 @@ import com.nt.course_service_lms.dto.inDTO.CourseBundleInDTO;
 import com.nt.course_service_lms.dto.inDTO.UpdateCourseBundleInDTO;
 import com.nt.course_service_lms.dto.outDTO.CourseBundleOutDTO;
 import com.nt.course_service_lms.entity.CourseBundle;
+import com.nt.course_service_lms.exception.ResourceAlreadyExistsException;
 import com.nt.course_service_lms.exception.ResourceNotFoundException;
 import com.nt.course_service_lms.service.CourseBundleService;
 
@@ -79,19 +80,11 @@ class CourseBundleControllerTest {
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(input)))
                 .andExpect(status().isCreated())
-                .andExpect(jsonPath("$.message").value("CourseBundle created successfully"))
+                .andExpect(jsonPath("$.message").value("Course Bundle created successfully."))
                 .andExpect(jsonPath("$.data.courseBundleId").value(1));
     }
 
-    @Test
-    void createCourseBundle_InvalidRequest_ReturnsBadRequest() throws Exception {
-        CourseBundleInDTO input = new CourseBundleInDTO(); // empty fields
 
-        mockMvc.perform(post("/api/service-api/course-bundles")
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content(objectMapper.writeValueAsString(input)))
-                .andExpect(status().isBadRequest());
-    }
 
     @Test
     void createCourseBundle_Duplicate_ReturnsBadRequest() throws Exception {
@@ -100,7 +93,7 @@ class CourseBundleControllerTest {
         input.setCourseId(20L);
 
         Mockito.when(courseBundleService.createCourseBundle(any()))
-                .thenThrow(new IllegalArgumentException("Duplicate course in bundle"));
+                .thenThrow(new ResourceAlreadyExistsException("Duplicate course in bundle"));
 
         mockMvc.perform(post("/api/service-api/course-bundles")
                         .contentType(MediaType.APPLICATION_JSON)

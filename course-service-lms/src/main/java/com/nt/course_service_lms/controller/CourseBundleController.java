@@ -8,6 +8,7 @@ import com.nt.course_service_lms.dto.outDTO.CourseBundleOutDTO;
 import com.nt.course_service_lms.dto.outDTO.StandardResponseOutDTO;
 import com.nt.course_service_lms.entity.CourseBundle;
 import com.nt.course_service_lms.service.CourseBundleService;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
@@ -49,7 +50,7 @@ public class CourseBundleController {
      */
     @PostMapping
     public ResponseEntity<StandardResponseOutDTO<CourseBundle>> createCourseBundle(
-            @RequestBody final CourseBundleInDTO courseBundleInDTO
+            @Valid @RequestBody final CourseBundleInDTO courseBundleInDTO
     ) {
         final CourseBundle createdBundle = courseBundleService.createCourseBundle(courseBundleInDTO);
         return ResponseEntity.status(HttpStatus.CREATED).body(
@@ -113,7 +114,7 @@ public class CourseBundleController {
     @PutMapping("/{id}")
     public ResponseEntity<StandardResponseOutDTO<String>> updateCourseBundle(
             @PathVariable("id") final Long courseBundleId,
-            @RequestBody final UpdateCourseBundleInDTO updateCourseBundleInDTO) {
+            @Valid @RequestBody final UpdateCourseBundleInDTO updateCourseBundleInDTO) {
         final String response = courseBundleService.updateCourseBundle(courseBundleId, updateCourseBundleInDTO);
         return ResponseEntity.ok(StandardResponseOutDTO.success(
                         response, "Course bundle with id" + courseBundleId + " updated successfully."
