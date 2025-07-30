@@ -142,7 +142,7 @@ class BundleControllerIntegrationTest {
                 ErrorResponse.class
         );
 
-        assertThat(response.getStatusCode()).isEqualTo(HttpStatus.BAD_REQUEST);
+        assertThat(response.getStatusCode()).isEqualTo(HttpStatus.CONFLICT);
         assertThat(response.getBody()).isNotNull();
         assertThat(response.getBody().getMessage()).contains("already exists");
     }
@@ -381,7 +381,7 @@ class BundleControllerIntegrationTest {
                 ErrorResponse.class
         );
 
-        assertThat(response.getStatusCode()).isEqualTo(HttpStatus.BAD_REQUEST);
+        assertThat(response.getStatusCode()).isEqualTo(HttpStatus.CONFLICT);
         assertThat(response.getBody().getMessage()).contains("already exists");
     }
 

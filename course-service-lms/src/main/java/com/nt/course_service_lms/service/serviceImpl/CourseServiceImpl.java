@@ -441,7 +441,7 @@ public class CourseServiceImpl implements CourseService {
             if (duplicateCourse.isPresent() && !(duplicateCourse.get().getCourseId() == courseId)) {
                 log.warn("Duplicate course title '{}' exists for owner ID: {}",
                         updateDTO.getTitle(), updateDTO.getOwnerId());
-                throw new ResourceNotValidException(COURSE_DUPLICATE_FOR_OWNER);
+                throw new ResourceAlreadyExistsException(COURSE_DUPLICATE_FOR_OWNER);
             }
         }
     }

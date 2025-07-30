@@ -156,7 +156,7 @@ class CourseControllerIntegrationTest {
                 ErrorResponse.class
         );
 
-        assertThat(response.getStatusCode()).isEqualTo(HttpStatus.BAD_REQUEST);
+        assertThat(response.getStatusCode()).isEqualTo(HttpStatus.CONFLICT);
         assertThat(response.getBody().getMessage()).contains("already exists");
     }
 
@@ -446,7 +446,7 @@ class CourseControllerIntegrationTest {
         );
 
         // Based on your GlobalExceptionHandler, ResourceNotValidException maps to UNAUTHORIZED
-        assertThat(response.getStatusCode()).isEqualTo(HttpStatus.UNAUTHORIZED);
+        assertThat(response.getStatusCode()).isEqualTo(HttpStatus.CONFLICT);
         assertThat(response.getBody()).isNotNull();
         assertThat(response.getBody().getMessage()).containsAnyOf("duplicate", "already exists", "owner");
     }

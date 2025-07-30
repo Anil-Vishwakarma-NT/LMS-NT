@@ -269,7 +269,7 @@ class QuizQuestionControllerIntegrationTest {
         System.out.println("Response Status: " + response.getStatusCode());
         System.out.println("Response Body: " + response.getBody());
 
-        assertThat(response.getStatusCode()).isEqualTo(HttpStatus.INTERNAL_SERVER_ERROR);
+        assertThat(response.getStatusCode()).isEqualTo(HttpStatus.BAD_REQUEST);
         assertThat(response.getBody().getMessage()).contains("Options are required for multiple choice questions");
     }
 
@@ -487,7 +487,7 @@ class QuizQuestionControllerIntegrationTest {
                 ErrorResponse.class
         );
 
-        assertThat(response.getStatusCode()).isEqualTo(HttpStatus.INTERNAL_SERVER_ERROR);
+        assertThat(response.getStatusCode()).isEqualTo(HttpStatus.BAD_REQUEST);
         assertThat(response.getBody().getMessage()).contains("Position must be between");
     }
 
@@ -613,7 +613,7 @@ class QuizQuestionControllerIntegrationTest {
                 ErrorResponse.class
         );
 
-        assertThat(response.getStatusCode()).isEqualTo(HttpStatus.INTERNAL_SERVER_ERROR);
+        assertThat(response.getStatusCode()).isEqualTo(HttpStatus.BAD_REQUEST);
         assertThat(response.getBody().getMessage()).contains("Invalid JSON format");
     }
 
@@ -639,7 +639,7 @@ class QuizQuestionControllerIntegrationTest {
                 ErrorResponse.class
         );
 
-        assertThat(response.getStatusCode()).isEqualTo(HttpStatus.INTERNAL_SERVER_ERROR);
+        assertThat(response.getStatusCode()).isEqualTo(HttpStatus.BAD_REQUEST);
         assertThat(response.getBody().getMessage()).contains("Invalid JSON format");
     }
 

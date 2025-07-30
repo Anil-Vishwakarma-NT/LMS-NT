@@ -173,7 +173,7 @@ class CourseBundleControllerIntegrationTest {
                 ErrorResponse.class
         );
 
-        assertThat(response.getStatusCode()).isEqualTo(HttpStatus.BAD_REQUEST);
+        assertThat(response.getStatusCode()).isEqualTo(HttpStatus.CONFLICT);
         assertThat(response.getBody().getMessage()).contains("already exists");
     }
 
@@ -195,7 +195,7 @@ class CourseBundleControllerIntegrationTest {
                 ErrorResponse.class
         );
 
-        assertThat(response.getStatusCode()).isEqualTo(HttpStatus.UNAUTHORIZED);
+        assertThat(response.getStatusCode()).isEqualTo(HttpStatus.BAD_REQUEST);
         assertThat(response.getBody().getMessage()).contains("Invalid Bundle ID");
     }
 
@@ -217,7 +217,7 @@ class CourseBundleControllerIntegrationTest {
                 ErrorResponse.class
         );
 
-        assertThat(response.getStatusCode()).isEqualTo(HttpStatus.UNAUTHORIZED);
+        assertThat(response.getStatusCode()).isEqualTo(HttpStatus.BAD_REQUEST);
         assertThat(response.getBody().getMessage()).contains("Invalid Course ID");
     }
 
