@@ -116,7 +116,7 @@ class BundleInDTOTest {
     void testBuilderCreatesValidDTO() {
         BundleInDTO dto = BundleInDTO.builder()
                 .bundleName("BuiltCourse")
-                .isActive(true)
+                .active(true)
                 .build();
 
         assertEquals("BuiltCourse", dto.getBundleName());

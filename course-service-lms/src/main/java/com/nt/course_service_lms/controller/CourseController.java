@@ -11,6 +11,7 @@ import com.nt.course_service_lms.service.CourseService;
 import jakarta.validation.Valid;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -55,7 +56,8 @@ public class CourseController {
         final StandardResponseOutDTO<CourseOutDTO> standardResponseOutDTO = StandardResponseOutDTO.success(
                 createdCourse, "Course Created Successfully"
         );
-        return ResponseEntity.ok(standardResponseOutDTO);
+        return ResponseEntity.status(HttpStatus.CREATED).body(standardResponseOutDTO);
+
     }
 
     /**
@@ -72,6 +74,7 @@ public class CourseController {
                 courses, "Fetched Courses Successfully"
         );
         return ResponseEntity.ok(standardResponseOutDTO);
+
     }
 
     /**

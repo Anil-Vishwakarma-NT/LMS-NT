@@ -58,7 +58,7 @@ public class BundleInDTO {
     private String bundleName;
 
     @NotNull(message = "Is Active field is required")
-    private boolean isActive;
+    private boolean active;
 
     @Override
     public boolean equals(Object o) {
@@ -69,11 +69,12 @@ public class BundleInDTO {
             return false;
         }
         BundleInDTO bundleInDTO = (BundleInDTO) o;
-        return isActive == bundleInDTO.isActive && Objects.equals(bundleName, bundleInDTO.bundleName);
+        return active == bundleInDTO.active && Objects.equals(bundleName, bundleInDTO.bundleName);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(bundleName, isActive);
+        return Objects.hash(bundleName, active);
     }
+
 }

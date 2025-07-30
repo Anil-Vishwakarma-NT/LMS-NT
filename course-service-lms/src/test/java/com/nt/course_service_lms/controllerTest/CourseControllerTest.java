@@ -77,7 +77,7 @@ class CourseControllerTest {
 
         Mockito.when(courseService.createCourse(any())).thenReturn(sampleCourse);
 
-        mockMvc.perform(post("/api/v1/courses")
+        mockMvc.perform(post("/api/service-api/course")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(input)))
                 .andExpect(status().isCreated())
@@ -90,7 +90,7 @@ class CourseControllerTest {
     void testGetAllCourses() throws Exception {
         Mockito.when(courseService.getAllCourses()).thenReturn(Arrays.asList(sampleCourse));
 
-        mockMvc.perform(get("/api/v1/courses"))
+        mockMvc.perform(get("/api/service-api/course"))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.status").value("success"))
                 .andExpect(jsonPath("$.data[0].courseId").value(1L));
@@ -101,7 +101,7 @@ class CourseControllerTest {
         CourseInfoOutDTO info = new CourseInfoOutDTO();
         Mockito.when(courseService.getCourseById(1L)).thenReturn(info);
 
-        mockMvc.perform(get("/api/v1/courses/1"))
+        mockMvc.perform(get("/api/service-api/course/1"))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.status").value("success"));
     }
@@ -118,7 +118,7 @@ class CourseControllerTest {
 
         Mockito.when(courseService.updateCourse(eq(1L), any())).thenReturn(sampleCourse);
 
-        mockMvc.perform(put("/api/v1/courses/1")
+        mockMvc.perform(put("/api/service-api/course/1")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(update)))
                 .andExpect(status().isOk())
@@ -130,7 +130,7 @@ class CourseControllerTest {
     void testDeleteCourse_Success() throws Exception {
         Mockito.when(courseService.deleteCourse(1L)).thenReturn("Course deleted successfully");
 
-        mockMvc.perform(delete("/api/v1/courses/1"))
+        mockMvc.perform(delete("/api/service-api/course/1"))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.status").value("success"))
                 .andExpect(jsonPath("$.message").value("Course deleted successfully"));
@@ -140,7 +140,7 @@ class CourseControllerTest {
     void testCreateCourse_InvalidInput() throws Exception {
         CourseInDTO invalid = new CourseInDTO();
 
-        mockMvc.perform(post("/api/v1/courses")
+        mockMvc.perform(post("/api/service-api/course")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(invalid)))
                 .andExpect(status().isBadRequest())
@@ -154,7 +154,7 @@ class CourseControllerTest {
         Mockito.when(courseService.getCourseById(999L))
                 .thenThrow(new ResourceNotFoundException("Course not found"));
 
-        mockMvc.perform(get("/api/v1/courses/999"))
+        mockMvc.perform(get("/api/service-api/course/999"))
                 .andExpect(status().isNotFound())
                 .andExpect(jsonPath("$.status").value("error"))
                 .andExpect(jsonPath("$.message").value("Course not found"));
@@ -162,7 +162,7 @@ class CourseControllerTest {
 
     @Test
     void testUpdateCourse_TypeMismatch() throws Exception {
-        mockMvc.perform(put("/api/v1/courses/invalid-id")
+        mockMvc.perform(put("/api/service-api/course/invalid-id")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content("{}"))
                 .andExpect(status().isBadRequest())
@@ -174,7 +174,7 @@ class CourseControllerTest {
     void testDeleteCourse_UncaughtException() throws Exception {
         Mockito.when(courseService.deleteCourse(1L)).thenThrow(new RuntimeException("Unexpected error"));
 
-        mockMvc.perform(delete("/api/v1/courses/1"))
+        mockMvc.perform(delete("/api/service-api/course/1"))
                 .andExpect(status().isInternalServerError())
                 .andExpect(jsonPath("$.status").value("error"))
                 .andExpect(jsonPath("$.message").value("Unexpected error"));
@@ -193,7 +193,7 @@ class CourseControllerTest {
         Mockito.when(courseService.updateCourse(eq(999L), any()))
                 .thenThrow(new ResourceNotFoundException("Course not found"));
 
-        mockMvc.perform(put("/api/v1/courses/999")
+        mockMvc.perform(put("/api/service-api/course/999")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(update)))
                 .andExpect(status().isNotFound())
@@ -205,7 +205,7 @@ class CourseControllerTest {
     void testCountCourses() throws Exception {
         Mockito.when(courseService.countCourses()).thenReturn(42L);
 
-        mockMvc.perform(get("/api/v1/courses/count"))
+        mockMvc.perform(get("/api/service-api/course/count"))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.status").value("success"))
                 .andExpect(jsonPath("$.data").value(42));
@@ -218,9 +218,9 @@ class CourseControllerTest {
 
         Mockito.when(courseService.getCoursesInfo()).thenReturn(Arrays.asList(info1, info2));
 
-        mockMvc.perform(get("/api/v1/courses/info"))
+        mockMvc.perform(get("/api/service-api/course/info"))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.status").value("success"))
+                .andExpect(jsonPath("$.status").value("SUCCESS"))
                 .andExpect(jsonPath("$.data.length()").value(2));
     }
 
@@ -244,7 +244,7 @@ class CourseControllerTest {
 
         Mockito.when(courseService.getRecentCourseSummaries()).thenReturn(Arrays.asList(recent1, recent2));
 
-        mockMvc.perform(get("/api/v1/courses/recent"))
+        mockMvc.perform(get("/api/service-api/course/recent"))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.status").value("success"))
                 .andExpect(jsonPath("$.data.length()").value(2))
@@ -258,7 +258,7 @@ class CourseControllerTest {
 
         Mockito.when(courseService.findExistingIds(inputIds)).thenReturn(existing);
 
-        mockMvc.perform(post("/api/v1/courses/existing-ids")
+        mockMvc.perform(post("/api/service-api/course/existing-ids")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(inputIds)))
                 .andExpect(status().isOk())
@@ -271,7 +271,7 @@ class CourseControllerTest {
     void testCourseExistsById_True() throws Exception {
         Mockito.when(courseService.courseExistsById(1L)).thenReturn(true);
 
-        mockMvc.perform(get("/api/v1/courses/1/exists"))
+        mockMvc.perform(get("/api/service-api/course/1/exists"))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.status").value("success"))
                 .andExpect(jsonPath("$.data").value(true));
@@ -281,7 +281,7 @@ class CourseControllerTest {
     void testCourseExistsById_False() throws Exception {
         Mockito.when(courseService.courseExistsById(999L)).thenReturn(false);
 
-        mockMvc.perform(get("/api/v1/courses/999/exists"))
+        mockMvc.perform(get("/api/service-api/course/999/exists"))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.status").value("success"))
                 .andExpect(jsonPath("$.data").value(false));

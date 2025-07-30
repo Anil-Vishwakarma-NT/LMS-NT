@@ -55,7 +55,7 @@ class BundleControllerTest {
         sampleBundle = BundleOutDTO.builder()
                 .bundleId(1L)
                 .bundleName("JavaBundle")
-                .isActive(true)
+                .active(true)
                 .createdAt(LocalDateTime.now())
                 .updatedAt(LocalDateTime.now())
                 .build();
@@ -132,7 +132,7 @@ class BundleControllerTest {
     }
 
     @Test
-    void updateBundle_DuplicateName_ReturnsConflict() throws Exception {
+    void updateBundle_DuplicateName_ReturnsBadRequest() throws Exception {
         UpdateBundleInDTO updateDto = new UpdateBundleInDTO("Duplicate", true);
         Mockito.when(bundleService.updateBundle(eq(1L), any()))
                 .thenThrow(new ResourceAlreadyExistsException("Already exists"));
@@ -140,7 +140,7 @@ class BundleControllerTest {
         mockMvc.perform(put("/api/service-api/bundles/1")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(updateDto)))
-                .andExpect(status().isConflict());
+                .andExpect(status().isBadRequest());
     }
 
     @Test

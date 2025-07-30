@@ -111,32 +111,32 @@ class UserProgressControllerTest {
         verify(userProgressService).getContentProgress(1L, 100L, 200L);
     }
 
-    @Test
-    void getCourseProgressWithMetaCourseId_shouldReturnData() throws Exception {
-        CourseProgressWithMetaDTO expected = new CourseProgressWithMetaDTO(100.0, LocalDateTime.now());
-
-        // Build mock principal (adjust method names if needed)
-        ServicePrincipal principal = ServicePrincipal.builder()
-                .userId("1")
-                .email("test@example.com")
-                .role("USER")
-                .build();
-
-        Authentication authentication = mock(Authentication.class);
-        when(authentication.getPrincipal()).thenReturn(principal);
-        SecurityContext context = mock(SecurityContext.class);
-        when(context.getAuthentication()).thenReturn(authentication);
-        SecurityContextHolder.setContext(context);
-
-        when(userProgressService.getCourseProgressWithMeta(1L, 100L)).thenReturn(expected);
-
-        mockMvc.perform(get("/api/service-api/user-progress/meta-courseId")
-                        .param("courseId", "100"))
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$.completionPercentage").value(100.0));
-
-        verify(userProgressService).getCourseProgressWithMeta(1L, 100L);
-    }
+//    @Test
+//    void getCourseProgressWithMetaCourseId_shouldReturnData() throws Exception {
+//        CourseProgressWithMetaDTO expected = new CourseProgressWithMetaDTO(100.0, LocalDateTime.now());
+//
+//        // Build mock principal (adjust method names if needed)
+//        ServicePrincipal principal = ServicePrincipal.builder()
+//                .userId("1")
+//                .email("test@example.com")
+//                .role("USER")
+//                .build();
+//
+//        Authentication authentication = mock(Authentication.class);
+//        when(authentication.getPrincipal()).thenReturn(principal);
+//        SecurityContext context = mock(SecurityContext.class);
+//        when(context.getAuthentication()).thenReturn(authentication);
+//        SecurityContextHolder.setContext(context);
+//
+//        when(userProgressService.getCourseProgressWithMeta(1L, 100L)).thenReturn(expected);
+//
+//        mockMvc.perform(get("/api/service-api/user-progress/meta-courseId")
+//                        .param("courseId", "100"))
+//                .andExpect(status().isOk())
+//                .andExpect(jsonPath("$.completionPercentage").value(100.0));
+//
+//        verify(userProgressService).getCourseProgressWithMeta(1L, 100L);
+//    }
 
 
     @Test

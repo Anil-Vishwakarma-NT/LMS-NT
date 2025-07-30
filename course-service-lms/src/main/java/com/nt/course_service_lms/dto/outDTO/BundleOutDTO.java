@@ -33,7 +33,7 @@ public class BundleOutDTO {
     /**
      * Indicates whether the bundle is active or not.
      */
-    private boolean isActive;
+    private boolean active;
 
     /**
      * Timestamp when the bundle was created.
