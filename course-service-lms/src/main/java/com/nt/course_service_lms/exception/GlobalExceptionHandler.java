@@ -42,10 +42,10 @@ public class GlobalExceptionHandler {
      * @return a structured error response with status 400
      */
     @ExceptionHandler(ResourceAlreadyExistsException.class)
-    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    @ResponseStatus(HttpStatus.CONFLICT)
     public ResponseEntity<ErrorResponse> handleResourceAlreadyExistsException(final ResourceAlreadyExistsException ex) {
-        ErrorResponse errorResponse = buildSimpleErrorResponse(ex, HttpStatus.BAD_REQUEST);
-        return new ResponseEntity<>(errorResponse, HttpStatus.BAD_REQUEST);
+        ErrorResponse errorResponse = buildSimpleErrorResponse(ex, HttpStatus.CONFLICT);
+        return new ResponseEntity<>(errorResponse, HttpStatus.CONFLICT);
     }
 
     /**
@@ -55,10 +55,10 @@ public class GlobalExceptionHandler {
      * @return a structured error response with status 401
      */
     @ExceptionHandler(ResourceNotValidException.class)
-    @ResponseStatus(HttpStatus.UNAUTHORIZED)
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
     public ResponseEntity<ErrorResponse> handleResourceNotValidException(final ResourceNotValidException ex) {
-        ErrorResponse errorResponse = buildSimpleErrorResponse(ex, HttpStatus.UNAUTHORIZED);
-        return new ResponseEntity<>(errorResponse, HttpStatus.UNAUTHORIZED);
+        ErrorResponse errorResponse = buildSimpleErrorResponse(ex, HttpStatus.BAD_REQUEST);
+        return new ResponseEntity<>(errorResponse, HttpStatus.BAD_REQUEST);
     }
 
     /**
