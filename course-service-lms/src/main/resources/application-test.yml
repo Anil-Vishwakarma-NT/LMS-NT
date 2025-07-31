@@ -10,7 +10,7 @@ spring:
 
   jpa:
     database-platform: org.hibernate.dialect.H2Dialect
-    show-sql: true
+    show-sql: false
     hibernate:
       ddl-auto: create-drop
 
@@ -22,22 +22,15 @@ spring:
         web-allow-others: true
         trace: false
 
-  # Completely disable Spring Security for tests
-  security:
-    enabled: false
-  autoconfigure:
-    exclude:
-      - org.springframework.boot.autoconfigure.security.servlet.SecurityAutoConfiguration
-      - org.springframework.boot.autoconfigure.security.servlet.UserDetailsServiceAutoConfiguration
-
 server:
   port: 0  # Use random port for tests
 
-# Disable all custom authentication
+# Test-specific JWT configuration (not used but needed for beans)
 jwt:
-  secret: test_jwt_secret_for_testing_purposes_only
+  secret: test_jwt_secret_for_testing_purposes_only_min_32_chars
   issuer: http://test-issuer
 
+# Disable gateway validation for tests
 gateway:
   validation:
     enabled: false
@@ -52,9 +45,9 @@ direct:
     header: X-Direct-Secret
     value: test-direct-secret
 
-validation:
-  enabled: false
-
-management:
-  security:
-    enabled: false
+# Logging for debugging
+logging:
+  level:
+    com.nt.course_service_lms.config: DEBUG
+    org.springframework.security: DEBUG
+    root: INFO

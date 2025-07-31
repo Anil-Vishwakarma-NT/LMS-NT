@@ -1,37 +1,8 @@
-//package com.nt.course_service_lms.config;
-//
-//import org.springframework.boot.test.context.TestConfiguration;
-//import org.springframework.context.annotation.Bean;
-//import org.springframework.context.annotation.Primary;
-//import org.springframework.context.annotation.Profile;
-//import org.springframework.security.config.annotation.web.builders.HttpSecurity;
-//import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
-//import org.springframework.security.config.annotation.web.configurers.HeadersConfigurer;
-//import org.springframework.security.web.SecurityFilterChain;
-//
-//@TestConfiguration
-//@EnableWebSecurity
-//@Profile("test")
-//public class TestSecurityConfig {
-//
-//    @Bean
-//    @Primary
-//    public SecurityFilterChain testSecurityFilterChain(HttpSecurity http) throws Exception {
-//        http
-//                .csrf(csrf -> csrf.disable())
-//                .authorizeHttpRequests(auth -> auth.anyRequest().permitAll())
-//                .headers(headers -> headers
-//                        .frameOptions(HeadersConfigurer.FrameOptionsConfig::disable)
-//                );
-//
-//        return http.build();
-//    }
-//}
-
 package com.nt.course_service_lms.config;
 
 import org.springframework.boot.test.context.TestConfiguration;
 import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Primary;
 import org.springframework.context.annotation.Profile;
 import org.springframework.security.access.expression.method.DefaultMethodSecurityExpressionHandler;
@@ -40,12 +11,13 @@ import org.springframework.security.config.annotation.method.configuration.Enabl
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configurers.HeadersConfigurer;
+import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
-@TestConfiguration
+@Configuration
 @EnableWebSecurity
-@EnableMethodSecurity(prePostEnabled = true) // Enable method-level security testing
+@EnableMethodSecurity(prePostEnabled = true)
 @Profile("test")
 public class TestSecurityConfig {
 
@@ -60,10 +32,30 @@ public class TestSecurityConfig {
     public SecurityFilterChain testSecurityFilterChain(HttpSecurity http) throws Exception {
         http
                 .csrf(csrf -> csrf.disable())
+                .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .addFilterBefore(testAuthenticationFilter, UsernamePasswordAuthenticationFilter.class)
-                .authorizeHttpRequests(auth -> auth.anyRequest().authenticated()) // Require authentication
+                .authorizeHttpRequests(auth -> auth
+                        .requestMatchers("/h2-console/**").permitAll()
+                        .anyRequest().authenticated()
+                )
                 .headers(headers -> headers
-                        .frameOptions(HeadersConfigurer.FrameOptionsConfig::disable)
+                        .frameOptions(HeadersConfigurer.FrameOptionsConfig::sameOrigin)
+                )
+                .exceptionHandling(exceptions -> exceptions
+                        .authenticationEntryPoint((request, response, authException) -> {
+                            response.setStatus(401);
+                            response.setContentType("application/json");
+                            response.getWriter().write(
+                                    "{\"error\": \"Unauthorized\", \"message\": \"Authentication required\"}"
+                            );
+                        })
+                        .accessDeniedHandler((request, response, accessDeniedException) -> {
+                            response.setStatus(403);
+                            response.setContentType("application/json");
+                            response.getWriter().write(
+                                    "{\"error\": \"Forbidden\", \"message\": \"Access denied\"}"
+                            );
+                        })
                 );
 
         return http.build();
@@ -73,7 +65,6 @@ public class TestSecurityConfig {
     @Primary
     public MethodSecurityExpressionHandler methodSecurityExpressionHandler() {
         DefaultMethodSecurityExpressionHandler handler = new DefaultMethodSecurityExpressionHandler();
-        // This ensures that hasRole('ADMIN') works with ROLE_ADMIN authority
         handler.setDefaultRolePrefix("ROLE_");
         return handler;
     }

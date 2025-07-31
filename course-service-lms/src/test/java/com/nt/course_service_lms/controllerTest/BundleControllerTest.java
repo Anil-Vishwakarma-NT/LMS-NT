@@ -5,6 +5,8 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.nt.course_service_lms.config.JwtUtil;
 import com.nt.course_service_lms.config.SecurityConfig;
 import com.nt.course_service_lms.config.ServiceAuthenticationFilter;
+import com.nt.course_service_lms.config.TestAuthenticationFilter;
+import com.nt.course_service_lms.config.TestSecurityConfig;
 import com.nt.course_service_lms.controller.BundleController;
 import com.nt.course_service_lms.dto.inDTO.BundleInDTO;
 import com.nt.course_service_lms.dto.inDTO.UpdateBundleInDTO;
@@ -48,7 +50,7 @@ import static org.springframework.security.test.web.servlet.setup.SecurityMockMv
 
 @WebMvcTest(BundleController.class)
 @ExtendWith(MockitoExtension.class)
-@Import(SecurityConfig.class)
+@Import(TestSecurityConfig.class)
 class BundleControllerTest {
 
     @Autowired
@@ -61,7 +63,7 @@ class BundleControllerTest {
     private BundleService bundleService;
 
     @MockitoBean
-    private ServiceAuthenticationFilter serviceAuthenticationFilter;
+    private TestAuthenticationFilter serviceAuthenticationFilter;
 
     // ADD THIS LINE: Provide a mock bean of JwtUtil to satisfy the
     // dependency in your ServiceAuthenticationFilter.

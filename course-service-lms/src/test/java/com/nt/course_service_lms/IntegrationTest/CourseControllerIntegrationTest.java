@@ -55,11 +55,11 @@ class CourseControllerIntegrationTest {
         return headers;
     }
 
-    private HttpHeaders createUserHeaders() {
+    private HttpHeaders createEmployeeHeaders() {
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_JSON);
-        headers.set("X-Test-User", "test-user");
-        headers.set("X-Test-Role", "USER");
+        headers.set("X-Test-User", "test-employee");
+        headers.set("X-Test-Role", "EMPLOYEE");
         return headers;
     }
 
@@ -243,7 +243,7 @@ class CourseControllerIntegrationTest {
                 .Active(true)
                 .build();
 
-        HttpEntity<CourseInDTO> entity = new HttpEntity<>(request, createUserHeaders());
+        HttpEntity<CourseInDTO> entity = new HttpEntity<>(request, createEmployeeHeaders());
 
         ResponseEntity<String> response = restTemplate.exchange(
                 getBaseUrl(),
@@ -252,7 +252,7 @@ class CourseControllerIntegrationTest {
                 String.class
         );
 
-        assertThat(response.getStatusCode()).isEqualTo(HttpStatus.INTERNAL_SERVER_ERROR);
+        assertThat(response.getStatusCode()).isEqualTo(HttpStatus.FORBIDDEN); // Should be 403 Forbidden for EMPLOYEE
     }
 
     // ==================== GET COURSE TESTS ====================
@@ -277,7 +277,7 @@ class CourseControllerIntegrationTest {
     @Test
     @Order(9)
     void shouldDenyGetAllCoursesForNonAdmin() {
-        HttpEntity<Void> entity = new HttpEntity<>(createUserHeaders());
+        HttpEntity<Void> entity = new HttpEntity<>(createEmployeeHeaders());
 
         ResponseEntity<String> response = restTemplate.exchange(
                 getBaseUrl(),
@@ -286,13 +286,13 @@ class CourseControllerIntegrationTest {
                 String.class
         );
 
-        assertThat(response.getStatusCode()).isEqualTo(HttpStatus.INTERNAL_SERVER_ERROR);
+        assertThat(response.getStatusCode()).isEqualTo(HttpStatus.FORBIDDEN);
     }
 
     @Test
     @Order(10)
     void shouldGetCourseById() {
-        HttpEntity<Void> entity = new HttpEntity<>(createUserHeaders());
+        HttpEntity<Void> entity = new HttpEntity<>(createEmployeeHeaders());
 
         ResponseEntity<StandardResponseOutDTO<CourseInfoOutDTO>> response = restTemplate.exchange(
                 getBaseUrl() + "/" + createdCourseId,
@@ -309,7 +309,7 @@ class CourseControllerIntegrationTest {
     @Test
     @Order(11)
     void shouldReturn404ForNonExistingCourse() {
-        HttpEntity<Void> entity = new HttpEntity<>(createUserHeaders());
+        HttpEntity<Void> entity = new HttpEntity<>(createEmployeeHeaders());
 
         ResponseEntity<ErrorResponse> response = restTemplate.exchange(
                 getBaseUrl() + "/999999",
@@ -324,7 +324,7 @@ class CourseControllerIntegrationTest {
     @Test
     @Order(12)
     void shouldCheckCourseExistence() {
-        HttpEntity<Void> entity = new HttpEntity<>(createUserHeaders());
+        HttpEntity<Void> entity = new HttpEntity<>(createEmployeeHeaders());
 
         ResponseEntity<Boolean> response = restTemplate.exchange(
                 getBaseUrl() + "/" + createdCourseId + "/exists",
@@ -340,7 +340,7 @@ class CourseControllerIntegrationTest {
     @Test
     @Order(13)
     void shouldReturnFalseForNonExistingCourseCheck() {
-        HttpEntity<Void> entity = new HttpEntity<>(createUserHeaders());
+        HttpEntity<Void> entity = new HttpEntity<>(createEmployeeHeaders());
 
         ResponseEntity<Boolean> response = restTemplate.exchange(
                 getBaseUrl() + "/999999/exists",
@@ -356,7 +356,7 @@ class CourseControllerIntegrationTest {
     @Test
     @Order(14)
     void shouldGetCourseNameById() {
-        HttpEntity<Void> entity = new HttpEntity<>(createUserHeaders());
+        HttpEntity<Void> entity = new HttpEntity<>(createEmployeeHeaders());
 
         ResponseEntity<String> response = restTemplate.exchange(
                 getBaseUrl() + "/" + createdCourseId + "/name",
@@ -485,7 +485,7 @@ class CourseControllerIntegrationTest {
                 .Active(true)
                 .build();
 
-        HttpEntity<UpdateCourseInDTO> entity = new HttpEntity<>(updateRequest, createUserHeaders());
+        HttpEntity<UpdateCourseInDTO> entity = new HttpEntity<>(updateRequest, createEmployeeHeaders());
 
         ResponseEntity<String> response = restTemplate.exchange(
                 getBaseUrl() + "/" + createdCourseId,
@@ -494,7 +494,7 @@ class CourseControllerIntegrationTest {
                 String.class
         );
 
-        assertThat(response.getStatusCode()).isEqualTo(HttpStatus.INTERNAL_SERVER_ERROR);
+        assertThat(response.getStatusCode()).isEqualTo(HttpStatus.FORBIDDEN);
     }
 
     // ==================== UTILITY ENDPOINT TESTS ====================
@@ -552,7 +552,7 @@ class CourseControllerIntegrationTest {
     @Order(23)
     void shouldGetExistingCourseIds() {
         List<Long> testIds = Arrays.asList(createdCourseId, secondCourseId, 999999L);
-        HttpEntity<List<Long>> entity = new HttpEntity<>(testIds, createUserHeaders());
+        HttpEntity<List<Long>> entity = new HttpEntity<>(testIds, createEmployeeHeaders());
 
         ResponseEntity<List<Long>> response = restTemplate.exchange(
                 getBaseUrl() + "/existing-ids",
@@ -570,7 +570,7 @@ class CourseControllerIntegrationTest {
     @Order(24)
     void shouldReturn404WhenNoExistingIdsFound() {
         List<Long> nonExistentIds = Arrays.asList(999998L, 999999L);
-        HttpEntity<List<Long>> entity = new HttpEntity<>(nonExistentIds, createUserHeaders());
+        HttpEntity<List<Long>> entity = new HttpEntity<>(nonExistentIds, createEmployeeHeaders());
 
         ResponseEntity<ErrorResponse> response = restTemplate.exchange(
                 getBaseUrl() + "/existing-ids",
@@ -627,7 +627,7 @@ class CourseControllerIntegrationTest {
     @Test
     @Order(27)
     void shouldDenyDeleteForNonAdmin() {
-        HttpEntity<Void> entity = new HttpEntity<>(createUserHeaders());
+        HttpEntity<Void> entity = new HttpEntity<>(createEmployeeHeaders());
 
         ResponseEntity<String> response = restTemplate.exchange(
                 getBaseUrl() + "/" + createdCourseId,
@@ -636,7 +636,7 @@ class CourseControllerIntegrationTest {
                 String.class
         );
 
-        assertThat(response.getStatusCode()).isEqualTo(HttpStatus.INTERNAL_SERVER_ERROR);
+        assertThat(response.getStatusCode()).isEqualTo(HttpStatus.FORBIDDEN);
     }
 
     // ==================== CLEAN UP ====================

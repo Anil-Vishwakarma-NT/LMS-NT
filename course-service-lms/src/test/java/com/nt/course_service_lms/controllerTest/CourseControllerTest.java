@@ -4,8 +4,9 @@ package com.nt.course_service_lms.controllerTest;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import com.nt.course_service_lms.config.JwtUtil;
-import com.nt.course_service_lms.config.SecurityConfig;
 import com.nt.course_service_lms.config.ServiceAuthenticationFilter;
+import com.nt.course_service_lms.config.TestAuthenticationFilter;
+import com.nt.course_service_lms.config.TestSecurityConfig;
 import com.nt.course_service_lms.controller.CourseController;
 import com.nt.course_service_lms.dto.inDTO.CourseInDTO;
 import com.nt.course_service_lms.dto.inDTO.UpdateCourseInDTO;
@@ -58,7 +59,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
  */
 @WebMvcTest(CourseController.class)
 @ExtendWith(MockitoExtension.class)
-@Import(SecurityConfig.class)
+@Import(TestSecurityConfig.class)
 class CourseControllerTest {
 
     @Autowired
@@ -71,7 +72,7 @@ class CourseControllerTest {
     private CourseService courseService;
 
     @MockitoBean
-    private ServiceAuthenticationFilter serviceAuthenticationFilter;
+    private TestAuthenticationFilter serviceAuthenticationFilter;
 
     @MockitoBean
     private JwtUtil jwtUtil;

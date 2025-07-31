@@ -389,7 +389,7 @@ public class JwtAuthFilter implements WebFilter {
         }
         response.setStatusCode(HttpStatus.UNAUTHORIZED);
         response.getHeaders().add("Content-Type", "application/json");
-        String body = String.format("{\"error\": \"Unauthorized\", \"message\": \"%s\"}", message);
+        String body = String.format("{\"status\": \"Unauthorized\", \"message\": \"%s\"}", message);
         return response.writeWith(Mono.just(response.bufferFactory().wrap(body.getBytes())));
     }
 }
