@@ -46,7 +46,6 @@ public class SecurityConfig {
                 .authorizeHttpRequests(authz -> authz
                         // user endpoints - require authentication
                         .requestMatchers("/h2-console/**").permitAll()
-                        .requestMatchers("/**").permitAll()
                         .anyRequest().authenticated()
                 )
                 .headers(headers -> headers

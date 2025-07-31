@@ -69,6 +69,7 @@ dependencies {
 	testImplementation 'jakarta.validation:jakarta.validation-api:3.0.2'
     testImplementation 'com.h2database:h2'
     testImplementation 'org.springframework.boot:spring-boot-test'
+    developmentOnly("org.springframework.boot:spring-boot-devtools")
 
 }
 

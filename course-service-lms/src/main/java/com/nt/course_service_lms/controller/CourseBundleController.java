@@ -13,6 +13,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -49,6 +50,7 @@ public class CourseBundleController {
      * @return ResponseEntity containing the created CourseBundle wrapped in StandardResponseOutDTO
      */
     @PostMapping
+    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<StandardResponseOutDTO<CourseBundle>> createCourseBundle(
             @Valid @RequestBody final CourseBundleInDTO courseBundleInDTO
     ) {
@@ -66,6 +68,7 @@ public class CourseBundleController {
      * @return ResponseEntity containing a list of CourseBundleOutDTO wrapped in StandardResponseOutDTO
      */
     @GetMapping
+    @PreAuthorize("hasAnyRole('ADMIN', 'USER')")
     public ResponseEntity<StandardResponseOutDTO<List<CourseBundleOutDTO>>> getAllCourseBundles() {
         final List<CourseBundleOutDTO> courseBundles = courseBundleService.getAllCourseBundles();
         return ResponseEntity.ok(StandardResponseOutDTO.success(courseBundles, "All course bundles retrieved successfully."));
@@ -78,6 +81,7 @@ public class CourseBundleController {
      * @return ResponseEntity containing the CourseBundleOutDTO wrapped in StandardResponseOutDTO
      */
     @GetMapping("/{id}")
+    @PreAuthorize("hasAnyRole('ADMIN', 'USER')")
     public ResponseEntity<StandardResponseOutDTO<CourseBundleOutDTO>> getCourseBundleById(
             @PathVariable("id") final Long courseBundleId
     ) {
@@ -95,6 +99,7 @@ public class CourseBundleController {
      * @return ResponseEntity containing a success message wrapped in StandardResponseOutDTO
      */
     @DeleteMapping("/{id}")
+    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<StandardResponseOutDTO<Void>> deleteCourseBundle(@PathVariable("id") final Long courseBundleId) {
         courseBundleService.deleteCourseBundle(courseBundleId);
         return ResponseEntity.ok(
@@ -112,6 +117,7 @@ public class CourseBundleController {
      * @return ResponseEntity containing the update response string wrapped in StandardResponseOutDTO
      */
     @PutMapping("/{id}")
+    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<StandardResponseOutDTO<String>> updateCourseBundle(
             @PathVariable("id") final Long courseBundleId,
             @Valid @RequestBody final UpdateCourseBundleInDTO updateCourseBundleInDTO) {
@@ -129,6 +135,7 @@ public class CourseBundleController {
      * @return ResponseEntity containing a list of CourseBundle entities wrapped in StandardResponseOutDTO
      */
     @GetMapping("/bundle/{id}")
+    @PreAuthorize("hasAnyRole('ADMIN', 'USER')")
     public ResponseEntity<StandardResponseOutDTO<List<CourseBundle>>> getAllCoursesByBundleId(
             @PathVariable("id") final Long bundleId) {
         log.info("Received request to get all courses.");
@@ -142,6 +149,7 @@ public class CourseBundleController {
      * @return ResponseEntity containing a list of BundleInfoOutDTO wrapped in StandardResponseOutDTO
      */
     @GetMapping("/info")
+    @PreAuthorize("hasAnyRole('ADMIN', 'USER')")
     public ResponseEntity<StandardResponseOutDTO<List<BundleInfoOutDTO>>> getALlBundleInfo() {
         final List<BundleInfoOutDTO> bundleInfoOutDTOS = courseBundleService.getBundlesInfo();
         return ResponseEntity.ok(StandardResponseOutDTO.success(bundleInfoOutDTOS, "Bundles info retrieved successfully."));
@@ -153,6 +161,7 @@ public class CourseBundleController {
      * @return ResponseEntity containing a list of BundleSummaryOutDTO wrapped in StandardResponseOutDTO
      */
     @GetMapping("/recent")
+    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<StandardResponseOutDTO<List<BundleSummaryOutDTO>>> getRecentBundles() {
         final List<BundleSummaryOutDTO> bundleSummaries = courseBundleService.getRecentBundleSummaries();
         return ResponseEntity.ok(StandardResponseOutDTO.success(bundleSummaries, "Recent bundles retrieved successfully."));
@@ -165,6 +174,7 @@ public class CourseBundleController {
      * @return ResponseEntity containing a list of course IDs
      */
     @GetMapping("/bundle-id/{id}/course-ids")
+    @PreAuthorize("hasAnyRole('ADMIN', 'USER')")
     public ResponseEntity<List<Long>> findCourseIdsByBundleId(@PathVariable("id") final Long bundleId) {
         return ResponseEntity.ok(courseBundleService.findCourseIdsByBundleId(bundleId));
     }
