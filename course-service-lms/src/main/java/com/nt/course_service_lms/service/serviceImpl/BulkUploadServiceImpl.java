@@ -283,6 +283,29 @@ public class BulkUploadServiceImpl implements BulkUploadService {
                 !dto.getOptions().contains("|")) {
             throw new IllegalArgumentException("MCQ options should be pipe-separated (option1|option2|option3)");
         }
+        // Validate MCQ_MULTIPLE correct answers format (should be pipe-separated for multiple answers)
+        if ("MCQ_MULTIPLE".equals(dto.getQuestionType()) &&
+                dto.getCorrectAnswer() != null && !dto.getCorrectAnswer().trim().isEmpty()) {
+            // For multiple choice, we expect multiple answers to be pipe-separated
+            // Single answer is also valid (no pipe needed)
+            String[] correctAnswers = dto.getCorrectAnswer().split("\\|");
+            if (correctAnswers.length > 1) {
+                // Validate that all correct answers exist in options
+                String[] options = dto.getOptions().split("\\|");
+                for (String answer : correctAnswers) {
+                    boolean found = false;
+                    for (String option : options) {
+                        if (option.trim().equals(answer.trim())) {
+                            found = true;
+                            break;
+                        }
+                    }
+                    if (!found) {
+                        throw new IllegalArgumentException("Correct answer '" + answer.trim() + "' not found in options");
+                    }
+                }
+            }
+        }
     }
 
     @Override
