@@ -66,7 +66,7 @@ public class CourseController {
      * @return ResponseEntity containing a list of all courses wrapped in a standard response format
      */
     @GetMapping
-    @PreAuthorize("hasRole('ADMIN')")
+    @PreAuthorize("hasAnyRole('ADMIN', 'EMPLOYEE')")
     public ResponseEntity<StandardResponseOutDTO<List<CourseOutDTO>>> getAllCourses() {
         log.info("Received request to get all courses.");
         final List<CourseOutDTO> courses = courseService.getAllCourses();
@@ -84,6 +84,7 @@ public class CourseController {
      * @return ResponseEntity containing the course information wrapped in a standard response format
      */
     @GetMapping("/{id}")
+    @PreAuthorize("hasAnyRole('ADMIN', 'EMPLOYEE')")
     public ResponseEntity<StandardResponseOutDTO<CourseInfoOutDTO>> getCourseById(@PathVariable final Long id) {
         log.info("Received request to get course by ID: {}", id);
         final CourseInfoOutDTO course = courseService.getCourseById(id);
@@ -136,6 +137,7 @@ public class CourseController {
      * @return ResponseEntity with boolean value indicating whether the course exists
      */
     @GetMapping("/{id}/exists")
+    @PreAuthorize("hasAnyRole('ADMIN', 'EMPLOYEE')")
     public ResponseEntity<Boolean> checkIfCourseExists(@PathVariable final Long id) {
         log.info("Fetching course with ID: {}", id);
         final boolean exists = courseService.courseExistsById(id);
@@ -148,7 +150,7 @@ public class CourseController {
      * @return ResponseEntity containing the total course count wrapped in a standard response format
      */
     @GetMapping("/count")
-    @PreAuthorize("hasRole('ADMIN')")
+    @PreAuthorize("hasAnyRole('ADMIN', 'EMPLOYEE')")
     public ResponseEntity<StandardResponseOutDTO<Long>> getCourseCount() {
         log.info("Received request to get total course count.");
         final long count = courseService.countCourses();
@@ -189,6 +191,7 @@ public class CourseController {
      * @return ResponseEntity containing the course name as a string
      */
     @GetMapping("/{id}/name")
+    @PreAuthorize("hasAnyRole('ADMIN', 'EMPLOYEE')")
     public ResponseEntity<String> getCourseNameById(@PathVariable("id") final Long id) {
         log.info("Received request to get course name.");
         final String courseName = courseService.getCourseNameById(id);
@@ -219,6 +222,7 @@ public class CourseController {
      * @return ResponseEntity containing a list of existing course IDs
      */
     @PostMapping("/existing-ids")
+    @PreAuthorize("hasAnyRole('ADMIN', 'EMPLOYEE')")
     public ResponseEntity<List<Long>> getExistingCourseIds(@RequestBody final List<Long> courseIds) {
         final List<Long> existingIds = courseService.findExistingIds(courseIds);
         return ResponseEntity.ok(existingIds);
