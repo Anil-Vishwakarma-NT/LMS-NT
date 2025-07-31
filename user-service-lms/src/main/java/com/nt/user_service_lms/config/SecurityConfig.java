@@ -66,8 +66,13 @@ public class SecurityConfig {
                         .anyRequest().authenticated()
 
                 )
-                .addFilterBefore(serviceAuthenticationFilter, UsernamePasswordAuthenticationFilter.class)
-                .exceptionHandling(exceptions -> exceptions
+                .addFilterBefore(serviceAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);
+        // <-- STEP 2: ADD A NULL CHECK
+        // Only add the filter if it has been instantiated (i.e., not in a 'test' profile)
+        if (serviceAuthenticationFilter != null) {
+            http.addFilterBefore(serviceAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);
+        }
+                http.exceptionHandling(exceptions -> exceptions
                         .authenticationEntryPoint((request, response, authException) -> {
                             response.setStatus(HttpStatus.UNAUTHORIZED.value());
                             response.setContentType("application/json");

@@ -1,0 +1,60 @@
+spring:
+  application:
+    name: course-service-lms
+
+  datasource:
+    url: jdbc:h2:mem:testdb
+    driver-class-name: org.h2.Driver
+    username: sa
+    password:
+
+  jpa:
+    database-platform: org.hibernate.dialect.H2Dialect
+    show-sql: true
+    hibernate:
+      ddl-auto: create-drop
+
+  h2:
+    console:
+      enabled: true
+      path: /h2-console
+      settings:
+        web-allow-others: true
+        trace: false
+
+  # Completely disable Spring Security for tests
+  security:
+    enabled: false
+  autoconfigure:
+    exclude:
+      - org.springframework.boot.autoconfigure.security.servlet.SecurityAutoConfiguration
+      - org.springframework.boot.autoconfigure.security.servlet.UserDetailsServiceAutoConfiguration
+
+server:
+  port: 0  # Use random port for tests
+
+# Disable all custom authentication
+jwt:
+  secret: test_jwt_secret_for_testing_purposes_only
+  issuer: http://test-issuer
+
+gateway:
+  validation:
+    enabled: false
+  secret:
+    header: X-Gateway-Secret
+    value: test-gateway-secret
+  signature:
+    header: X-Gateway-Signature
+
+direct:
+  secret:
+    header: X-Direct-Secret
+    value: test-direct-secret
+
+validation:
+  enabled: false
+
+management:
+  security:
+    enabled: false

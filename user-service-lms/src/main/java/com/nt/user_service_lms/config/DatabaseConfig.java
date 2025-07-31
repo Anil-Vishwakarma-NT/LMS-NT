@@ -23,7 +23,7 @@ import javax.sql.DataSource;
  * </p>
  */
 @Configuration
-@Profile("!local")
+@Profile("!local & !test")
 public class DatabaseConfig {
 
     /**
