@@ -266,8 +266,6 @@ class QuizQuestionControllerIntegrationTest {
                 entity,
                 ErrorResponse.class
         );
-        System.out.println("Response Status: " + response.getStatusCode());
-        System.out.println("Response Body: " + response.getBody());
 
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.BAD_REQUEST);
         assertThat(response.getBody().getMessage()).contains("Options are required for multiple choice questions");
