@@ -12,6 +12,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -52,6 +53,7 @@ public class UserResponseController {
      * @throws IllegalArgumentException if the user response list is empty
      */
     @PostMapping
+    @PreAuthorize("hasAnyRole('ADMIN', 'EMPLOYEE')")
     public ResponseEntity<StandardResponseOutDTO<List<UserResponseOutDTO>>> createUserResponse(
             @Valid @RequestBody final List<UserResponseInDTO> userResponseInDTOList) {
         log.info("Received request to create user responses for {} questions", userResponseInDTOList.size());
@@ -81,6 +83,7 @@ public class UserResponseController {
      * @return ResponseEntity containing the user response data with HTTP 200 status
      */
     @GetMapping("/{responseId}")
+    @PreAuthorize("hasAnyRole('ADMIN', 'EMPLOYEE')")
     public ResponseEntity<StandardResponseOutDTO<UserResponseOutDTO>> getUserResponseById(
             @PathVariable final Long responseId) {
         log.info("Received request to get user response with ID: {}", responseId);
@@ -100,6 +103,7 @@ public class UserResponseController {
      * @return ResponseEntity containing the updated user response with HTTP 200 status
      */
     @PutMapping("/{responseId}")
+    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<StandardResponseOutDTO<UserResponseOutDTO>> updateUserResponse(
             @PathVariable final Long responseId,
             @Valid @RequestBody final UserResponseUpdateInDTO userResponseUpdateInDTO) {
@@ -119,6 +123,7 @@ public class UserResponseController {
      * @return ResponseEntity with HTTP 200 status confirming successful deletion
      */
     @DeleteMapping("/{responseId}")
+    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<StandardResponseOutDTO<Void>> deleteUserResponse(
             @PathVariable final Long responseId) {
         log.info("Received request to delete user response with ID: {}", responseId);
@@ -137,6 +142,7 @@ public class UserResponseController {
      * @return ResponseEntity containing a paginated list of user responses
      */
     @GetMapping
+    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<StandardResponseOutDTO<Page<UserResponseOutDTO>>> getAllUserResponses(
             final Pageable pageable) {
         log.info("Received request to get all user responses with pagination - page: {}, size: {}",
@@ -156,6 +162,7 @@ public class UserResponseController {
      * @return ResponseEntity containing a list of user responses for the specified user
      */
     @GetMapping("/user/{userId}")
+    @PreAuthorize("hasAnyRole('ADMIN', 'EMPLOYEE')")
     public ResponseEntity<StandardResponseOutDTO<List<UserResponseOutDTO>>> getUserResponsesByUserId(
             @PathVariable final Long userId) {
         log.info("Received request to get user responses for user ID: {}", userId);
@@ -175,6 +182,7 @@ public class UserResponseController {
      * @return ResponseEntity containing a paginated list of user responses
      */
     @GetMapping("/user/{userId}/paginated")
+    @PreAuthorize("hasAnyRole('ADMIN', 'EMPLOYEE')")
     public ResponseEntity<StandardResponseOutDTO<Page<UserResponseOutDTO>>> getUserResponsesByUserIdPaginated(
             @PathVariable final Long userId,
             final Pageable pageable) {
@@ -194,6 +202,7 @@ public class UserResponseController {
      * @return ResponseEntity containing a list of user responses for the specified quiz
      */
     @GetMapping("/quiz/{quizId}")
+    @PreAuthorize("hasAnyRole('ADMIN', 'EMPLOYEE')")
     public ResponseEntity<StandardResponseOutDTO<List<UserResponseOutDTO>>> getUserResponsesByQuizId(
             @PathVariable final Long quizId) {
         log.info("Received request to get user responses for quiz ID: {}", quizId);
@@ -213,6 +222,7 @@ public class UserResponseController {
      * @return ResponseEntity containing a paginated list of user responses for the quiz
      */
     @GetMapping("/quiz/{quizId}/paginated")
+    @PreAuthorize("hasAnyRole('ADMIN', 'EMPLOYEE')")
     public ResponseEntity<StandardResponseOutDTO<Page<UserResponseOutDTO>>> getUserResponsesByQuizIdPaginated(
             @PathVariable final Long quizId,
             final Pageable pageable) {
@@ -233,6 +243,7 @@ public class UserResponseController {
      * @return ResponseEntity containing a list of user responses for the user-quiz combination
      */
     @GetMapping("/user/{userId}/quiz/{quizId}")
+    @PreAuthorize("hasAnyRole('ADMIN', 'EMPLOYEE')")
     public ResponseEntity<StandardResponseOutDTO<List<UserResponseOutDTO>>> getUserResponsesByUserIdAndQuizId(
             @PathVariable final Long userId,
             @PathVariable final Long quizId) {
@@ -254,6 +265,7 @@ public class UserResponseController {
      * @return ResponseEntity containing a list of user responses for the specific attempt
      */
     @GetMapping("/user/{userId}/quiz/{quizId}/attempt/{attempt}")
+    @PreAuthorize("hasAnyRole('ADMIN', 'EMPLOYEE')")
     public ResponseEntity<StandardResponseOutDTO<List<UserResponseOutDTO>>> getUserResponsesByUserIdQuizIdAndAttempt(
             @PathVariable final Long userId,
             @PathVariable final Long quizId,
@@ -279,6 +291,7 @@ public class UserResponseController {
      * @return ResponseEntity containing the total score as a BigDecimal value
      */
     @GetMapping("/user/{userId}/quiz/{quizId}/attempt/{attempt}/total-score")
+    @PreAuthorize("hasAnyRole('ADMIN', 'EMPLOYEE')")
     public ResponseEntity<StandardResponseOutDTO<BigDecimal>> getTotalScore(
             @PathVariable final Long userId,
             @PathVariable final Long quizId,
@@ -301,6 +314,7 @@ public class UserResponseController {
      * @return ResponseEntity containing the count of correct answers as a Long value
      */
     @GetMapping("/user/{userId}/quiz/{quizId}/attempt/{attempt}/correct-count")
+    @PreAuthorize("hasAnyRole('ADMIN', 'EMPLOYEE')")
     public ResponseEntity<StandardResponseOutDTO<Long>> countCorrectAnswers(
             @PathVariable final Long userId,
             @PathVariable final Long quizId,
@@ -324,6 +338,7 @@ public class UserResponseController {
      * @return ResponseEntity containing the maximum attempt number as a Long value
      */
     @GetMapping("/user/{userId}/quiz/{quizId}/max-attempt")
+    @PreAuthorize("hasAnyRole('ADMIN', 'EMPLOYEE')")
     public ResponseEntity<StandardResponseOutDTO<Long>> getMaxAttemptNumber(
             @PathVariable final Long userId,
             @PathVariable final Long quizId) {
