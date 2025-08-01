@@ -5,6 +5,7 @@ import jakarta.transaction.Transactional;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
@@ -135,4 +136,58 @@ public interface EnrollmentRepository extends JpaRepository<Enrollment, Long> {
      */
     Optional<Enrollment> findByGroupIdAndUserIdAndCourseId(Long groupId, Long userId, Long courseId);
 
+
+
+    /**
+     * Finds an enrollment by group ID, user ID, and course ID.
+     *
+     * @param groupId the group ID
+     * @param userId the user ID
+     * @param bundleId the course ID
+     * @return optional enrollment
+     */
+    Optional<List<Enrollment>> findByGroupIdAndUserIdAndBundleId(Long groupId, Long userId, Long bundleId);
+
+
+    /**
+     * Finds list of enrollments by bundle ID.
+     *
+     * @param bundleId the course ID
+     * @return optional enrollment
+     */
+    List<Enrollment> findByBundleId(Long bundleId);
+
+    /**
+     * Finds list of enrollments by bundle ID.
+     *
+     * @param groupId the course ID
+     * @return List of  enrollment.
+     */
+    List<Enrollment> findByGroupIdAndBundleIdIsNull(Long groupId);
+
+    /**
+     * Finds list of bundleId by group ID.
+     *
+     * @param groupId the course ID
+     * @return List of long
+     */
+    @Query("SELECT e.bundleId FROM Enrollment e WHERE e.groupId = :groupId AND e.bundleId IS NOT NULL GROUP BY e.bundleId")
+    List<Long> findBundleIdInGroup(@Param("groupId") Long groupId);
+
+    /**
+     * Finds list of enrollments by group ID where bundle Id is not null.
+     *
+     * @param groupId the course ID
+     * @return List of  enrollment
+     */
+    List<Enrollment> findByGroupIdAndBundleIdIsNotNull(Long groupId);
+
+    /**
+     * Finds list of enrollments by bundle ID and course ID.
+     *
+     * @param courseId the course ID
+     * @param bundleId
+     * @return optional enrollment
+     */
+    List<Enrollment> findByBundleIdAndCourseId(Long bundleId, Long courseId);
 }

@@ -6,11 +6,13 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
-import lombok.*;
-
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
+import lombok.Builder;
 import java.util.Objects;
 
-import java.util.Objects;
 
 
 /**
@@ -66,13 +68,24 @@ public class Group {
         this.creatorId = creatorId;
     }
 
+    /**
+     * Checks if the object is equal.
+     *
+     * @param o
+     */
     @Override
-    public boolean equals(Object o) {
-        if (o == null || getClass() != o.getClass()) return false;
+    public boolean equals(final Object o) {
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
         Group group = (Group) o;
-        return creatorId == group.creatorId && isActive == group.isActive && Objects.equals(groupId, group.groupId) && Objects.equals(groupName, group.groupName);
+        return creatorId == group.creatorId && isActive == group.isActive
+                && Objects.equals(groupId, group.groupId) && Objects.equals(groupName, group.groupName);
     }
 
+    /**
+     * generates hashcode.
+     */
     @Override
     public int hashCode() {
         return Objects.hash(groupId, groupName, creatorId, isActive);

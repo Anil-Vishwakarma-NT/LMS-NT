@@ -93,4 +93,8 @@ SELECT * FROM (
 ORDER BY created_at DESC
 """, nativeQuery = true)
     List<Object[]> findRecentDashboardData();
+
+
+    List<Course> findByCourseIdIn(List<Long> courseIds);
+
 }

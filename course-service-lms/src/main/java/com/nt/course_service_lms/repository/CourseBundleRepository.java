@@ -7,6 +7,7 @@ import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
+import java.util.Optional;
 
 /**
  * Repository interface for managing {@link CourseBundle} entities.
@@ -51,4 +52,7 @@ public interface CourseBundleRepository extends JpaRepository<CourseBundle, Long
      */
     @Query("SELECT bc.courseId FROM CourseBundle bc WHERE bc.bundleId = :bundleId")
     List<Long> findCourseIdsByBundleId(@Param("bundleId") Long bundleId);
+
+
+    Optional<CourseBundle> findByBundleIdAndCourseId(Long bundleId , Long courseId);
 }

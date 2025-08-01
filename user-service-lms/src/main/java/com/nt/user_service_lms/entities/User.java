@@ -1,6 +1,5 @@
 package com.nt.user_service_lms.entities;
 
-import com.nt.user_service_lms.constants.UserConstants;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -101,15 +100,31 @@ public class User {
     private boolean active = true;
 
 
+    /**
+     * Checks if the object is equal.
+     *
+     * @param o
+     */
     @Override
-    public boolean equals(Object o) {
-        if (o == null || getClass() != o.getClass()) return false;
+    public boolean equals(final Object o) {
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
         User user = (User) o;
-        return userId == user.userId && active == user.active && Objects.equals(userName, user.userName) && Objects.equals(firstName, user.firstName) && Objects.equals(lastName, user.lastName) && Objects.equals(email, user.email) && Objects.equals(password, user.password) && Objects.equals(managerId, user.managerId) && Objects.equals(roleId, user.roleId) && Objects.equals(createdAt, user.createdAt) && Objects.equals(updatedAt, user.updatedAt);
+        return userId == user.userId && active == user.active
+                && Objects.equals(userName, user.userName) && Objects.equals(firstName, user.firstName)
+                && Objects.equals(lastName, user.lastName) && Objects.equals(email, user.email)
+                && Objects.equals(password, user.password) && Objects.equals(managerId, user.managerId)
+                && Objects.equals(roleId, user.roleId) && Objects.equals(createdAt, user.createdAt)
+                && Objects.equals(updatedAt, user.updatedAt);
     }
 
+    /**
+     * generates hashcode.
+     */
     @Override
     public int hashCode() {
-        return Objects.hash(userId, userName, firstName, lastName, email, password, managerId, roleId, createdAt, updatedAt, active);
+        return Objects.hash(userId, userName, firstName, lastName, email, password, managerId,
+                roleId, createdAt, updatedAt, active);
     }
 }

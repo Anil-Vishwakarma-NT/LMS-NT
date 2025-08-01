@@ -1,5 +1,6 @@
 package com.nt.course_service_lms.dto.inDTO;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Pattern;
@@ -52,13 +53,14 @@ public class BundleInDTO {
     @NotBlank(message = BUNDLE_NAME_NOT_BLANK)
     @Size(min = INT_VALUE_3, message = BUNDLE_NAME_MIN_LENGTH)
     @Pattern(
-            regexp = "^(?!\\d)(?!\\s)[A-Za-z][A-Za-z0-9]*(?<!\\s)$",
+            regexp = "^(?!\\d)(?!\\s)[A-Za-z][A-Za-z0-9 ]*(?<!\\s)$",
             message = BUNDLE_NAME_INVALID
     )
     private String bundleName;
 
     @NotNull(message = "Is Active field is required")
-    private boolean active;
+    @JsonProperty("isActive")
+    private boolean isActive;
 
     @Override
     public boolean equals(Object o) {
@@ -69,12 +71,11 @@ public class BundleInDTO {
             return false;
         }
         BundleInDTO bundleInDTO = (BundleInDTO) o;
-        return active == bundleInDTO.active && Objects.equals(bundleName, bundleInDTO.bundleName);
+        return isActive == bundleInDTO.isActive && Objects.equals(bundleName, bundleInDTO.bundleName);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(bundleName, active);
+        return Objects.hash(bundleName, isActive);
     }
-
 }

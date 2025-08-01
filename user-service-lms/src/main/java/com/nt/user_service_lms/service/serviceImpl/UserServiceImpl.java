@@ -131,7 +131,7 @@ public class UserServiceImpl implements UserService {
      * @return map containing statistics
      */
     @Override
-    public Map<String, Long> userStatistics(long userId) {
+    public Map<String, Long> userStatistics(final long userId) {
         Map<String, Long> stats = new HashMap<>();
         Long enrols = enrollmentRepository.getUserTotalEnrollments(userId);
         stats.put("enrollments", enrols);

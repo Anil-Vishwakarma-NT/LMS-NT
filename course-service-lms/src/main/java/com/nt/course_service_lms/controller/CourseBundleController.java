@@ -1,5 +1,8 @@
 package com.nt.course_service_lms.controller;
 
+import com.nt.course_service_lms.dto.inDTO.AddCourseToBundleInDTO;
+import com.nt.course_service_lms.dto.outDTO.*;
+import com.nt.course_service_lms.entity.CourseBundle;
 import com.nt.course_service_lms.dto.inDTO.CourseBundleInDTO;
 import com.nt.course_service_lms.dto.inDTO.UpdateCourseBundleInDTO;
 import com.nt.course_service_lms.dto.outDTO.BundleInfoOutDTO;
@@ -22,6 +25,7 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
@@ -136,13 +140,38 @@ public class CourseBundleController {
      */
     @GetMapping("/bundle/{id}")
     @PreAuthorize("hasAnyRole('ADMIN', 'USER')")
-    public ResponseEntity<StandardResponseOutDTO<List<CourseBundle>>> getAllCoursesByBundleId(
-            @PathVariable("id") final Long bundleId) {
+    public ResponseEntity<StandardResponseOutDTO<List<CourseInfoOutDTO>>> getAllCoursesByBundleId(@PathVariable("id") final Long bundleId) {
         log.info("Received request to get all courses.");
-        final List<CourseBundle> courseBundles = courseBundleService.getAllCoursesByBundle(bundleId);
+        List<CourseInfoOutDTO> courseBundles = courseBundleService.getAllCoursesByBundle(bundleId);
         return ResponseEntity.ok(StandardResponseOutDTO.success(courseBundles, "Course bundles with id retrieved successfully."));
     }
 
+    @GetMapping("/bundle/courses")
+    public ResponseEntity<StandardResponseOutDTO<List<CourseInfoOutDTO>>> getCoursesToAddInBundle(@RequestParam Long bundleId ){
+     List<CourseInfoOutDTO> courses = courseBundleService.getCoursesToAdd(bundleId);
+     return new ResponseEntity<>(StandardResponseOutDTO.success(courses , "Courses Retrieved") , HttpStatus.OK);
+    }
+
+
+    @PostMapping("/bundle/addCourse")
+    public ResponseEntity<StandardResponseOutDTO<MessageOutDTO>> addCourseToBundle(@RequestBody AddCourseToBundleInDTO addCourseToBundleInDTO){
+           StandardResponseOutDTO<MessageOutDTO> response = courseBundleService.addCourseToBundle(addCourseToBundleInDTO);
+           return new ResponseEntity<>(response , HttpStatus.OK);
+    }
+
+    @GetMapping("/bundle/bundlecourses")
+    public ResponseEntity<StandardResponseOutDTO<List<CourseInfoOutDTO>>> getBundleCourses(@RequestParam Long bundleId) {
+
+        StandardResponseOutDTO<List<CourseInfoOutDTO>> response = courseBundleService.getBundleCourses(bundleId);
+
+        return new ResponseEntity<>(response , HttpStatus.OK);
+    }
+
+    @DeleteMapping("/bundle/removeCourse")
+    public ResponseEntity<StandardResponseOutDTO<MessageOutDTO>> removeCourseFromBundle(@RequestParam Long bundleId , @RequestParam Long courseId){
+        StandardResponseOutDTO<MessageOutDTO> response = courseBundleService.removeCourse(bundleId ,courseId);
+        return new ResponseEntity<>(response , HttpStatus.OK);
+    }
     /**
      * Retrieves information about all bundles.
      *

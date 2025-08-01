@@ -4,6 +4,7 @@ import com.nt.course_service_lms.converters.BundleConverter;
 import com.nt.course_service_lms.dto.inDTO.BundleInDTO;
 import com.nt.course_service_lms.dto.inDTO.UpdateBundleInDTO;
 import com.nt.course_service_lms.dto.outDTO.BundleOutDTO;
+import com.nt.course_service_lms.dto.outDTO.StandardResponseOutDTO;
 import com.nt.course_service_lms.entity.Bundle;
 import com.nt.course_service_lms.exception.ResourceAlreadyExistsException;
 import com.nt.course_service_lms.exception.ResourceNotFoundException;
@@ -77,9 +78,9 @@ class BundleServiceImplTest {
         when(bundleRepository.save(testBundle)).thenReturn(testBundle);
         when(bundleConverter.toOutDTO(testBundle)).thenReturn(testBundleOutDTO);
 
-        BundleOutDTO result = bundleService.createBundle(dto);
+        StandardResponseOutDTO<BundleOutDTO> result = bundleService.createBundle(dto);
 
-        assertEquals("JavaMaster", result.getBundleName());
+        assertEquals("JavaMaster", result.getData().getBundleName());
         verify(bundleRepository).save(testBundle);
     }
 

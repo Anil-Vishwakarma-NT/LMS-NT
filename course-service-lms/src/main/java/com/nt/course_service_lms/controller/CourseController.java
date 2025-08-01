@@ -223,4 +223,11 @@ public class CourseController {
         final List<Long> existingIds = courseService.findExistingIds(courseIds);
         return ResponseEntity.ok(existingIds);
     }
+
+
+    @PostMapping("/courses")
+    public ResponseEntity<StandardResponseOutDTO<List<CourseInfoOutDTO>>> getCoursesByIds(@RequestBody List<Long> courseIds){
+          StandardResponseOutDTO<List<CourseInfoOutDTO>>  response = courseService.getCoursesByIds(courseIds);
+          return new ResponseEntity<>(response , HttpStatus.OK);
+    }
 }

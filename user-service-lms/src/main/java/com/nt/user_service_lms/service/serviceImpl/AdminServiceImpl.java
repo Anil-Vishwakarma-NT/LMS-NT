@@ -4,15 +4,22 @@ import com.nt.user_service_lms.constants.UserConstants;
 import com.nt.user_service_lms.converter.UserDTOConverter;
 import com.nt.user_service_lms.dto.inDTO.RegisterDto;
 import com.nt.user_service_lms.dto.inDTO.UserInDTO;
+<<<<<<< HEAD
 import com.nt.user_service_lms.dto.outDTO.AdminDashboardStatsOutDTO;
 import com.nt.user_service_lms.dto.outDTO.MessageOutDto;
+=======
+import com.nt.user_service_lms.dto.outDTO.MessageOutDTO;
+>>>>>>> latest-dev
 import com.nt.user_service_lms.dto.outDTO.StandardResponseOutDTO;
 import com.nt.user_service_lms.dto.outDTO.UserOutDTO;
+import com.nt.user_service_lms.entities.Enrollment;
+import com.nt.user_service_lms.exception.InvalidRequestException;
+import com.nt.user_service_lms.exception.ResourceNotFoundException;
 import com.nt.user_service_lms.entities.Role;
 import com.nt.user_service_lms.entities.User;
-import com.nt.user_service_lms.exception.InvalidRequestException;
 import com.nt.user_service_lms.exception.ResourceConflictException;
-import com.nt.user_service_lms.exception.ResourceNotFoundException;
+import com.nt.user_service_lms.feignClient.CourseMicroserviceClient;
+import com.nt.user_service_lms.repository.EnrollmentRepository;
 import com.nt.user_service_lms.repository.RoleRepository;
 import com.nt.user_service_lms.repository.UserRepository;
 import com.nt.user_service_lms.service.AdminService;
@@ -28,6 +35,7 @@ import java.util.List;
 import java.util.Optional;
 
 import static com.nt.user_service_lms.constants.UserConstants.INVALID_REQUEST;
+import static com.nt.user_service_lms.constants.UserConstants.USER_NOT_FOUND;
 import static com.nt.user_service_lms.constants.UserConstants.USER_UPDATED_SUCCESSFULLY;
 
 /**
@@ -50,6 +58,19 @@ public class AdminServiceImpl implements AdminService {
     private RoleRepository roleRepository;
 
     /**
+     * Repository for enrollment operations.
+     */
+    @Autowired
+    private EnrollmentRepository enrollmentRepository;
+
+
+    /**
+     * Feign client interface.
+     */
+    @Autowired
+    private CourseMicroserviceClient courseMicroserviceClient;
+
+    /**
      * Encoder for password encryption.
      */
     @Autowired
@@ -61,6 +82,9 @@ public class AdminServiceImpl implements AdminService {
     @Autowired
     private UserDTOConverter userDTOConverter;
 
+
+
+
     /**
      * Registers a new user.
      *
@@ -68,7 +92,7 @@ public class AdminServiceImpl implements AdminService {
      * @return a message response
      */
     @Override
-    public StandardResponseOutDTO<MessageOutDto> register(final RegisterDto registerDto) {
+    public StandardResponseOutDTO<MessageOutDTO> register(final RegisterDto registerDto) {
         log.info("Attempting to register user with email: {}", registerDto.getEmail());
         if (userRepository.findByEmailIgnoreCase(registerDto.getEmail()).isPresent()) {
             log.warn("Registration failed - user with email {} already exists", registerDto.getEmail());
@@ -93,7 +117,7 @@ public class AdminServiceImpl implements AdminService {
         user.setUpdatedAt(new Date());
         userRepository.save(user);
         log.info("User registered successfully with email: {}", registerDto.getEmail());
-        MessageOutDto messageOutDto = new MessageOutDto(UserConstants.USER_REGISTRATION_SUCCESS);
+        MessageOutDTO messageOutDto = new MessageOutDTO(UserConstants.USER_REGISTRATION_SUCCESS);
         return StandardResponseOutDTO.success(messageOutDto, "User Registration Successfully");
     }
 
@@ -104,13 +128,13 @@ public class AdminServiceImpl implements AdminService {
      * @return a message response
      */
     @Override
-    public StandardResponseOutDTO<MessageOutDto> employeeDeletion(final long id) {
+    public StandardResponseOutDTO<MessageOutDTO> employeeDeletion(final long id) {
         log.info("Attempting to delete user with ID: {}", id);
         if (id != UserConstants.getAdminId()) {
             User user = userRepository.findById(id)
                     .orElseThrow(() -> {
                         log.error("User with ID {} not found", id);
-                        return new ResourceNotFoundException(UserConstants.USER_NOT_FOUND);
+                        return new ResourceNotFoundException(USER_NOT_FOUND);
                     });
             Role role = roleRepository.findById(user.getRoleId())
                     .orElseThrow(() -> {
@@ -141,7 +165,7 @@ public class AdminServiceImpl implements AdminService {
         } else {
             throw new InvalidRequestException(INVALID_REQUEST);
         }
-        MessageOutDto messageOutDto = new MessageOutDto(UserConstants.USER_DELETION_MESSAGE);
+        MessageOutDTO messageOutDto = new MessageOutDTO(UserConstants.USER_DELETION_MESSAGE);
         return StandardResponseOutDTO.success(messageOutDto, null);
     }
 
@@ -162,16 +186,17 @@ public class AdminServiceImpl implements AdminService {
             List<UserOutDTO> userDtos = new ArrayList<>();
             for (User user : employees) {
                 if (user.isActive() && (user.getUserId() != UserConstants.getAdminId())) {
-                    User manager = userRepository.findById(user.getManagerId())
-                            .orElseThrow(() -> {
-                                log.error("Manager with ID {} not found", user.getManagerId());
-                                throw new ResourceNotFoundException(UserConstants.USER_NOT_FOUND);
-                            });
+                    Optional<User> optionalmanager = userRepository.findById(user.getManagerId());
+
+                    if (!optionalmanager.isPresent()) {
+                        throw new ResourceNotFoundException(USER_NOT_FOUND + "Manager not found");
+                    }
+                   User manager = optionalmanager.get();
                     String managerName = manager.getFirstName() + " " + manager.getLastName();
                     Role role = roleRepository.findById(user.getRoleId()).orElseThrow(
                             () -> {
-                                log.error("Role with ID {} not found", user.getManagerId());
-                                throw new ResourceNotFoundException(UserConstants.USER_NOT_FOUND);
+                                log.error("Role with ID {} not found", user.getRoleId());
+                                throw new ResourceNotFoundException("Role not found for the Id");
                             }
                     );
                     UserOutDTO userDto = userDTOConverter.userToOutDto(user, managerName, role.getName());
@@ -206,13 +231,13 @@ public class AdminServiceImpl implements AdminService {
                     User manager = userRepository.findById(user.getManagerId())
                             .orElseThrow(() -> {
                                 log.error("Manager with ID {} not found", user.getManagerId());
-                                throw new ResourceNotFoundException(UserConstants.USER_NOT_FOUND);
+                                throw new ResourceNotFoundException(USER_NOT_FOUND);
                             });
                     String managerName = manager.getFirstName() + " " + manager.getLastName();
                     Role role = roleRepository.findById(user.getRoleId()).orElseThrow(
                             () -> {
                                 log.error("Role with ID {} not found", user.getManagerId());
-                                throw new ResourceNotFoundException(UserConstants.USER_NOT_FOUND);
+                                throw new ResourceNotFoundException(USER_NOT_FOUND);
                             }
                     );
                     UserOutDTO userDto = userDTOConverter.userToOutDto(user, managerName, role.getName());
@@ -235,14 +260,14 @@ public class AdminServiceImpl implements AdminService {
      * @return a message response
      */
     @Override
-    public StandardResponseOutDTO<MessageOutDto> changeUserRole(final long userId, final String newRoleName) {
+    public StandardResponseOutDTO<MessageOutDTO> changeUserRole(final long userId, final String newRoleName) {
         log.info("Attempting to change role for user with ID: {} to role: {}", userId, newRoleName);
         try {
             if (userId != UserConstants.getAdminId()) {
                 User user = userRepository.findById(userId)
                         .orElseThrow(() -> {
                             log.error("User with ID {} not found", userId);
-                            throw new ResourceNotFoundException(UserConstants.USER_NOT_FOUND);
+                            throw new ResourceNotFoundException(USER_NOT_FOUND);
                         });
                 Role role = roleRepository.findByName(newRoleName)
                         .orElseThrow(() -> {
@@ -253,7 +278,7 @@ public class AdminServiceImpl implements AdminService {
                 user.setUpdatedAt(new Date());
                 userRepository.save(user);
                 log.info("Successfully changed role for user with ID: {} to {}", userId, newRoleName);
-                MessageOutDto messageOutDto = new MessageOutDto(UserConstants.UPDATED);
+                MessageOutDTO messageOutDto = new MessageOutDTO(UserConstants.UPDATED);
                 return StandardResponseOutDTO.success(messageOutDto, UserConstants.UPDATED);
             } else {
                 throw new InvalidRequestException(INVALID_REQUEST);
@@ -277,13 +302,13 @@ public class AdminServiceImpl implements AdminService {
             if (userId != UserConstants.getAdminId()) {
                 User manager = userRepository.findById(userId).orElseThrow(() -> {
                     log.error("Manager with ID {} not found", userId);
-                    throw new ResourceNotFoundException(UserConstants.USER_NOT_FOUND);
+                    throw new ResourceNotFoundException(USER_NOT_FOUND);
                 });
                 String managerName = manager.getFirstName() + manager.getLastName();
                 List<User> users = userRepository.findByManagerId(userId);
                 if (users.isEmpty()) {
                     log.warn("No employees found");
-                    return StandardResponseOutDTO.success(Collections.emptyList(), UserConstants.USER_NOT_FOUND);
+                    return StandardResponseOutDTO.success(Collections.emptyList(), USER_NOT_FOUND);
                 }
                 List<UserOutDTO> response = new ArrayList<>();
                 for (User user : users) {
@@ -320,13 +345,13 @@ public class AdminServiceImpl implements AdminService {
      * @param userId      the user ID
      * @return a message response
      */
-    public MessageOutDto updateUserDetails(final UserInDTO registerDto, final long userId) {
+    public MessageOutDTO updateUserDetails(final UserInDTO registerDto, final long userId) {
         log.info("updating user information");
         try {
             if (userId != UserConstants.getAdminId()) {
                 User user = userRepository.findById(userId).orElseThrow(() -> {
                     log.error("User with ID {} not found", userId);
-                    throw new ResourceNotFoundException(UserConstants.USER_NOT_FOUND);
+                    throw new ResourceNotFoundException(USER_NOT_FOUND);
                 });
                 if (!registerDto.getFirstName().isEmpty()) {
                     user.setFirstName(registerDto.getFirstName());
@@ -345,7 +370,7 @@ public class AdminServiceImpl implements AdminService {
                     user.setRoleId(role.get().getRoleId());
                 }
                 userRepository.save(user);
-                return new MessageOutDto(USER_UPDATED_SUCCESSFULLY);
+                return new MessageOutDTO(USER_UPDATED_SUCCESSFULLY);
             } else {
                 throw new InvalidRequestException(INVALID_REQUEST);
             }
@@ -354,4 +379,62 @@ public class AdminServiceImpl implements AdminService {
             throw new RuntimeException(UserConstants.ERROR, e);
         }
     }
+
+
+
+
+    /**
+     * Deletes bundle.
+     *
+     * @param bundleId the user input DTO
+     * @return a message response
+     */
+    @Override
+    public StandardResponseOutDTO<MessageOutDTO> deleteBundle(final long bundleId) {
+        try {
+            log.info("fetching all the enrollments with bundle Id {}", bundleId);
+            List<Enrollment> enrollments = enrollmentRepository.findByBundleId(bundleId);
+            for (Enrollment enrol : enrollments) {
+                enrol.setActive(false);
+                enrollmentRepository.save(enrol);
+            }
+            log.info("Deleting bundle from courseBundle and Bundles");
+            courseMicroserviceClient.deleteBundle(bundleId);
+            MessageOutDTO message = new MessageOutDTO("Bundle Deleted");
+            return StandardResponseOutDTO.success(message, "Bundle Deleted");
+        } catch (RuntimeException e) {
+            log.warn("Error occurred while deleting bundle");
+            throw new RuntimeException(e);
+        }
+    }
+
+
+
+    /**
+     * Remove course from the bundle.
+     *
+     * @param bundleId
+     * @param courseId
+     * @return a message response
+     */
+    @Override
+    public StandardResponseOutDTO<MessageOutDTO> removeCourseFromBundle(final Long bundleId, final Long courseId) {
+        List<Enrollment> enrollments = enrollmentRepository.findByBundleIdAndCourseId(bundleId, courseId);
+        for (Enrollment enrol : enrollments) {
+            enrol.setActive(false);
+            enrollmentRepository.save(enrol);
+        }
+
+       StandardResponseOutDTO<MessageOutDTO> message =  courseMicroserviceClient.removeCourseFromBundle(bundleId,
+               courseId).getBody();
+
+
+
+        return message;
+    }
+
+
+
+
+
 }

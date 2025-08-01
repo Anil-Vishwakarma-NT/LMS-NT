@@ -8,6 +8,7 @@ import com.nt.course_service_lms.dto.outDTO.CourseInfoOutDTO;
 import com.nt.course_service_lms.dto.outDTO.CourseOutDTO;
 import com.nt.course_service_lms.dto.outDTO.CourseSummaryOutDTO;
 import com.nt.course_service_lms.dto.outDTO.DashboardDataOutDTO;
+import com.nt.course_service_lms.dto.outDTO.StandardResponseOutDTO;
 import com.nt.course_service_lms.entity.Course;
 import com.nt.course_service_lms.exception.ResourceAlreadyExistsException;
 import com.nt.course_service_lms.exception.ResourceNotFoundException;
@@ -444,5 +445,16 @@ public class CourseServiceImpl implements CourseService {
                 throw new ResourceAlreadyExistsException(COURSE_DUPLICATE_FOR_OWNER);
             }
         }
+    }
+
+
+
+    @Override
+    public StandardResponseOutDTO<List<CourseInfoOutDTO>> getCoursesByIds(List<Long> courseIds){
+  List<Course> courses = courseRepository.findByCourseIdIn(courseIds);
+    List<CourseInfoOutDTO> courseInfo = courses.stream().map(CourseConvertors::courseToCourseInfoOutDTO).collect(Collectors.toList());
+
+    return StandardResponseOutDTO.success(courseInfo  , "courses retrienved");
+
     }
 }

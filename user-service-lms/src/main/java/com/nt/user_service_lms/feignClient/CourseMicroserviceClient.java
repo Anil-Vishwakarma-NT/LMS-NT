@@ -3,17 +3,19 @@ package com.nt.user_service_lms.feignClient;
 
 import com.nt.user_service_lms.config.FeignTokenInterceptor;
 import com.nt.user_service_lms.dto.outDTO.BundleInfoOutDTO;
-import com.nt.user_service_lms.dto.outDTO.CourseBundleOutDTO;
 import com.nt.user_service_lms.dto.outDTO.CourseInfoOutDTO;
 import com.nt.user_service_lms.dto.outDTO.CourseProgressWithMetaDTO;
 import com.nt.user_service_lms.dto.outDTO.StandardResponseOutDTO;
+import com.nt.user_service_lms.dto.outDTO.BundleOutDTO;
+import com.nt.user_service_lms.dto.outDTO.MessageOutDTO;
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.DeleteMapping;
 
 import java.util.List;
 
@@ -47,8 +49,8 @@ public interface CourseMicroserviceClient {
      * @param bundleId the bundle ID
      * @return a response entity containing a list of course bundles
      */
-    @GetMapping("/bundles/course-bundles/bundle/{id}")
-    ResponseEntity<StandardResponseOutDTO<List<CourseBundleOutDTO>>> getAllCoursesByBundleId(@PathVariable("id") Long bundleId);
+    @GetMapping("/course-bundles/bundle/{id}")
+    ResponseEntity<StandardResponseOutDTO<List<CourseInfoOutDTO>>> getAllCoursesByBundleId(@PathVariable("id") Long bundleId);
 
     /**
      * Retrieves the name of a course by its ID.
@@ -66,7 +68,7 @@ public interface CourseMicroserviceClient {
      * @return a response entity containing the bundle name
      */
     @GetMapping("/bundles/{id}/name")
-    public ResponseEntity<StandardResponseOutDTO<String>> getBundleNameById(@PathVariable("id") Long id);
+    ResponseEntity<StandardResponseOutDTO<String>> getBundleNameById(@PathVariable("id") Long id);
 
     /**
      * Retrieves information for all courses.
@@ -92,7 +94,7 @@ public interface CourseMicroserviceClient {
      * @return a response entity containing the course progress as a double
      */
     @GetMapping("/user-progress")
-    public ResponseEntity<Double> getCourseProgress(@RequestParam Long userId, @RequestParam Long courseId);
+    ResponseEntity<Double> getCourseProgress(@RequestParam Long userId, @RequestParam Long courseId);
 
     /**
      * Retrieves the existing course IDs from a list.
@@ -129,7 +131,7 @@ public interface CourseMicroserviceClient {
      * @return a DTO containing course progress with meta information
      */
     @GetMapping("user-progress/meta")
-    public CourseProgressWithMetaDTO getCourseProgressWithMeta(@RequestParam Long userId, @RequestParam Long courseId);
+    CourseProgressWithMetaDTO getCourseProgressWithMeta(@RequestParam Long userId, @RequestParam Long courseId);
 
     /**
      * Retrieves course information by course ID.
@@ -139,4 +141,53 @@ public interface CourseMicroserviceClient {
      */
     @GetMapping("/course/{id}")
     ResponseEntity<StandardResponseOutDTO<CourseInfoOutDTO>> getCourseById(@PathVariable Long id);
-}
+
+    /**
+     * Deletes bundle by bundle ID.
+     *
+     * @param id the bundle ID
+     * @return a response entity containing the course info DTO
+     */
+    @DeleteMapping("/bundles/{id}")
+    ResponseEntity<StandardResponseOutDTO<Void>> deleteBundle(@PathVariable Long id);
+
+    /**
+     * Retrieves bundle info by bundle Id.
+     *
+     * @param id the bundle ID
+     * @return a response entity containing the course info DTO
+     */
+    @GetMapping("/bundles/{id}")
+    ResponseEntity<StandardResponseOutDTO<BundleOutDTO>> getBundleById(@PathVariable Long id);
+    /**
+     * Get courses info by list of courseIds.
+     *
+     * @param courseIds
+     * @return a response entity containing the course info DTO
+     */
+    @PostMapping("/course/courses")
+    ResponseEntity<StandardResponseOutDTO<List<CourseInfoOutDTO>>> getCoursesByIds(@RequestBody List<Long> courseIds);
+
+    /**
+     * Retrieves bundle info by list of bundle Ids.
+     *
+     * @param bundleIds the bundle ID
+     * @return a response entity containing the course info DTO
+     */
+    @PostMapping("/bundles/meta-bundles")
+    ResponseEntity<StandardResponseOutDTO<List<BundleOutDTO>>> getBundlesByIds(@RequestBody List<Long> bundleIds);
+
+    /**
+     * Remove course from a bundl.
+     *
+     * @param bundleId the bundle ID
+     * @param courseId the course ID
+     * @return a response entity containing the course info DTO
+     */
+    @DeleteMapping("/course-bundles/bundle/removeCourse")
+    ResponseEntity<StandardResponseOutDTO<MessageOutDTO>> removeCourseFromBundle(@RequestParam Long bundleId,
+                                                                                 @RequestParam Long courseId);
+
+
+
+    }
