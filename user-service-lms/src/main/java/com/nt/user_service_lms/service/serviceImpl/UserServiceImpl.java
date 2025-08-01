@@ -115,11 +115,12 @@ public class UserServiceImpl implements UserService {
         List<Object[]> results = userRepository.fetchRecentUserDetails();
         return results.stream().map(obj -> {
             UsersDetailsViewDTO dto = new UsersDetailsViewDTO();
-            dto.setFullName((String) obj[0]);
-            dto.setEmail((String) obj[1]);
-            dto.setRole((String) obj[2]);
+            dto.setFullName((String) obj[1]);
+            dto.setEmail((String) obj[2]);
+            dto.setRole((String) obj[3]);
+            dto.setUserId((Long) obj[0]);
             dto.setManagerName((String) obj[CommonConstants.NUMBER_THREE]);
-            dto.setCreatedAt((Timestamp) obj[CommonConstants.NUMBER_FOUR]);
+            dto.setCreatedAt((Timestamp) obj[NUMBER_FIVE]);
             return dto;
         }).collect(Collectors.toList());
     }

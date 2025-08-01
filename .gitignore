@@ -1,0 +1,20 @@
+# IntelliJ
+.idea/
+*.iws
+*.iml
+*.ipr
+
+# Build output
+/build/
+out/
+.gradle/
+
+# Logs
+*/logs/
+
+# Gradle Wrapper (do not ignore)
+!gradle/wrapper/gradle-wrapper.jar
+
+
+*.class
+*.bin

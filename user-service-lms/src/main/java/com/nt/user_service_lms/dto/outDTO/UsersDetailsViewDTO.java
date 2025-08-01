@@ -15,6 +15,10 @@ import java.sql.Timestamp;
 public class UsersDetailsViewDTO {
 
     /**
+     * The Id  of the user.
+     */
+    private Long userId;
+    /**
      * The full name of the user.
      */
     private String fullName;

@@ -84,7 +84,7 @@ public class BundleServiceImpl implements BundleService {
             log.info("Bundle '{}' created successfully with ID: {}", savedBundle.getBundleName(), savedBundle.getBundleId());
 
             // Convert entity to output DTO
-            return StandardResponseOutDTO.success(bundleConverter.toOutDTO(savedBundle),null);
+            return StandardResponseOutDTO.success(bundleConverter.toOutDTO(savedBundle), null);
         } catch (ResourceAlreadyExistsException e) {
             throw e;
         } catch (Exception e) {
@@ -215,7 +215,7 @@ public class BundleServiceImpl implements BundleService {
                 return new ResourceNotFoundException(String.format(BUNDLE_NOT_FOUND_BY_ID, id));
             });
             List<CourseBundle> courseBundles = courseBundleRepository.findByBundleId(id);
-            for(CourseBundle courseBundle : courseBundles){
+            for (CourseBundle courseBundle : courseBundles) {
                 courseBundle.setActive(false);
                 courseBundleRepository.save(courseBundle);
             }
@@ -318,9 +318,13 @@ public class BundleServiceImpl implements BundleService {
         }
     }
 
-
+    /**
+     * Get bundle By ids.
+     * @param bundleIds
+     * @return bunldeOutDTO
+     */
     @Override
-    public StandardResponseOutDTO<List<BundleOutDTO>> getBundlesByIds(List<Long> bundleIds){
+    public StandardResponseOutDTO<List<BundleOutDTO>> getBundlesByIds(List<Long> bundleIds) {
         List <Bundle> bundles = bundleRepository.findByBundleIdIn(bundleIds);
         BundleConverter bundleConverter = new BundleConverter();
         List<BundleOutDTO> bundleInfo = bundles.stream().map(bundleConverter::toOutDTO).collect(Collectors.toList());

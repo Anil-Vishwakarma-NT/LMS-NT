@@ -1,7 +1,8 @@
 package com.nt.course_service_lms.controller;
 
 import com.nt.course_service_lms.dto.inDTO.AddCourseToBundleInDTO;
-import com.nt.course_service_lms.dto.outDTO.*;
+import com.nt.course_service_lms.dto.outDTO.CourseInfoOutDTO;
+import com.nt.course_service_lms.dto.outDTO.MessageOutDTO;
 import com.nt.course_service_lms.entity.CourseBundle;
 import com.nt.course_service_lms.dto.inDTO.CourseBundleInDTO;
 import com.nt.course_service_lms.dto.inDTO.UpdateCourseBundleInDTO;
@@ -9,14 +10,20 @@ import com.nt.course_service_lms.dto.outDTO.BundleInfoOutDTO;
 import com.nt.course_service_lms.dto.outDTO.BundleSummaryOutDTO;
 import com.nt.course_service_lms.dto.outDTO.CourseBundleOutDTO;
 import com.nt.course_service_lms.dto.outDTO.StandardResponseOutDTO;
-import com.nt.course_service_lms.entity.CourseBundle;
 import com.nt.course_service_lms.service.CourseBundleService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
-
+import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import java.util.List;
 
 /**

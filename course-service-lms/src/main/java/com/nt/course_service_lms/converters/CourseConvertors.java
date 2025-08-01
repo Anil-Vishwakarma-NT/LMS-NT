@@ -99,6 +99,7 @@ public final class CourseConvertors {
      */
     public static CourseSummaryOutDTO courseToCourseSummaryOutDTO(final Course course) {
         return new CourseSummaryOutDTO(
+                course.getCourseId(),
                 course.getTitle(),
                 course.getDescription(),
                 course.getLevel(),

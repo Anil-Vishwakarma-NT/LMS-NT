@@ -1,6 +1,6 @@
 /**
  * This package contains classes and controllers for the Learning Management System (LMS) application.
- * The main class starts the Spring Boot applicatio
+ * The main class starts the Spring Boot application.
  */
 package com.nt.user_service_lms;
 

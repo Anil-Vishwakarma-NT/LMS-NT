@@ -11,9 +11,14 @@ import java.util.List;
 @AllArgsConstructor
 @NoArgsConstructor
 public class AddCourseToBundleInDTO {
+    /**
+     * Bundle Id for bundle
+     */
+   private  Long bundleId;
 
-    Long bundleId;
-
-    List<Long> courses;
+    /**
+     * list of courses to be added.
+     */
+   private List<Long> courses;
 
 }

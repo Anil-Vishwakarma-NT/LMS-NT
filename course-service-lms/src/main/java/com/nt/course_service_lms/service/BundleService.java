@@ -4,7 +4,6 @@ import com.nt.course_service_lms.dto.inDTO.BundleInDTO;
 import com.nt.course_service_lms.dto.inDTO.UpdateBundleInDTO;
 import com.nt.course_service_lms.dto.outDTO.BundleOutDTO;
 import com.nt.course_service_lms.dto.outDTO.StandardResponseOutDTO;
-import com.nt.course_service_lms.exception.ResourceNotFoundException;
 
 import java.util.List;
 
@@ -87,5 +86,10 @@ public interface BundleService {
      */
     List<Long> findExistingIds(List<Long> bundleIds);
 
+    /**
+     * Get bundles by List of Ids.
+     * @param bundleIds
+     * @return list of bundleOutDTO
+     */
     StandardResponseOutDTO<List<BundleOutDTO>> getBundlesByIds(List<Long> bundleIds);
 }

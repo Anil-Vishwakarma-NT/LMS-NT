@@ -58,6 +58,7 @@ public class CourseBundleInDTO {
     @NotNull(message = "Is Active field is required")
     private boolean isActive;
 
+
     @Override
     public boolean equals(Object o) {
         if (this == o) {

@@ -61,6 +61,7 @@ public interface UserRepository extends JpaRepository<User, Long> {
      */
     @Query(value = """
             SELECT
+             u.user_id AS userId,
                 CONCAT(u.firstname, ' ', u.lastname) AS fullName,
                 u.email AS email,
                 r.name AS role,
