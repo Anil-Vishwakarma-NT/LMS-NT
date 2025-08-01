@@ -1,6 +1,6 @@
 package com.nt.course_service_lms.dto.outDTO;
 
-import jdk.jfr.Name;
+
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;

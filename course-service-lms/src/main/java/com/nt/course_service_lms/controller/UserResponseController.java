@@ -55,7 +55,7 @@ public class UserResponseController {
     @PostMapping
     @PreAuthorize("hasAnyRole('ADMIN', 'EMPLOYEE')")
     public ResponseEntity<StandardResponseOutDTO<List<UserResponseOutDTO>>> createUserResponse(
-            @Valid @RequestBody final List<UserResponseInDTO> userResponseInDTOList) {
+             @RequestBody final List<@Valid UserResponseInDTO> userResponseInDTOList) {
         log.info("Received request to create user responses for {} questions", userResponseInDTOList.size());
 
         if (userResponseInDTOList.isEmpty()) {
