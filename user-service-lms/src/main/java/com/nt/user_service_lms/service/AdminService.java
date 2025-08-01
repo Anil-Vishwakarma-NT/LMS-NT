@@ -1,12 +1,11 @@
 package com.nt.user_service_lms.service;
 
 import com.nt.user_service_lms.dto.inDTO.RegisterDto;
-<<<<<<< HEAD
+
 import com.nt.user_service_lms.dto.outDTO.AdminDashboardStatsOutDTO;
-import com.nt.user_service_lms.dto.outDTO.MessageOutDto;
-=======
+
 import com.nt.user_service_lms.dto.outDTO.MessageOutDTO;
->>>>>>> latest-dev
+
 import com.nt.user_service_lms.dto.outDTO.StandardResponseOutDTO;
 import com.nt.user_service_lms.dto.outDTO.UserOutDTO;
 
@@ -64,10 +63,8 @@ public interface AdminService {
      */
     StandardResponseOutDTO<List<UserOutDTO>> getManagerEmployee(long userId);
 
-<<<<<<< HEAD
     StandardResponseOutDTO<AdminDashboardStatsOutDTO> getAdminStats();
-}
-=======
+
     /**
      * Deletes bundle .
      *
@@ -85,6 +82,4 @@ public interface AdminService {
      */
     StandardResponseOutDTO<MessageOutDTO> removeCourseFromBundle(Long bundleId, Long courseId);
 
-   }
-
->>>>>>> latest-dev
+}

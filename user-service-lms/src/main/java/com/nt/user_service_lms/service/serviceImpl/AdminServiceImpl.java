@@ -4,12 +4,8 @@ import com.nt.user_service_lms.constants.UserConstants;
 import com.nt.user_service_lms.converter.UserDTOConverter;
 import com.nt.user_service_lms.dto.inDTO.RegisterDto;
 import com.nt.user_service_lms.dto.inDTO.UserInDTO;
-<<<<<<< HEAD
 import com.nt.user_service_lms.dto.outDTO.AdminDashboardStatsOutDTO;
-import com.nt.user_service_lms.dto.outDTO.MessageOutDto;
-=======
 import com.nt.user_service_lms.dto.outDTO.MessageOutDTO;
->>>>>>> latest-dev
 import com.nt.user_service_lms.dto.outDTO.StandardResponseOutDTO;
 import com.nt.user_service_lms.dto.outDTO.UserOutDTO;
 import com.nt.user_service_lms.entities.Enrollment;
