@@ -278,6 +278,8 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.nt.course_service_lms.config.JwtUtil;
 import com.nt.course_service_lms.config.SecurityConfig;
 import com.nt.course_service_lms.config.ServiceAuthenticationFilter;
+import com.nt.course_service_lms.config.TestAuthenticationFilter;
+import com.nt.course_service_lms.config.TestSecurityConfig;
 import com.nt.course_service_lms.controller.CourseContentController;
 import com.nt.course_service_lms.dto.inDTO.CourseContentInDTO;
 import com.nt.course_service_lms.dto.inDTO.UpdateCourseContentInDTO;
@@ -319,7 +321,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 @WebMvcTest(CourseContentController.class)
 @ExtendWith(MockitoExtension.class)
-@Import(SecurityConfig.class)
+@Import(TestSecurityConfig.class)
 class CourseContentControllerTest {
 
     @Autowired
@@ -332,7 +334,7 @@ class CourseContentControllerTest {
     private CourseContentService courseContentService;
 
     @MockitoBean
-    private ServiceAuthenticationFilter serviceAuthenticationFilter;
+    private TestAuthenticationFilter serviceAuthenticationFilter;
 
     @MockitoBean
     private JwtUtil jwtUtil;

@@ -82,8 +82,8 @@ public class BundleController {
      * if found and HTTP status 200 (OK)
      */
     @GetMapping("/{id}")
-    @PreAuthorize("hasAnyRole('ADMIN', 'USER')")
-    public ResponseEntity<StandardResponseOutDTO<BundleOutDTO>> getBundleById(@PathVariable final Long id) {
+    @PreAuthorize("hasAnyRole('ADMIN', 'EMPLOYEE')")
+    public ResponseEntity<StandardResponseOutDTO<BundleOutDTO>> getBundleById(@PathVariable("id") final Long id) {
         log.info("Received request to fetch bundle with ID: {}", id);
         BundleOutDTO bundle = bundleService.getBundleById(id);
         return ResponseEntity.ok(StandardResponseOutDTO.success(bundle, "Bundle retrieved successfully"));
@@ -101,7 +101,7 @@ public class BundleController {
      */
     @PutMapping("/{id}")
     @PreAuthorize("hasRole('ADMIN')")
-    public ResponseEntity<StandardResponseOutDTO<BundleOutDTO>> updateBundle(@PathVariable final Long id,
+    public ResponseEntity<StandardResponseOutDTO<BundleOutDTO>> updateBundle(@PathVariable("id") final Long id,
                                                                              @Valid @RequestBody final
                                                                              UpdateBundleInDTO updateBundleInDTO) {
         log.info("Received request to update bundle with ID: {}", id);
@@ -119,7 +119,7 @@ public class BundleController {
      */
     @DeleteMapping("/{id}")
     @PreAuthorize("hasRole('ADMIN')")
-    public ResponseEntity<StandardResponseOutDTO<Void>> deleteBundle(@PathVariable final Long id) {
+    public ResponseEntity<StandardResponseOutDTO<Void>> deleteBundle(@PathVariable("id") final Long id) {
         log.info("Received request to delete bundle with ID: {}", id);
         bundleService.deleteBundle(id);
         String message = "Bundle with ID " + id + " deleted successfully.";
@@ -136,8 +136,8 @@ public class BundleController {
      * indicating whether the bundle exists and HTTP status 200 (OK)
      */
     @GetMapping("/{id}/exists")
-    @PreAuthorize("hasAnyRole('ADMIN', 'USER')")
-    public ResponseEntity<StandardResponseOutDTO<Boolean>> checkIfBundleExists(@PathVariable final Long id) {
+    @PreAuthorize("hasAnyRole('ADMIN', 'EMPLOYEE')")
+    public ResponseEntity<StandardResponseOutDTO<Boolean>> checkIfBundleExists(@PathVariable("id") final Long id) {
         log.info("Checking if bundle exists with ID: {}", id);
         boolean exists = bundleService.existsByBundleId(id);
         String message = exists ? "Bundle exists" : "Bundle does not exist";
@@ -171,7 +171,7 @@ public class BundleController {
      * as a String and HTTP status 200 (OK)
      */
     @GetMapping("/{id}/name")
-    @PreAuthorize("hasAnyRole('ADMIN', 'USER')")
+    @PreAuthorize("hasAnyRole('ADMIN', 'EMPLOYEE')")
     public ResponseEntity<StandardResponseOutDTO<String>> getBundleNameById(@PathVariable("id") final Long id) {
         log.info("Received request to get bundle name for ID: {}", id);
         String bundleName = bundleService.getBundleNameById(id);
@@ -189,7 +189,7 @@ public class BundleController {
      * that exist in the system and HTTP status 200 (OK)
      */
     @PostMapping("/existing-ids")
-    @PreAuthorize("hasAnyRole('ADMIN', 'USER')")
+    @PreAuthorize("hasAnyRole('ADMIN', 'EMPLOYEE')")
     public ResponseEntity<List<Long>> getExistingBundleIds(@RequestBody final List<Long> bundleIds) {
         List<Long> existingIds = bundleService.findExistingIds(bundleIds);
         return ResponseEntity.ok(existingIds);

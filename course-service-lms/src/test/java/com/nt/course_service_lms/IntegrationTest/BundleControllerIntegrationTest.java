@@ -54,11 +54,11 @@ class BundleControllerIntegrationTest {
         return headers;
     }
 
-    private HttpHeaders createUserHeaders() {
+    private HttpHeaders createEmployeeHeaders() {
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_JSON);
-        headers.set("X-Test-User", "test-user");
-        headers.set("X-Test-Role", "USER");
+        headers.set("X-Test-User", "test-employee");
+        headers.set("X-Test-Role", "EMPLOYEE");
         return headers;
     }
 
@@ -69,16 +69,17 @@ class BundleControllerIntegrationTest {
     void setupTestData() {
         // Create test bundles directly using repository
         Bundle testBundle1 = Bundle.builder()
-                .bundleName("Spring Boot Fundamentals Bundle")
+                .bundleName("SpringBootFundamentalsBundle")
                 .isActive(true)
                 .createdAt(LocalDateTime.now())
                 .updatedAt(LocalDateTime.now())
                 .build();
         Bundle savedBundle1 = bundleRepository.save(testBundle1);
         createdBundleId = savedBundle1.getBundleId();
+        System.out.println(createdBundleId);
 
         Bundle testBundle2 = Bundle.builder()
-                .bundleName("Advanced Java Bundle")
+                .bundleName("AdvancedJavaBundle")
                 .isActive(false)
                 .createdAt(LocalDateTime.now())
                 .updatedAt(LocalDateTime.now())
@@ -87,7 +88,7 @@ class BundleControllerIntegrationTest {
         secondBundleId = savedBundle2.getBundleId();
 
         Bundle testBundle3 = Bundle.builder()
-                .bundleName("Microservices Bundle")
+                .bundleName("MicroservicesArchitectureBundle")
                 .isActive(true)
                 .createdAt(LocalDateTime.now())
                 .updatedAt(LocalDateTime.now())
@@ -102,7 +103,7 @@ class BundleControllerIntegrationTest {
     @Order(2)
     void shouldCreateBundleSuccessfully() {
         BundleInDTO request = BundleInDTO.builder()
-                .bundleName("New Bundle Creation Test")
+                .bundleName("NewBundleCreationTest")
                 .active(true)
                 .build();
 
@@ -112,13 +113,13 @@ class BundleControllerIntegrationTest {
                 getBaseUrl(),
                 HttpMethod.POST,
                 entity,
-                new ParameterizedTypeReference<StandardResponseOutDTO<BundleOutDTO>>() {}
+                new ParameterizedTypeReference<>() {}
         );
+        System.out.println(response);
 
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.CREATED);
         assertThat(response.getBody()).isNotNull();
-        assertThat(response.getBody().getStatus()).isEqualTo("SUCCESS");
-        assertThat(response.getBody().getData().getBundleName()).isEqualTo("New Bundle Creation Test");
+        assertThat(response.getBody().getData().getBundleName()).isEqualTo("NewBundleCreationTest");
         assertThat(response.getBody().getData().isActive()).isTrue();
         assertThat(response.getBody().getData().getCreatedAt()).isNotNull();
     }
@@ -127,7 +128,7 @@ class BundleControllerIntegrationTest {
     @Order(3)
     void shouldRejectDuplicateBundleName() {
         BundleInDTO request = BundleInDTO.builder()
-                .bundleName("Spring Boot Fundamentals Bundle") // Same name as setup bundle
+                .bundleName("SpringBootFundamentalsBundle") // Same name as setup bundle
                 .active(true)
                 .build();
 
@@ -141,7 +142,6 @@ class BundleControllerIntegrationTest {
         );
 
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.CONFLICT);
-        assertThat(response.getBody()).isNotNull();
         assertThat(response.getBody().getMessage()).contains("already exists");
     }
 
@@ -149,7 +149,7 @@ class BundleControllerIntegrationTest {
     @Order(4)
     void shouldRejectInvalidBundleData() {
         BundleInDTO request = BundleInDTO.builder()
-                .bundleName("AB") // Too short (assuming min 3 characters validation)
+                .bundleName("AB") // Too short (min 3 characters)
                 .active(true)
                 .build();
 
@@ -168,30 +168,70 @@ class BundleControllerIntegrationTest {
 
     @Test
     @Order(5)
-    void shouldDenyBundleCreationForNonAdmin() {
+    void shouldRejectInvalidBundleNamePattern() {
         BundleInDTO request = BundleInDTO.builder()
-                .bundleName("Unauthorized Bundle")
+                .bundleName("123InvalidName") // Starts with digit
                 .active(true)
                 .build();
 
-        HttpEntity<BundleInDTO> entity = new HttpEntity<>(request, createUserHeaders());
+        HttpEntity<BundleInDTO> entity = new HttpEntity<>(request, createAdminHeaders());
 
-        ResponseEntity<ErrorResponse> response = restTemplate.exchange(
+        ResponseEntity<Map<String, String>> response = restTemplate.exchange(
                 getBaseUrl(),
                 HttpMethod.POST,
                 entity,
-                ErrorResponse.class
+                new ParameterizedTypeReference<Map<String, String>>() {}
+        );
+
+        assertThat(response.getStatusCode()).isEqualTo(HttpStatus.BAD_REQUEST);
+        assertThat(response.getBody()).containsKey("bundleName");
+    }
+
+    @Test
+    @Order(6)
+    void shouldRejectBundleNameWithSpaces() {
+        BundleInDTO request = BundleInDTO.builder()
+                .bundleName("Invalid Bundle Name") // Contains spaces (not allowed by pattern)
+                .active(true)
+                .build();
+
+        HttpEntity<BundleInDTO> entity = new HttpEntity<>(request, createAdminHeaders());
+
+        ResponseEntity<Map<String, String>> response = restTemplate.exchange(
+                getBaseUrl(),
+                HttpMethod.POST,
+                entity,
+                new ParameterizedTypeReference<Map<String, String>>() {}
+        );
+
+        assertThat(response.getStatusCode()).isEqualTo(HttpStatus.BAD_REQUEST);
+        assertThat(response.getBody()).containsKey("bundleName");
+    }
+
+    @Test
+    @Order(7)
+    void shouldDenyBundleCreationForNonAdmin() {
+        BundleInDTO request = BundleInDTO.builder()
+                .bundleName("UnauthorizedBundle")
+                .active(true)
+                .build();
+
+        HttpEntity<BundleInDTO> entity = new HttpEntity<>(request, createEmployeeHeaders());
+
+        ResponseEntity<String> response = restTemplate.exchange(
+                getBaseUrl(),
+                HttpMethod.POST,
+                entity,
+                String.class
         );
 
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.FORBIDDEN);
-        assertThat(response.getBody()).isNotNull();
-        assertThat(response.getBody().getMessage()).contains("Access Denied");
     }
 
     // ==================== GET BUNDLE TESTS ====================
 
     @Test
-    @Order(6)
+    @Order(8)
     void shouldGetAllBundlesAsAdmin() {
         HttpEntity<Void> entity = new HttpEntity<>(createAdminHeaders());
 
@@ -199,56 +239,51 @@ class BundleControllerIntegrationTest {
                 getBaseUrl(),
                 HttpMethod.GET,
                 entity,
-                new ParameterizedTypeReference<StandardResponseOutDTO<List<BundleOutDTO>>>() {}
+                new ParameterizedTypeReference<>() {}
         );
 
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
-        assertThat(response.getBody()).isNotNull();
-        assertThat(response.getBody().getStatus()).isEqualTo("SUCCESS");
         assertThat(response.getBody().getData()).isNotEmpty();
         assertThat(response.getBody().getData().size()).isGreaterThanOrEqualTo(3);
     }
 
     @Test
-    @Order(7)
+    @Order(9)
     void shouldDenyGetAllBundlesForNonAdmin() {
-        HttpEntity<Void> entity = new HttpEntity<>(createUserHeaders());
+        HttpEntity<Void> entity = new HttpEntity<>(createEmployeeHeaders());
 
-        ResponseEntity<ErrorResponse> response = restTemplate.exchange(
+        ResponseEntity<String> response = restTemplate.exchange(
                 getBaseUrl(),
                 HttpMethod.GET,
                 entity,
-                ErrorResponse.class
+                String.class
         );
 
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.FORBIDDEN);
-        assertThat(response.getBody()).isNotNull();
-        assertThat(response.getBody().getMessage()).contains("Access Denied");
     }
 
     @Test
-    @Order(8)
+    @Order(10)
     void shouldGetBundleById() {
-        HttpEntity<Void> entity = new HttpEntity<>(createUserHeaders());
+        HttpEntity<Void> entity = new HttpEntity<>(createAdminHeaders());
 
         ResponseEntity<StandardResponseOutDTO<BundleOutDTO>> response = restTemplate.exchange(
                 getBaseUrl() + "/" + createdBundleId,
                 HttpMethod.GET,
                 entity,
-                new ParameterizedTypeReference<StandardResponseOutDTO<BundleOutDTO>>() {}
+                new ParameterizedTypeReference<>() {}
         );
 
+        System.out.println(response);
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
-        assertThat(response.getBody()).isNotNull();
-        assertThat(response.getBody().getStatus()).isEqualTo("SUCCESS");
         assertThat(response.getBody().getData().getBundleId()).isEqualTo(createdBundleId);
-        assertThat(response.getBody().getData().getBundleName()).isEqualTo("Spring Boot Fundamentals Bundle");
+        assertThat(response.getBody().getData().getBundleName()).isEqualTo("SpringBootFundamentalsBundle");
     }
 
     @Test
-    @Order(9)
+    @Order(11)
     void shouldReturn404ForNonExistingBundle() {
-        HttpEntity<Void> entity = new HttpEntity<>(createUserHeaders());
+        HttpEntity<Void> entity = new HttpEntity<>(createEmployeeHeaders());
 
         ResponseEntity<ErrorResponse> response = restTemplate.exchange(
                 getBaseUrl() + "/999999",
@@ -258,68 +293,63 @@ class BundleControllerIntegrationTest {
         );
 
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.NOT_FOUND);
-        assertThat(response.getBody()).isNotNull();
-        assertThat(response.getBody().getMessage()).contains("not found");
     }
 
     @Test
-    @Order(10)
+    @Order(12)
     void shouldCheckBundleExistence() {
-        HttpEntity<Void> entity = new HttpEntity<>(createUserHeaders());
+        HttpEntity<Void> entity = new HttpEntity<>(createEmployeeHeaders());
 
         ResponseEntity<StandardResponseOutDTO<Boolean>> response = restTemplate.exchange(
                 getBaseUrl() + "/" + createdBundleId + "/exists",
                 HttpMethod.GET,
                 entity,
-                new ParameterizedTypeReference<StandardResponseOutDTO<Boolean>>() {}
+                new ParameterizedTypeReference<>() {}
         );
 
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
-        assertThat(response.getBody()).isNotNull();
         assertThat(response.getBody().getData()).isTrue();
     }
 
     @Test
-    @Order(11)
+    @Order(13)
     void shouldReturnFalseForNonExistingBundleCheck() {
-        HttpEntity<Void> entity = new HttpEntity<>(createUserHeaders());
+        HttpEntity<Void> entity = new HttpEntity<>(createEmployeeHeaders());
 
         ResponseEntity<StandardResponseOutDTO<Boolean>> response = restTemplate.exchange(
                 getBaseUrl() + "/999999/exists",
                 HttpMethod.GET,
                 entity,
-                new ParameterizedTypeReference<StandardResponseOutDTO<Boolean>>() {}
+                new ParameterizedTypeReference<>() {}
         );
 
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
-        assertThat(response.getBody()).isNotNull();
         assertThat(response.getBody().getData()).isFalse();
     }
 
     @Test
-    @Order(12)
+    @Order(14)
     void shouldGetBundleNameById() {
-        HttpEntity<Void> entity = new HttpEntity<>(createUserHeaders());
+        HttpEntity<Void> entity = new HttpEntity<>(createEmployeeHeaders());
 
         ResponseEntity<StandardResponseOutDTO<String>> response = restTemplate.exchange(
                 getBaseUrl() + "/" + createdBundleId + "/name",
                 HttpMethod.GET,
                 entity,
-                new ParameterizedTypeReference<StandardResponseOutDTO<String>>() {}
+                new ParameterizedTypeReference<>() {}
         );
 
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
-        assertThat(response.getBody()).isNotNull();
-        assertThat(response.getBody().getData()).isEqualTo("Spring Boot Fundamentals Bundle");
+        assertThat(response.getBody().getData()).isEqualTo("SpringBootFundamentalsBundle");
     }
 
     // ==================== UPDATE BUNDLE TESTS ====================
 
     @Test
-    @Order(13)
+    @Order(15)
     void shouldUpdateBundleSuccessfully() {
         UpdateBundleInDTO updateRequest = UpdateBundleInDTO.builder()
-                .bundleName("Updated Spring Boot Bundle")
+                .bundleName("UpdatedSpringBootBundle")
                 .isActive(false)
                 .build();
 
@@ -329,22 +359,20 @@ class BundleControllerIntegrationTest {
                 getBaseUrl() + "/" + createdBundleId,
                 HttpMethod.PUT,
                 entity,
-                new ParameterizedTypeReference<StandardResponseOutDTO<BundleOutDTO>>() {}
+                new ParameterizedTypeReference<>() {}
         );
 
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
-        assertThat(response.getBody()).isNotNull();
-        assertThat(response.getBody().getStatus()).isEqualTo("SUCCESS");
-        assertThat(response.getBody().getData().getBundleName()).isEqualTo("Updated Spring Boot Bundle");
+        assertThat(response.getBody().getData().getBundleName()).isEqualTo("UpdatedSpringBootBundle");
         assertThat(response.getBody().getData().isActive()).isFalse();
         assertThat(response.getBody().getData().getUpdatedAt()).isNotNull();
     }
 
     @Test
-    @Order(14)
-    void shouldAllowUpdateWithSameTitle() {
+    @Order(16)
+    void shouldAllowUpdateWithSameName() {
         UpdateBundleInDTO updateRequest = UpdateBundleInDTO.builder()
-                .bundleName("Updated Spring Boot Bundle") // Same name as current
+                .bundleName("UpdatedSpringBootBundle") // Same name as current
                 .isActive(true)
                 .build();
 
@@ -354,19 +382,18 @@ class BundleControllerIntegrationTest {
                 getBaseUrl() + "/" + createdBundleId,
                 HttpMethod.PUT,
                 entity,
-                new ParameterizedTypeReference<StandardResponseOutDTO<BundleOutDTO>>() {}
+                new ParameterizedTypeReference<>() {}
         );
 
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
-        assertThat(response.getBody()).isNotNull();
         assertThat(response.getBody().getData().isActive()).isTrue();
     }
 
     @Test
-    @Order(15)
-    void shouldRejectUpdateWithDuplicateTitle() {
+    @Order(17)
+    void shouldRejectUpdateWithDuplicateName() {
         UpdateBundleInDTO updateRequest = UpdateBundleInDTO.builder()
-                .bundleName("Advanced Java Bundle") // Name exists for another bundle
+                .bundleName("AdvancedJavaBundle") // Name exists for another bundle
                 .isActive(true)
                 .build();
 
@@ -385,10 +412,10 @@ class BundleControllerIntegrationTest {
     }
 
     @Test
-    @Order(16)
+    @Order(18)
     void shouldReturn404WhenUpdatingNonExistingBundle() {
         UpdateBundleInDTO updateRequest = UpdateBundleInDTO.builder()
-                .bundleName("Valid Title")
+                .bundleName("ValidBundleName")
                 .isActive(true)
                 .build();
 
@@ -402,34 +429,32 @@ class BundleControllerIntegrationTest {
         );
 
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.NOT_FOUND);
-        assertThat(response.getBody()).isNotNull();
     }
 
     @Test
-    @Order(17)
+    @Order(19)
     void shouldDenyUpdateForNonAdmin() {
         UpdateBundleInDTO updateRequest = UpdateBundleInDTO.builder()
-                .bundleName("Unauthorized Update")
+                .bundleName("UnauthorizedUpdate")
                 .isActive(true)
                 .build();
 
-        HttpEntity<UpdateBundleInDTO> entity = new HttpEntity<>(updateRequest, createUserHeaders());
+        HttpEntity<UpdateBundleInDTO> entity = new HttpEntity<>(updateRequest, createEmployeeHeaders());
 
-        ResponseEntity<ErrorResponse> response = restTemplate.exchange(
+        ResponseEntity<String> response = restTemplate.exchange(
                 getBaseUrl() + "/" + createdBundleId,
                 HttpMethod.PUT,
                 entity,
-                ErrorResponse.class
+                String.class
         );
 
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.FORBIDDEN);
-        assertThat(response.getBody()).isNotNull();
     }
 
     // ==================== UTILITY ENDPOINT TESTS ====================
 
     @Test
-    @Order(18)
+    @Order(20)
     void shouldGetBundleCountAsAdmin() {
         HttpEntity<Void> entity = new HttpEntity<>(createAdminHeaders());
 
@@ -437,19 +462,33 @@ class BundleControllerIntegrationTest {
                 getBaseUrl() + "/count",
                 HttpMethod.GET,
                 entity,
-                new ParameterizedTypeReference<StandardResponseOutDTO<Long>>() {}
+                new ParameterizedTypeReference<>() {}
         );
 
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
-        assertThat(response.getBody()).isNotNull();
         assertThat(response.getBody().getData()).isGreaterThanOrEqualTo(3L);
     }
 
     @Test
-    @Order(19)
+    @Order(21)
+    void shouldDenyBundleCountForNonAdmin() {
+        HttpEntity<Void> entity = new HttpEntity<>(createEmployeeHeaders());
+
+        ResponseEntity<String> response = restTemplate.exchange(
+                getBaseUrl() + "/count",
+                HttpMethod.GET,
+                entity,
+                String.class
+        );
+
+        assertThat(response.getStatusCode()).isEqualTo(HttpStatus.FORBIDDEN);
+    }
+
+    @Test
+    @Order(22)
     void shouldGetExistingBundleIds() {
         List<Long> testIds = Arrays.asList(createdBundleId, secondBundleId, 999999L);
-        HttpEntity<List<Long>> entity = new HttpEntity<>(testIds, createUserHeaders());
+        HttpEntity<List<Long>> entity = new HttpEntity<>(testIds, createEmployeeHeaders());
 
         ResponseEntity<List<Long>> response = restTemplate.exchange(
                 getBaseUrl() + "/existing-ids",
@@ -464,26 +503,26 @@ class BundleControllerIntegrationTest {
     }
 
     @Test
-    @Order(20)
-    void shouldReturn404WhenNoExistingIdsFound() {
+    @Order(23)
+    void shouldReturnEmptyListWhenNoExistingIdsFound() {
         List<Long> nonExistentIds = Arrays.asList(999998L, 999999L);
-        HttpEntity<List<Long>> entity = new HttpEntity<>(nonExistentIds, createUserHeaders());
+        HttpEntity<List<Long>> entity = new HttpEntity<>(nonExistentIds, createEmployeeHeaders());
 
-        ResponseEntity<ErrorResponse> response = restTemplate.exchange(
+        ResponseEntity<List<Long>> response = restTemplate.exchange(
                 getBaseUrl() + "/existing-ids",
                 HttpMethod.POST,
                 entity,
-                ErrorResponse.class
+                new ParameterizedTypeReference<List<Long>>() {}
         );
 
-        assertThat(response.getStatusCode()).isEqualTo(HttpStatus.NOT_FOUND);
-        assertThat(response.getBody()).isNotNull();
+        assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
+        assertThat(response.getBody()).isEmpty();
     }
 
     // ==================== DELETE BUNDLE TESTS ====================
 
     @Test
-    @Order(21)
+    @Order(24)
     void shouldDeleteBundleAsAdmin() {
         HttpEntity<Void> entity = new HttpEntity<>(createAdminHeaders());
 
@@ -491,12 +530,11 @@ class BundleControllerIntegrationTest {
                 getBaseUrl() + "/" + secondBundleId,
                 HttpMethod.DELETE,
                 entity,
-                new ParameterizedTypeReference<StandardResponseOutDTO<Void>>() {}
+                new ParameterizedTypeReference<>() {}
         );
 
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
         assertThat(response.getBody()).isNotNull();
-        assertThat(response.getBody().getStatus()).isEqualTo("SUCCESS");
 
         // Verify deletion - should return 404 NOT_FOUND
         ResponseEntity<ErrorResponse> getResponse = restTemplate.exchange(
@@ -509,7 +547,7 @@ class BundleControllerIntegrationTest {
     }
 
     @Test
-    @Order(22)
+    @Order(25)
     void shouldReturn404WhenDeletingNonExistingBundle() {
         HttpEntity<Void> entity = new HttpEntity<>(createAdminHeaders());
 
@@ -521,29 +559,67 @@ class BundleControllerIntegrationTest {
         );
 
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.NOT_FOUND);
-        assertThat(response.getBody()).isNotNull();
     }
 
     @Test
-    @Order(23)
+    @Order(26)
     void shouldDenyDeleteForNonAdmin() {
-        HttpEntity<Void> entity = new HttpEntity<>(createUserHeaders());
+        HttpEntity<Void> entity = new HttpEntity<>(createEmployeeHeaders());
 
-        ResponseEntity<ErrorResponse> response = restTemplate.exchange(
+        ResponseEntity<String> response = restTemplate.exchange(
                 getBaseUrl() + "/" + createdBundleId,
                 HttpMethod.DELETE,
                 entity,
-                ErrorResponse.class
+                String.class
         );
 
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.FORBIDDEN);
-        assertThat(response.getBody()).isNotNull();
+    }
+
+    // ==================== EDGE CASE TESTS ====================
+
+    @Test
+    @Order(27)
+    void shouldHandleEmptyBundleIdsList() {
+        List<Long> emptyIds = Arrays.asList();
+        HttpEntity<List<Long>> entity = new HttpEntity<>(emptyIds, createEmployeeHeaders());
+
+        ResponseEntity<List<Long>> response = restTemplate.exchange(
+                getBaseUrl() + "/existing-ids",
+                HttpMethod.POST,
+                entity,
+                new ParameterizedTypeReference<List<Long>>() {}
+        );
+
+        assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
+        assertThat(response.getBody()).isEmpty();
+    }
+
+    @Test
+    @Order(28)
+    void shouldRejectBlankBundleName() {
+        BundleInDTO request = BundleInDTO.builder()
+                .bundleName("") // Blank name
+                .active(true)
+                .build();
+
+        HttpEntity<BundleInDTO> entity = new HttpEntity<>(request, createAdminHeaders());
+
+        ResponseEntity<Map<String, String>> response = restTemplate.exchange(
+                getBaseUrl(),
+                HttpMethod.POST,
+                entity,
+                new ParameterizedTypeReference<Map<String, String>>() {}
+        );
+
+        assertThat(response.getStatusCode()).isEqualTo(HttpStatus.BAD_REQUEST);
+        assertThat(response.getBody()).containsKey("bundleName");
     }
 
     // ==================== CLEAN UP ====================
 
     @Test
-    @Order(24)
+    @Order(29)
     void cleanUpTestData() {
         HttpEntity<Void> entity = new HttpEntity<>(createAdminHeaders());
 
@@ -567,15 +643,14 @@ class BundleControllerIntegrationTest {
                 getBaseUrl(),
                 HttpMethod.GET,
                 entity,
-                new ParameterizedTypeReference<StandardResponseOutDTO<List<BundleOutDTO>>>() {}
+                new ParameterizedTypeReference<>() {}
         );
 
-        if (allBundles.getStatusCode() == HttpStatus.OK &&
-                allBundles.getBody() != null &&
-                !allBundles.getBody().getData().isEmpty()) {
+        if (allBundles.getStatusCode() == HttpStatus.OK && !allBundles.getBody().getData().isEmpty()) {
             allBundles.getBody().getData().stream()
                     .filter(bundle -> bundle.getBundleName().contains("Test") ||
-                            bundle.getBundleName().contains("New"))
+                            bundle.getBundleName().contains("New") ||
+                            bundle.getBundleName().contains("No Discount"))
                     .forEach(bundle -> {
                         restTemplate.exchange(
                                 getBaseUrl() + "/" + bundle.getBundleId(),

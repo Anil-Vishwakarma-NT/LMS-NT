@@ -223,6 +223,8 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.nt.course_service_lms.config.JwtUtil;
 import com.nt.course_service_lms.config.SecurityConfig;
 import com.nt.course_service_lms.config.ServiceAuthenticationFilter;
+import com.nt.course_service_lms.config.TestAuthenticationFilter;
+import com.nt.course_service_lms.config.TestSecurityConfig;
 import com.nt.course_service_lms.controller.QuizController;
 import com.nt.course_service_lms.dto.inDTO.QuizCreateInDTO;
 import com.nt.course_service_lms.dto.inDTO.QuizUpdateInDTO;
@@ -266,7 +268,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 @WebMvcTest(QuizController.class)
 @ExtendWith(MockitoExtension.class)
-@Import(SecurityConfig.class)
+@Import(TestSecurityConfig.class)
 class QuizControllerTest {
 
     @Autowired
@@ -279,7 +281,7 @@ class QuizControllerTest {
     private QuizService quizService;
 
     @MockitoBean
-    private ServiceAuthenticationFilter serviceAuthenticationFilter;
+    private TestAuthenticationFilter serviceAuthenticationFilter;
 
     @MockitoBean
     private JwtUtil jwtUtil;
