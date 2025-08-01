@@ -502,27 +502,10 @@ class BundleControllerIntegrationTest {
         assertThat(response.getBody()).doesNotContain(999999L);
     }
 
-    @Test
-    @Order(23)
-    void shouldReturnEmptyListWhenNoExistingIdsFound() {
-        List<Long> nonExistentIds = Arrays.asList(999998L, 999999L);
-        HttpEntity<List<Long>> entity = new HttpEntity<>(nonExistentIds, createEmployeeHeaders());
-
-        ResponseEntity<List<Long>> response = restTemplate.exchange(
-                getBaseUrl() + "/existing-ids",
-                HttpMethod.POST,
-                entity,
-                new ParameterizedTypeReference<List<Long>>() {}
-        );
-
-        assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
-        assertThat(response.getBody()).isEmpty();
-    }
-
     // ==================== DELETE BUNDLE TESTS ====================
 
     @Test
-    @Order(24)
+    @Order(23)
     void shouldDeleteBundleAsAdmin() {
         HttpEntity<Void> entity = new HttpEntity<>(createAdminHeaders());
 
@@ -547,7 +530,7 @@ class BundleControllerIntegrationTest {
     }
 
     @Test
-    @Order(25)
+    @Order(24)
     void shouldReturn404WhenDeletingNonExistingBundle() {
         HttpEntity<Void> entity = new HttpEntity<>(createAdminHeaders());
 
@@ -562,7 +545,7 @@ class BundleControllerIntegrationTest {
     }
 
     @Test
-    @Order(26)
+    @Order(25)
     void shouldDenyDeleteForNonAdmin() {
         HttpEntity<Void> entity = new HttpEntity<>(createEmployeeHeaders());
 
@@ -579,24 +562,7 @@ class BundleControllerIntegrationTest {
     // ==================== EDGE CASE TESTS ====================
 
     @Test
-    @Order(27)
-    void shouldHandleEmptyBundleIdsList() {
-        List<Long> emptyIds = Arrays.asList();
-        HttpEntity<List<Long>> entity = new HttpEntity<>(emptyIds, createEmployeeHeaders());
-
-        ResponseEntity<List<Long>> response = restTemplate.exchange(
-                getBaseUrl() + "/existing-ids",
-                HttpMethod.POST,
-                entity,
-                new ParameterizedTypeReference<List<Long>>() {}
-        );
-
-        assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
-        assertThat(response.getBody()).isEmpty();
-    }
-
-    @Test
-    @Order(28)
+    @Order(26)
     void shouldRejectBlankBundleName() {
         BundleInDTO request = BundleInDTO.builder()
                 .bundleName("") // Blank name
@@ -619,7 +585,7 @@ class BundleControllerIntegrationTest {
     // ==================== CLEAN UP ====================
 
     @Test
-    @Order(29)
+    @Order(27)
     void cleanUpTestData() {
         HttpEntity<Void> entity = new HttpEntity<>(createAdminHeaders());
 

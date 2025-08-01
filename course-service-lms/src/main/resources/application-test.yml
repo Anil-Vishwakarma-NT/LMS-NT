@@ -10,9 +10,12 @@ spring:
 
   jpa:
     database-platform: org.hibernate.dialect.H2Dialect
-    show-sql: false
+    show-sql: true  # Enable SQL logging for debugging
     hibernate:
       ddl-auto: create-drop
+    properties:
+      hibernate:
+        format_sql: true
 
   h2:
     console:
@@ -23,7 +26,7 @@ spring:
         trace: false
 
 server:
-  port: 0  # Use random port for tests
+  port: 8080  # Use random port for tests
 
 # Test-specific JWT configuration (not used but needed for beans)
 jwt:
@@ -48,6 +51,11 @@ direct:
 # Logging for debugging
 logging:
   level:
+    com.nt.course_service_lms: DEBUG
     com.nt.course_service_lms.config: DEBUG
     org.springframework.security: DEBUG
+    org.hibernate.SQL: DEBUG
+    org.hibernate.type.descriptor.sql.BasicBinder: TRACE
     root: INFO
+  pattern:
+    console: "%d{yyyy-MM-dd HH:mm:ss.SSS} [%thread] %-5level [%logger{36}] - %msg%n"
