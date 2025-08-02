@@ -82,7 +82,9 @@ public class SecurityConfig {
                         .pathMatchers(
                                 "/lms/api/client-api/auth/login",
                                 "/lms/api/client-api/auth/refresh",
-                                "/lms/api/client-api/password/**"
+                                "/lms/api/client-api/password/**",
+                                "/course/h2-console/**",
+                                "/user/h2-console/**"
                         ).permitAll()
 
                         // Token introspection - requires authentication

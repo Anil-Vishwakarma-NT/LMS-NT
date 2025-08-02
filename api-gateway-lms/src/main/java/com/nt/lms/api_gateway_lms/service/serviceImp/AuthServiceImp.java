@@ -12,12 +12,16 @@ import com.nt.lms.api_gateway_lms.exception.ResourceNotFoundException;
 import com.nt.lms.api_gateway_lms.service.CustomUserDetailsService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.authentication.BadCredentialsException;
+import org.springframework.security.authentication.DisabledException;
 import org.springframework.security.authentication.ReactiveAuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Service;
 import reactor.core.publisher.Mono;
+import reactor.core.scheduler.Schedulers;
 
 import java.util.Map;
 
@@ -121,6 +125,85 @@ public class AuthServiceImp {
                     return Mono.just(ResponseEntity.status(CommonConstants.INTEGER_FOUR_HUNDRED).body(null));
                 });
     }
+
+
+//    public Mono<ResponseEntity<AuthResponse>> login(final AuthRequest request) {
+//        log.info("Attempting login for email: {}", request.getEmail());
+//
+//        // Early validation - fail fast
+//        if (request.getEmail() == null || request.getPassword() == null) {
+//            log.warn("Login failed - email or password is null");
+//            return Mono.just(ResponseEntity.badRequest().build());
+//        }
+//
+//        // Single authentication call that handles both user lookup and password verification
+//        Authentication auth = new UsernamePasswordAuthenticationToken(
+//                request.getEmail(), request.getPassword()
+//        );
+//
+//        return authenticationManager.authenticate(auth)
+//                .cast(Authentication.class)
+//                .flatMap(authResult -> {
+//                    CustomUserDetails authenticatedUser = (CustomUserDetails) authResult.getPrincipal();
+//
+//                    // Check if user is active (this should ideally be done in UserDetailsService)
+//                    if (!authenticatedUser.isActive()) {
+//                        log.warn("Login attempt failed - user inactive: {}", request.getEmail());
+//                        return Mono.error(new ResourceNotFoundException(UserConstants.USER_DELETED));
+//                    }
+//
+//                    // Generate tokens asynchronously if possible, or at least batch the operations
+//                    return generateTokensAsync(authenticatedUser)
+//                            .map(authResponse -> ResponseEntity.ok(authResponse));
+//                })
+//                .onErrorResume(this::handleAuthenticationError);
+//    }
+//
+//    // Separate method for token generation (can be made async if JWT library supports it)
+//    private Mono<AuthResponse> generateTokensAsync(CustomUserDetails userDetails) {
+//        return Mono.fromCallable(() -> {
+//                    // Batch token generation to minimize processing time
+//                    String accessToken = jwtTokenManager.generateAccessToken(
+//                            userDetails,
+//                            userDetails.getUserId(),
+//                            userDetails.getEmail(),
+//                            userDetails.getFullName()
+//                    );
+//
+//                    String refreshToken = jwtTokenManager.generateRefreshToken(
+//                            userDetails,
+//                            userDetails.getUserId(),
+//                            userDetails.getEmail(),
+//                            userDetails.getFullName()
+//                    );
+//
+//                    return AuthResponse.builder()
+//                            .accessToken(accessToken)
+//                            .refreshToken(refreshToken)
+//                            .tokenType("Bearer")
+//                            .expiresIn(jwtTokenManager.getAccessTokenExpiration() / 1000L)
+//                            .build();
+//                })
+//                .subscribeOn(Schedulers.boundedElastic()); // Use elastic scheduler for CPU-bound operations
+//    }
+//
+//    // Cleaner error handling
+//    private Mono<ResponseEntity<AuthResponse>> handleAuthenticationError(Throwable e) {
+//        if (e instanceof ResourceNotFoundException) {
+//            return Mono.just(ResponseEntity.notFound().build());
+//        }
+//        if (e instanceof BadCredentialsException) {
+//            log.warn("Authentication failed for invalid credentials");
+//            return Mono.just(ResponseEntity.status(HttpStatus.UNAUTHORIZED).build());
+//        }
+//        if (e instanceof DisabledException) {
+//            log.warn("Authentication failed - account disabled");
+//            return Mono.just(ResponseEntity.status(HttpStatus.FORBIDDEN).build());
+//        }
+//
+//        log.error("Authentication failed: {}", e.getMessage());
+//        return Mono.just(ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build());
+//    }
 
     /**
      * Generates a new access token using a valid refresh token.

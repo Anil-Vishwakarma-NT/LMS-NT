@@ -1,177 +1,751 @@
+
 package com.nt.course_service_lms.controllerTest;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.nt.course_service_lms.config.JwtUtil;
+import com.nt.course_service_lms.config.SecurityConfig;
+import com.nt.course_service_lms.config.ServiceAuthenticationFilter;
+import com.nt.course_service_lms.config.TestAuthenticationFilter;
+import com.nt.course_service_lms.config.TestSecurityConfig;
 import com.nt.course_service_lms.controller.CourseContentController;
 import com.nt.course_service_lms.dto.inDTO.CourseContentInDTO;
 import com.nt.course_service_lms.dto.inDTO.UpdateCourseContentInDTO;
 import com.nt.course_service_lms.dto.outDTO.CourseContentOutDTO;
-import com.nt.course_service_lms.dto.outDTO.StandardResponseOutDTO;
+import com.nt.course_service_lms.exception.ResourceAlreadyExistsException;
+import com.nt.course_service_lms.exception.ResourceNotFoundException;
 import com.nt.course_service_lms.service.CourseContentService;
+import jakarta.servlet.FilterChain;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.mockito.InjectMocks;
-import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
-import org.springframework.http.ResponseEntity;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
+import org.springframework.context.annotation.Import;
+import org.springframework.http.MediaType;
+import org.springframework.security.test.context.support.WithMockUser;
+import org.springframework.test.context.bean.override.mockito.MockitoBean;
+import org.springframework.test.web.servlet.MockMvc;
 
+import java.time.LocalDateTime;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.mockito.Mockito.anyLong;
-import static org.mockito.Mockito.eq;
-import static org.mockito.Mockito.times;
-import static org.mockito.Mockito.verify;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyLong;
+import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.when;
+import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-public class CourseContentControllerTest {
+@WebMvcTest(CourseContentController.class)
+@ExtendWith(MockitoExtension.class)
+@Import(TestSecurityConfig.class)
+class CourseContentControllerTest {
 
-    @InjectMocks
-    private CourseContentController controller;
+    @Autowired
+    private MockMvc mockMvc;
 
-    @Mock
-    private CourseContentService service;
+    @Autowired
+    private ObjectMapper objectMapper;
+
+    @MockitoBean
+    private CourseContentService courseContentService;
+
+    @MockitoBean
+    private TestAuthenticationFilter serviceAuthenticationFilter;
+
+    @MockitoBean
+    private JwtUtil jwtUtil;
+
+    private CourseContentInDTO courseContentInDTO;
+    private UpdateCourseContentInDTO updateCourseContentInDTO;
+    private CourseContentOutDTO courseContentOutDTO;
 
     @BeforeEach
-    void setUp() {
-        MockitoAnnotations.openMocks(this);
+    void setUp() throws Exception {
+        // Configure the mocked filter to DO NOTHING but continue the chain
+        doAnswer(invocation -> {
+            FilterChain filterChain = invocation.getArgument(2);
+            filterChain.doFilter(invocation.getArgument(0), invocation.getArgument(1));
+            return null;
+        }).when(serviceAuthenticationFilter).doFilter(any(HttpServletRequest.class), any(HttpServletResponse.class), any(FilterChain.class));
+
+        // Initialize test data
+        courseContentInDTO = CourseContentInDTO.builder()
+                .courseId(1L)
+                .title("Test Course Content")
+                .description("This is a test course content description")
+                .resourceLink("https://example.com/resource")
+                .isActive(true)
+                .build();
+
+        updateCourseContentInDTO = UpdateCourseContentInDTO.builder()
+                .courseId(2L)
+                .title("Updated Course Content")
+                .description("This is an updated course content description")
+                .resourceLink("https://updated-example.com/resource")
+                .isActive(false)
+                .build();
+
+        courseContentOutDTO = CourseContentOutDTO.builder()
+                .courseContentId(1L)
+                .courseId(1L)
+                .title("Test Course Content")
+                .description("This is a test course content description")
+                .resourceLink("https://example.com/resource")
+                .isActive(true)
+                .createdAt(LocalDateTime.now())
+                .updatedAt(LocalDateTime.now())
+                .build();
+    }
+
+    // CREATE COURSE CONTENT TESTS
+    @Test
+    @WithMockUser(roles = "ADMIN")
+    void createCourseContent_ShouldReturnCreatedCourseContent_WhenValidInput() throws Exception {
+        // Given
+        when(courseContentService.createCourseContent(any(CourseContentInDTO.class))).thenReturn(courseContentOutDTO);
+
+        // When & Then
+        mockMvc.perform(post("/api/service-api/course-content")
+                        .with(csrf())
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(courseContentInDTO)))
+                .andExpect(status().isCreated())
+                .andExpect(jsonPath("$.status").value("SUCCESS"))
+                .andExpect(jsonPath("$.message").value("Course Content Created Successfully"))
+                .andExpect(jsonPath("$.data.courseContentId").value(1L))
+                .andExpect(jsonPath("$.data.courseId").value(1L))
+                .andExpect(jsonPath("$.data.title").value("Test Course Content"))
+                .andExpect(jsonPath("$.data.description").value("This is a test course content description"))
+                .andExpect(jsonPath("$.data.resourceLink").value("https://example.com/resource"))
+                .andExpect(jsonPath("$.data.active").value(true));
     }
 
     @Test
-    void testCreateCourseContent() {
-        CourseContentInDTO inDTO = new CourseContentInDTO();
-        inDTO.setTitle("Intro");
-        inDTO.setCourseId(1L);
+    @WithMockUser(roles = "ADMIN")
+    void createCourseContent_ShouldReturnBadRequest_WhenInvalidInput() throws Exception {
+        // Given - Invalid course content with blank title
+        CourseContentInDTO invalidCourseContent = CourseContentInDTO.builder()
+                .courseId(1L)
+                .title("")
+                .description("This is a test description")
+                .resourceLink("https://example.com/resource")
+                .isActive(true)
+                .build();
 
-        CourseContentOutDTO outDTO = new CourseContentOutDTO();
-        outDTO.setCourseContentId(10L);
-        outDTO.setTitle("Intro");
-
-        when(service.createCourseContent(inDTO)).thenReturn(outDTO);
-
-        ResponseEntity<StandardResponseOutDTO<CourseContentOutDTO>> response = controller.createCourseContent(inDTO);
-
-        assertEquals(201, response.getStatusCodeValue());
-        assertEquals("Intro", response.getBody().getData().getTitle());
+        // When & Then
+        mockMvc.perform(post("/api/service-api/course-content")
+                        .with(csrf())
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(invalidCourseContent)))
+                .andExpect(status().isBadRequest());
     }
 
     @Test
-    void testGetAllCourseContents() {
-        CourseContentOutDTO c1 = new CourseContentOutDTO();
-        c1.setTitle("Topic 1");
+    @WithMockUser(roles = "ADMIN")
+    void createCourseContent_ShouldReturnConflict_WhenResourceAlreadyExists() throws Exception {
+        // Given
+        when(courseContentService.createCourseContent(any(CourseContentInDTO.class)))
+                .thenThrow(new ResourceAlreadyExistsException("Course content already exists"));
 
-        CourseContentOutDTO c2 = new CourseContentOutDTO();
-        c2.setTitle("Topic 2");
-
-        when(service.getAllCourseContents()).thenReturn(Arrays.asList(c1, c2));
-
-        ResponseEntity<StandardResponseOutDTO<List<CourseContentOutDTO>>> response = controller.getAllCourseContents();
-
-        assertEquals(200, response.getStatusCodeValue());
-        assertEquals(2, response.getBody().getData().size());
+        // When & Then
+        mockMvc.perform(post("/api/service-api/course-content")
+                        .with(csrf())
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(courseContentInDTO)))
+                .andExpect(status().isConflict());
     }
 
     @Test
-    void testGetAllCourseContents_Empty() {
-        when(service.getAllCourseContents()).thenReturn(Collections.emptyList());
+    @WithMockUser(roles = "ADMIN")
+    void createCourseContent_ShouldReturnBadRequest_WhenCourseNotFound() throws Exception {
+        // Given
+        when(courseContentService.createCourseContent(any(CourseContentInDTO.class)))
+                .thenThrow(new ResourceNotFoundException("Course not found"));
 
-        ResponseEntity<StandardResponseOutDTO<List<CourseContentOutDTO>>> response = controller.getAllCourseContents();
-
-        assertEquals(200, response.getStatusCodeValue());
-        assertTrue(response.getBody().getData().isEmpty());
+        // When & Then
+        mockMvc.perform(post("/api/service-api/course-content")
+                        .with(csrf())
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(courseContentInDTO)))
+                .andExpect(status().isNotFound());
     }
 
     @Test
-    void testGetCourseContentById() {
-        Long id = 1L;
-        CourseContentOutDTO dto = new CourseContentOutDTO();
-        dto.setCourseContentId(id);
-        dto.setTitle("Unit");
-
-        when(service.getCourseContentById(id)).thenReturn(dto);
-
-        ResponseEntity<StandardResponseOutDTO<CourseContentOutDTO>> response = controller.getCourseContentById(id);
-
-        assertEquals(200, response.getStatusCodeValue());
-        assertEquals("Unit", response.getBody().getData().getTitle());
+    @WithMockUser(roles = "EMPLOYEE")
+    void createCourseContent_ShouldReturnForbidden_WhenNotAdmin() throws Exception {
+        // When & Then
+        mockMvc.perform(post("/api/service-api/course-content")
+                        .with(csrf())
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(courseContentInDTO)))
+                .andExpect(status().isForbidden());
     }
 
     @Test
-    void testGetCourseContentByCourseId() {
-        Long courseId = 101L;
+    @WithMockUser(roles = "ADMIN")
+    void createCourseContent_ShouldReturnBadRequest_WhenInvalidResourceLink() throws Exception {
+        // Given - Invalid resource link
+        CourseContentInDTO invalidCourseContent = CourseContentInDTO.builder()
+                .courseId(1L)
+                .title("Test Title")
+                .description("Test Description")
+                .resourceLink("invalid-url")
+                .isActive(true)
+                .build();
 
-        CourseContentOutDTO dto = new CourseContentOutDTO();
-        dto.setCourseContentId(1L);
-
-        when(service.getAllCourseContentByCourseId(courseId)).thenReturn(Collections.singletonList(dto));
-
-        ResponseEntity<StandardResponseOutDTO<List<CourseContentOutDTO>>> response = controller.getCourseContentByCourseId(courseId);
-
-        assertEquals(200, response.getStatusCodeValue());
-        assertEquals(1, response.getBody().getData().size());
+        // When & Then
+        mockMvc.perform(post("/api/service-api/course-content")
+                        .with(csrf())
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(invalidCourseContent)))
+                .andExpect(status().isBadRequest());
     }
 
     @Test
-    void testDeleteCourseContent() {
-        Long id = 99L;
-        when(service.deleteCourseContent(id)).thenReturn("Deleted");
+    @WithMockUser(roles = "ADMIN")
+    void createCourseContent_ShouldReturnBadRequest_WhenNegativeCourseId() throws Exception {
+        // Given - Negative course ID
+        CourseContentInDTO invalidCourseContent = CourseContentInDTO.builder()
+                .courseId(-1L)
+                .title("Test Title")
+                .description("Test Description")
+                .resourceLink("https://example.com")
+                .isActive(true)
+                .build();
 
-        ResponseEntity<StandardResponseOutDTO<Void>> response = controller.deleteCourseContent(id);
+        // When & Then
+        mockMvc.perform(post("/api/service-api/course-content")
+                        .with(csrf())
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(invalidCourseContent)))
+                .andExpect(status().isBadRequest());
+    }
 
-        assertEquals(200, response.getStatusCodeValue());
-        assertEquals("Deleted", response.getBody().getMessage());
-        verify(service, times(1)).deleteCourseContent(id);
+    // GET ALL COURSE CONTENTS TESTS
+    @Test
+    @WithMockUser(roles = "ADMIN")
+    void getAllCourseContents_ShouldReturnListOfCourseContents_WhenCourseContentsExist() throws Exception {
+        // Given
+        List<CourseContentOutDTO> courseContents = Arrays.asList(courseContentOutDTO);
+        when(courseContentService.getAllCourseContents()).thenReturn(courseContents);
+
+        // When & Then
+        mockMvc.perform(get("/api/service-api/course-content"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.status").value("SUCCESS"))
+                .andExpect(jsonPath("$.message").value("Course Contents Retrieved Successfully"))
+                .andExpect(jsonPath("$.data").isArray())
+                .andExpect(jsonPath("$.data[0].courseContentId").value(1L))
+                .andExpect(jsonPath("$.data[0].title").value("Test Course Content"));
     }
 
     @Test
-    void testUpdateCourseContent() {
-        Long id = 1L;
-        UpdateCourseContentInDTO updateDTO = new UpdateCourseContentInDTO();
-        updateDTO.setTitle("Updated");
+    @WithMockUser(roles = "EMPLOYEE")
+    void getAllCourseContents_ShouldReturnListOfCourseContents_WhenEmployeeRole() throws Exception {
+        // Given
+        List<CourseContentOutDTO> courseContents = Arrays.asList(courseContentOutDTO);
+        when(courseContentService.getAllCourseContents()).thenReturn(courseContents);
 
-        CourseContentOutDTO updatedDTO = new CourseContentOutDTO();
-        updatedDTO.setCourseContentId(id);
-        updatedDTO.setTitle("Updated");
-
-        when(service.updateCourseContent(id, updateDTO)).thenReturn(updatedDTO);
-
-        ResponseEntity<StandardResponseOutDTO<CourseContentOutDTO>> response = controller.updateCourseContent(id, updateDTO);
-
-        assertEquals(200, response.getStatusCodeValue());
-        assertEquals("Updated", response.getBody().getData().getTitle());
+        // When & Then
+        mockMvc.perform(get("/api/service-api/course-content"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.status").value("SUCCESS"));
     }
 
     @Test
-    void testHealthCheck() {
-        ResponseEntity<StandardResponseOutDTO<String>> response = controller.healthCheck();
+    @WithMockUser(roles = "ADMIN")
+    void getAllCourseContents_ShouldReturnNotFound_WhenNoCourseContentsExist() throws Exception {
+        // Given
+        when(courseContentService.getAllCourseContents())
+                .thenThrow(new ResourceNotFoundException("No course contents found"));
 
-        assertEquals(200, response.getStatusCodeValue());
-        assertEquals("UP", response.getBody().getData());
+        // When & Then
+        mockMvc.perform(get("/api/service-api/course-content"))
+                .andExpect(status().isNotFound());
     }
 
     @Test
-    void testGetCourseContentCount() {
-        Long courseId = 3L;
-        List<CourseContentOutDTO> list = Arrays.asList(new CourseContentOutDTO(), new CourseContentOutDTO());
+    @WithMockUser(roles = "USER")
+    void getAllCourseContents_ShouldReturnForbidden_WhenUserRole() throws Exception {
+        // When & Then
+        mockMvc.perform(get("/api/service-api/course-content"))
+                .andExpect(status().isForbidden());
+    }
 
-        when(service.getAllCourseContentByCourseId(courseId)).thenReturn(list);
+    // GET COURSE CONTENT BY ID TESTS
+    @Test
+    @WithMockUser(roles = "ADMIN")
+    void getCourseContentById_ShouldReturnCourseContent_WhenCourseContentExists() throws Exception {
+        // Given
+        when(courseContentService.getCourseContentById(1L)).thenReturn(courseContentOutDTO);
 
-        ResponseEntity<StandardResponseOutDTO<Integer>> response = controller.getCourseContentCount(courseId);
-
-        assertEquals(200, response.getStatusCodeValue());
-        assertEquals(2, response.getBody().getData());
+        // When & Then
+        mockMvc.perform(get("/api/service-api/course-content/1"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.status").value("SUCCESS"))
+                .andExpect(jsonPath("$.message").value("Course Content Retrieved Successfully"))
+                .andExpect(jsonPath("$.data.courseContentId").value(1L))
+                .andExpect(jsonPath("$.data.title").value("Test Course Content"));
     }
 
     @Test
-    void testGetCourseContentCount_Empty() {
-        Long courseId = 3L;
+    @WithMockUser(roles = "EMPLOYEE")
+    void getCourseContentById_ShouldReturnCourseContent_WhenEmployeeRole() throws Exception {
+        // Given
+        when(courseContentService.getCourseContentById(1L)).thenReturn(courseContentOutDTO);
 
-        when(service.getAllCourseContentByCourseId(courseId)).thenReturn(Collections.emptyList());
+        // When & Then
+        mockMvc.perform(get("/api/service-api/course-content/1"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.status").value("SUCCESS"));
+    }
 
-        ResponseEntity<StandardResponseOutDTO<Integer>> response = controller.getCourseContentCount(courseId);
+    @Test
+    @WithMockUser(roles = "ADMIN")
+    void getCourseContentById_ShouldReturnNotFound_WhenCourseContentDoesNotExist() throws Exception {
+        // Given
+        when(courseContentService.getCourseContentById(999L))
+                .thenThrow(new ResourceNotFoundException("Course content not found"));
 
-        assertEquals(200, response.getStatusCodeValue());
-        assertEquals(0, response.getBody().getData());
+        // When & Then
+        mockMvc.perform(get("/api/service-api/course-content/999"))
+                .andExpect(status().isNotFound());
+    }
+
+    // GET COURSE CONTENT BY COURSE ID TESTS
+    @Test
+    @WithMockUser(roles = "ADMIN")
+    void getCourseContentByCourseId_ShouldReturnCourseContents_WhenCourseContentExists() throws Exception {
+        // Given
+        List<CourseContentOutDTO> courseContents = Arrays.asList(courseContentOutDTO);
+        when(courseContentService.getAllCourseContentByCourseId(1L)).thenReturn(courseContents);
+
+        // When & Then
+        mockMvc.perform(get("/api/service-api/course-content/course/1"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.status").value("SUCCESS"))
+                .andExpect(jsonPath("$.message").value("Course Contents Retrieved Successfully"))
+                .andExpect(jsonPath("$.data").isArray())
+                .andExpect(jsonPath("$.data[0].courseId").value(1L));
+    }
+
+    @Test
+    @WithMockUser(roles = "EMPLOYEE")
+    void getCourseContentByCourseId_ShouldReturnCourseContents_WhenEmployeeRole() throws Exception {
+        // Given
+        List<CourseContentOutDTO> courseContents = Arrays.asList(courseContentOutDTO);
+        when(courseContentService.getAllCourseContentByCourseId(1L)).thenReturn(courseContents);
+
+        // When & Then
+        mockMvc.perform(get("/api/service-api/course-content/course/1"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.status").value("SUCCESS"));
+    }
+
+    @Test
+    @WithMockUser(roles = "ADMIN")
+    void getCourseContentByCourseId_ShouldReturnNotFound_WhenCourseNotFound() throws Exception {
+        // Given
+        when(courseContentService.getAllCourseContentByCourseId(999L))
+                .thenThrow(new ResourceNotFoundException("Course not found"));
+
+        // When & Then
+        mockMvc.perform(get("/api/service-api/course-content/course/999"))
+                .andExpect(status().isNotFound());
+    }
+
+    @Test
+    @WithMockUser(roles = "ADMIN")
+    void getCourseContentByCourseId_ShouldReturnNotFound_WhenNoCourseContentsFound() throws Exception {
+        // Given
+        when(courseContentService.getAllCourseContentByCourseId(1L))
+                .thenThrow(new ResourceNotFoundException("No course contents found for course"));
+
+        // When & Then
+        mockMvc.perform(get("/api/service-api/course-content/course/1"))
+                .andExpect(status().isNotFound());
+    }
+
+    // DELETE COURSE CONTENT TESTS
+    @Test
+    @WithMockUser(roles = "ADMIN")
+    void deleteCourseContent_ShouldReturnSuccess_WhenCourseContentExists() throws Exception {
+        // Given
+        when(courseContentService.deleteCourseContent(1L)).thenReturn("Course content deleted successfully");
+
+        // When & Then
+        mockMvc.perform(delete("/api/service-api/course-content/1")
+                        .with(csrf()))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.status").value("SUCCESS"))
+                .andExpect(jsonPath("$.message").value("Course content deleted successfully"))
+                .andExpect(jsonPath("$.data").isEmpty());
+    }
+
+    @Test
+    @WithMockUser(roles = "EMPLOYEE")
+    void deleteCourseContent_ShouldReturnForbidden_WhenNotAdmin() throws Exception {
+        // When & Then
+        mockMvc.perform(delete("/api/service-api/course-content/1")
+                        .with(csrf()))
+                .andExpect(status().isForbidden());
+    }
+
+    @Test
+    @WithMockUser(roles = "ADMIN")
+    void deleteCourseContent_ShouldReturnNotFound_WhenCourseContentDoesNotExist() throws Exception {
+        // Given
+        when(courseContentService.deleteCourseContent(999L))
+                .thenThrow(new ResourceNotFoundException("Course content not found"));
+
+        // When & Then
+        mockMvc.perform(delete("/api/service-api/course-content/999")
+                        .with(csrf()))
+                .andExpect(status().isNotFound());
+    }
+
+    // UPDATE COURSE CONTENT TESTS
+    @Test
+    @WithMockUser(roles = "ADMIN")
+    void updateCourseContent_ShouldReturnUpdatedCourseContent_WhenValidInput() throws Exception {
+        // Given
+        CourseContentOutDTO updatedCourseContent = CourseContentOutDTO.builder()
+                .courseContentId(1L)
+                .courseId(2L)
+                .title("Updated Course Content")
+                .description("This is an updated course content description")
+                .resourceLink("https://updated-example.com/resource")
+                .isActive(false)
+                .createdAt(LocalDateTime.now())
+                .updatedAt(LocalDateTime.now())
+                .build();
+
+        when(courseContentService.updateCourseContent(anyLong(), any(UpdateCourseContentInDTO.class)))
+                .thenReturn(updatedCourseContent);
+
+        // When & Then
+        mockMvc.perform(put("/api/service-api/course-content/1")
+                        .with(csrf())
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(updateCourseContentInDTO)))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.status").value("SUCCESS"))
+                .andExpect(jsonPath("$.message").value("Course Content Updated Successfully"))
+                .andExpect(jsonPath("$.data.courseContentId").value(1L))
+                .andExpect(jsonPath("$.data.title").value("Updated Course Content"))
+                .andExpect(jsonPath("$.data.active").value(false));
+    }
+
+    @Test
+    @WithMockUser(roles = "ADMIN")
+    void updateCourseContent_ShouldReturnBadRequest_WhenInvalidInput() throws Exception {
+        // Given - Invalid update with blank title
+        UpdateCourseContentInDTO invalidUpdate = UpdateCourseContentInDTO.builder()
+                .courseId(1L)
+                .title("")
+                .description("Updated description")
+                .resourceLink("https://example.com")
+                .isActive(true)
+                .build();
+
+        // When & Then
+        mockMvc.perform(put("/api/service-api/course-content/1")
+                        .with(csrf())
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(invalidUpdate)))
+                .andExpect(status().isBadRequest());
+    }
+
+    @Test
+    @WithMockUser(roles = "EMPLOYEE")
+    void updateCourseContent_ShouldReturnForbidden_WhenNotAdmin() throws Exception {
+        // When & Then
+        mockMvc.perform(put("/api/service-api/course-content/1")
+                        .with(csrf())
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(updateCourseContentInDTO)))
+                .andExpect(status().isForbidden());
+    }
+
+    @Test
+    @WithMockUser(roles = "ADMIN")
+    void updateCourseContent_ShouldReturnNotFound_WhenCourseContentDoesNotExist() throws Exception {
+        // Given
+        when(courseContentService.updateCourseContent(anyLong(), any(UpdateCourseContentInDTO.class)))
+                .thenThrow(new ResourceNotFoundException("Course content not found"));
+
+        // When & Then
+        mockMvc.perform(put("/api/service-api/course-content/999")
+                        .with(csrf())
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(updateCourseContentInDTO)))
+                .andExpect(status().isNotFound());
+    }
+
+    @Test
+    @WithMockUser(roles = "ADMIN")
+    void updateCourseContent_ShouldReturnConflict_WhenDuplicateFound() throws Exception {
+        // Given
+        when(courseContentService.updateCourseContent(anyLong(), any(UpdateCourseContentInDTO.class)))
+                .thenThrow(new ResourceAlreadyExistsException("Course content with same title already exists"));
+
+        // When & Then
+        mockMvc.perform(put("/api/service-api/course-content/1")
+                        .with(csrf())
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(updateCourseContentInDTO)))
+                .andExpect(status().isConflict());
+    }
+
+
+    // GET COURSE CONTENT COUNT TESTS
+    @Test
+    @WithMockUser(roles = "ADMIN")
+    void getCourseContentCount_ShouldReturnCount_WhenCourseContentsExist() throws Exception {
+        // Given
+        List<CourseContentOutDTO> courseContents = Arrays.asList(courseContentOutDTO, courseContentOutDTO);
+        when(courseContentService.getAllCourseContentByCourseId(1L)).thenReturn(courseContents);
+
+        // When & Then
+        mockMvc.perform(get("/api/service-api/course-content/course/1/count"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.status").value("SUCCESS"))
+                .andExpect(jsonPath("$.message").value("Course Content Count Retrieved Successfully"))
+                .andExpect(jsonPath("$.data").value(2));
+    }
+
+    @Test
+    @WithMockUser(roles = "EMPLOYEE")
+    void getCourseContentCount_ShouldReturnCount_WhenEmployeeRole() throws Exception {
+        // Given
+        List<CourseContentOutDTO> courseContents = Collections.singletonList(courseContentOutDTO);
+        when(courseContentService.getAllCourseContentByCourseId(1L)).thenReturn(courseContents);
+
+        // When & Then
+        mockMvc.perform(get("/api/service-api/course-content/course/1/count"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.status").value("SUCCESS"))
+                .andExpect(jsonPath("$.data").value(1));
+    }
+
+    @Test
+    @WithMockUser(roles = "ADMIN")
+    void getCourseContentCount_ShouldReturnZero_WhenNoCourseContents() throws Exception {
+        // Given
+        when(courseContentService.getAllCourseContentByCourseId(1L))
+                .thenThrow(new ResourceNotFoundException("No course contents found"));
+
+        // When & Then
+        mockMvc.perform(get("/api/service-api/course-content/course/1/count"))
+                .andExpect(status().isNotFound());
+    }
+
+    @Test
+    @WithMockUser(roles = "USER")
+    void getCourseContentCount_ShouldReturnForbidden_WhenUserRole() throws Exception {
+        // When & Then
+        mockMvc.perform(get("/api/service-api/course-content/course/1/count"))
+                .andExpect(status().isForbidden());
+    }
+
+    // EDGE CASES AND ERROR SCENARIOS
+    @Test
+    @WithMockUser(roles = "ADMIN")
+    void createCourseContent_ShouldReturnBadRequest_WhenMalformedJson() throws Exception {
+        // When & Then
+        mockMvc.perform(post("/api/service-api/course-content")
+                        .with(csrf())
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content("invalid json"))
+                .andExpect(status().isBadRequest());
+    }
+
+    @Test
+    @WithMockUser(roles = "ADMIN")
+    void createCourseContent_ShouldReturnBadRequest_WhenDescriptionTooLong() throws Exception {
+        // Given - Description exceeding max length
+        String longDescription = String.join("", Collections.nCopies(1001, "a")); // Assuming max is 1000
+        CourseContentInDTO invalidCourseContent = CourseContentInDTO.builder()
+                .courseId(1L)
+                .title("Test Title")
+                .description(longDescription)
+                .resourceLink("https://example.com")
+                .isActive(true)
+                .build();
+
+        // When & Then
+        mockMvc.perform(post("/api/service-api/course-content")
+                        .with(csrf())
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(invalidCourseContent)))
+                .andExpect(status().isBadRequest());
+    }
+
+    @Test
+    @WithMockUser(roles = "ADMIN")
+    void createCourseContent_ShouldReturnBadRequest_WhenTitleTooLong() throws Exception {
+        // Given - Title exceeding max length
+        String longTitle = String.join("", Collections.nCopies(101, "a"));; // Assuming max is 100
+        CourseContentInDTO invalidCourseContent = CourseContentInDTO.builder()
+                .courseId(1L)
+                .title(longTitle)
+                .description("Test Description")
+                .resourceLink("https://example.com")
+                .isActive(true)
+                .build();
+
+        // When & Then
+        mockMvc.perform(post("/api/service-api/course-content")
+                        .with(csrf())
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(invalidCourseContent)))
+                .andExpect(status().isBadRequest());
+    }
+
+    @Test
+    void getAllCourseContents_ShouldReturnUnauthorized_WhenNoAuthentication() throws Exception {
+        // When & Then
+        mockMvc.perform(get("/api/service-api/course-content"))
+                .andExpect(status().isUnauthorized());
+    }
+
+    @Test
+    void createCourseContent_ShouldReturnUnauthorized_WhenNoAuthentication() throws Exception {
+        // When & Then
+        mockMvc.perform(post("/api/service-api/course-content")
+                        .with(csrf())
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(courseContentInDTO)))
+                .andExpect(status().isUnauthorized());
+    }
+
+    @Test
+    @WithMockUser(roles = "ADMIN")
+    void createCourseContent_ShouldReturnInternalServerError_WhenUnexpectedError() throws Exception {
+        // Given
+        when(courseContentService.createCourseContent(any(CourseContentInDTO.class)))
+                .thenThrow(new RuntimeException("Unexpected error"));
+
+        // When & Then
+        mockMvc.perform(post("/api/service-api/course-content")
+                        .with(csrf())
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(courseContentInDTO)))
+                .andExpect(status().isInternalServerError());
+    }
+
+    @Test
+    @WithMockUser(roles = "ADMIN")
+    void updateCourseContent_ShouldReturnBadRequest_WhenInvalidResourceLink() throws Exception {
+        // Given - Invalid resource link in update
+        UpdateCourseContentInDTO invalidUpdate = UpdateCourseContentInDTO.builder()
+                .courseId(1L)
+                .title("Valid Title")
+                .description("Valid Description")
+                .resourceLink("invalid-url")
+                .isActive(true)
+                .build();
+
+        // When & Then
+        mockMvc.perform(put("/api/service-api/course-content/1")
+                        .with(csrf())
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(invalidUpdate)))
+                .andExpect(status().isBadRequest());
+    }
+
+    @Test
+    @WithMockUser(roles = "ADMIN")
+    void createCourseContent_ShouldAcceptEmptyResourceLink() throws Exception {
+        // Given - Empty resource link should be valid according to regex pattern
+        CourseContentInDTO validCourseContent = CourseContentInDTO.builder()
+                .courseId(1L)
+                .title("Test Title")
+                .description("Test Description")
+                .resourceLink("")
+                .isActive(true)
+                .build();
+
+        when(courseContentService.createCourseContent(any(CourseContentInDTO.class))).thenReturn(courseContentOutDTO);
+
+        // When & Then
+        mockMvc.perform(post("/api/service-api/course-content")
+                        .with(csrf())
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(validCourseContent)))
+                .andExpect(status().isCreated());
+    }
+
+    @Test
+    @WithMockUser(roles = "ADMIN")
+    void createCourseContent_ShouldAcceptFtpResourceLink() throws Exception {
+        // Given - FTP resource link should be valid
+        CourseContentInDTO validCourseContent = CourseContentInDTO.builder()
+                .courseId(1L)
+                .title("Test Title")
+                .description("Test Description")
+                .resourceLink("ftp://example.com/resource")
+                .isActive(true)
+                .build();
+
+        when(courseContentService.createCourseContent(any(CourseContentInDTO.class))).thenReturn(courseContentOutDTO);
+
+        // When & Then
+        mockMvc.perform(post("/api/service-api/course-content")
+                        .with(csrf())
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(validCourseContent)))
+                .andExpect(status().isCreated());
+    }
+
+    @Test
+    @WithMockUser(roles = "ADMIN")
+    void updateCourseContent_ShouldReturnBadRequest_WhenNegativeCourseId() throws Exception {
+        // Given - Negative course ID in update
+        UpdateCourseContentInDTO invalidUpdate = UpdateCourseContentInDTO.builder()
+                .courseId(-1L)
+                .title("Valid Title")
+                .description("Valid Description")
+                .resourceLink("https://example.com")
+                .isActive(true)
+                .build();
+
+        // When & Then
+        mockMvc.perform(put("/api/service-api/course-content/1")
+                        .with(csrf())
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(invalidUpdate)))
+                .andExpect(status().isBadRequest());
+    }
+
+    @Test
+    @WithMockUser(roles = "ADMIN")
+    void updateCourseContent_ShouldReturnBadRequest_WhenBlankDescription() throws Exception {
+        // Given - Blank description in update
+        UpdateCourseContentInDTO invalidUpdate = UpdateCourseContentInDTO.builder()
+                .courseId(1L)
+                .title("Valid Title")
+                .description("")
+                .resourceLink("https://example.com")
+                .isActive(true)
+                .build();
+
+        // When & Then
+        mockMvc.perform(put("/api/service-api/course-content/1")
+                        .with(csrf())
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(invalidUpdate)))
+                .andExpect(status().isBadRequest());
     }
 }

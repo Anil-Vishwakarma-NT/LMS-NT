@@ -1,6 +1,7 @@
 package com.nt.user_service_lms.controller;
 
 import com.nt.user_service_lms.dto.inDTO.RegisterDto;
+import com.nt.user_service_lms.dto.outDTO.AdminDashboardStatsOutDTO;
 import com.nt.user_service_lms.dto.outDTO.UsersDetailsViewDTO;
 import com.nt.user_service_lms.dto.inDTO.UserInDTO;
 import com.nt.user_service_lms.dto.outDTO.MessageOutDTO;
@@ -246,6 +247,12 @@ public class AdminController {
     ) {
         List<UserCourseEnrollDetails> enrolledCourses = userService.getUserEnrolledCourses(userId);
         return ResponseEntity.ok(StandardResponseOutDTO.success(enrolledCourses, "Fetched enrolled courses successfully"));
+    }
+
+    @GetMapping("/admin-dashboard-stats")
+    public ResponseEntity<StandardResponseOutDTO<AdminDashboardStatsOutDTO>> getAdminDashboardStats() {
+        StandardResponseOutDTO<AdminDashboardStatsOutDTO> standardResponseOutDTO = adminService.getAdminStats();
+        return ResponseEntity.ok(standardResponseOutDTO);
     }
 
 }

@@ -3,7 +3,12 @@ package com.nt.course_service_lms.controller;
 import com.nt.course_service_lms.constants.CommonConstants;
 import com.nt.course_service_lms.dto.inDTO.QuizAttemptCreateInDTO;
 import com.nt.course_service_lms.dto.inDTO.QuizAttemptUpdateInDTO;
+import com.nt.course_service_lms.dto.outDTO.QuizAttemptDetailsByCourseIDOutDTO;
+import com.nt.course_service_lms.dto.outDTO.QuizAttemptDetailsByUserIDOutDTO;
 import com.nt.course_service_lms.dto.outDTO.QuizAttemptOutDTO;
+import com.nt.course_service_lms.dto.outDTO.QuizSubmissionResultOutDTO;
+import com.nt.course_service_lms.dto.outDTO.StandardResponseOutDTO;
+import com.nt.course_service_lms.dto.outDTO.UserQuizAttemptDetailsOutDTO;
 import com.nt.course_service_lms.service.QuizAttemptService;
 import jakarta.validation.Valid;
 import lombok.extern.slf4j.Slf4j;
@@ -13,6 +18,8 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PageableDefault;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.method.P;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
@@ -49,6 +56,7 @@ public class QuizAttemptController {
      * @return ResponseEntity containing the created quiz attempt data
      */
     @PostMapping
+    @PreAuthorize("hasAnyRole('ADMIN', 'EMPLOYEE')")
     public ResponseEntity<QuizAttemptOutDTO> createQuizAttempt(@Valid @RequestBody final QuizAttemptCreateInDTO dto) {
         log.info("REST request to create QuizAttempt for user: {} and quiz: {}", dto.getUserId(), dto.getQuizId());
 
@@ -64,6 +72,7 @@ public class QuizAttemptController {
      * @return ResponseEntity containing the updated quiz attempt data
      */
     @PutMapping("/{quizAttemptId}")
+    @PreAuthorize("hasAnyRole('ADMIN', 'EMPLOYEE')")
     public ResponseEntity<QuizAttemptOutDTO> updateQuizAttempt(
             @PathVariable final Long quizAttemptId,
             @Valid @RequestBody final QuizAttemptUpdateInDTO dto) {
@@ -80,6 +89,7 @@ public class QuizAttemptController {
      * @return ResponseEntity containing the quiz attempt data or 404 if not found
      */
     @GetMapping("/{quizAttemptId}")
+    @PreAuthorize("hasAnyRole('ADMIN', 'EMPLOYEE')")
     public ResponseEntity<QuizAttemptOutDTO> getQuizAttemptById(@PathVariable final Long quizAttemptId) {
         log.info("REST request to get QuizAttempt with ID: {}", quizAttemptId);
 
@@ -95,6 +105,7 @@ public class QuizAttemptController {
      * @return ResponseEntity containing a page of quiz attempts
      */
     @GetMapping
+    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<Page<QuizAttemptOutDTO>> getAllQuizAttempts(
             @PageableDefault(size = CommonConstants.NUMBER_TWENTY, sort = "createdAt") final Pageable pageable) {
         log.info("REST request to get all QuizAttempts with pagination");
@@ -110,6 +121,7 @@ public class QuizAttemptController {
      * @return ResponseEntity containing a list of quiz attempts for the user
      */
     @GetMapping("/user/{userId}")
+    @PreAuthorize("hasAnyRole('ADMIN', 'EMPLOYEE')")
     public ResponseEntity<List<QuizAttemptOutDTO>> getQuizAttemptsByUserId(@PathVariable final Long userId) {
         log.info("REST request to get QuizAttempts for user: {}", userId);
 
@@ -124,6 +136,7 @@ public class QuizAttemptController {
      * @return ResponseEntity containing a list of quiz attempts for the quiz
      */
     @GetMapping("/quiz/{quizId}")
+    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<List<QuizAttemptOutDTO>> getQuizAttemptsByQuizId(@PathVariable final Long quizId) {
         log.info("REST request to get QuizAttempts for quiz: {}", quizId);
 
@@ -139,6 +152,7 @@ public class QuizAttemptController {
      * @return ResponseEntity containing a list of quiz attempts for the user and quiz
      */
     @GetMapping("/user/{userId}/quiz/{quizId}")
+    @PreAuthorize("hasAnyRole('ADMIN', 'EMPLOYEE')")
     public ResponseEntity<List<QuizAttemptOutDTO>> getQuizAttemptsByUserAndQuiz(
             @PathVariable final Long userId,
             @PathVariable final Long quizId) {
@@ -155,6 +169,7 @@ public class QuizAttemptController {
      * @return ResponseEntity containing a list of quiz attempts with the specified status
      */
     @GetMapping("/status/{status}")
+    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<List<QuizAttemptOutDTO>> getQuizAttemptsByStatus(@PathVariable final String status) {
         log.info("REST request to get QuizAttempts with status: {}", status);
 
@@ -170,6 +185,7 @@ public class QuizAttemptController {
      * @return ResponseEntity containing the latest quiz attempt or 404 if not found
      */
     @GetMapping("/user/{userId}/quiz/{quizId}/latest")
+    @PreAuthorize("hasAnyRole('ADMIN', 'EMPLOYEE')")
     public ResponseEntity<QuizAttemptOutDTO> getLatestAttemptByUserAndQuiz(
             @PathVariable final Long userId,
             @PathVariable final Long quizId) {
@@ -187,6 +203,7 @@ public class QuizAttemptController {
      * @return ResponseEntity with no content status
      */
     @DeleteMapping("/{quizAttemptId}")
+    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<Void> deleteQuizAttempt(@PathVariable final Long quizAttemptId) {
         log.info("REST request to delete QuizAttempt with ID: {}", quizAttemptId);
 
@@ -202,6 +219,7 @@ public class QuizAttemptController {
      * @return ResponseEntity containing the completed quiz attempt data
      */
     @PatchMapping("/{quizAttemptId}/complete")
+    @PreAuthorize("hasAnyRole('ADMIN', 'EMPLOYEE')")
     public ResponseEntity<QuizAttemptOutDTO> completeAttempt(
             @PathVariable final Long quizAttemptId,
             @RequestBody(required = false) final String scoreDetails) {
@@ -218,6 +236,7 @@ public class QuizAttemptController {
      * @return ResponseEntity containing the abandoned quiz attempt data
      */
     @PatchMapping("/{quizAttemptId}/abandon")
+    @PreAuthorize("hasAnyRole('ADMIN', 'EMPLOYEE')")
     public ResponseEntity<QuizAttemptOutDTO> abandonAttempt(@PathVariable final Long quizAttemptId) {
         log.info("REST request to abandon QuizAttempt with ID: {}", quizAttemptId);
 
@@ -232,6 +251,7 @@ public class QuizAttemptController {
      * @return ResponseEntity containing the timed out quiz attempt data
      */
     @PatchMapping("/{quizAttemptId}/timeout")
+    @PreAuthorize("hasAnyRole('ADMIN', 'EMPLOYEE')")
     public ResponseEntity<QuizAttemptOutDTO> timeOutAttempt(@PathVariable final Long quizAttemptId) {
         log.info("REST request to time out QuizAttempt with ID: {}", quizAttemptId);
 
@@ -246,6 +266,7 @@ public class QuizAttemptController {
      * @return ResponseEntity with 200 status if exists, 404 if not found
      */
     @RequestMapping(value = "/{quizAttemptId}", method = RequestMethod.HEAD)
+    @PreAuthorize("hasAnyRole('ADMIN', 'EMPLOYEE')")
     public ResponseEntity<Void> checkQuizAttemptExists(@PathVariable final Long quizAttemptId) {
         log.info("REST request to check if QuizAttempt exists with ID: {}", quizAttemptId);
 
@@ -261,6 +282,7 @@ public class QuizAttemptController {
      * @return ResponseEntity containing the count of quiz attempts
      */
     @GetMapping("/user/{userId}/quiz/{quizId}/count")
+    @PreAuthorize("hasAnyRole('ADMIN', 'EMPLOYEE')")
     public ResponseEntity<Long> countAttemptsByUserAndQuiz(
             @PathVariable final Long userId,
             @PathVariable final Long quizId) {
@@ -278,5 +300,29 @@ public class QuizAttemptController {
     @GetMapping("/health")
     public ResponseEntity<String> healthCheck() {
         return ResponseEntity.ok("QuizAttempt Controller is healthy");
+    }
+
+    @GetMapping("/user/{userId}/quiz/course/{courseId}")
+    @PreAuthorize("hasAnyRole('ADMIN', 'EMPLOYEE')")
+    public StandardResponseOutDTO<List<UserQuizAttemptDetailsOutDTO>> getUserAttemptDetails(@PathVariable Long userId, @PathVariable Long courseId) {
+        List<UserQuizAttemptDetailsOutDTO> quizSubmissionResultOutDTOS = quizAttemptService.getUserAttemptDetails(userId,courseId);
+        StandardResponseOutDTO<List<UserQuizAttemptDetailsOutDTO>> standardResponseOutDTO = StandardResponseOutDTO.success(quizSubmissionResultOutDTOS, "Fetched user attempt details");
+        return standardResponseOutDTO;
+    }
+
+    @GetMapping("/quiz-attempt-details/{userId}")
+    @PreAuthorize("hasAnyRole('ADMIN', 'EMPLOYEE')")
+    public StandardResponseOutDTO<List<QuizAttemptDetailsByUserIDOutDTO>> getQuizAttemptDetailsByUserId(@PathVariable Long userId) {
+        List<QuizAttemptDetailsByUserIDOutDTO> quizAttemptDetailsByUserIDOutDTOS = quizAttemptService.getQuizAttemptDetailsByUserID(userId);
+        StandardResponseOutDTO<List<QuizAttemptDetailsByUserIDOutDTO>> standardResponseOutDTO = StandardResponseOutDTO.success(quizAttemptDetailsByUserIDOutDTOS, "User Attempt Details Fetched Successfully");
+        return standardResponseOutDTO;
+    }
+
+    @GetMapping("/quiz-attempt-details/course/{courseId}")
+    @PreAuthorize("hasRole('ADMIN')")
+    public StandardResponseOutDTO<List<QuizAttemptDetailsByCourseIDOutDTO>> getQuizAttemptDetailsByCourseId(@PathVariable Long courseId) {
+        List<QuizAttemptDetailsByCourseIDOutDTO> quizAttemptDetailsByUserIDOutDTOS = quizAttemptService.getQuizAttemptDetailsByCourseID(courseId);
+        StandardResponseOutDTO<List<QuizAttemptDetailsByCourseIDOutDTO>> standardResponseOutDTO = StandardResponseOutDTO.success(quizAttemptDetailsByUserIDOutDTOS, "User Attempt Details Fetched Successfully");
+        return standardResponseOutDTO;
     }
 }

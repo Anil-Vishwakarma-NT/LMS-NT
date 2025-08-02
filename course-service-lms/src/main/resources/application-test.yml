@@ -1,0 +1,61 @@
+spring:
+  application:
+    name: course-service-lms
+
+  datasource:
+    url: jdbc:h2:mem:testdb
+    driver-class-name: org.h2.Driver
+    username: sa
+    password:
+
+  jpa:
+    database-platform: org.hibernate.dialect.H2Dialect
+    show-sql: true  # Enable SQL logging for debugging
+    hibernate:
+      ddl-auto: create-drop
+    properties:
+      hibernate:
+        format_sql: true
+
+  h2:
+    console:
+      enabled: true
+      path: /h2-console
+      settings:
+        web-allow-others: true
+        trace: false
+
+server:
+  port: 8080  # Use random port for tests
+
+# Test-specific JWT configuration (not used but needed for beans)
+jwt:
+  secret: test_jwt_secret_for_testing_purposes_only_min_32_chars
+  issuer: http://test-issuer
+
+# Disable gateway validation for tests
+gateway:
+  validation:
+    enabled: false
+  secret:
+    header: X-Gateway-Secret
+    value: test-gateway-secret
+  signature:
+    header: X-Gateway-Signature
+
+direct:
+  secret:
+    header: X-Direct-Secret
+    value: test-direct-secret
+
+# Logging for debugging
+logging:
+  level:
+    com.nt.course_service_lms: DEBUG
+    com.nt.course_service_lms.config: DEBUG
+    org.springframework.security: DEBUG
+    org.hibernate.SQL: DEBUG
+    org.hibernate.type.descriptor.sql.BasicBinder: TRACE
+    root: INFO
+  pattern:
+    console: "%d{yyyy-MM-dd HH:mm:ss.SSS} [%thread] %-5level [%logger{36}] - %msg%n"

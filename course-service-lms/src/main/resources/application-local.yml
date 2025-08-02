@@ -27,7 +27,7 @@ jwt:
 
 gateway:
   validation:
-    enabled: false
+    enabled: true
   secret:
     header: X-Gateway-Secret
     value: your-super-secret-gateway-key-change-this-in-production

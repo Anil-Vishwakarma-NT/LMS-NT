@@ -10,6 +10,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -43,6 +44,7 @@ public class QuizSubmissionController {
      * @return ResponseEntity containing the quiz submission result wrapped in a standard response format
      */
     @PostMapping("/timeout/{quizAttemptId}")
+    @PreAuthorize("hasAnyRole('ADMIN', 'EMPLOYEE')")
     public ResponseEntity<StandardResponseOutDTO<QuizSubmissionResultOutDTO>> submitQuizOnTimeout(
             @PathVariable final Long quizAttemptId,
             @RequestBody final QuizSubmissionInDTO submissionDTO) {
@@ -70,6 +72,7 @@ public class QuizSubmissionController {
      * @throws jakarta.validation.ConstraintViolationException if the submission data is invalid
      */
     @PostMapping("/{quizAttemptId}")
+    @PreAuthorize("hasAnyRole('ADMIN', 'EMPLOYEE')")
     public ResponseEntity<StandardResponseOutDTO<QuizSubmissionResultOutDTO>> submitQuiz(
             @PathVariable final Long quizAttemptId,
             @Valid @RequestBody final QuizSubmissionInDTO submissionDTO,

@@ -8,6 +8,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.context.annotation.Profile;
 import org.springframework.http.HttpHeaders;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
@@ -42,6 +43,7 @@ import static com.nt.course_service_lms.constants.SecurityConstant.TOKEN_TYPE_SE
  * @version 1.0
  * @since 1.0
  */
+@Profile("!test")
 @Component
 public class ServiceAuthenticationFilter extends OncePerRequestFilter {
 
@@ -113,9 +115,14 @@ public class ServiceAuthenticationFilter extends OncePerRequestFilter {
                                     final HttpServletResponse response,
                                     final FilterChain filterChain) throws ServletException, IOException {
 
+
         try {
             String path = request.getRequestURI();
             if (path.startsWith("/video/") || path.startsWith("/pdf/")) {
+                filterChain.doFilter(request, response);
+                return;
+            }
+            if (path.startsWith("/h2-console") || path.startsWith("/favicon.ico")){
                 filterChain.doFilter(request, response);
                 return;
             }
@@ -394,5 +401,11 @@ public class ServiceAuthenticationFilter extends OncePerRequestFilter {
         response.setStatus(HttpServletResponse.SC_FORBIDDEN);
         response.setContentType("application/json");
         response.getWriter().write(String.format(ERROR_FORBIDDEN, message));
+    }
+
+    @Override
+    protected boolean shouldNotFilter(HttpServletRequest request) throws ServletException {
+        String path = request.getRequestURI();
+        return path.startsWith("/h2-console");
     }
 }

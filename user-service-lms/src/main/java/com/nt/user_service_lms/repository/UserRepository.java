@@ -1,6 +1,7 @@
 package com.nt.user_service_lms.repository;
 
 
+import com.nt.user_service_lms.dto.outDTO.AdminDashboardStatsOutDTO;
 import com.nt.user_service_lms.entities.User;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
@@ -84,4 +85,36 @@ public interface UserRepository extends JpaRepository<User, Long> {
      */
     @Query("SELECT u.userId FROM User u WHERE u.userId IN :userIds")
     List<Long> findExistingIds(@Param("userIds") List<Long> userIds);
+
+    @Query(value = "SELECT " +
+            "    (SELECT COUNT(*) FROM users WHERE is_active = true) AS userCount, " +
+            "    (SELECT COUNT(*) FROM groups WHERE is_active = true) AS groupCount, " +
+            "    (SELECT COUNT(*) FROM course WHERE is_active = true) AS courseCount, " +
+            "    (SELECT COUNT(*) FROM bundle WHERE is_active = true) AS bundleCount, " +
+            "    (\n" +
+            "        -- This block calculates the true number of enrollment \"events\"\n" +
+            "        (\n" +
+            "            -- Part 1: Count unique BUNDLE enrollment events\n" +
+            "            SELECT COUNT(*) FROM (\n" +
+            "                SELECT DISTINCT\n" +
+            "                    -- An actor is either a group or a user. We create a unique key like 'g12' or 'u45'.\n" +
+            "                    CASE WHEN group_id IS NOT NULL THEN 'g' || group_id ELSE 'u' || user_id END as actor_key,\n" +
+            "                    bundle_id\n" +
+            "                FROM enrollments\n" +
+            "                WHERE bundle_id IS NOT NULL AND status = 'ACTIVE'\n" +
+            "            ) as bundle_events\n" +
+            "        ) + (\n" +
+            "            -- Part 2: Count unique COURSE-ONLY enrollment events\n" +
+            "            SELECT COUNT(*) FROM (\n" +
+            "                SELECT DISTINCT\n" +
+            "                    CASE WHEN group_id IS NOT NULL THEN 'g' || group_id ELSE 'u' || user_id END as actor_key,\n" +
+            "                    course_id\n" +
+            "                FROM enrollments\n" +
+            "                -- This condition is key: it only considers course enrollments that are NOT part of a bundle.\n" +
+            "                WHERE bundle_id IS NULL AND status = 'ACTIVE'\n" +
+            "            ) as course_events\n" +
+            "        )\n" +
+            "    ) AS totalEnrollments",
+            nativeQuery = true)
+    AdminDashboardStatsOutDTO getAdminDashboardStats();
 }

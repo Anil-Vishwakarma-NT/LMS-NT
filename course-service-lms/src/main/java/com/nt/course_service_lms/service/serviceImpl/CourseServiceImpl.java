@@ -3,9 +3,11 @@ package com.nt.course_service_lms.service.serviceImpl;
 import com.nt.course_service_lms.converters.CourseConvertors;
 import com.nt.course_service_lms.dto.inDTO.CourseInDTO;
 import com.nt.course_service_lms.dto.inDTO.UpdateCourseInDTO;
+import com.nt.course_service_lms.dto.outDTO.BundleSummaryOutDTO;
 import com.nt.course_service_lms.dto.outDTO.CourseInfoOutDTO;
 import com.nt.course_service_lms.dto.outDTO.CourseOutDTO;
 import com.nt.course_service_lms.dto.outDTO.CourseSummaryOutDTO;
+import com.nt.course_service_lms.dto.outDTO.DashboardDataOutDTO;
 import com.nt.course_service_lms.dto.outDTO.StandardResponseOutDTO;
 import com.nt.course_service_lms.entity.Course;
 import com.nt.course_service_lms.exception.ResourceAlreadyExistsException;
@@ -18,7 +20,9 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.sql.Timestamp;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -332,6 +336,45 @@ public class CourseServiceImpl implements CourseService {
         return summaries;
     }
 
+    @Override
+    public DashboardDataOutDTO getRecentDashboardData() {
+        log.info("Fetching recent dashboard data with optimized query");
+
+        List<Object[]> results = courseRepository.findRecentDashboardData();
+
+        List<CourseSummaryOutDTO> courseSummaries = new ArrayList<>();
+        List<BundleSummaryOutDTO> bundleSummaries = new ArrayList<>();
+
+        for (Object[] row : results) {
+            String type = (String) row[0];
+            if ("COURSE".equals(type)) {
+                courseSummaries.add(CourseSummaryOutDTO.builder()
+                        .title((String) row[2])
+                        .description((String) row[3])
+                        .level((String) row[4])
+                        .createdAt(((Timestamp) row[5]).toLocalDateTime())
+                        .updatedAt(((Timestamp) row[6]).toLocalDateTime())
+                        .build());
+            } else if ("BUNDLE".equals(type)) {
+                bundleSummaries.add(BundleSummaryOutDTO.builder()
+                        .bundleId(((Number) row[1]).longValue())
+                        .bundleName((String) row[2])
+                        .courseCount(((Number) row[7]).longValue())
+                        .createdAt(((Timestamp) row[5]).toLocalDateTime())
+                        .updatedAt(((Timestamp) row[6]).toLocalDateTime())
+                        .build());
+            }
+        }
+
+        log.info("Retrieved {} recent courses and {} recent bundles with optimized query",
+                courseSummaries.size(), bundleSummaries.size());
+
+        return DashboardDataOutDTO.builder()
+                .recentCourses(courseSummaries)
+                .recentBundles(bundleSummaries)
+                .build();
+    }
+
     // Private helper methods
 
     /**
@@ -399,7 +442,7 @@ public class CourseServiceImpl implements CourseService {
             if (duplicateCourse.isPresent() && !(duplicateCourse.get().getCourseId() == courseId)) {
                 log.warn("Duplicate course title '{}' exists for owner ID: {}",
                         updateDTO.getTitle(), updateDTO.getOwnerId());
-                throw new ResourceNotValidException(COURSE_DUPLICATE_FOR_OWNER);
+                throw new ResourceAlreadyExistsException(COURSE_DUPLICATE_FOR_OWNER);
             }
         }
     }

@@ -10,6 +10,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -47,6 +48,7 @@ public class QuizQuestionController {
      * @return ResponseEntity containing the created question and success message
      */
     @PostMapping
+    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<StandardResponseOutDTO<QuizQuestionOutDTO>> createQuestion(
             @Valid @RequestBody final QuizQuestionInDTO questionCreateInDTO) {
         log.info("Received request to create question for quiz ID: {}", questionCreateInDTO.getQuizId());
@@ -65,6 +67,7 @@ public class QuizQuestionController {
      * @return ResponseEntity containing the list of questions and success message
      */
     @GetMapping("/quiz/{quizId}")
+    @PreAuthorize("hasAnyRole('ADMIN', 'EMPLOYEE')")
     public ResponseEntity<StandardResponseOutDTO<List<QuizQuestionOutDTO>>> getAllQuestionsByQuizId(
             @PathVariable final Long quizId) {
         log.info("Received request to get all questions for quiz ID: {}", quizId);
@@ -83,6 +86,7 @@ public class QuizQuestionController {
      * @return ResponseEntity containing the question and success message
      */
     @GetMapping("/{questionId}")
+    @PreAuthorize("hasAnyRole('ADMIN', 'EMPLOYEE')")
     public ResponseEntity<StandardResponseOutDTO<QuizQuestionOutDTO>> getQuestionById(
             @PathVariable final Long questionId) {
         log.info("Received request to get question with ID: {}", questionId);
@@ -101,6 +105,7 @@ public class QuizQuestionController {
      * @return ResponseEntity containing the updated question and success message
      */
     @PutMapping("/{questionId}")
+    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<StandardResponseOutDTO<QuizQuestionOutDTO>> updateQuestion(
             @PathVariable final Long questionId,
             @Valid @RequestBody final UpdateQuizQuestionInDTO questionUpdateInDTO) {
@@ -119,6 +124,7 @@ public class QuizQuestionController {
      * @return ResponseEntity containing success message
      */
     @DeleteMapping("/{questionId}")
+    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<StandardResponseOutDTO<Void>> deleteQuestion(
             @PathVariable final Long questionId) {
         log.info("Received request to delete question with ID: {}", questionId);
