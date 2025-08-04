@@ -258,4 +258,10 @@ public class AdminController {
         return ResponseEntity.ok(standardResponseOutDTO);
     }
 
+
+    @GetMapping("/managers")
+    public ResponseEntity<StandardResponseOutDTO<List<UserOutDTO>>> getManagersList(){
+        StandardResponseOutDTO<List<UserOutDTO>> managers = adminService.getManagers();
+        return new ResponseEntity<>(managers , HttpStatus.OK);
+    }
 }
