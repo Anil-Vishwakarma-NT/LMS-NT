@@ -4,7 +4,7 @@ spring:
 
   datasource:
     url: jdbc:postgresql://localhost:5432/lms_db
-    username: LMS
+    username: postgres
     password: root
     driver-class-name: org.postgresql.Driver
 
@@ -25,13 +25,18 @@ spring:
     validate-on-migrate: true
     out-of-order: false
     table: flyway_schema_history
+    repeatable-sql-migration-prefix: R__
+    validate-migration-naming: true
 
 server:
   port: 8081
 
 logging:
   level:
+    org.flywaydb.core.internal.resolver: DEBUG
+    org.flywaydb.core.internal.scanner: DEBUG
     org.springframework.web: DEBUG
+    org.flywaydb: DEBUG
 
 jwt:
   secret: bXlfc2VjcmV0X2tleV9teV9zZWNyZXRfa2V5X3Byb2R1Y3Rpb25fdXNlX3N0cm9uZ2VyX2tleV8yNTZfYml0c19sb25n
