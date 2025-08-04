@@ -3,9 +3,6 @@
   <component name="ProjectModuleManager">
     <modules>
       <module fileurl="file://$PROJECT_DIR$/.idea/modules/com.nt.user-service-lms.main.iml" filepath="$PROJECT_DIR$/.idea/modules/com.nt.user-service-lms.main.iml" />
-      <module fileurl="file://$PROJECT_DIR$/.idea/modules/user-service-lms.iml" filepath="$PROJECT_DIR$/.idea/modules/user-service-lms.iml" />
-      <module fileurl="file://$PROJECT_DIR$/.idea/modules/user-service-lms.main.iml" filepath="$PROJECT_DIR$/.idea/modules/user-service-lms.main.iml" />
-      <module fileurl="file://$PROJECT_DIR$/.idea/modules/user-service-lms.test.iml" filepath="$PROJECT_DIR$/.idea/modules/user-service-lms.test.iml" />
     </modules>
   </component>
 </project>
