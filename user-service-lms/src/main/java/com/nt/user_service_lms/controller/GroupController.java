@@ -60,12 +60,6 @@ public class GroupController {
     private GroupService groupService;
 
     /**
-     * Repository for accessing user data from the database.
-     * Injected via Spring's dependency injection mechanism.
-     */
-    @Autowired
-    private UserRepository userRepository;
-    /**
      * Creates a new group with the specified details.
      * <p>
      * This endpoint allows authenticated users to create a new group by providing

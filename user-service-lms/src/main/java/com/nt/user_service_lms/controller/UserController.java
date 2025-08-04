@@ -41,13 +41,6 @@ import java.util.Optional;
 public class UserController {
 
     /**
-     * Repository for performing database operations on User entities.
-     * Provides methods for finding users by various criteria such as email and ID.
-     */
-    @Autowired
-    private UserRepository userRepository;
-
-    /**
      * Service layer component for handling complex user-related business logic.
      * Encapsulates operations such as retrieving user deadlines and enrolled courses.
      */
@@ -62,19 +55,9 @@ public class UserController {
      * or NOT_FOUND status with null body if user doesn't exist
      */
     @GetMapping("/getUserId")
-    public ResponseEntity<UserOutDTO> getUserIdByEmail(@RequestParam final String email) {
-        Optional<User> user = userRepository.findByEmailIgnoreCase(email);
-
-        if (user.isPresent()) {
-            UserOutDTO userOutDTO = new UserOutDTO();
-            userOutDTO.setUserId(user.get().getUserId());
-            userOutDTO.setFirstName(user.get().getFirstName());
-            userOutDTO.setLastName(user.get().getLastName());
-
-            return ResponseEntity.ok(userOutDTO);
-        } else {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(null);
-        }
+    public ResponseEntity<StandardResponseOutDTO<UserOutDTO>> getUserIdByEmail(@RequestParam final String email) {
+             StandardResponseOutDTO<UserOutDTO> userdto = userService.getUserDetailsByEmail(email);
+             return new ResponseEntity<>(userdto , HttpStatus.OK);
     }
 
     /**
@@ -85,21 +68,12 @@ public class UserController {
      * or NOT_FOUND status with null body if user doesn't exist
      */
     @GetMapping("/getUserDetails")
-    public ResponseEntity<UserOutDTO> getUserIdByAuth() {
+    public ResponseEntity<StandardResponseOutDTO<UserOutDTO>> getUserIdByAuth() {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         String username = authentication.getName();
-        Optional<User> user = userRepository.findByEmailIgnoreCase(username);
 
-        if (user.isPresent()) {
-            UserOutDTO userOutDTO = new UserOutDTO();
-            userOutDTO.setUserId(user.get().getUserId());
-            userOutDTO.setFirstName(user.get().getFirstName());
-            userOutDTO.setLastName(user.get().getLastName());
-
-            return ResponseEntity.ok(userOutDTO);
-        } else {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(null);
-        }
+        StandardResponseOutDTO<UserOutDTO> userdto = userService.getUserDetailsByEmail(username);
+        return new ResponseEntity<>(userdto , HttpStatus.OK);
     }
 
     /**
@@ -111,23 +85,13 @@ public class UserController {
      */
     @GetMapping("/{userId}")
     public ResponseEntity<StandardResponseOutDTO<UserOutDTO>> getUserNameById(@PathVariable final long userId) {
-        Optional<User> userOpt = userRepository.findById(userId);
-
-        if (userOpt.isEmpty()) {
+        StandardResponseOutDTO<UserOutDTO> userdto = userService.getUserDetailsByUserId(userId);
+        if (userdto.getData() == null ) {
             return ResponseEntity
                     .status(HttpStatus.NOT_FOUND)
                     .body(StandardResponseOutDTO.error("User not found"));
         }
-
-        User user = userOpt.get();
-        UserOutDTO userOutDTO = new UserOutDTO();
-        userOutDTO.setUserId(user.getUserId());
-        userOutDTO.setFirstName(user.getFirstName());
-        userOutDTO.setLastName(user.getLastName());
-
-        return ResponseEntity.ok(
-                StandardResponseOutDTO.success(userOutDTO, "Fetched user info")
-        );
+        return new ResponseEntity<>(userdto , HttpStatus.OK);
     }
 
     /**

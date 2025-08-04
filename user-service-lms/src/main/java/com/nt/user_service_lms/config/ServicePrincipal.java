@@ -38,7 +38,7 @@ public final class ServicePrincipal implements Principal {
      *
      * @param builder the builder instance containing the values to set
      */
-    private ServicePrincipal(final Builder builder) {
+    public ServicePrincipal(final Builder builder) {
         this.serviceId = builder.serviceId;
         this.userId = builder.userId;
         this.userEmail = builder.userEmail;

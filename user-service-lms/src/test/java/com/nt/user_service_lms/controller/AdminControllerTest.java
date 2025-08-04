@@ -1,203 +1,171 @@
-//package com.nt.user_service_lms.controller;
-//
-//import com.nt.user_service_lms.dto.*;
-//import com.nt.user_service_lms.service.serviceImpl.AdminServiceImpl;
-//import com.nt.user_service_lms.service.serviceImpl.GroupServiceImpl;
-//import com.nt.user_service_lms.service.serviceImpl.UserServiceImpl;
-//import org.junit.jupiter.api.BeforeEach;
-//import org.junit.jupiter.api.Test;
-//import org.mockito.InjectMocks;
-//import org.mockito.Mock;
-//import org.mockito.MockitoAnnotations;
-//import org.springframework.test.web.servlet.MockMvc;
-//import org.springframework.test.web.servlet.setup.MockMvcBuilders;
-//
-//import java.util.ArrayList;
-//import java.util.List;
-//
-//import static org.mockito.Mockito.*;
-//import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
-//import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
-//import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-//import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
-//import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
-//
-///**
-// * Unit tests for the AdminController class.
-// * <p>
-// * These tests verify the functionality of the AdminController's endpoints, including:
-// * - Registering an admin.
-// * - Deleting an employee.
-// * - Retrieving all employees.
-// * - Retrieving employees managed by a specific manager.
-// * - Changing user roles.
-// * </p>
-// */
-//class AdminControllerTest {
-//
-//    @Mock
-//    private UserServiceImpl userService;
-//
-//    @Mock
-//    private AdminServiceImpl adminService;
-//
-//    @Mock
-//    private GroupServiceImpl groupService;
-//
-//    @InjectMocks
-//    private AdminController adminController;
-//
-//    private MockMvc mockMvc;
-//
-//    /**
-//     * Setup mock data before each test.
-//     */
-//    @BeforeEach
-//    void setUp() {
-//        MockitoAnnotations.openMocks(this);
-//        mockMvc = MockMvcBuilders.standaloneSetup(adminController).build();
-//    }
-//
-//    /**
-//     * Test case for registering an admin.
-//     */
-//    @Test
-//    void testRegister_ShouldReturnSuccessMessage_WhenAdminRegistered() throws Exception {
-//        RegisterDto registerDto = new RegisterDto();
-//        registerDto.setEmail("test@example.com");
-//
-//        MessageOutDto messageOutDto = new MessageOutDto();
-//        messageOutDto.setMessage("Admin registered successfully");
-//
-//        when(adminService.register(registerDto)).thenReturn(StandardResponseOutDTO.success(messageOutDto,"Admin registered successfully"));
-//
-//        mockMvc.perform(post("/admin/register")
-//                        .contentType("application/json")
-//                        .content("{\"email\":\"test@example.com\"}"))
-//                .andExpect(status().isCreated())
-//                .andExpect(jsonPath("$.message").value("Admin registered successfully"));
-//
-//        verify(adminService, times(1)).register(registerDto);
-//    }
-//
-//    /**
-//     * Test case for deleting an employee.
-//     */
-//    @Test
-//    void testDeleteEmployee_ShouldReturnSuccessMessage_WhenEmployeeDeleted() throws Exception {
-//        long userId = 1L;
-//
-//        MessageOutDto messageOutDto = new MessageOutDto();
-//        StandardResponseOutDTO<MessageOutDto> standardResponseOutDTO = new StandardResponseOutDTO<>();
-//        messageOutDto.setMessage("User deleted successfully");
-//
-//        standardResponseOutDTO.setData(messageOutDto);
-//        standardResponseOutDTO.setMessage(null);
-//        standardResponseOutDTO.setStatus("SUCCESS");
-//
-//        when(adminService.employeeDeletion(userId)).thenReturn(standardResponseOutDTO);
-//
-//        mockMvc.perform(delete("/admin/user/{userId}", userId))
-//                .andExpect(status().isOk())
-//                .andExpect(jsonPath("$.message").value("User deleted successfully"));
-//
-//        verify(adminService, times(1)).employeeDeletion(userId);
-//    }
-//
-//    /**
-//     * Test case for retrieving all employees.
-//     */
-//    @Test
-//    void testGetAllEmployees_ShouldReturnEmployeeList_WhenEmployeesExist() throws Exception {
-//        List<UserOutDTO> employees = new ArrayList<>();
-//        UserOutDTO user = new UserOutDTO();
-//        user.setUserId(1L);
-//        user.setEmail("test@example.com");
-//        employees.add(user);
-//
-//        when(adminService.getAllActiveUsers()).thenReturn(employees);
-//
-//        mockMvc.perform(get("/admin/employees"))
-//                .andExpect(status().isOk())
-//                .andExpect(jsonPath("$.size()").value(1))
-//                .andExpect(jsonPath("$[0].userId").value(1))
-//                .andExpect(jsonPath("$[0].email").value("test@example.com"));
-//
-//        verify(adminService, times(1)).getAllActiveUsers();
-//    }
-//
-//    /**
-//     * Test case when there are no employees.
-//     */
-//    @Test
-//    void testGetAllEmployees_ShouldReturnNoContent_WhenNoEmployeesExist() throws Exception {
-//        List<UserOutDTO> employees = new ArrayList<>();
-//
-//        when(adminService.getAllActiveUsers()).thenReturn(employees);
-//
-//        mockMvc.perform(get("/admin/employees"))
-//                .andExpect(status().isNoContent());
-//
-//        verify(adminService, times(1)).getAllActiveUsers();
-//    }
-//
-//    /**
-//     * Test case for retrieving employees managed by a specific manager.
-//     */
-//    @Test
-//    void testGetManagerEmployee_ShouldReturnEmployeeList_WhenEmployeesExist() throws Exception {
-//        long userId = 1L;
-//        List<UserOutDTO> employees = new ArrayList<>();
-//        UserOutDTO user = new UserOutDTO();
-//        user.setUserId(2L);
-//        employees.add(user);
-//
-//        when(adminService.getManagerEmployee(userId)).thenReturn(employees);
-//
-//        mockMvc.perform(get("/admin/manager-employee/{userId}", userId))
-//                .andExpect(status().isOk())
-//                .andExpect(jsonPath("$.size()").value(1))
-//                .andExpect(jsonPath("$[0].userId").value(2));
-//
-//        verify(adminService, times(1)).getManagerEmployee(userId);
-//    }
-//
-//    /**
-//     * Test case when a manager has no employees.
-//     */
-//    @Test
-//    void testGetManagerEmployee_ShouldReturnNoContent_WhenNoEmployeesExist() throws Exception {
-//        long userId = 1L;
-//        List<UserOutDTO> employees = new ArrayList<>();
-//
-//        when(adminService.getManagerEmployee(userId)).thenReturn(employees);
-//
-//        mockMvc.perform(get("/admin/manager-employee/{userId}", userId))
-//                .andExpect(status().isNoContent());
-//
-//        verify(adminService, times(1)).getManagerEmployee(userId);
-//    }
-//
-//    /**
-//     * Test case for changing a user's role.
-//     */
-//    @Test
-//    void testChangeRole_ShouldReturnSuccessMessage_WhenRoleChanged() throws Exception {
-//        UserInDTO userInDTO = new UserInDTO();
-//        userInDTO.setUserId(1L);
-//        userInDTO.setRole("manager");
-//
-//        MessageOutDto messageOutDto = new MessageOutDto();
-//        messageOutDto.setMessage("Role changed successfully");
-//
-//        when(adminService.changeUserRole(userInDTO.getUserId(), userInDTO.getRole())).thenReturn(messageOutDto);
-//
-//        mockMvc.perform(post("/admin/change-role")
-//                        .contentType("application/json")
-//                        .content("{\"userId\":1,\"role\":\"manager\"}"))
-//                .andExpect(status().isOk())
-//                .andExpect(jsonPath("$.message").value("Role changed successfully"));
-//
-//        verify(adminService, times(1)).changeUserRole(userInDTO.getUserId(), userInDTO.getRole());
-//    }
-//}
+package com.nt.user_service_lms.controller;
+
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.nt.user_service_lms.dto.inDTO.RegisterDto;
+import com.nt.user_service_lms.dto.inDTO.UserInDTO;
+import com.nt.user_service_lms.dto.outDTO.*;
+import com.nt.user_service_lms.exception.InvalidRequestException;
+import com.nt.user_service_lms.exception.ResourceConflictException;
+import com.nt.user_service_lms.exception.ResourceNotFoundException;
+import com.nt.user_service_lms.service.serviceImpl.AdminServiceImpl;
+import com.nt.user_service_lms.service.serviceImpl.UserServiceImpl;
+import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.Test;
+import org.mockito.Mockito;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
+import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.http.MediaType;
+import org.springframework.test.web.servlet.MockMvc;
+
+import java.util.Collections;
+import java.util.List;
+
+import static org.hamcrest.Matchers.*;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
+
+@WebMvcTest(AdminController.class)
+class AdminControllerTest {
+
+    @Autowired
+    private MockMvc mockMvc;
+
+    @MockBean
+    private AdminServiceImpl adminService;
+
+    @MockBean
+    private UserServiceImpl userService;
+
+    @Autowired
+    private ObjectMapper objectMapper;
+
+    @Test
+    @DisplayName("POST /register - success")
+    void testRegisterUserSuccess() throws Exception {
+        RegisterDto dto = new RegisterDto();
+        dto.setEmail("test@example.com");
+
+        StandardResponseOutDTO<MessageOutDTO> response = StandardResponseOutDTO.success(new MessageOutDTO("Registered"), "OK");
+
+        Mockito.when(adminService.register(Mockito.any(RegisterDto.class))).thenReturn(response);
+
+        mockMvc.perform(post("/api/service-api/admin/register")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(dto)))
+                .andExpect(status().isCreated())
+                .andExpect(jsonPath("$.message").value("OK"));
+    }
+
+    @Test
+    @DisplayName("POST /register - conflict")
+    void testRegisterConflict() throws Exception {
+        RegisterDto dto = new RegisterDto();
+        dto.setEmail("duplicate@example.com");
+
+        Mockito.when(adminService.register(Mockito.any())).thenThrow(new ResourceConflictException("User exists"));
+
+        mockMvc.perform(post("/api/service-api/admin/register")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(dto)))
+                .andExpect(status().isConflict());
+    }
+
+    @Test
+    void testDeleteEmployeeSuccess() throws Exception {
+        long userId = 1L;
+        StandardResponseOutDTO<MessageOutDTO> response = StandardResponseOutDTO.success(new MessageOutDTO("Deleted"), null);
+        Mockito.when(adminService.employeeDeletion(userId)).thenReturn(response);
+
+        mockMvc.perform(delete("/api/service-api/admin/remove-user/{userId}", userId))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.data.message").value("Deleted"));
+    }
+
+    @Test
+    void testDeleteEmployeeNotFound() throws Exception {
+        long userId = 999;
+        Mockito.when(adminService.employeeDeletion(userId)).thenThrow(new ResourceNotFoundException("Not found"));
+
+        mockMvc.perform(delete("/api/service-api/admin/remove-user/{userId}", userId))
+                .andExpect(status().isNotFound());
+    }
+
+    @Test
+    void testGetAllEmployeesEmptyList() throws Exception {
+        StandardResponseOutDTO<List<UserOutDTO>> response =
+                StandardResponseOutDTO.success(Collections.emptyList(), "No Data");
+
+        Mockito.when(adminService.getAllActiveUsers()).thenReturn(response);
+
+        mockMvc.perform(get("/api/service-api/admin/active-employees"))
+                .andExpect(status().isNoContent());
+    }
+
+    @Test
+    void testChangeUserRoleSuccess() throws Exception {
+        UserInDTO dto = new UserInDTO();
+        dto.setUserId(5L);
+        dto.setRole("manager");
+
+        StandardResponseOutDTO<MessageOutDTO> response = StandardResponseOutDTO.success(
+                new MessageOutDTO("Role updated"), "OK");
+
+        Mockito.when(adminService.changeUserRole(dto.getUserId(), dto.getRole())).thenReturn(response);
+
+        mockMvc.perform(post("/api/service-api/admin/change-role")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(dto)))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.data.message").value("Role updated"));
+    }
+
+    @Test
+    void testChangeUserRoleInvalidRequest() throws Exception {
+        UserInDTO dto = new UserInDTO();
+        dto.setUserId(0L);
+        dto.setRole("admin");
+
+        Mockito.when(adminService.changeUserRole(Mockito.anyLong(), Mockito.anyString()))
+                .thenThrow(new InvalidRequestException("Invalid"));
+
+        mockMvc.perform(post("/api/service-api/admin/change-role")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(dto)))
+                .andExpect(status().isBadRequest());
+    }
+
+    @Test
+    void testGetDashboardStatsSuccess() throws Exception {
+        StandardResponseOutDTO<AdminDashboardStatsOutDTO> response = StandardResponseOutDTO.success(
+                new AdminDashboardStatsOutDTO(), "Fetched");
+
+        Mockito.when(adminService.getAdminStats()).thenReturn(response);
+
+        mockMvc.perform(get("/api/service-api/admin/admin-dashboard-stats"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.message").value("Fetched"));
+    }
+
+    @Test
+    void testDeleteBundle() throws Exception {
+        Mockito.when(adminService.deleteBundle(1L)).thenReturn(
+                StandardResponseOutDTO.success(new MessageOutDTO("Bundle Deleted"), "Bundle Deleted"));
+
+        mockMvc.perform(delete("/api/service-api/admin/bundle?bundleId=1"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.data.message").value("Bundle Deleted"));
+    }
+
+    @Test
+    void testRemoveCourseFromBundle() throws Exception {
+        Mockito.when(adminService.removeCourseFromBundle(1L, 2L)).thenReturn(
+                StandardResponseOutDTO.success(new MessageOutDTO("Removed"), "Success"));
+
+        mockMvc.perform(delete("/api/service-api/admin/bundle/removecourse?bundleId=1&courseId=2"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.data.message").value("Removed"));
+    }
+
+    // Add more tests similarly for updateUserDetails(), getInactiveEmployees, getManagerEmployee, etc.
+}

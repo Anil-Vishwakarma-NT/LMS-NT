@@ -30,9 +30,7 @@ import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 
-import static com.nt.user_service_lms.constants.UserConstants.INVALID_REQUEST;
-import static com.nt.user_service_lms.constants.UserConstants.USER_NOT_FOUND;
-import static com.nt.user_service_lms.constants.UserConstants.USER_UPDATED_SUCCESSFULLY;
+import static com.nt.user_service_lms.constants.UserConstants.*;
 
 /**
  * Service implementation for admin operations such as user registration, deletion, role management, and user retrieval.
@@ -111,6 +109,7 @@ public class AdminServiceImpl implements AdminService {
         user.setRoleId(registerDto.getRoleId());
         user.setCreatedAt(new Date());
         user.setUpdatedAt(new Date());
+        user.setManagerId(UserConstants.getAdminId());
         userRepository.save(user);
         log.info("User registered successfully with email: {}", registerDto.getEmail());
         MessageOutDTO messageOutDto = new MessageOutDTO(UserConstants.USER_REGISTRATION_SUCCESS);
@@ -341,6 +340,7 @@ public class AdminServiceImpl implements AdminService {
      * @param userId      the user ID
      * @return a message response
      */
+    @Override
     public MessageOutDTO updateUserDetails(final UserInDTO registerDto, final long userId) {
         log.info("updating user information");
         try {
@@ -429,6 +429,35 @@ public class AdminServiceImpl implements AdminService {
         return message;
     }
 
+
+//    @Override
+//    public StandardResponseOutDTO<List<UserOutDTO>> getManagers(){
+//        List<User> managers = userRepository.findByRoleId(MANAGER_ROLE_ID);
+//        List<UserOutDTO> userDtos = new ArrayList<>();
+//        for (User user : managers) {
+//            if (user.isActive() && (user.getUserId() != UserConstants.getAdminId())) {
+//                Optional<User> optionalmanager = userRepository.findById(user.getManagerId());
+//
+//                if (!optionalmanager.isPresent()) {
+//                    throw new ResourceNotFoundException(USER_NOT_FOUND + "Manager not found");
+//                }
+//                User manager = optionalmanager.get();
+//                String managerName = manager.getFirstName() + " " + manager.getLastName();
+//                Role role = roleRepository.findById(user.getRoleId()).orElseThrow(
+//                        () -> {
+//                            log.error("Role with ID {} not found", user.getRoleId());
+//                            throw new ResourceNotFoundException("Role not found for the Id");
+//                        }
+//                );
+//                UserOutDTO userDto = userDTOConverter.userToOutDto(user, managerName, role.getName());
+//                userDtos.add(userDto);
+//            }
+//        }
+//
+//
+//
+//
+//    }
 
 
 

@@ -78,6 +78,14 @@ public interface UserRepository extends JpaRepository<User, Long> {
     List<Object[]> fetchRecentUserDetails();
 
     /**
+     * Get list of managers.
+     * @param roleId
+     * @return
+     */
+    List<User> findByRoleId(Long roleId);
+
+
+    /**
      * Finds existing user IDs from the provided list.
      *
      * @param userIds List of user IDs to check.

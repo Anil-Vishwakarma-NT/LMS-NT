@@ -113,6 +113,12 @@ public final class UserConstants {
 
 
     /**
+     * The ID of the manager user.
+     */
+    public static final Long MANAGER_ROLE_ID = 2L;
+
+
+    /**
      * Private constructor to prevent instantiation of this utility class.
      */
     private UserConstants() {

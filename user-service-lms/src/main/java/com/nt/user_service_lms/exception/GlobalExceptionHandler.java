@@ -1,197 +1,160 @@
 package com.nt.user_service_lms.exception;
 
-import com.fasterxml.jackson.databind.exc.InvalidFormatException;
-import jakarta.servlet.http.HttpServletRequest;
-import lombok.AllArgsConstructor;
-import lombok.Data;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.http.converter.HttpMessageNotReadableException;
+import org.springframework.security.access.AccessDeniedException;
 import org.springframework.validation.FieldError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
-import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
-import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.ResponseStatus;
+import org.springframework.web.bind.annotation.RestControllerAdvice;
+import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
 
-import java.time.LocalDateTime;
-import java.util.List;
-import java.util.stream.Collectors;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
- * A centralized exception handler for all REST controllers.
- * Handles various custom and Spring exceptions globally.
+ * Global exception handler for the LMS Course Service.
+ *
+ * <p>This class captures and handles specific and general exceptions thrown across
+ * the application and maps them to appropriate HTTP responses.</p>
+ *
+ * <p>It returns structured {@link ErrorResponse} objects or maps of validation errors
+ * to improve the client-side handling of errors.</p>
  */
-@ControllerAdvice
-public final class GlobalExceptionHandler {
+@RestControllerAdvice
+public class GlobalExceptionHandler {
 
     /**
-     * Handles ResourceConflictException.
+     * Builds a simple {@link ErrorResponse} with the given exception message and status.
      *
-     * @param ex      the exception
-     * @param request the HTTP request
-     * @return standardized error response
+     * @param ex     The exception instance
+     * @param status The HTTP status to associate with the error
+     * @return an {@link ErrorResponse} containing the status code and error message
      */
-    @ExceptionHandler(ResourceConflictException.class)
-    @ResponseStatus(HttpStatus.CONFLICT)
-    @ResponseBody
-    public ErrorResponse handleConflictException(final ResourceConflictException ex,
-                                                 final HttpServletRequest request) {
-        return new ErrorResponse(LocalDateTime.now(), HttpStatus.CONFLICT.value(), ex.getMessage());
-    }
-
-
-    /**
-     * Handles UnauthorizedAccessException.
-     *
-     * @param ex      the exception
-     * @param request the HTTP request
-     * @return standardized error response
-     */
-    @ExceptionHandler(UnauthorizedAccessException.class)
-    @ResponseBody
-    @ResponseStatus(HttpStatus.UNAUTHORIZED)
-    public ErrorResponse handleUnauthorizedException(final UnauthorizedAccessException ex,
-                                                     final HttpServletRequest request) {
-        return new ErrorResponse(LocalDateTime.now(), HttpStatus.UNAUTHORIZED.value(), ex.getMessage());
+    private ErrorResponse buildSimpleErrorResponse(final Exception ex, final HttpStatus status) {
+        return new ErrorResponse(status.value(), ex.getMessage());
     }
 
     /**
-     * Handles Unauthorized Exception errors.
+     * Handles {@link ResourceAlreadyExistsException} and returns a 400 Bad Request response.
      *
-     * @param ex      the exception
-     * @param request the HTTP request
-     * @return standardized error response
-     */
-    @ExceptionHandler(ResourceNotValidException.class)
-    @ResponseBody
-    @ResponseStatus(HttpStatus.BAD_REQUEST)
-    public ErrorResponse handleUnauthorizedException(final ResourceNotValidException ex,
-                                                     final HttpServletRequest request) {
-        return new ErrorResponse(LocalDateTime.now(), HttpStatus.BAD_REQUEST.value(), ex.getMessage());
-    }
-
-    /**
-     * Handles ResourceAlreadyExistsException.
-     *
-     * @param ex      the exception
-     * @param request the HTTP request
-     * @return standardized error response
+     * @param ex the thrown exception
+     * @return a structured error response with status 400
      */
     @ExceptionHandler(ResourceAlreadyExistsException.class)
-    @ResponseBody
     @ResponseStatus(HttpStatus.CONFLICT)
-    public ErrorResponse handleUnauthorizedException(final ResourceAlreadyExistsException ex,
-                                                     final HttpServletRequest request) {
-        return new ErrorResponse(LocalDateTime.now(), HttpStatus.CONFLICT.value(), ex.getMessage());
+    public ResponseEntity<ErrorResponse> handleResourceAlreadyExistsException(final ResourceAlreadyExistsException ex) {
+        ErrorResponse errorResponse = buildSimpleErrorResponse(ex, HttpStatus.CONFLICT);
+        return new ResponseEntity<>(errorResponse, HttpStatus.CONFLICT);
     }
 
     /**
-     * Handles validation exceptions when method arguments fail constraints.
+     * Handles {@link ResourceNotValidException} and returns a 401 Unauthorized response.
      *
-     * @param ex      the validation exception
-     * @param request the HTTP request
-     * @return standardized error response with validation messages
+     * @param ex the thrown exception
+     * @return a structured error response with status 401
      */
-    @ExceptionHandler(MethodArgumentNotValidException.class)
-    @ResponseBody
+    @ExceptionHandler(ResourceNotValidException.class)
     @ResponseStatus(HttpStatus.BAD_REQUEST)
-    public ErrorResponse handleValidationException(final MethodArgumentNotValidException ex,
-                                                   final HttpServletRequest request) {
-        List<String> errors = ex.getBindingResult()
-                .getFieldErrors()
-                .stream()
-                .map(FieldError::getDefaultMessage)
-                .collect(Collectors.toList());
-
-        String errorMessage = String.join(",", errors);
-        return new ErrorResponse(LocalDateTime.now(), HttpStatus.BAD_REQUEST.value(), "Validation failed: " + errorMessage);
+    public ResponseEntity<ErrorResponse> handleResourceNotValidException(final ResourceNotValidException ex) {
+        ErrorResponse errorResponse = buildSimpleErrorResponse(ex, HttpStatus.BAD_REQUEST);
+        return new ResponseEntity<>(errorResponse, HttpStatus.BAD_REQUEST);
     }
 
     /**
-     * Handles ResourceNotFoundException.
+     * Handles {@link ResourceNotFoundException} and returns a 404 Not Found response.
      *
-     * @param ex      the exception
-     * @param request the HTTP request
-     * @return standardized error response
+     * @param ex the thrown exception
+     * @return a structured error response with status 404
      */
     @ExceptionHandler(ResourceNotFoundException.class)
     @ResponseStatus(HttpStatus.NOT_FOUND)
-    @ResponseBody
-    public ErrorResponse handleResourceNotFoundException(final ResourceNotFoundException ex,
-                                                         final HttpServletRequest request) {
-        return new ErrorResponse(LocalDateTime.now(), HttpStatus.NOT_FOUND.value(), ex.getMessage());
+    public ResponseEntity<ErrorResponse> handleResourceNotFoundException(final ResourceNotFoundException ex) {
+        ErrorResponse errorResponse = buildSimpleErrorResponse(ex, HttpStatus.NOT_FOUND);
+        return new ResponseEntity<>(errorResponse, HttpStatus.NOT_FOUND);
     }
 
     /**
-     * Handles InvalidRequestException.
+     * Handles {@link MethodArgumentNotValidException} (bean validation errors) and returns
+     * a map of field-specific validation messages with 400 Bad Request status.
      *
-     * @param ex      the exception
-     * @param request the HTTP request
-     * @return standardized error response
+     * @param ex the thrown validation exception
+     * @return a map of field names to validation error messages
      */
-    @ExceptionHandler(InvalidRequestException.class)
+    @ExceptionHandler(MethodArgumentNotValidException.class)
     @ResponseStatus(HttpStatus.BAD_REQUEST)
-    @ResponseBody
-    public ErrorResponse handleInvalidRequestException(final InvalidRequestException ex,
-                                                       final HttpServletRequest request) {
-        return new ErrorResponse(LocalDateTime.now(), HttpStatus.BAD_REQUEST.value(), ex.getMessage());
+    public Map<String, String> handleValidationException(final MethodArgumentNotValidException ex) {
+        Map<String, String> errors = new HashMap<>();
+        ex.getBindingResult().getAllErrors().forEach((error) -> {
+            String fieldName = ((FieldError) error).getField();
+            String errorMessage = error.getDefaultMessage();
+            errors.put(fieldName, errorMessage);
+        });
+        return errors;
     }
 
     /**
-     * Handles bad input format errors.
+     * Handles security-related {@link AccessDeniedException} and returns a 403 Forbidden response.
      *
-     * @param ex      the exception
-     * @param request the HTTP request
-     * @return standardized error response
+     * <p>This ensures that authorization failures, like those from {@code @PreAuthorize},
+     * are handled correctly and not caught by the generic exception handler.</p>
+     *
+     * @param ex the thrown security exception
+     * @return a structured error response with status 403
+     */
+    @ExceptionHandler(AccessDeniedException.class)
+    @ResponseStatus(HttpStatus.FORBIDDEN)
+    public ResponseEntity<ErrorResponse> handleAccessDeniedException(final AccessDeniedException ex) {
+        ErrorResponse errorResponse = new ErrorResponse(HttpStatus.FORBIDDEN.value(), "Access Denied. You do not have permission to perform this action.");
+        return new ResponseEntity<>(errorResponse, HttpStatus.FORBIDDEN);
+    }
+
+    /**
+     * Handles exceptions caused by malformed request bodies (e.g., invalid JSON).
+     *
+     * @param ex the HttpMessageNotReadableException
+     * @return a structured error response with status 400
      */
     @ExceptionHandler(HttpMessageNotReadableException.class)
     @ResponseStatus(HttpStatus.BAD_REQUEST)
-    @ResponseBody
-    public ErrorResponse handleHttpMessageNotReadableException(final HttpMessageNotReadableException ex,
-                                                               final HttpServletRequest request) {
-        String errorMessage = "Invalid input format";
-        if (ex.getCause() instanceof InvalidFormatException ife) {
-            if (ife.getTargetType() != null && ife.getTargetType().isEnum()) {
-                errorMessage = String.format("Invalid value for %s. Accepted values are: %s",
-                        ife.getPath().get(ife.getPath().size() - 1).getFieldName(),
-                        String.join(", ", getEnumValues(ife.getTargetType())));
-            }
-        }
-        return new ErrorResponse(LocalDateTime.now(), HttpStatus.BAD_REQUEST.value(), errorMessage);
+    public ResponseEntity<ErrorResponse> handleMessageNotReadable(final HttpMessageNotReadableException ex) {
+        String message = "The request body is malformed or unreadable. Please check the JSON format.";
+        ErrorResponse errorResponse = new ErrorResponse(HttpStatus.BAD_REQUEST.value(), message);
+        return new ResponseEntity<>(errorResponse, HttpStatus.BAD_REQUEST);
     }
 
-    /**
-     * Custom error response structure.
-     */
-    @Data
-    @AllArgsConstructor
-    public static class ErrorResponse {
-
-        /**
-         * The timestamp when the error occurred.
-         */
-        private LocalDateTime timestamp;
-
-        /**
-         * The HTTP status code.
-         */
-        private int status;
-
-        /**
-         * The human-readable error message.
-         */
-        private String message;
-    }
 
     /**
-     * Utility method to extract enum values from a class.
+     * Handles {@link MethodArgumentTypeMismatchException} and returns a 400 Bad Request response
+     * with details about the parameter that caused the mismatch.
      *
-     * @param enumClass the enum class
-     * @return list of enum constant names
+     * @param ex the thrown exception
+     * @return a structured error response with type mismatch message
      */
-    private List<String> getEnumValues(final Class<?> enumClass) {
-        return java.util.Arrays.stream(enumClass.getEnumConstants())
-                .map(Object::toString)
-                .collect(Collectors.toList());
+    @ExceptionHandler(MethodArgumentTypeMismatchException.class)
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    public ResponseEntity<ErrorResponse> handleTypeMismatch(final MethodArgumentTypeMismatchException ex) {
+        String paramName = ex.getName();
+        String requiredType = ex.getRequiredType() != null ? ex.getRequiredType().getSimpleName() : "unknown";
+        String value = ex.getValue() != null ? ex.getValue().toString() : "null";
+        String message = String.format("Parameter '%s' must be of type '%s'. Provided value: '%s'",
+                paramName, requiredType, value);
+        ErrorResponse errorResponse = new ErrorResponse(HttpStatus.BAD_REQUEST.value(), message);
+        return new ResponseEntity<>(errorResponse, HttpStatus.BAD_REQUEST);
+    }
+
+    /**
+     * Handles all uncaught exceptions and returns a 500 Internal Server Error response.
+     *
+     * @param ex the thrown exception
+     * @return a structured error response indicating internal server error
+     */
+    @ExceptionHandler(Exception.class)
+    @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
+    public ResponseEntity<ErrorResponse> handleGeneralException(final Exception ex) {
+        ErrorResponse errorResponse = buildSimpleErrorResponse(ex, HttpStatus.INTERNAL_SERVER_ERROR);
+        return new ResponseEntity<>(errorResponse, HttpStatus.INTERNAL_SERVER_ERROR);
     }
 }

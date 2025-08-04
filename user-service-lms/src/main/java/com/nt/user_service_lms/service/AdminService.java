@@ -2,6 +2,7 @@ package com.nt.user_service_lms.service;
 
 import com.nt.user_service_lms.dto.inDTO.RegisterDto;
 
+import com.nt.user_service_lms.dto.inDTO.UserInDTO;
 import com.nt.user_service_lms.dto.outDTO.AdminDashboardStatsOutDTO;
 
 import com.nt.user_service_lms.dto.outDTO.MessageOutDTO;
@@ -64,6 +65,8 @@ public interface AdminService {
     StandardResponseOutDTO<List<UserOutDTO>> getManagerEmployee(long userId);
 
     StandardResponseOutDTO<AdminDashboardStatsOutDTO> getAdminStats();
+
+    MessageOutDTO updateUserDetails(UserInDTO registerDto, long userId);
 
     /**
      * Deletes bundle .

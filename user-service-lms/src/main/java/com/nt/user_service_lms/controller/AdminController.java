@@ -8,6 +8,9 @@ import com.nt.user_service_lms.dto.outDTO.MessageOutDTO;
 import com.nt.user_service_lms.dto.outDTO.StandardResponseOutDTO;
 import com.nt.user_service_lms.dto.outDTO.UserCourseEnrollDetails;
 import com.nt.user_service_lms.dto.outDTO.UserOutDTO;
+import com.nt.user_service_lms.service.AdminService;
+import com.nt.user_service_lms.service.GroupService;
+import com.nt.user_service_lms.service.UserService;
 import com.nt.user_service_lms.service.serviceImpl.AdminServiceImpl;
 import com.nt.user_service_lms.service.serviceImpl.GroupServiceImpl;
 import com.nt.user_service_lms.service.serviceImpl.UserServiceImpl;
@@ -43,19 +46,19 @@ public class AdminController {
      * Service for user-related operations.
      */
     @Autowired
-    private UserServiceImpl userService;
+    private UserService userService;
 
     /**
      * Service for admin-specific operations.
      */
     @Autowired
-    private AdminServiceImpl adminService;
+    private AdminService adminService;
 
     /**
      * Service for group-related operations.
      */
     @Autowired
-    private GroupServiceImpl groupService;
+    private GroupService groupService;
 
     /**
      * Registers a new user in the system.
