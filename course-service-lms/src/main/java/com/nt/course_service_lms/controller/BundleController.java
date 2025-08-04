@@ -48,9 +48,10 @@ public class BundleController {
     @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<StandardResponseOutDTO<BundleOutDTO>> createBundle(@Valid @RequestBody final BundleInDTO bundleInDTO) {
         log.info("Received request to create bundle: {}", bundleInDTO.getBundleName());
-        StandardResponseOutDTO<BundleOutDTO> createdBundle = bundleService.createBundle(bundleInDTO);
+        BundleOutDTO createdBundle = bundleService.createBundle(bundleInDTO);
+        StandardResponseOutDTO<BundleOutDTO> standardResponseOutDTO = StandardResponseOutDTO.success(createdBundle, "Bundle created successfully");
         return ResponseEntity.status(HttpStatus.CREATED)
-                .body(createdBundle);
+                .body(standardResponseOutDTO);
     }
 
     /**

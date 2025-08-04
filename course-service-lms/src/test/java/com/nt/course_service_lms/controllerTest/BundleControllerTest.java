@@ -85,7 +85,7 @@ class BundleControllerTest {
         // Initialize test data
         bundleInDTO = BundleInDTO.builder()
                 .bundleName("TestBundle")
-                .active(true)
+                .isActive(true)
                 .build();
 
         updateBundleInDTO = UpdateBundleInDTO.builder()
@@ -127,7 +127,7 @@ class BundleControllerTest {
         // Given - Invalid bundle with empty name
         BundleInDTO invalidBundle = BundleInDTO.builder()
                 .bundleName("")
-                .active(true)
+                .isActive(true)
                 .build();
 
         // When & Then

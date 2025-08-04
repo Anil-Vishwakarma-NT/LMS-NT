@@ -78,9 +78,9 @@ class BundleServiceImplTest {
         when(bundleRepository.save(testBundle)).thenReturn(testBundle);
         when(bundleConverter.toOutDTO(testBundle)).thenReturn(testBundleOutDTO);
 
-        StandardResponseOutDTO<BundleOutDTO> result = bundleService.createBundle(dto);
+        BundleOutDTO result = bundleService.createBundle(dto);
 
-        assertEquals("JavaMaster", result.getData().getBundleName());
+        assertEquals("JavaMaster", result.getBundleName());
         verify(bundleRepository).save(testBundle);
     }
 

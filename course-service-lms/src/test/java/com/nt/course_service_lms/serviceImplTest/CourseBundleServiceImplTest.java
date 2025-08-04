@@ -5,6 +5,7 @@ import com.nt.course_service_lms.dto.inDTO.UpdateCourseBundleInDTO;
 import com.nt.course_service_lms.dto.outDTO.BundleInfoOutDTO;
 import com.nt.course_service_lms.dto.outDTO.BundleSummaryOutDTO;
 import com.nt.course_service_lms.dto.outDTO.CourseBundleOutDTO;
+import com.nt.course_service_lms.dto.outDTO.CourseInfoOutDTO;
 import com.nt.course_service_lms.entity.Bundle;
 import com.nt.course_service_lms.entity.Course;
 import com.nt.course_service_lms.entity.CourseBundle;
@@ -196,7 +197,7 @@ class CourseBundleServiceImplTest {
     @Test
     void getAllCoursesByBundle_success() {
         when(courseBundleRepository.findByBundleId(2L)).thenReturn(Arrays.asList(courseBundle));
-        List<CourseBundle> result = courseBundleService.getAllCoursesByBundle(2L);
+        List<CourseInfoOutDTO> result = courseBundleService.getAllCoursesByBundle(2L);
         assertEquals(1, result.size());
     }
 

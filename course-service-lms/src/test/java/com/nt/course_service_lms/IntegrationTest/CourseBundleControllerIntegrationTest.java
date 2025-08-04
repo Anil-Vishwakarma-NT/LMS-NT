@@ -7,6 +7,7 @@ import com.nt.course_service_lms.dto.outDTO.BundleInfoOutDTO;
 import com.nt.course_service_lms.dto.outDTO.BundleOutDTO;
 import com.nt.course_service_lms.dto.outDTO.BundleSummaryOutDTO;
 import com.nt.course_service_lms.dto.outDTO.CourseBundleOutDTO;
+import com.nt.course_service_lms.dto.outDTO.CourseInfoOutDTO;
 import com.nt.course_service_lms.dto.outDTO.StandardResponseOutDTO;
 import com.nt.course_service_lms.entity.Bundle;
 import com.nt.course_service_lms.entity.Course;
@@ -322,7 +323,7 @@ class CourseBundleControllerIntegrationTest {
     void shouldGetAllCoursesByBundleId() {
         HttpEntity<Void> entity = new HttpEntity<>(createHeaders());
 
-        ResponseEntity<StandardResponseOutDTO<List<CourseBundle>>> response = restTemplate.exchange(
+        ResponseEntity<StandardResponseOutDTO<List<CourseInfoOutDTO>>> response = restTemplate.exchange(
                 getBaseUrl() + "/bundle/" + testBundleId,
                 HttpMethod.GET,
                 entity,

@@ -13,6 +13,7 @@ import com.nt.course_service_lms.dto.inDTO.UpdateCourseBundleInDTO;
 import com.nt.course_service_lms.dto.outDTO.BundleInfoOutDTO;
 import com.nt.course_service_lms.dto.outDTO.BundleSummaryOutDTO;
 import com.nt.course_service_lms.dto.outDTO.CourseBundleOutDTO;
+import com.nt.course_service_lms.dto.outDTO.CourseInfoOutDTO;
 import com.nt.course_service_lms.entity.CourseBundle;
 import com.nt.course_service_lms.exception.ResourceAlreadyExistsException;
 import com.nt.course_service_lms.exception.ResourceNotFoundException;
@@ -76,6 +77,7 @@ class CourseBundleControllerTest {
     private UpdateCourseBundleInDTO updateCourseBundleInDTO;
     private CourseBundleOutDTO courseBundleOutDTO;
     private CourseBundle courseBundle;
+    private CourseInfoOutDTO courseInfoOutDTO;
     private BundleInfoOutDTO bundleInfoOutDTO;
     private BundleSummaryOutDTO bundleSummaryOutDTO;
 
@@ -133,6 +135,16 @@ class CourseBundleControllerTest {
                 .bundleName("Test Bundle")
                 .courseCount(3L)
                 .createdAt(LocalDateTime.now())
+                .updatedAt(LocalDateTime.now())
+                .build();
+
+        courseInfoOutDTO = CourseInfoOutDTO.builder()
+                .title("Course Title")
+                .courseId(1L)
+                .ownerId(1L)
+                .description("Description")
+                .courseLevel("BEGINNER")
+                .isActive(true)
                 .updatedAt(LocalDateTime.now())
                 .build();
     }
@@ -410,7 +422,7 @@ class CourseBundleControllerTest {
     @WithMockUser(roles = "ADMIN")
     void getAllCoursesByBundleId_ShouldReturnCourses_WhenCoursesExist() throws Exception {
         // Given
-        List<CourseBundle> courseBundles = Arrays.asList(courseBundle);
+        List<CourseInfoOutDTO> courseBundles = Arrays.asList(courseInfoOutDTO);
         when(courseBundleService.getAllCoursesByBundle(1L)).thenReturn(courseBundles);
 
         // When & Then
@@ -426,7 +438,7 @@ class CourseBundleControllerTest {
     @WithMockUser(roles = "USER")
     void getAllCoursesByBundleId_ShouldReturnCourses_WhenUserRole() throws Exception {
         // Given
-        List<CourseBundle> courseBundles = Arrays.asList(courseBundle);
+        List<CourseInfoOutDTO> courseBundles = Arrays.asList(courseInfoOutDTO);
         when(courseBundleService.getAllCoursesByBundle(1L)).thenReturn(courseBundles);
 
         // When & Then

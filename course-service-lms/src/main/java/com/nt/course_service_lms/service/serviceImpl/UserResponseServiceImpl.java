@@ -417,306 +417,306 @@ public class UserResponseServiceImpl implements UserResponseService {
         }
     }
 
-    /**
-     * Retrieves a single user response by its unique identifier.
-     *
-     * <p>This method performs a read-only transaction to fetch a user response
-     * from the database and convert it to a DTO for client consumption.</p>
-     *
-     * @param responseId the unique identifier of the user response to retrieve
-     * @return UserResponseOutDTO containing the user response data
-     * @throws ResourceNotFoundException if no user response exists with the given ID
-     * @throws RuntimeException          if any unexpected error occurs during retrieval
-     */
-    @Override
-    @Transactional(readOnly = true)
-    public UserResponseOutDTO getUserResponseById(final Long responseId) {
-        log.info("Fetching user response with ID: {}", responseId);
+//    /**
+//     * Retrieves a single user response by its unique identifier.
+//     *
+//     * <p>This method performs a read-only transaction to fetch a user response
+//     * from the database and convert it to a DTO for client consumption.</p>
+//     *
+//     * @param responseId the unique identifier of the user response to retrieve
+//     * @return UserResponseOutDTO containing the user response data
+//     * @throws ResourceNotFoundException if no user response exists with the given ID
+//     * @throws RuntimeException          if any unexpected error occurs during retrieval
+//     */
+//    @Override
+//    @Transactional(readOnly = true)
+//    public UserResponseOutDTO getUserResponseById(final Long responseId) {
+//        log.info("Fetching user response with ID: {}", responseId);
+//
+//        try {
+//            UserResponse userResponse = userResponseRepository.findById(responseId)
+//                    .orElseThrow(() -> {
+//                        log.warn("User response not found with ID: {}", responseId);
+//                        return new ResourceNotFoundException("User response not found with ID: " + responseId);
+//                    });
+//
+//            log.info("User response found with ID: {}", responseId);
+//            return userResponseConverter.convertToOutDTO(userResponse);
+//
+//        } catch (ResourceNotFoundException e) {
+//            log.error("User response not found: {}", e.getMessage());
+//            throw e;
+//        } catch (Exception e) {
+//            log.error("Unexpected error occurred while fetching user response with ID: {}", responseId, e);
+//            throw new RuntimeException("Failed to fetch user response", e);
+//        }
+//    }
 
-        try {
-            UserResponse userResponse = userResponseRepository.findById(responseId)
-                    .orElseThrow(() -> {
-                        log.warn("User response not found with ID: {}", responseId);
-                        return new ResourceNotFoundException("User response not found with ID: " + responseId);
-                    });
+//    /**
+//     * Updates an existing user response with new data.
+//     *
+//     * <p>This method retrieves the existing user response, applies the updates
+//     * from the DTO, and saves the modified entity back to the database.</p>
+//     *
+//     * <p>Note: This method does not re-validate answers or recalculate points.
+//     * It simply updates the provided fields in the existing response.</p>
+//     *
+//     * @param responseId              the unique identifier of the user response to update
+//     * @param userResponseUpdateInDTO the DTO containing the updated field values
+//     * @return UserResponseOutDTO containing the updated user response data
+//     * @throws ResourceNotFoundException if no user response exists with the given ID
+//     * @throws RuntimeException          if any unexpected error occurs during update
+//     */
+//    @Override
+//    public UserResponseOutDTO updateUserResponse(final Long responseId, final UserResponseUpdateInDTO userResponseUpdateInDTO) {
+//        log.info("Updating user response with ID: {}", responseId);
+//
+//        try {
+//            UserResponse existingUserResponse = userResponseRepository.findById(responseId)
+//                    .orElseThrow(() -> {
+//                        log.warn("User response not found with ID: {} for update", responseId);
+//                        return new ResourceNotFoundException("User response not found with ID: " + responseId);
+//                    });
+//
+//            // Update entity with new data
+//            UserResponse updatedUserResponse = userResponseConverter.updateEntityFromDTO(
+//                    existingUserResponse,
+//                    userResponseUpdateInDTO
+//            );
+//
+//            // Save updated entity
+//            UserResponse savedUserResponse = userResponseRepository.save(updatedUserResponse);
+//            log.info("User response updated successfully with ID: {}", savedUserResponse.getResponseId());
+//
+//            // Convert and return DTO
+//            return userResponseConverter.convertToOutDTO(savedUserResponse);
+//
+//        } catch (ResourceNotFoundException e) {
+//            log.error("Failed to update user response - not found: {}", e.getMessage());
+//            throw e;
+//        } catch (Exception e) {
+//            log.error("Unexpected error occurred while updating user response with ID: {}", responseId, e);
+//            throw new RuntimeException("Failed to update user response", e);
+//        }
+//    }
 
-            log.info("User response found with ID: {}", responseId);
-            return userResponseConverter.convertToOutDTO(userResponse);
+//    /**
+//     * Deletes a user response by its unique identifier.
+//     *
+//     * <p>This method first verifies that the user response exists before attempting
+//     * to delete it. If the response doesn't exist, it throws a ResourceNotFoundException.</p>
+//     *
+//     * <p>Note: This operation is permanent and cannot be undone. Consider implementing
+//     * soft deletion if audit trails are required.</p>
+//     *
+//     * @param responseId the unique identifier of the user response to delete
+//     * @throws ResourceNotFoundException if no user response exists with the given ID
+//     * @throws RuntimeException          if any unexpected error occurs during deletion
+//     */
+//    @Override
+//    public void deleteUserResponse(final Long responseId) {
+//        log.info("Deleting user response with ID: {}", responseId);
+//
+//        try {
+//            if (!userResponseRepository.existsById(responseId)) {
+//                log.warn("User response not found with ID: {} for deletion", responseId);
+//                throw new ResourceNotFoundException("User response not found with ID: " + responseId);
+//            }
+//
+//            userResponseRepository.deleteById(responseId);
+//            log.info("User response deleted successfully with ID: {}", responseId);
+//
+//        } catch (ResourceNotFoundException e) {
+//            log.error("Failed to delete user response - not found: {}", e.getMessage());
+//            throw e;
+//        } catch (Exception e) {
+//            log.error("Unexpected error occurred while deleting user response with ID: {}", responseId, e);
+//            throw new RuntimeException("Failed to delete user response", e);
+//        }
+//    }
 
-        } catch (ResourceNotFoundException e) {
-            log.error("User response not found: {}", e.getMessage());
-            throw e;
-        } catch (Exception e) {
-            log.error("Unexpected error occurred while fetching user response with ID: {}", responseId, e);
-            throw new RuntimeException("Failed to fetch user response", e);
-        }
-    }
-
-    /**
-     * Updates an existing user response with new data.
-     *
-     * <p>This method retrieves the existing user response, applies the updates
-     * from the DTO, and saves the modified entity back to the database.</p>
-     *
-     * <p>Note: This method does not re-validate answers or recalculate points.
-     * It simply updates the provided fields in the existing response.</p>
-     *
-     * @param responseId              the unique identifier of the user response to update
-     * @param userResponseUpdateInDTO the DTO containing the updated field values
-     * @return UserResponseOutDTO containing the updated user response data
-     * @throws ResourceNotFoundException if no user response exists with the given ID
-     * @throws RuntimeException          if any unexpected error occurs during update
-     */
-    @Override
-    public UserResponseOutDTO updateUserResponse(final Long responseId, final UserResponseUpdateInDTO userResponseUpdateInDTO) {
-        log.info("Updating user response with ID: {}", responseId);
-
-        try {
-            UserResponse existingUserResponse = userResponseRepository.findById(responseId)
-                    .orElseThrow(() -> {
-                        log.warn("User response not found with ID: {} for update", responseId);
-                        return new ResourceNotFoundException("User response not found with ID: " + responseId);
-                    });
-
-            // Update entity with new data
-            UserResponse updatedUserResponse = userResponseConverter.updateEntityFromDTO(
-                    existingUserResponse,
-                    userResponseUpdateInDTO
-            );
-
-            // Save updated entity
-            UserResponse savedUserResponse = userResponseRepository.save(updatedUserResponse);
-            log.info("User response updated successfully with ID: {}", savedUserResponse.getResponseId());
-
-            // Convert and return DTO
-            return userResponseConverter.convertToOutDTO(savedUserResponse);
-
-        } catch (ResourceNotFoundException e) {
-            log.error("Failed to update user response - not found: {}", e.getMessage());
-            throw e;
-        } catch (Exception e) {
-            log.error("Unexpected error occurred while updating user response with ID: {}", responseId, e);
-            throw new RuntimeException("Failed to update user response", e);
-        }
-    }
-
-    /**
-     * Deletes a user response by its unique identifier.
-     *
-     * <p>This method first verifies that the user response exists before attempting
-     * to delete it. If the response doesn't exist, it throws a ResourceNotFoundException.</p>
-     *
-     * <p>Note: This operation is permanent and cannot be undone. Consider implementing
-     * soft deletion if audit trails are required.</p>
-     *
-     * @param responseId the unique identifier of the user response to delete
-     * @throws ResourceNotFoundException if no user response exists with the given ID
-     * @throws RuntimeException          if any unexpected error occurs during deletion
-     */
-    @Override
-    public void deleteUserResponse(final Long responseId) {
-        log.info("Deleting user response with ID: {}", responseId);
-
-        try {
-            if (!userResponseRepository.existsById(responseId)) {
-                log.warn("User response not found with ID: {} for deletion", responseId);
-                throw new ResourceNotFoundException("User response not found with ID: " + responseId);
-            }
-
-            userResponseRepository.deleteById(responseId);
-            log.info("User response deleted successfully with ID: {}", responseId);
-
-        } catch (ResourceNotFoundException e) {
-            log.error("Failed to delete user response - not found: {}", e.getMessage());
-            throw e;
-        } catch (Exception e) {
-            log.error("Unexpected error occurred while deleting user response with ID: {}", responseId, e);
-            throw new RuntimeException("Failed to delete user response", e);
-        }
-    }
-
-    /**
-     * Retrieves all user responses with pagination support.
-     *
-     * @param pageable the pagination information including page number and size
-     * @return a paginated list of user responses converted to DTOs
-     * @throws RuntimeException if an unexpected error occurs during retrieval
-     */
-    @Override
-    @Transactional(readOnly = true)
-    public Page<UserResponseOutDTO> getAllUserResponses(final Pageable pageable) {
-        log.info("Fetching all user responses with pagination - page: {}, size: {}",
-                pageable.getPageNumber(), pageable.getPageSize());
-
-        try {
-            Page<UserResponse> userResponsePage = userResponseRepository.findAll(pageable);
-            log.info("Found {} user responses", userResponsePage.getTotalElements());
-
-            return userResponsePage.map(userResponseConverter::convertToOutDTO);
-
-        } catch (Exception e) {
-            log.error("Unexpected error occurred while fetching all user responses", e);
-            throw new RuntimeException("Failed to fetch user responses", e);
-        }
-    }
-
-    /**
-     * Retrieves all user responses for a specific user.
-     *
-     * @param userId the unique identifier of the user
-     * @return a list of user responses for the specified user converted to DTOs
-     * @throws RuntimeException if an unexpected error occurs during retrieval
-     */
-    @Override
-    @Transactional(readOnly = true)
-    public List<UserResponseOutDTO> getUserResponsesByUserId(final Long userId) {
-        log.info("Fetching user responses for user ID: {}", userId);
-
-        try {
-            List<UserResponse> userResponses = userResponseRepository.findByUserId(userId);
-            log.info("Found {} user responses for user ID: {}", userResponses.size(), userId);
-
-            return userResponseConverter.convertToOutDTOList(userResponses);
-
-        } catch (Exception e) {
-            log.error("Unexpected error occurred while fetching user responses for user ID: {}", userId, e);
-            throw new RuntimeException("Failed to fetch user responses", e);
-        }
-    }
-
-    /**
-     * Retrieves all user responses for a specific quiz.
-     *
-     * @param quizId the unique identifier of the quiz
-     * @return a list of user responses for the specified quiz converted to DTOs
-     * @throws RuntimeException if an unexpected error occurs during retrieval
-     */
-    @Override
-    @Transactional(readOnly = true)
-    public List<UserResponseOutDTO> getUserResponsesByQuizId(final Long quizId) {
-        log.info("Fetching user responses for quiz ID: {}", quizId);
-
-        try {
-            List<UserResponse> userResponses = userResponseRepository.findByQuizId(quizId);
-            log.info("Found {} user responses for quiz ID: {}", userResponses.size(), quizId);
-
-            return userResponseConverter.convertToOutDTOList(userResponses);
-
-        } catch (Exception e) {
-            log.error("Unexpected error occurred while fetching user responses for quiz ID: {}", quizId, e);
-            throw new RuntimeException("Failed to fetch user responses", e);
-        }
-    }
-
-    /**
-     * Retrieves all user responses for a specific user and quiz combination.
-     *
-     * @param userId the unique identifier of the user
-     * @param quizId the unique identifier of the quiz
-     * @return a list of user responses for the specified user and quiz converted to DTOs
-     * @throws RuntimeException if an unexpected error occurs during retrieval
-     */
-    @Override
-    @Transactional(readOnly = true)
-    public List<UserResponseOutDTO> getUserResponsesByUserIdAndQuizId(final Long userId, final Long quizId) {
-        log.info("Fetching user responses for user ID: {} and quiz ID: {}", userId, quizId);
-
-        try {
-            List<UserResponse> userResponses = userResponseRepository.findByUserIdAndQuizId(userId, quizId);
-            log.info("Found {} user responses for user ID: {} and quiz ID: {}", userResponses.size(), userId, quizId);
-
-            return userResponseConverter.convertToOutDTOList(userResponses);
-
-        } catch (Exception e) {
-            log.error("Unexpected error occurred while fetching user responses for user ID: {} and quiz ID: {}",
-                    userId, quizId, e);
-            throw new RuntimeException("Failed to fetch user responses", e);
-        }
-    }
-
-    /**
-     * Retrieves all user responses for a specific user, quiz, and attempt combination.
-     *
-     * @param userId  the unique identifier of the user
-     * @param quizId  the unique identifier of the quiz
-     * @param attempt the attempt number for the quiz
-     * @return a list of user responses for the specified user, quiz, and attempt converted to DTOs
-     * @throws RuntimeException if an unexpected error occurs during retrieval
-     */
-    @Override
-    @Transactional(readOnly = true)
-    public List<UserResponseOutDTO> getUserResponsesByUserIdAndQuizIdAndAttempt(
-            final Long userId,
-            final Long quizId,
-            final Long attempt
-    ) {
-        log.info("Fetching user responses for user ID: {}, quiz ID: {}, attempt: {}", userId, quizId, attempt);
-
-        try {
-            List<UserResponse> userResponses = userResponseRepository.findByUserIdAndQuizIdAndAttempt(userId, quizId, attempt);
-            log.info("Found {} user responses for user ID: {}, quiz ID: {}, attempt: {}",
-                    userResponses.size(), userId, quizId, attempt);
-
-            return userResponseConverter.convertToOutDTOList(userResponses);
-
-        } catch (Exception e) {
-            log.error("Unexpected error occurred while fetching user responses for user ID: {}, quiz ID: {}, attempt: {}",
-                    userId, quizId, attempt, e);
-            throw new RuntimeException("Failed to fetch user responses", e);
-        }
-    }
-
-    /**
-     * Retrieves all user responses for a specific user with pagination support.
-     *
-     * @param userId   the unique identifier of the user
-     * @param pageable the pagination information including page number and size
-     * @return a paginated list of user responses for the specified user converted to DTOs
-     * @throws RuntimeException if an unexpected error occurs during retrieval
-     */
-    @Override
-    @Transactional(readOnly = true)
-    public Page<UserResponseOutDTO> getUserResponsesByUserId(final Long userId, final Pageable pageable) {
-        log.info("Fetching user responses for user ID: {} with pagination - page: {}, size: {}",
-                userId, pageable.getPageNumber(), pageable.getPageSize());
-
-        try {
-            Page<UserResponse> userResponsePage = userResponseRepository.findByUserId(userId, pageable);
-            log.info("Found {} user responses for user ID: {}", userResponsePage.getTotalElements(), userId);
-
-            return userResponsePage.map(userResponseConverter::convertToOutDTO);
-
-        } catch (Exception e) {
-            log.error("Unexpected error occurred while fetching user responses for user ID: {} with pagination", userId, e);
-            throw new RuntimeException("Failed to fetch user responses", e);
-        }
-    }
-
-    /**
-     * Retrieves all user responses for a specific quiz with pagination support.
-     *
-     * @param quizId   the unique identifier of the quiz
-     * @param pageable the pagination information including page number and size
-     * @return a paginated list of user responses for the specified quiz converted to DTOs
-     * @throws RuntimeException if an unexpected error occurs during retrieval
-     */
-    @Override
-    @Transactional(readOnly = true)
-    public Page<UserResponseOutDTO> getUserResponsesByQuizId(final Long quizId, final Pageable pageable) {
-        log.info("Fetching user responses for quiz ID: {} with pagination - page: {}, size: {}",
-                quizId, pageable.getPageNumber(), pageable.getPageSize());
-
-        try {
-            Page<UserResponse> userResponsePage = userResponseRepository.findByQuizId(quizId, pageable);
-            log.info("Found {} user responses for quiz ID: {}", userResponsePage.getTotalElements(), quizId);
-
-            return userResponsePage.map(userResponseConverter::convertToOutDTO);
-
-        } catch (Exception e) {
-            log.error("Unexpected error occurred while fetching user responses for quiz ID: {} with pagination", quizId, e);
-            throw new RuntimeException("Failed to fetch user responses", e);
-        }
-    }
+//    /**
+//     * Retrieves all user responses with pagination support.
+//     *
+//     * @param pageable the pagination information including page number and size
+//     * @return a paginated list of user responses converted to DTOs
+//     * @throws RuntimeException if an unexpected error occurs during retrieval
+//     */
+//    @Override
+//    @Transactional(readOnly = true)
+//    public Page<UserResponseOutDTO> getAllUserResponses(final Pageable pageable) {
+//        log.info("Fetching all user responses with pagination - page: {}, size: {}",
+//                pageable.getPageNumber(), pageable.getPageSize());
+//
+//        try {
+//            Page<UserResponse> userResponsePage = userResponseRepository.findAll(pageable);
+//            log.info("Found {} user responses", userResponsePage.getTotalElements());
+//
+//            return userResponsePage.map(userResponseConverter::convertToOutDTO);
+//
+//        } catch (Exception e) {
+//            log.error("Unexpected error occurred while fetching all user responses", e);
+//            throw new RuntimeException("Failed to fetch user responses", e);
+//        }
+//    }
+//
+//    /**
+//     * Retrieves all user responses for a specific user.
+//     *
+//     * @param userId the unique identifier of the user
+//     * @return a list of user responses for the specified user converted to DTOs
+//     * @throws RuntimeException if an unexpected error occurs during retrieval
+//     */
+//    @Override
+//    @Transactional(readOnly = true)
+//    public List<UserResponseOutDTO> getUserResponsesByUserId(final Long userId) {
+//        log.info("Fetching user responses for user ID: {}", userId);
+//
+//        try {
+//            List<UserResponse> userResponses = userResponseRepository.findByUserId(userId);
+//            log.info("Found {} user responses for user ID: {}", userResponses.size(), userId);
+//
+//            return userResponseConverter.convertToOutDTOList(userResponses);
+//
+//        } catch (Exception e) {
+//            log.error("Unexpected error occurred while fetching user responses for user ID: {}", userId, e);
+//            throw new RuntimeException("Failed to fetch user responses", e);
+//        }
+//    }
+//
+//    /**
+//     * Retrieves all user responses for a specific quiz.
+//     *
+//     * @param quizId the unique identifier of the quiz
+//     * @return a list of user responses for the specified quiz converted to DTOs
+//     * @throws RuntimeException if an unexpected error occurs during retrieval
+//     */
+//    @Override
+//    @Transactional(readOnly = true)
+//    public List<UserResponseOutDTO> getUserResponsesByQuizId(final Long quizId) {
+//        log.info("Fetching user responses for quiz ID: {}", quizId);
+//
+//        try {
+//            List<UserResponse> userResponses = userResponseRepository.findByQuizId(quizId);
+//            log.info("Found {} user responses for quiz ID: {}", userResponses.size(), quizId);
+//
+//            return userResponseConverter.convertToOutDTOList(userResponses);
+//
+//        } catch (Exception e) {
+//            log.error("Unexpected error occurred while fetching user responses for quiz ID: {}", quizId, e);
+//            throw new RuntimeException("Failed to fetch user responses", e);
+//        }
+//    }
+//
+//    /**
+//     * Retrieves all user responses for a specific user and quiz combination.
+//     *
+//     * @param userId the unique identifier of the user
+//     * @param quizId the unique identifier of the quiz
+//     * @return a list of user responses for the specified user and quiz converted to DTOs
+//     * @throws RuntimeException if an unexpected error occurs during retrieval
+//     */
+//    @Override
+//    @Transactional(readOnly = true)
+//    public List<UserResponseOutDTO> getUserResponsesByUserIdAndQuizId(final Long userId, final Long quizId) {
+//        log.info("Fetching user responses for user ID: {} and quiz ID: {}", userId, quizId);
+//
+//        try {
+//            List<UserResponse> userResponses = userResponseRepository.findByUserIdAndQuizId(userId, quizId);
+//            log.info("Found {} user responses for user ID: {} and quiz ID: {}", userResponses.size(), userId, quizId);
+//
+//            return userResponseConverter.convertToOutDTOList(userResponses);
+//
+//        } catch (Exception e) {
+//            log.error("Unexpected error occurred while fetching user responses for user ID: {} and quiz ID: {}",
+//                    userId, quizId, e);
+//            throw new RuntimeException("Failed to fetch user responses", e);
+//        }
+//    }
+//
+//    /**
+//     * Retrieves all user responses for a specific user, quiz, and attempt combination.
+//     *
+//     * @param userId  the unique identifier of the user
+//     * @param quizId  the unique identifier of the quiz
+//     * @param attempt the attempt number for the quiz
+//     * @return a list of user responses for the specified user, quiz, and attempt converted to DTOs
+//     * @throws RuntimeException if an unexpected error occurs during retrieval
+//     */
+//    @Override
+//    @Transactional(readOnly = true)
+//    public List<UserResponseOutDTO> getUserResponsesByUserIdAndQuizIdAndAttempt(
+//            final Long userId,
+//            final Long quizId,
+//            final Long attempt
+//    ) {
+//        log.info("Fetching user responses for user ID: {}, quiz ID: {}, attempt: {}", userId, quizId, attempt);
+//
+//        try {
+//            List<UserResponse> userResponses = userResponseRepository.findByUserIdAndQuizIdAndAttempt(userId, quizId, attempt);
+//            log.info("Found {} user responses for user ID: {}, quiz ID: {}, attempt: {}",
+//                    userResponses.size(), userId, quizId, attempt);
+//
+//            return userResponseConverter.convertToOutDTOList(userResponses);
+//
+//        } catch (Exception e) {
+//            log.error("Unexpected error occurred while fetching user responses for user ID: {}, quiz ID: {}, attempt: {}",
+//                    userId, quizId, attempt, e);
+//            throw new RuntimeException("Failed to fetch user responses", e);
+//        }
+//    }
+//
+//    /**
+//     * Retrieves all user responses for a specific user with pagination support.
+//     *
+//     * @param userId   the unique identifier of the user
+//     * @param pageable the pagination information including page number and size
+//     * @return a paginated list of user responses for the specified user converted to DTOs
+//     * @throws RuntimeException if an unexpected error occurs during retrieval
+//     */
+//    @Override
+//    @Transactional(readOnly = true)
+//    public Page<UserResponseOutDTO> getUserResponsesByUserId(final Long userId, final Pageable pageable) {
+//        log.info("Fetching user responses for user ID: {} with pagination - page: {}, size: {}",
+//                userId, pageable.getPageNumber(), pageable.getPageSize());
+//
+//        try {
+//            Page<UserResponse> userResponsePage = userResponseRepository.findByUserId(userId, pageable);
+//            log.info("Found {} user responses for user ID: {}", userResponsePage.getTotalElements(), userId);
+//
+//            return userResponsePage.map(userResponseConverter::convertToOutDTO);
+//
+//        } catch (Exception e) {
+//            log.error("Unexpected error occurred while fetching user responses for user ID: {} with pagination", userId, e);
+//            throw new RuntimeException("Failed to fetch user responses", e);
+//        }
+//    }
+//
+//    /**
+//     * Retrieves all user responses for a specific quiz with pagination support.
+//     *
+//     * @param quizId   the unique identifier of the quiz
+//     * @param pageable the pagination information including page number and size
+//     * @return a paginated list of user responses for the specified quiz converted to DTOs
+//     * @throws RuntimeException if an unexpected error occurs during retrieval
+//     */
+//    @Override
+//    @Transactional(readOnly = true)
+//    public Page<UserResponseOutDTO> getUserResponsesByQuizId(final Long quizId, final Pageable pageable) {
+//        log.info("Fetching user responses for quiz ID: {} with pagination - page: {}, size: {}",
+//                quizId, pageable.getPageNumber(), pageable.getPageSize());
+//
+//        try {
+//            Page<UserResponse> userResponsePage = userResponseRepository.findByQuizId(quizId, pageable);
+//            log.info("Found {} user responses for quiz ID: {}", userResponsePage.getTotalElements(), quizId);
+//
+//            return userResponsePage.map(userResponseConverter::convertToOutDTO);
+//
+//        } catch (Exception e) {
+//            log.error("Unexpected error occurred while fetching user responses for quiz ID: {} with pagination", quizId, e);
+//            throw new RuntimeException("Failed to fetch user responses", e);
+//        }
+//    }
 
     /**
      * Calculates the total score for a specific user's quiz attempt.
@@ -778,31 +778,31 @@ public class UserResponseServiceImpl implements UserResponseService {
         }
     }
 
-    /**
-     * Retrieves the maximum attempt number for a specific user and quiz combination.
-     *
-     * @param userId the unique identifier of the user
-     * @param quizId the unique identifier of the quiz
-     * @return the maximum attempt number as a Long, or 0L if no attempts are found
-     * @throws RuntimeException if an unexpected error occurs during retrieval
-     */
-    @Override
-    @Transactional(readOnly = true)
-    public Long getMaxAttemptNumber(final Long userId, final Long quizId) {
-        log.info("Getting maximum attempt number for user ID: {} and quiz ID: {}", userId, quizId);
-
-        try {
-            Long maxAttempt = userResponseRepository.getMaxAttemptByUserIdAndQuizId(userId, quizId);
-            if (maxAttempt == null) {
-                maxAttempt = 0L;
-            }
-            log.info("Maximum attempt number: {} for user ID: {} and quiz ID: {}", maxAttempt, userId, quizId);
-            return maxAttempt;
-
-        } catch (Exception e) {
-            log.error("Unexpected error occurred while getting maximum attempt number for user ID: {} and quiz ID: {}",
-                    userId, quizId, e);
-            throw new RuntimeException("Failed to get maximum attempt number", e);
-        }
-    }
+//    /**
+//     * Retrieves the maximum attempt number for a specific user and quiz combination.
+//     *
+//     * @param userId the unique identifier of the user
+//     * @param quizId the unique identifier of the quiz
+//     * @return the maximum attempt number as a Long, or 0L if no attempts are found
+//     * @throws RuntimeException if an unexpected error occurs during retrieval
+//     */
+//    @Override
+//    @Transactional(readOnly = true)
+//    public Long getMaxAttemptNumber(final Long userId, final Long quizId) {
+//        log.info("Getting maximum attempt number for user ID: {} and quiz ID: {}", userId, quizId);
+//
+//        try {
+//            Long maxAttempt = userResponseRepository.getMaxAttemptByUserIdAndQuizId(userId, quizId);
+//            if (maxAttempt == null) {
+//                maxAttempt = 0L;
+//            }
+//            log.info("Maximum attempt number: {} for user ID: {} and quiz ID: {}", maxAttempt, userId, quizId);
+//            return maxAttempt;
+//
+//        } catch (Exception e) {
+//            log.error("Unexpected error occurred while getting maximum attempt number for user ID: {} and quiz ID: {}",
+//                    userId, quizId, e);
+//            throw new RuntimeException("Failed to get maximum attempt number", e);
+//        }
+//    }
 }
