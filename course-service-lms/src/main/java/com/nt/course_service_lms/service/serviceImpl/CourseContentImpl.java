@@ -168,8 +168,8 @@ public class CourseContentImpl implements CourseContentService {
 
             CourseContent courseContent = courseContentRepository.findById(courseContentId)
                     .orElseThrow(() -> new ResourceNotFoundException(COURSE_CONTENT_NOT_FOUND));
-
-            courseContentRepository.delete(courseContent);
+            courseContent.setActive(false);
+            //courseContentRepository.delete(courseContent);
             log.info("Successfully deleted course content with ID: {}", courseContentId);
 
             return COURSE_CONTENT_DELETED;

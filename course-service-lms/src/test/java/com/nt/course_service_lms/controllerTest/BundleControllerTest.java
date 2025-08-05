@@ -85,7 +85,7 @@ class BundleControllerTest {
         // Initialize test data
         bundleInDTO = BundleInDTO.builder()
                 .bundleName("TestBundle")
-                .active(true)
+                .isActive(true)
                 .build();
 
         updateBundleInDTO = UpdateBundleInDTO.builder()
@@ -118,7 +118,7 @@ class BundleControllerTest {
                 .andExpect(jsonPath("$.message").value("Bundle created successfully"))
                 .andExpect(jsonPath("$.data.bundleId").value(1L))
                 .andExpect(jsonPath("$.data.bundleName").value("TestBundle"))
-                .andExpect(jsonPath("$.data.active").value(true));
+                .andExpect(jsonPath("$.data.isActive").value(true));
     }
 
     @Test
@@ -127,7 +127,7 @@ class BundleControllerTest {
         // Given - Invalid bundle with empty name
         BundleInDTO invalidBundle = BundleInDTO.builder()
                 .bundleName("")
-                .active(true)
+                .isActive(true)
                 .build();
 
         // When & Then
@@ -224,7 +224,7 @@ class BundleControllerTest {
                 .andExpect(jsonPath("$.message").value("Bundle updated successfully"))
                 .andExpect(jsonPath("$.data.bundleId").value(1L))
                 .andExpect(jsonPath("$.data.bundleName").value("UpdatedBundle"))
-                .andExpect(jsonPath("$.data.active").value(false));
+                .andExpect(jsonPath("$.data.isActive").value(false));
     }
 
     @Test
