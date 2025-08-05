@@ -448,13 +448,12 @@ public class CourseServiceImpl implements CourseService {
     }
 
 
-
     @Override
-    public StandardResponseOutDTO<List<CourseInfoOutDTO>> getCoursesByIds(List<Long> courseIds){
-  List<Course> courses = courseRepository.findByCourseIdIn(courseIds);
-    List<CourseInfoOutDTO> courseInfo = courses.stream().map(CourseConvertors::courseToCourseInfoOutDTO).collect(Collectors.toList());
+    public StandardResponseOutDTO<List<CourseInfoOutDTO>> getCoursesByIds(List<Long> courseIds) {
+        List<Course> courses = courseRepository.findByCourseIdIn(courseIds);
+        List<CourseInfoOutDTO> courseInfo = courses.stream().map(CourseConvertors::courseToCourseInfoOutDTO).collect(Collectors.toList());
 
-    return StandardResponseOutDTO.success(courseInfo  , "courses retrienved");
+        return StandardResponseOutDTO.success(courseInfo, "courses retrienved");
 
     }
 }

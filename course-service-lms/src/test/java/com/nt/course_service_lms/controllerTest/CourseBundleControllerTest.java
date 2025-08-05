@@ -1,10 +1,7 @@
-
 package com.nt.course_service_lms.controllerTest;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.nt.course_service_lms.config.JwtUtil;
-import com.nt.course_service_lms.config.SecurityConfig;
-import com.nt.course_service_lms.config.ServiceAuthenticationFilter;
 import com.nt.course_service_lms.config.TestAuthenticationFilter;
 import com.nt.course_service_lms.config.TestSecurityConfig;
 import com.nt.course_service_lms.controller.CourseBundleController;
@@ -13,14 +10,12 @@ import com.nt.course_service_lms.dto.inDTO.UpdateCourseBundleInDTO;
 import com.nt.course_service_lms.dto.outDTO.BundleInfoOutDTO;
 import com.nt.course_service_lms.dto.outDTO.BundleSummaryOutDTO;
 import com.nt.course_service_lms.dto.outDTO.CourseBundleOutDTO;
+import com.nt.course_service_lms.dto.outDTO.CourseInfoOutDTO;
 import com.nt.course_service_lms.entity.CourseBundle;
 import com.nt.course_service_lms.exception.ResourceAlreadyExistsException;
 import com.nt.course_service_lms.exception.ResourceNotFoundException;
 import com.nt.course_service_lms.exception.ResourceNotValidException;
 import com.nt.course_service_lms.service.CourseBundleService;
-import jakarta.servlet.FilterChain;
-import jakarta.servlet.http.HttpServletRequest;
-import jakarta.servlet.http.HttpServletResponse;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -30,12 +25,12 @@ import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.context.annotation.Import;
 import org.springframework.http.MediaType;
 import org.springframework.security.test.context.support.WithMockUser;
+import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
 
 import java.time.LocalDateTime;
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.List;
 
 import static org.mockito.ArgumentMatchers.any;
@@ -55,6 +50,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @WebMvcTest(CourseBundleController.class)
 @ExtendWith(MockitoExtension.class)
 @Import(TestSecurityConfig.class)
+@ActiveProfiles("test")
 class CourseBundleControllerTest {
 
     @Autowired
@@ -67,7 +63,7 @@ class CourseBundleControllerTest {
     private CourseBundleService courseBundleService;
 
     @MockitoBean
-    private TestAuthenticationFilter serviceAuthenticationFilter;
+    private TestAuthenticationFilter testAuthenticationFilter;
 
     @MockitoBean
     private JwtUtil jwtUtil;
@@ -76,18 +72,12 @@ class CourseBundleControllerTest {
     private UpdateCourseBundleInDTO updateCourseBundleInDTO;
     private CourseBundleOutDTO courseBundleOutDTO;
     private CourseBundle courseBundle;
+    private CourseInfoOutDTO courseInfoOutDTO;
     private BundleInfoOutDTO bundleInfoOutDTO;
     private BundleSummaryOutDTO bundleSummaryOutDTO;
 
     @BeforeEach
     void setUp() throws Exception {
-        // Configure the mocked filter to DO NOTHING but continue the chain
-        doAnswer(invocation -> {
-            FilterChain filterChain = invocation.getArgument(2);
-            filterChain.doFilter(invocation.getArgument(0), invocation.getArgument(1));
-            return null;
-        }).when(serviceAuthenticationFilter).doFilter(any(HttpServletRequest.class), any(HttpServletResponse.class), any(FilterChain.class));
-
         // Initialize test data
         courseBundleInDTO = CourseBundleInDTO.builder()
                 .courseBundleId(1L)
@@ -134,6 +124,16 @@ class CourseBundleControllerTest {
                 .courseCount(3L)
                 .createdAt(LocalDateTime.now())
                 .updatedAt(LocalDateTime.now())
+                .build();
+
+        courseInfoOutDTO = CourseInfoOutDTO.builder()
+                .courseId(1L)
+                .courseLevel("BEGINNER")
+                .title("Course Test")
+                .ownerId(1L)
+                .updatedAt(LocalDateTime.now())
+                .isActive(true)
+                .description("Description")
                 .build();
     }
 
@@ -410,7 +410,7 @@ class CourseBundleControllerTest {
     @WithMockUser(roles = "ADMIN")
     void getAllCoursesByBundleId_ShouldReturnCourses_WhenCoursesExist() throws Exception {
         // Given
-        List<CourseBundle> courseBundles = Arrays.asList(courseBundle);
+        List<CourseInfoOutDTO> courseBundles = Arrays.asList(courseInfoOutDTO);
         when(courseBundleService.getAllCoursesByBundle(1L)).thenReturn(courseBundles);
 
         // When & Then
@@ -426,7 +426,7 @@ class CourseBundleControllerTest {
     @WithMockUser(roles = "USER")
     void getAllCoursesByBundleId_ShouldReturnCourses_WhenUserRole() throws Exception {
         // Given
-        List<CourseBundle> courseBundles = Arrays.asList(courseBundle);
+        List<CourseInfoOutDTO> courseBundles = Arrays.asList(courseInfoOutDTO);
         when(courseBundleService.getAllCoursesByBundle(1L)).thenReturn(courseBundles);
 
         // When & Then

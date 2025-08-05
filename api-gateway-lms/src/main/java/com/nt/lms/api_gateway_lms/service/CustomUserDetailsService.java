@@ -43,7 +43,7 @@ public class CustomUserDetailsService implements ReactiveUserDetailsService {
      *
      * @param username the email of the user attempting to authenticate
      * @return a {@link Mono} emitting the {@link UserDetails} of the user if found,
-     *         or emitting an error if the user is not found
+     * or emitting an error if the user is not found
      * @throws UsernameNotFoundException if the user does not exist
      */
     @Override

@@ -9,11 +9,11 @@ import com.nt.user_service_lms.dto.outDTO.MessageOutDTO;
 import com.nt.user_service_lms.dto.outDTO.StandardResponseOutDTO;
 import com.nt.user_service_lms.dto.outDTO.UserOutDTO;
 import com.nt.user_service_lms.entities.Enrollment;
-import com.nt.user_service_lms.exception.InvalidRequestException;
-import com.nt.user_service_lms.exception.ResourceNotFoundException;
 import com.nt.user_service_lms.entities.Role;
 import com.nt.user_service_lms.entities.User;
+import com.nt.user_service_lms.exception.InvalidRequestException;
 import com.nt.user_service_lms.exception.ResourceConflictException;
+import com.nt.user_service_lms.exception.ResourceNotFoundException;
 import com.nt.user_service_lms.feignClient.CourseMicroserviceClient;
 import com.nt.user_service_lms.repository.EnrollmentRepository;
 import com.nt.user_service_lms.repository.RoleRepository;
@@ -30,7 +30,9 @@ import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 
-import static com.nt.user_service_lms.constants.UserConstants.*;
+import static com.nt.user_service_lms.constants.UserConstants.INVALID_REQUEST;
+import static com.nt.user_service_lms.constants.UserConstants.USER_NOT_FOUND;
+import static com.nt.user_service_lms.constants.UserConstants.USER_UPDATED_SUCCESSFULLY;
 
 /**
  * Service implementation for admin operations such as user registration, deletion, role management, and user retrieval.
@@ -75,8 +77,6 @@ public class AdminServiceImpl implements AdminService {
      */
     @Autowired
     private UserDTOConverter userDTOConverter;
-
-
 
 
     /**
@@ -186,7 +186,7 @@ public class AdminServiceImpl implements AdminService {
                     if (!optionalmanager.isPresent()) {
                         throw new ResourceNotFoundException(USER_NOT_FOUND + "Manager not found");
                     }
-                   User manager = optionalmanager.get();
+                    User manager = optionalmanager.get();
                     String managerName = manager.getFirstName() + " " + manager.getLastName();
                     Role role = roleRepository.findById(user.getRoleId()).orElseThrow(
                             () -> {
@@ -327,8 +327,8 @@ public class AdminServiceImpl implements AdminService {
         try {
             AdminDashboardStatsOutDTO adminDashboardStatsOutDTO = userRepository.getAdminDashboardStats();
             return StandardResponseOutDTO.success(adminDashboardStatsOutDTO, "Dashboard data fetched.");
-        } catch(Exception e) {
-            log.error("Unexpected error : ",e);
+        } catch (Exception e) {
+            log.error("Unexpected error : ", e);
             throw new RuntimeException("Unexpected error occurred");
         }
     }
@@ -377,8 +377,6 @@ public class AdminServiceImpl implements AdminService {
     }
 
 
-
-
     /**
      * Deletes bundle.
      *
@@ -405,7 +403,6 @@ public class AdminServiceImpl implements AdminService {
     }
 
 
-
     /**
      * Remove course from the bundle.
      *
@@ -421,9 +418,8 @@ public class AdminServiceImpl implements AdminService {
             enrollmentRepository.save(enrol);
         }
 
-       StandardResponseOutDTO<MessageOutDTO> message =  courseMicroserviceClient.removeCourseFromBundle(bundleId,
-               courseId).getBody();
-
+        StandardResponseOutDTO<MessageOutDTO> message = courseMicroserviceClient.removeCourseFromBundle(bundleId,
+                courseId).getBody();
 
 
         return message;
@@ -458,8 +454,6 @@ public class AdminServiceImpl implements AdminService {
 //
 //
 //    }
-
-
 
 
 }

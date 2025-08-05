@@ -1,10 +1,9 @@
 package com.nt.course_service_lms.controllerTest;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.nt.course_service_lms.config.ServicePrincipal;
 import com.nt.course_service_lms.controller.UserProgressController;
-import com.nt.course_service_lms.dto.outDTO.UserProgressOutDTO;
 import com.nt.course_service_lms.dto.outDTO.CourseProgressWithMetaDTO;
+import com.nt.course_service_lms.dto.outDTO.UserProgressOutDTO;
 import com.nt.course_service_lms.service.UserProgressService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -22,9 +21,15 @@ import org.springframework.test.web.servlet.MockMvc;
 
 import java.time.LocalDateTime;
 
-import static org.mockito.Mockito.*;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
+import static org.mockito.Mockito.any;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @WebMvcTest(UserProgressController.class)
 @Import(UserProgressControllerTest.TestConfig.class)
@@ -151,6 +156,7 @@ class UserProgressControllerTest {
                         .param("courseId", "100"))
                 .andExpect(status().isNotFound());
     }
+
     @Test
     void getCourseProgressWithMetaWithId_empty_shouldReturnDefault() throws Exception {
         CourseProgressWithMetaDTO dto = new CourseProgressWithMetaDTO(0.0, null);
@@ -163,6 +169,7 @@ class UserProgressControllerTest {
                 .andExpect(jsonPath("$.completionPercentage").value(0.0))
                 .andExpect(jsonPath("$.firstCompletedAt").doesNotExist());
     }
+
     @Test
     void getContentProgress_zeroProgress_shouldReturnZero() throws Exception {
         when(userProgressService.getContentProgress(1L, 2L, 3L)).thenReturn(0.0);
@@ -174,6 +181,7 @@ class UserProgressControllerTest {
                 .andExpect(status().isOk())
                 .andExpect(content().string("0.0"));
     }
+
     @Test
     void getLastPosition_nullResponse_shouldReturnZero() throws Exception {
         when(userProgressService.getLastPosition(1L, 2L, 3L)).thenReturn(0);
@@ -185,6 +193,7 @@ class UserProgressControllerTest {
                 .andExpect(status().isOk())
                 .andExpect(content().string("0"));
     }
+
     @Test
     void getCourseProgressWithMetaCourseId_invalidPrincipal_shouldThrowException() throws Exception {
         SecurityContext securityContext = mock(SecurityContext.class);

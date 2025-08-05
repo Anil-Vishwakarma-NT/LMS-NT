@@ -10,9 +10,6 @@ import com.nt.user_service_lms.dto.outDTO.UserOutDTO;
 import com.nt.user_service_lms.entities.Enrollment;
 import com.nt.user_service_lms.entities.Role;
 import com.nt.user_service_lms.entities.User;
-import com.nt.user_service_lms.exception.InvalidRequestException;
-import com.nt.user_service_lms.exception.ResourceConflictException;
-import com.nt.user_service_lms.exception.ResourceNotFoundException;
 import com.nt.user_service_lms.feignClient.CourseMicroserviceClient;
 import com.nt.user_service_lms.repository.EnrollmentRepository;
 import com.nt.user_service_lms.repository.RoleRepository;
@@ -23,24 +20,33 @@ import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
-import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.crypto.password.PasswordEncoder;
 
-import java.util.*;
+import java.util.List;
+import java.util.Optional;
 
-import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.Mockito.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.mockito.Mockito.any;
+import static org.mockito.Mockito.when;
 
 public class AdminServiceImplTest {
 
-    @Mock private UserRepository userRepository;
-    @Mock private RoleRepository roleRepository;
-    @Mock private EnrollmentRepository enrollmentRepository;
-    @Mock private CourseMicroserviceClient courseMicroserviceClient;
-    @Mock private PasswordEncoder passwordEncoder;
-    @Mock private UserDTOConverter userDTOConverter;
+    @Mock
+    private UserRepository userRepository;
+    @Mock
+    private RoleRepository roleRepository;
+    @Mock
+    private EnrollmentRepository enrollmentRepository;
+    @Mock
+    private CourseMicroserviceClient courseMicroserviceClient;
+    @Mock
+    private PasswordEncoder passwordEncoder;
+    @Mock
+    private UserDTOConverter userDTOConverter;
 
-    @InjectMocks private AdminServiceImpl adminService;
+    @InjectMocks
+    private AdminServiceImpl adminService;
 
     @BeforeEach
     void setUp() {
@@ -66,7 +72,7 @@ public class AdminServiceImplTest {
         user.setRoleId(2L);
         user.setActive(true);
         when(userRepository.findById(2L)).thenReturn(Optional.of(user));
-        when(roleRepository.findById(2L)).thenReturn(Optional.of(new Role(2L , "EMPLOYEE")));
+        when(roleRepository.findById(2L)).thenReturn(Optional.of(new Role(2L, "EMPLOYEE")));
 
         StandardResponseOutDTO<MessageOutDTO> response = adminService.employeeDeletion(2L);
         assertEquals("User deleted successfully", response.getData().getMessage());
@@ -132,7 +138,7 @@ public class AdminServiceImplTest {
         when(userRepository.findById(2L)).thenReturn(Optional.of(user));
         when(roleRepository.findByName("employee")).thenReturn(Optional.of(new Role(2L, "employee")));
 
-        UserInDTO dto = new UserInDTO(2L,"John", "Doe", "johnny", "john@example.com", "employee");
+        UserInDTO dto = new UserInDTO(2L, "John", "Doe", "johnny", "john@example.com", "employee");
         MessageOutDTO result = adminService.updateUserDetails(dto, 2L);
         assertEquals(UserConstants.USER_UPDATED_SUCCESSFULLY, result.getMessage());
     }

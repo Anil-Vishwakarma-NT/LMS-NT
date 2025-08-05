@@ -21,7 +21,8 @@ public final class UserServiceLmsApplication {
      * Required to satisfy Checkstyle utility class rule (even though this is not a utility class).
      */
     private UserServiceLmsApplication() {
-           }
+    }
+
     /**
      * Main method to run the application.
      *

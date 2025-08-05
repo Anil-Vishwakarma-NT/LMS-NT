@@ -52,11 +52,11 @@ public class AuthController {
      * @param request The authentication request containing user credentials.
      *                Must include valid email and password fields.
      * @return A {@code Mono<ResponseEntity<AuthResponse>>} containing:
-     *         <ul>
-     *           <li>HTTP 200 OK with AuthResponse containing access and refresh tokens on success</li>
-     *           <li>HTTP 401 Unauthorized if credentials are invalid</li>
-     *           <li>HTTP 400 Bad Request if request format is invalid</li>
-     *         </ul>
+     * <ul>
+     *   <li>HTTP 200 OK with AuthResponse containing access and refresh tokens on success</li>
+     *   <li>HTTP 401 Unauthorized if credentials are invalid</li>
+     *   <li>HTTP 400 Bad Request if request format is invalid</li>
+     * </ul>
      * @throws IllegalArgumentException if the request is null or contains invalid data
      * @see AuthRequest
      * @see AuthResponse
@@ -79,11 +79,11 @@ public class AuthController {
      * @param request The refresh token request containing the refresh token.
      *                Must include a valid, non-expired refresh token.
      * @return A {@code Mono<ResponseEntity<AuthResponse>>} containing:
-     *         <ul>
-     *           <li>HTTP 200 OK with new AuthResponse containing fresh tokens on success</li>
-     *           <li>HTTP 401 Unauthorized if refresh token is invalid or expired</li>
-     *           <li>HTTP 400 Bad Request if request format is invalid</li>
-     *         </ul>
+     * <ul>
+     *   <li>HTTP 200 OK with new AuthResponse containing fresh tokens on success</li>
+     *   <li>HTTP 401 Unauthorized if refresh token is invalid or expired</li>
+     *   <li>HTTP 400 Bad Request if request format is invalid</li>
+     * </ul>
      * @throws IllegalArgumentException if the request is null or refresh token is missing
      * @see RefreshTokenRequest
      * @see AuthResponse
@@ -106,11 +106,11 @@ public class AuthController {
      * @param authHeader The Authorization header containing the Bearer token.
      *                   Expected format: "Bearer {access_token}"
      * @return A {@code Mono<ResponseEntity<Map<String, String>>>} containing:
-     *         <ul>
-     *           <li>HTTP 200 OK with success message on successful logout</li>
-     *           <li>HTTP 401 Unauthorized if token is invalid or expired</li>
-     *           <li>HTTP 400 Bad Request if Authorization header is missing or malformed</li>
-     *         </ul>
+     * <ul>
+     *   <li>HTTP 200 OK with success message on successful logout</li>
+     *   <li>HTTP 401 Unauthorized if token is invalid or expired</li>
+     *   <li>HTTP 400 Bad Request if Authorization header is missing or malformed</li>
+     * </ul>
      * @throws IllegalArgumentException if authHeader is null or doesn't start with "Bearer "
      * @see Map
      */

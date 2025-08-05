@@ -1,10 +1,8 @@
 package com.nt.course_service_lms.IntegrationTest;
 
-import com.nt.course_service_lms.dto.inDTO.BundleInDTO;
 import com.nt.course_service_lms.dto.inDTO.CourseBundleInDTO;
 import com.nt.course_service_lms.dto.inDTO.UpdateCourseBundleInDTO;
 import com.nt.course_service_lms.dto.outDTO.BundleInfoOutDTO;
-import com.nt.course_service_lms.dto.outDTO.BundleOutDTO;
 import com.nt.course_service_lms.dto.outDTO.BundleSummaryOutDTO;
 import com.nt.course_service_lms.dto.outDTO.CourseBundleOutDTO;
 import com.nt.course_service_lms.dto.outDTO.StandardResponseOutDTO;
@@ -14,17 +12,24 @@ import com.nt.course_service_lms.entity.CourseBundle;
 import com.nt.course_service_lms.exception.ErrorResponse;
 import com.nt.course_service_lms.repository.BundleRepository;
 import com.nt.course_service_lms.repository.CourseRepository;
-import org.junit.jupiter.api.*;
+import org.junit.jupiter.api.MethodOrderer;
+import org.junit.jupiter.api.Order;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.TestMethodOrder;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.web.client.TestRestTemplate;
 import org.springframework.boot.test.web.server.LocalServerPort;
 import org.springframework.core.ParameterizedTypeReference;
-import org.springframework.http.*;
+import org.springframework.http.HttpEntity;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpMethod;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import org.springframework.test.context.ActiveProfiles;
 
 import java.time.LocalDateTime;
-import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 
@@ -121,7 +126,8 @@ class CourseBundleControllerIntegrationTest {
                 getBaseUrl(),
                 HttpMethod.POST,
                 entity,
-                new ParameterizedTypeReference<>() {}
+                new ParameterizedTypeReference<>() {
+                }
         );
 
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.CREATED);
@@ -148,7 +154,8 @@ class CourseBundleControllerIntegrationTest {
                 getBaseUrl(),
                 HttpMethod.POST,
                 entity,
-                new ParameterizedTypeReference<>() {}
+                new ParameterizedTypeReference<>() {
+                }
         );
 
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.CREATED);
@@ -236,7 +243,8 @@ class CourseBundleControllerIntegrationTest {
                 getBaseUrl(),
                 HttpMethod.POST,
                 entity,
-                new ParameterizedTypeReference<Map<String, String>>() {}
+                new ParameterizedTypeReference<Map<String, String>>() {
+                }
         );
 
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.BAD_REQUEST);
@@ -258,7 +266,8 @@ class CourseBundleControllerIntegrationTest {
                 getBaseUrl(),
                 HttpMethod.POST,
                 entity,
-                new ParameterizedTypeReference<Map<String, String>>() {}
+                new ParameterizedTypeReference<Map<String, String>>() {
+                }
         );
 
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.BAD_REQUEST);
@@ -276,7 +285,8 @@ class CourseBundleControllerIntegrationTest {
                 getBaseUrl(),
                 HttpMethod.GET,
                 entity,
-                new ParameterizedTypeReference<>() {}
+                new ParameterizedTypeReference<>() {
+                }
         );
 
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
@@ -293,7 +303,8 @@ class CourseBundleControllerIntegrationTest {
                 getBaseUrl() + "/" + createdCourseBundleId,
                 HttpMethod.GET,
                 entity,
-                new ParameterizedTypeReference<>() {}
+                new ParameterizedTypeReference<>() {
+                }
         );
 
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
@@ -326,7 +337,8 @@ class CourseBundleControllerIntegrationTest {
                 getBaseUrl() + "/bundle/" + testBundleId,
                 HttpMethod.GET,
                 entity,
-                new ParameterizedTypeReference<>() {}
+                new ParameterizedTypeReference<>() {
+                }
         );
 
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
@@ -366,7 +378,8 @@ class CourseBundleControllerIntegrationTest {
                 getBaseUrl() + "/" + createdCourseBundleId,
                 HttpMethod.PUT,
                 entity,
-                new ParameterizedTypeReference<>() {}
+                new ParameterizedTypeReference<>() {
+                }
         );
 
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
@@ -406,7 +419,8 @@ class CourseBundleControllerIntegrationTest {
                 getBaseUrl() + "/info",
                 HttpMethod.GET,
                 entity,
-                new ParameterizedTypeReference<>() {}
+                new ParameterizedTypeReference<>() {
+                }
         );
 
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
@@ -431,7 +445,8 @@ class CourseBundleControllerIntegrationTest {
                 getBaseUrl() + "/recent",
                 HttpMethod.GET,
                 entity,
-                new ParameterizedTypeReference<>() {}
+                new ParameterizedTypeReference<>() {
+                }
         );
 
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
@@ -448,7 +463,8 @@ class CourseBundleControllerIntegrationTest {
                 getBaseUrl() + "/bundle-id/" + testBundleId + "/course-ids",
                 HttpMethod.GET,
                 entity,
-                new ParameterizedTypeReference<List<Long>>() {}
+                new ParameterizedTypeReference<List<Long>>() {
+                }
         );
 
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
@@ -482,7 +498,8 @@ class CourseBundleControllerIntegrationTest {
                 getBaseUrl() + "/" + secondCourseBundleId,
                 HttpMethod.DELETE,
                 entity,
-                new ParameterizedTypeReference<>() {}
+                new ParameterizedTypeReference<>() {
+                }
         );
 
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
@@ -524,7 +541,8 @@ class CourseBundleControllerIntegrationTest {
                 getBaseUrl() + "/" + createdCourseBundleId,
                 HttpMethod.DELETE,
                 entity,
-                new ParameterizedTypeReference<StandardResponseOutDTO<Void>>() {}
+                new ParameterizedTypeReference<StandardResponseOutDTO<Void>>() {
+                }
         );
 
         // Clean up test bundle
@@ -532,7 +550,8 @@ class CourseBundleControllerIntegrationTest {
                 getBundleUrl() + "/" + testBundleId,
                 HttpMethod.DELETE,
                 entity,
-                new ParameterizedTypeReference<StandardResponseOutDTO<Void>>() {}
+                new ParameterizedTypeReference<StandardResponseOutDTO<Void>>() {
+                }
         );
     }
 }

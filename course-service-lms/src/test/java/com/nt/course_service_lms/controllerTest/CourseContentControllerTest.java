@@ -1,10 +1,7 @@
-
 package com.nt.course_service_lms.controllerTest;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.nt.course_service_lms.config.JwtUtil;
-import com.nt.course_service_lms.config.SecurityConfig;
-import com.nt.course_service_lms.config.ServiceAuthenticationFilter;
 import com.nt.course_service_lms.config.TestAuthenticationFilter;
 import com.nt.course_service_lms.config.TestSecurityConfig;
 import com.nt.course_service_lms.controller.CourseContentController;
@@ -596,7 +593,8 @@ class CourseContentControllerTest {
     @WithMockUser(roles = "ADMIN")
     void createCourseContent_ShouldReturnBadRequest_WhenTitleTooLong() throws Exception {
         // Given - Title exceeding max length
-        String longTitle = String.join("", Collections.nCopies(101, "a"));; // Assuming max is 100
+        String longTitle = String.join("", Collections.nCopies(101, "a"));
+        ; // Assuming max is 100
         CourseContentInDTO invalidCourseContent = CourseContentInDTO.builder()
                 .courseId(1L)
                 .title(longTitle)

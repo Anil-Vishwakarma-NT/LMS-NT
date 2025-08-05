@@ -192,7 +192,6 @@ public class Enrollment {
 
     /**
      * Checks hashcode for the objects.
-     *
      */
     @Override
     public int hashCode() {

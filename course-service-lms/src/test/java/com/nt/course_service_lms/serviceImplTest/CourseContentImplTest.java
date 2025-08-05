@@ -1,6 +1,5 @@
 package com.nt.course_service_lms.serviceImplTest;
 
-import com.nt.course_service_lms.converters.CourseContentConverters;
 import com.nt.course_service_lms.dto.inDTO.CourseContentInDTO;
 import com.nt.course_service_lms.dto.inDTO.UpdateCourseContentInDTO;
 import com.nt.course_service_lms.dto.outDTO.CourseContentOutDTO;
@@ -20,12 +19,15 @@ import org.mockito.MockitoAnnotations;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.time.LocalDateTime;
-import java.util.*;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.List;
+import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.any;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -64,6 +66,7 @@ class CourseContentImplTest {
 
         updateCourseContentInDTO = new UpdateCourseContentInDTO(101L, "Intro Updated", "Updated Description", "http://link-updated", false);
     }
+
     @AfterEach
     void tearDown() throws Exception {
         closeable.close();

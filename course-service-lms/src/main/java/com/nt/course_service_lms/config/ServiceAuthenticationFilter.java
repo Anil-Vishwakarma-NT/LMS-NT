@@ -122,7 +122,7 @@ public class ServiceAuthenticationFilter extends OncePerRequestFilter {
                 filterChain.doFilter(request, response);
                 return;
             }
-            if (path.startsWith("/h2-console") || path.startsWith("/favicon.ico")){
+            if (path.startsWith("/h2-console") || path.startsWith("/favicon.ico")) {
                 filterChain.doFilter(request, response);
                 return;
             }

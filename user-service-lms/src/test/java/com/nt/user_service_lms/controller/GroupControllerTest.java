@@ -2,11 +2,11 @@ package com.nt.user_service_lms.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.nt.user_service_lms.config.JwtUtil;
-import com.nt.user_service_lms.config.ServicePrincipal;
 import com.nt.user_service_lms.config.TestAuthenticationFilter;
 import com.nt.user_service_lms.config.TestSecurityConfig;
 import com.nt.user_service_lms.dto.inDTO.GroupInDTO;
-import com.nt.user_service_lms.dto.outDTO.*;
+import com.nt.user_service_lms.dto.outDTO.MessageOutDTO;
+import com.nt.user_service_lms.dto.outDTO.StandardResponseOutDTO;
 import com.nt.user_service_lms.repository.UserRepository;
 import com.nt.user_service_lms.service.GroupService;
 import jakarta.servlet.FilterChain;
@@ -14,32 +14,29 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
-import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.context.annotation.Import;
 import org.springframework.http.MediaType;
-import org.springframework.security.authentication.TestingAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
 
-import java.util.Collections;
 import java.util.List;
 
 import static com.nt.user_service_lms.constants.GroupConstants.GROUP_CREATED;
-import static org.mockito.ArgumentMatchers.*;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyList;
+import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.when;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
-
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @WebMvcTest(GroupController.class)
 @ExtendWith(MockitoExtension.class)
@@ -68,9 +65,6 @@ class GroupControllerTest {
     private final String email = "admin@nucleusteq.com";
 
 
-
-
-
     @BeforeEach
     void setup() throws Exception {
 
@@ -93,7 +87,7 @@ class GroupControllerTest {
     @DisplayName("Should create group and return 201 CREATED")
     @WithMockUser(roles = {"ADMIN"})
     void shouldCreateGroup() throws Exception {
-        var response =  StandardResponseOutDTO.success(new MessageOutDTO(GROUP_CREATED), GROUP_CREATED);
+        var response = StandardResponseOutDTO.success(new MessageOutDTO(GROUP_CREATED), GROUP_CREATED);
         when(groupService.createGroup(anyString(), anyString(), anyList())).thenReturn(response);
 
         mockMvc.perform(post("/api/service-api/group/create-group")
@@ -102,7 +96,8 @@ class GroupControllerTest {
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(sampleDTO))
                         .with(csrf()))
-                .andExpect(status().isCreated());    }
+                .andExpect(status().isCreated());
+    }
 
     @Test
     @DisplayName("Should return 403 when creating group without auth")

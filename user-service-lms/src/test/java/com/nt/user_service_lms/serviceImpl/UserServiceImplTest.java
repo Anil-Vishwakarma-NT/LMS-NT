@@ -1,10 +1,12 @@
 package com.nt.user_service_lms.serviceImpl;
 
-import com.nt.user_service_lms.dto.outDTO.*;
+import com.nt.user_service_lms.dto.outDTO.CourseDeadlinesDTO;
+import com.nt.user_service_lms.dto.outDTO.CourseInfoOutDTO;
+import com.nt.user_service_lms.dto.outDTO.StandardResponseOutDTO;
+import com.nt.user_service_lms.dto.outDTO.UserCourseEnrollDetails;
 import com.nt.user_service_lms.entities.Enrollment;
 import com.nt.user_service_lms.entities.Role;
 import com.nt.user_service_lms.entities.User;
-import com.nt.user_service_lms.exception.ResourceNotFoundException;
 import com.nt.user_service_lms.feignClient.CourseMicroserviceClient;
 import com.nt.user_service_lms.repository.EnrollmentRepository;
 import com.nt.user_service_lms.repository.RoleRepository;
@@ -19,13 +21,14 @@ import org.mockito.MockitoAnnotations;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.userdetails.UserDetails;
 
-import java.sql.Timestamp;
-import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.util.*;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
 
-import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.Mockito.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.mockito.Mockito.when;
 
 class UserServiceImplTest {
 
@@ -80,9 +83,15 @@ class UserServiceImplTest {
 
     @Test
     void testCountActiveUsers() {
-        User user1 = new User(); user1.setUserId(2L); user1.setActive(true);
-        User user2 = new User(); user2.setUserId(1L); user2.setActive(true);
-        User user3 = new User(); user3.setUserId(3L); user3.setActive(false);
+        User user1 = new User();
+        user1.setUserId(2L);
+        user1.setActive(true);
+        User user2 = new User();
+        user2.setUserId(1L);
+        user2.setActive(true);
+        User user3 = new User();
+        user3.setUserId(3L);
+        user3.setActive(false);
         when(userRepository.findAll()).thenReturn(List.of(user1, user2, user3));
         long count = userService.countActiveUsers();
         assertEquals(1, count);
@@ -143,12 +152,16 @@ class UserServiceImplTest {
     @Test
     void testGetUserEnrolledCourses() {
         Enrollment e1 = new Enrollment();
-        e1.setCourseId(1L); e1.setAssignedAt(LocalDateTime.now().minusDays(5));
-        e1.setAssignedBy(100L); e1.setDeadline(LocalDateTime.now().plusDays(5));
+        e1.setCourseId(1L);
+        e1.setAssignedAt(LocalDateTime.now().minusDays(5));
+        e1.setAssignedBy(100L);
+        e1.setDeadline(LocalDateTime.now().plusDays(5));
 
         Enrollment e2 = new Enrollment();
-        e2.setCourseId(1L); e2.setAssignedAt(LocalDateTime.now());
-        e2.setAssignedBy(101L); e2.setDeadline(LocalDateTime.now().plusDays(10));
+        e2.setCourseId(1L);
+        e2.setAssignedAt(LocalDateTime.now());
+        e2.setAssignedBy(101L);
+        e2.setDeadline(LocalDateTime.now().plusDays(10));
 
         when(enrollmentRepository.findByUserIdAndIsActiveTrue(1L)).thenReturn(List.of(e1, e2));
 

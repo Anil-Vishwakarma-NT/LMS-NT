@@ -137,12 +137,11 @@ public interface EnrollmentRepository extends JpaRepository<Enrollment, Long> {
     Optional<Enrollment> findByGroupIdAndUserIdAndCourseId(Long groupId, Long userId, Long courseId);
 
 
-
     /**
      * Finds an enrollment by group ID, user ID, and course ID.
      *
-     * @param groupId the group ID
-     * @param userId the user ID
+     * @param groupId  the group ID
+     * @param userId   the user ID
      * @param bundleId the course ID
      * @return optional enrollment
      */

@@ -226,8 +226,8 @@ public class CourseController {
 
 
     @PostMapping("/courses")
-    public ResponseEntity<StandardResponseOutDTO<List<CourseInfoOutDTO>>> getCoursesByIds(@RequestBody List<Long> courseIds){
-          StandardResponseOutDTO<List<CourseInfoOutDTO>>  response = courseService.getCoursesByIds(courseIds);
-          return new ResponseEntity<>(response , HttpStatus.OK);
+    public ResponseEntity<StandardResponseOutDTO<List<CourseInfoOutDTO>>> getCoursesByIds(@RequestBody List<Long> courseIds) {
+        StandardResponseOutDTO<List<CourseInfoOutDTO>> response = courseService.getCoursesByIds(courseIds);
+        return new ResponseEntity<>(response, HttpStatus.OK);
     }
 }

@@ -68,6 +68,7 @@ public class RefreshToken {
         return Objects.equals(id, that.id) && Objects.equals(userId, that.userId)
                 && Objects.equals(token, that.token) && Objects.equals(expiryDate, that.expiryDate);
     }
+
     /**
      * generates hashcode.
      */

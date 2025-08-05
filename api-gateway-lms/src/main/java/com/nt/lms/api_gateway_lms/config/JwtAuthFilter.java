@@ -122,7 +122,7 @@ public class JwtAuthFilter implements WebFilter {
      * </ul>
      *
      * @param exchange the current server exchange containing request/response
-     * @param chain the web filter chain for continuing request processing
+     * @param chain    the web filter chain for continuing request processing
      * @return a Mono&lt;Void&gt; representing completion of the filter operation
      */
     @Override
@@ -168,8 +168,8 @@ public class JwtAuthFilter implements WebFilter {
      * </ul>
      *
      * @param exchange the current server exchange
-     * @param chain the web filter chain for continuing request processing
-     * @param token the access token to be processed
+     * @param chain    the web filter chain for continuing request processing
+     * @param token    the access token to be processed
      * @return a Mono&lt;Void&gt; representing completion of access token handling
      */
     private Mono<Void> handleAccessToken(final ServerWebExchange exchange, final WebFilterChain chain, final String token) {
@@ -223,8 +223,8 @@ public class JwtAuthFilter implements WebFilter {
      * </ul>
      *
      * @param exchange the current server exchange
-     * @param chain the web filter chain for continuing request processing
-     * @param token the service token to be processed
+     * @param chain    the web filter chain for continuing request processing
+     * @param token    the service token to be processed
      * @return a Mono&lt;Void&gt; representing completion of service token handling
      */
     private Mono<Void> handleServiceToken(final ServerWebExchange exchange, final WebFilterChain chain, final String token) {
@@ -277,8 +277,8 @@ public class JwtAuthFilter implements WebFilter {
      * <p>The security headers include a cryptographic signature to prevent tampering
      * and ensure the request originated from the API gateway.
      *
-     * @param request the original HTTP request
-     * @param serviceToken the service token to be included in headers
+     * @param request           the original HTTP request
+     * @param serviceToken      the service token to be included in headers
      * @param originalTokenType the type of the original token (ACCESS or SERVICE)
      * @return a new ServerHttpRequest with added security headers
      */
@@ -330,8 +330,8 @@ public class JwtAuthFilter implements WebFilter {
      * In production environments, consider using HMAC-SHA256 for better security.
      *
      * @param timestamp the current timestamp in milliseconds
-     * @param nonce the random nonce value
-     * @param secret the gateway secret key
+     * @param nonce     the random nonce value
+     * @param secret    the gateway secret key
      * @return a signature string for request verification
      */
     private String generateSignature(final long timestamp, final String nonce, final String secret) {
@@ -379,7 +379,7 @@ public class JwtAuthFilter implements WebFilter {
      * </ul>
      *
      * @param response the HTTP response object
-     * @param message the error message to include in the response body
+     * @param message  the error message to include in the response body
      * @return a Mono&lt;Void&gt; representing completion of the error response writing
      */
     private Mono<Void> handleUnauthorized(final ServerHttpResponse response, final String message) {

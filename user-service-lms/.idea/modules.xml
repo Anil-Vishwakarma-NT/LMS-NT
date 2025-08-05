@@ -2,6 +2,7 @@
 <project version="4">
   <component name="ProjectModuleManager">
     <modules>
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/LMS-NT.user-service-lms.main.iml" filepath="$PROJECT_DIR$/.idea/modules/LMS-NT.user-service-lms.main.iml" />
       <module fileurl="file://$PROJECT_DIR$/.idea/modules/com.nt.user-service-lms.main.iml" filepath="$PROJECT_DIR$/.idea/modules/com.nt.user-service-lms.main.iml" />
       <module fileurl="file://$PROJECT_DIR$/.idea/modules/user-service-lms.iml" filepath="$PROJECT_DIR$/.idea/modules/user-service-lms.iml" />
     </modules>

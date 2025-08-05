@@ -14,11 +14,11 @@ public class AddCourseToBundleInDTO {
     /**
      * Bundle Id for bundle
      */
-   private  Long bundleId;
+    private Long bundleId;
 
     /**
      * list of courses to be added.
      */
-   private List<Long> courses;
+    private List<Long> courses;
 
 }

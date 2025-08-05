@@ -54,6 +54,7 @@ public interface BundleRepository extends JpaRepository<Bundle, Long> {
 
     /**
      * Find all the bundles in the table.
+     *
      * @param bundleIds
      * @return list of bundle
      */

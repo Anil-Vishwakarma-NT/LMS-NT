@@ -1,10 +1,7 @@
-
 package com.nt.course_service_lms.controllerTest;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.nt.course_service_lms.config.JwtUtil;
-import com.nt.course_service_lms.config.SecurityConfig;
-import com.nt.course_service_lms.config.ServiceAuthenticationFilter;
 import com.nt.course_service_lms.config.TestAuthenticationFilter;
 import com.nt.course_service_lms.config.TestSecurityConfig;
 import com.nt.course_service_lms.controller.QuizQuestionController;

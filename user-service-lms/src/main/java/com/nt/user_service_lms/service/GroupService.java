@@ -1,17 +1,16 @@
 package com.nt.user_service_lms.service;
 
 import com.nt.user_service_lms.dto.inDTO.GroupInDTO;
-//import com.nt.user_service_lms.dto.outDTO.*;
 import com.nt.user_service_lms.dto.outDTO.BundleOutDTO;
+import com.nt.user_service_lms.dto.outDTO.CourseInfoOutDTO;
+import com.nt.user_service_lms.dto.outDTO.GroupBundleOutDTO;
+import com.nt.user_service_lms.dto.outDTO.GroupCourseOutDTO;
 import com.nt.user_service_lms.dto.outDTO.GroupOutDTO;
+import com.nt.user_service_lms.dto.outDTO.GroupSummaryOutDTO;
+import com.nt.user_service_lms.dto.outDTO.GroupUserOutDTO;
 import com.nt.user_service_lms.dto.outDTO.MessageOutDTO;
 import com.nt.user_service_lms.dto.outDTO.StandardResponseOutDTO;
-import com.nt.user_service_lms.dto.outDTO.CourseInfoOutDTO;
-import com.nt.user_service_lms.dto.outDTO.GroupSummaryOutDTO;
-import com.nt.user_service_lms.dto.outDTO.GroupCourseOutDTO;
-import com.nt.user_service_lms.dto.outDTO.GroupUserOutDTO;
 import com.nt.user_service_lms.dto.outDTO.UserGroupOutDTO;
-import com.nt.user_service_lms.dto.outDTO.GroupBundleOutDTO;
 
 import java.util.List;
 
@@ -68,7 +67,7 @@ public interface GroupService {
     /**
      * Retrieves bundle details a user is enrolled in.
      *
-     * @param userId the ID of the user
+     * @param userId  the ID of the user
      * @param groupId
      * @return a StandardResponseOutDTO containing a list of BundleOutDTO
      */

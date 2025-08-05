@@ -54,5 +54,5 @@ public interface CourseBundleRepository extends JpaRepository<CourseBundle, Long
     List<Long> findCourseIdsByBundleId(@Param("bundleId") Long bundleId);
 
 
-    Optional<CourseBundle> findByBundleIdAndCourseId(Long bundleId , Long courseId);
+    Optional<CourseBundle> findByBundleIdAndCourseId(Long bundleId, Long courseId);
 }

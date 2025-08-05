@@ -59,12 +59,10 @@ public class TokenController {
      *   <li>500 Internal Server Error: Token processing error</li>
      * </ul>
      *
-     * @param request the incoming HTTP request containing headers and other request information
+     * @param request             the incoming HTTP request containing headers and other request information
      * @param serviceTokenRequest the request body containing target service details for token generation
      * @return a Mono containing ResponseEntity with ServiceTokenResponse - either success with token or error message
-     *
      * @throws RuntimeException if token generation fails due to invalid access token or service configuration
-     *
      * @see ServiceTokenRequest
      * @see ServiceTokenResponse
      * @see JwtUtil#generateServiceTokenForDirectAccess(String, String)

@@ -77,7 +77,7 @@ public class UserInDTO {
     /**
      * generates hashcode.
      */
-     @Override
+    @Override
     public int hashCode() {
         return Objects.hash(userId, email, firstName, lastName, userName, role);
     }

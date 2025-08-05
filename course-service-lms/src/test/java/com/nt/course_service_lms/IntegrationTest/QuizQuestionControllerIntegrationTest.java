@@ -11,13 +11,21 @@ import com.nt.course_service_lms.exception.ErrorResponse;
 import com.nt.course_service_lms.repository.CourseRepository;
 import com.nt.course_service_lms.repository.QuizQuestionRepository;
 import com.nt.course_service_lms.repository.QuizRepository;
-import org.junit.jupiter.api.*;
+import org.junit.jupiter.api.MethodOrderer;
+import org.junit.jupiter.api.Order;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.TestMethodOrder;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.web.client.TestRestTemplate;
 import org.springframework.boot.test.web.server.LocalServerPort;
 import org.springframework.core.ParameterizedTypeReference;
-import org.springframework.http.*;
+import org.springframework.http.HttpEntity;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpMethod;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import org.springframework.test.context.ActiveProfiles;
 
 import java.math.BigDecimal;
@@ -180,7 +188,8 @@ class QuizQuestionControllerIntegrationTest {
                 getBaseUrl(),
                 HttpMethod.POST,
                 entity,
-                new ParameterizedTypeReference<>() {}
+                new ParameterizedTypeReference<>() {
+                }
         );
 
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.CREATED);
@@ -212,7 +221,8 @@ class QuizQuestionControllerIntegrationTest {
                 getBaseUrl(),
                 HttpMethod.POST,
                 entity,
-                new ParameterizedTypeReference<>() {}
+                new ParameterizedTypeReference<>() {
+                }
         );
 
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.CREATED);
@@ -291,7 +301,8 @@ class QuizQuestionControllerIntegrationTest {
                 getBaseUrl(),
                 HttpMethod.POST,
                 entity,
-                new ParameterizedTypeReference<Map<String, String>>() {}
+                new ParameterizedTypeReference<Map<String, String>>() {
+                }
         );
 
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.BAD_REQUEST);
@@ -312,7 +323,8 @@ class QuizQuestionControllerIntegrationTest {
                 getBaseUrl() + "/" + testQuestionId,
                 HttpMethod.GET,
                 entity,
-                new ParameterizedTypeReference<>() {}
+                new ParameterizedTypeReference<>() {
+                }
         );
 
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
@@ -346,7 +358,8 @@ class QuizQuestionControllerIntegrationTest {
                 getBaseUrl() + "/quiz/" + testQuizId,
                 HttpMethod.GET,
                 entity,
-                new ParameterizedTypeReference<>() {}
+                new ParameterizedTypeReference<>() {
+                }
         );
 
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
@@ -414,7 +427,8 @@ class QuizQuestionControllerIntegrationTest {
                 getBaseUrl() + "/" + testQuestionId,
                 HttpMethod.PUT,
                 entity,
-                new ParameterizedTypeReference<>() {}
+                new ParameterizedTypeReference<>() {
+                }
         );
 
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
@@ -444,7 +458,8 @@ class QuizQuestionControllerIntegrationTest {
                 getBaseUrl() + "/" + secondQuestionId,
                 HttpMethod.PUT,
                 entity,
-                new ParameterizedTypeReference<>() {}
+                new ParameterizedTypeReference<>() {
+                }
         );
 
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
@@ -456,7 +471,8 @@ class QuizQuestionControllerIntegrationTest {
                 getBaseUrl() + "/quiz/" + testQuizId,
                 HttpMethod.GET,
                 getEntity,
-                new ParameterizedTypeReference<>() {}
+                new ParameterizedTypeReference<>() {
+                }
         );
 
         List<QuizQuestionOutDTO> questions = getResponse.getBody().getData();
@@ -527,7 +543,8 @@ class QuizQuestionControllerIntegrationTest {
                 getBaseUrl() + "/" + thirdQuestionId,
                 HttpMethod.DELETE,
                 entity,
-                new ParameterizedTypeReference<>() {}
+                new ParameterizedTypeReference<>() {
+                }
         );
 
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
@@ -547,7 +564,8 @@ class QuizQuestionControllerIntegrationTest {
                 getBaseUrl() + "/quiz/" + testQuizId,
                 HttpMethod.GET,
                 entity,
-                new ParameterizedTypeReference<>() {}
+                new ParameterizedTypeReference<>() {
+                }
         );
 
         List<QuizQuestionOutDTO> remainingQuestions = listResponse.getBody().getData();

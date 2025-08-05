@@ -1,8 +1,8 @@
 package com.nt.course_service_lms.controller;
 
 import com.nt.course_service_lms.dto.inDTO.BundleInDTO;
-import com.nt.course_service_lms.dto.outDTO.BundleOutDTO;
 import com.nt.course_service_lms.dto.inDTO.UpdateBundleInDTO;
+import com.nt.course_service_lms.dto.outDTO.BundleOutDTO;
 import com.nt.course_service_lms.dto.outDTO.StandardResponseOutDTO;
 import com.nt.course_service_lms.service.BundleService;
 import jakarta.validation.Valid;
@@ -11,14 +11,14 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PatchMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PatchMapping;
-import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
 
@@ -54,9 +54,10 @@ public class BundleController {
     @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<StandardResponseOutDTO<BundleOutDTO>> createBundle(@Valid @RequestBody final BundleInDTO bundleInDTO) {
         log.info("Received request to create bundle: {}", bundleInDTO.getBundleName());
-        StandardResponseOutDTO<BundleOutDTO> createdBundle = bundleService.createBundle(bundleInDTO);
+        BundleOutDTO createdBundle = bundleService.createBundle(bundleInDTO);
+        StandardResponseOutDTO<BundleOutDTO> standardResponseOutDTO = StandardResponseOutDTO.success(createdBundle, "Bundle Created Successfully");
         return ResponseEntity.status(HttpStatus.CREATED)
-                .body(createdBundle);
+                .body(standardResponseOutDTO);
     }
 
     /**
@@ -100,7 +101,7 @@ public class BundleController {
     public ResponseEntity<StandardResponseOutDTO<List<BundleOutDTO>>> getBundlesByIds(@RequestBody final List<Long> bundleIds) {
         log.info("Received request to fetch bundle with IDs");
         StandardResponseOutDTO<List<BundleOutDTO>> bundle = bundleService.getBundlesByIds(bundleIds);
-        return  new ResponseEntity<>(bundle , HttpStatus.OK);
+        return new ResponseEntity<>(bundle, HttpStatus.OK);
     }
 
     /**
@@ -136,7 +137,7 @@ public class BundleController {
     public ResponseEntity<StandardResponseOutDTO<Void>> deleteBundle(@PathVariable("id") final Long id) {
         log.info("Received request to delete bundle with ID: {}", id);
         bundleService.deleteBundle(id);
-        String message ="Bundle with ID " + id + " deleted successfully.";
+        String message = "Bundle with ID " + id + " deleted successfully.";
         return ResponseEntity.ok(StandardResponseOutDTO.success(null, "Bundle deleted successfully"));
     }
 
