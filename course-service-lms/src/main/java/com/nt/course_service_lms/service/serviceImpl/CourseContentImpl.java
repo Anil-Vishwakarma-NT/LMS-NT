@@ -171,7 +171,7 @@ public class CourseContentImpl implements CourseContentService {
             courseContent.setActive(false);
             //courseContentRepository.delete(courseContent);
             log.info("Successfully deleted course content with ID: {}", courseContentId);
-
+            courseContentRepository.save(courseContent);
             return COURSE_CONTENT_DELETED;
 
         } catch (ResourceNotFoundException e) {
