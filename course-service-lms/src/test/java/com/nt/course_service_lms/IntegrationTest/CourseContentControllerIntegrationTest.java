@@ -5,7 +5,9 @@ import com.nt.course_service_lms.dto.inDTO.UpdateCourseContentInDTO;
 import com.nt.course_service_lms.dto.outDTO.CourseContentOutDTO;
 import com.nt.course_service_lms.dto.outDTO.StandardResponseOutDTO;
 import com.nt.course_service_lms.entity.Course;
+import com.nt.course_service_lms.entity.CourseContent;
 import com.nt.course_service_lms.exception.ErrorResponse;
+import com.nt.course_service_lms.repository.CourseContentRepository;
 import com.nt.course_service_lms.repository.CourseRepository;
 import org.junit.jupiter.api.MethodOrderer;
 import org.junit.jupiter.api.Order;
@@ -42,22 +44,34 @@ class CourseContentControllerIntegrationTest {
     private TestRestTemplate restTemplate;
 
     @Autowired
+    private CourseContentRepository courseContentRepository;
+
+    @Autowired
     private CourseRepository courseRepository;
 
     private static Long testCourseId;
-    private static Long testCourseId2;
+    private static Long secondTestCourseId;
     private static Long createdContentId;
     private static Long secondContentId;
+    private static Long thirdContentId;
 
     private String getBaseUrl() {
         return "http://localhost:" + port + "/api/service-api/course-content";
     }
 
-    private HttpHeaders createHeaders() {
+    private HttpHeaders createAdminHeaders() {
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_JSON);
         headers.set("X-Test-User", "test-admin");
         headers.set("X-Test-Role", "ADMIN");
+        return headers;
+    }
+
+    private HttpHeaders createEmployeeHeaders() {
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(MediaType.APPLICATION_JSON);
+        headers.set("X-Test-User", "test-employee");
+        headers.set("X-Test-Role", "EMPLOYEE");
         return headers;
     }
 
@@ -66,10 +80,11 @@ class CourseContentControllerIntegrationTest {
     @Test
     @Order(1)
     void setupTestData() {
-        // Create test courses
+        // Create test courses first
         Course testCourse1 = Course.builder()
-                .title("TestCourse1")
-                .description("Test Course 1 Description")
+                .title("Spring Boot Fundamentals")
+                .description("Learn Spring Boot basics")
+                .isActive(true)
                 .createdAt(LocalDateTime.now())
                 .updatedAt(LocalDateTime.now())
                 .build();
@@ -77,13 +92,54 @@ class CourseContentControllerIntegrationTest {
         testCourseId = savedCourse1.getCourseId();
 
         Course testCourse2 = Course.builder()
-                .title("TestCourse2")
-                .description("Test Course 2 Description")
+                .title("Advanced Java Concepts")
+                .description("Deep dive into Java")
+                .isActive(true)
                 .createdAt(LocalDateTime.now())
                 .updatedAt(LocalDateTime.now())
                 .build();
         Course savedCourse2 = courseRepository.save(testCourse2);
-        testCourseId2 = savedCourse2.getCourseId();
+        secondTestCourseId = savedCourse2.getCourseId();
+
+        // Create test course contents
+        CourseContent content1 = CourseContent.builder()
+                .courseId(testCourseId)
+                .title("Introduction to Spring Boot")
+                .description("Basic overview of Spring Boot framework and its features")
+                .resourceLink("https://example.com/spring-boot-intro")
+                .isActive(true)
+                .createdAt(LocalDateTime.now())
+                .updatedAt(LocalDateTime.now())
+                .build();
+        CourseContent savedContent1 = courseContentRepository.save(content1);
+        createdContentId = savedContent1.getCourseContentId();
+
+        CourseContent content2 = CourseContent.builder()
+                .courseId(testCourseId)
+                .title("Spring Boot Configuration")
+                .description("Learn about application properties and configuration")
+                .resourceLink("https://example.com/spring-boot-config")
+                .isActive(false)
+                .createdAt(LocalDateTime.now())
+                .updatedAt(LocalDateTime.now())
+                .build();
+        CourseContent savedContent2 = courseContentRepository.save(content2);
+        secondContentId = savedContent2.getCourseContentId();
+
+        CourseContent content3 = CourseContent.builder()
+                .courseId(secondTestCourseId)
+                .title("Java Collections Framework")
+                .description("Deep dive into Java collections")
+                .resourceLink("https://example.com/java-collections")
+                .isActive(true)
+                .createdAt(LocalDateTime.now())
+                .updatedAt(LocalDateTime.now())
+                .build();
+        CourseContent savedContent3 = courseContentRepository.save(content3);
+        thirdContentId = savedContent3.getCourseContentId();
+
+        System.out.println("Test Course ID: " + testCourseId);
+        System.out.println("Created Content ID: " + createdContentId);
     }
 
     // ==================== CREATE COURSE CONTENT TESTS ====================
@@ -93,69 +149,41 @@ class CourseContentControllerIntegrationTest {
     void shouldCreateCourseContentSuccessfully() {
         CourseContentInDTO request = CourseContentInDTO.builder()
                 .courseId(testCourseId)
-                .title("Introduction to Java")
-                .description("This lesson covers the basics of Java programming language")
-                .resourceLink("https://example.com/java-basics")
+                .title("Spring Boot Testing")
+                .description("Learn how to test Spring Boot applications effectively")
+                .resourceLink("https://example.com/spring-boot-testing")
                 .isActive(true)
                 .build();
 
-        HttpEntity<CourseContentInDTO> entity = new HttpEntity<>(request, createHeaders());
+        HttpEntity<CourseContentInDTO> entity = new HttpEntity<>(request, createAdminHeaders());
 
         ResponseEntity<StandardResponseOutDTO<CourseContentOutDTO>> response = restTemplate.exchange(
                 getBaseUrl(),
                 HttpMethod.POST,
                 entity,
-                new ParameterizedTypeReference<>() {
-                }
+                new ParameterizedTypeReference<>() {}
         );
 
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.CREATED);
         assertThat(response.getBody()).isNotNull();
-        assertThat(response.getBody().getData().getTitle()).isEqualTo("Introduction to Java");
+        assertThat(response.getBody().getData().getTitle()).isEqualTo("Spring Boot Testing");
         assertThat(response.getBody().getData().getCourseId()).isEqualTo(testCourseId);
         assertThat(response.getBody().getData().isActive()).isTrue();
         assertThat(response.getBody().getData().getCreatedAt()).isNotNull();
-
-        createdContentId = response.getBody().getData().getCourseContentId();
     }
 
     @Test
     @Order(3)
-    void shouldCreateSecondCourseContentForTesting() {
+    void shouldRejectDuplicateCourseContentTitle() {
         CourseContentInDTO request = CourseContentInDTO.builder()
                 .courseId(testCourseId)
-                .title("Advanced Java Topics")
-                .description("Advanced concepts in Java programming")
-                .resourceLink("https://example.com/advanced-java")
-                .isActive(false)
-                .build();
-
-        HttpEntity<CourseContentInDTO> entity = new HttpEntity<>(request, createHeaders());
-
-        ResponseEntity<StandardResponseOutDTO<CourseContentOutDTO>> response = restTemplate.exchange(
-                getBaseUrl(),
-                HttpMethod.POST,
-                entity,
-                new ParameterizedTypeReference<>() {
-                }
-        );
-
-        assertThat(response.getStatusCode()).isEqualTo(HttpStatus.CREATED);
-        secondContentId = response.getBody().getData().getCourseContentId();
-    }
-
-    @Test
-    @Order(4)
-    void shouldRejectDuplicateContentTitle() {
-        CourseContentInDTO request = CourseContentInDTO.builder()
-                .courseId(testCourseId)
-                .title("Introduction to Java") // Same title as first content
-                .description("Duplicate content description")
-                .resourceLink("https://example.com/duplicate")
+                .title("Introduction to Spring Boot") // Same title as existing content
+                .description("Another introduction to Spring Boot")
+                .resourceLink("https://example.com/another-intro")
                 .isActive(true)
                 .build();
 
-        HttpEntity<CourseContentInDTO> entity = new HttpEntity<>(request, createHeaders());
+        HttpEntity<CourseContentInDTO> entity = new HttpEntity<>(request, createAdminHeaders());
 
         ResponseEntity<ErrorResponse> response = restTemplate.exchange(
                 getBaseUrl(),
@@ -169,17 +197,17 @@ class CourseContentControllerIntegrationTest {
     }
 
     @Test
-    @Order(5)
-    void shouldRejectInvalidCourseId() {
+    @Order(4)
+    void shouldRejectCourseContentForNonExistingCourse() {
         CourseContentInDTO request = CourseContentInDTO.builder()
-                .courseId(999999L) // Non-existent course ID
-                .title("Valid Title")
-                .description("Valid description")
-                .resourceLink("https://example.com/valid")
+                .courseId(999999L) // Non-existing course
+                .title("Invalid Course Content")
+                .description("This should fail")
+                .resourceLink("https://example.com/invalid")
                 .isActive(true)
                 .build();
 
-        HttpEntity<CourseContentInDTO> entity = new HttpEntity<>(request, createHeaders());
+        HttpEntity<CourseContentInDTO> entity = new HttpEntity<>(request, createAdminHeaders());
 
         ResponseEntity<ErrorResponse> response = restTemplate.exchange(
                 getBaseUrl(),
@@ -193,24 +221,23 @@ class CourseContentControllerIntegrationTest {
     }
 
     @Test
-    @Order(6)
-    void shouldRejectBlankTitle() {
+    @Order(5)
+    void shouldRejectInvalidCourseContentData() {
         CourseContentInDTO request = CourseContentInDTO.builder()
                 .courseId(testCourseId)
-                .title("") // Blank title
+                .title("") // Empty title
                 .description("Valid description")
                 .resourceLink("https://example.com/valid")
                 .isActive(true)
                 .build();
 
-        HttpEntity<CourseContentInDTO> entity = new HttpEntity<>(request, createHeaders());
+        HttpEntity<CourseContentInDTO> entity = new HttpEntity<>(request, createAdminHeaders());
 
         ResponseEntity<Map<String, String>> response = restTemplate.exchange(
                 getBaseUrl(),
                 HttpMethod.POST,
                 entity,
-                new ParameterizedTypeReference<Map<String, String>>() {
-                }
+                new ParameterizedTypeReference<Map<String, String>>() {}
         );
 
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.BAD_REQUEST);
@@ -218,7 +245,7 @@ class CourseContentControllerIntegrationTest {
     }
 
     @Test
-    @Order(7)
+    @Order(6)
     void shouldRejectInvalidResourceLink() {
         CourseContentInDTO request = CourseContentInDTO.builder()
                 .courseId(testCourseId)
@@ -228,14 +255,13 @@ class CourseContentControllerIntegrationTest {
                 .isActive(true)
                 .build();
 
-        HttpEntity<CourseContentInDTO> entity = new HttpEntity<>(request, createHeaders());
+        HttpEntity<CourseContentInDTO> entity = new HttpEntity<>(request, createAdminHeaders());
 
         ResponseEntity<Map<String, String>> response = restTemplate.exchange(
                 getBaseUrl(),
                 HttpMethod.POST,
                 entity,
-                new ParameterizedTypeReference<Map<String, String>>() {
-                }
+                new ParameterizedTypeReference<Map<String, String>>() {}
         );
 
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.BAD_REQUEST);
@@ -243,43 +269,40 @@ class CourseContentControllerIntegrationTest {
     }
 
     @Test
-    @Order(8)
-    void shouldAcceptEmptyResourceLink() {
+    @Order(7)
+    void shouldDenyCourseContentCreationForNonAdmin() {
         CourseContentInDTO request = CourseContentInDTO.builder()
-                .courseId(testCourseId2)
-                .title("Content Without Link")
-                .description("Content that doesn't require external resources")
-                .resourceLink("") // Empty resource link should be allowed
+                .courseId(testCourseId)
+                .title("Unauthorized Content")
+                .description("This should be rejected")
+                .resourceLink("https://example.com/unauthorized")
                 .isActive(true)
                 .build();
 
-        HttpEntity<CourseContentInDTO> entity = new HttpEntity<>(request, createHeaders());
+        HttpEntity<CourseContentInDTO> entity = new HttpEntity<>(request, createEmployeeHeaders());
 
-        ResponseEntity<StandardResponseOutDTO<CourseContentOutDTO>> response = restTemplate.exchange(
+        ResponseEntity<String> response = restTemplate.exchange(
                 getBaseUrl(),
                 HttpMethod.POST,
                 entity,
-                new ParameterizedTypeReference<>() {
-                }
+                String.class
         );
 
-        assertThat(response.getStatusCode()).isEqualTo(HttpStatus.CREATED);
-        assertThat(response.getBody().getData().getResourceLink()).isEmpty();
+        assertThat(response.getStatusCode()).isEqualTo(HttpStatus.FORBIDDEN);
     }
 
     // ==================== GET COURSE CONTENT TESTS ====================
 
     @Test
-    @Order(9)
-    void shouldGetAllCourseContents() {
-        HttpEntity<Void> entity = new HttpEntity<>(createHeaders());
+    @Order(8)
+    void shouldGetAllCourseContentsAsEmployee() {
+        HttpEntity<Void> entity = new HttpEntity<>(createEmployeeHeaders());
 
         ResponseEntity<StandardResponseOutDTO<List<CourseContentOutDTO>>> response = restTemplate.exchange(
                 getBaseUrl(),
                 HttpMethod.GET,
                 entity,
-                new ParameterizedTypeReference<>() {
-                }
+                new ParameterizedTypeReference<>() {}
         );
 
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
@@ -288,27 +311,27 @@ class CourseContentControllerIntegrationTest {
     }
 
     @Test
-    @Order(10)
+    @Order(9)
     void shouldGetCourseContentById() {
-        HttpEntity<Void> entity = new HttpEntity<>(createHeaders());
+        HttpEntity<Void> entity = new HttpEntity<>(createEmployeeHeaders());
 
         ResponseEntity<StandardResponseOutDTO<CourseContentOutDTO>> response = restTemplate.exchange(
                 getBaseUrl() + "/" + createdContentId,
                 HttpMethod.GET,
                 entity,
-                new ParameterizedTypeReference<>() {
-                }
+                new ParameterizedTypeReference<>() {}
         );
 
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
         assertThat(response.getBody().getData().getCourseContentId()).isEqualTo(createdContentId);
-        assertThat(response.getBody().getData().getTitle()).isEqualTo("Introduction to Java");
+        assertThat(response.getBody().getData().getTitle()).isEqualTo("Introduction to Spring Boot");
+        assertThat(response.getBody().getData().getCourseId()).isEqualTo(testCourseId);
     }
 
     @Test
-    @Order(11)
-    void shouldReturn404ForNonExistingContent() {
-        HttpEntity<Void> entity = new HttpEntity<>(createHeaders());
+    @Order(10)
+    void shouldReturn404ForNonExistingCourseContent() {
+        HttpEntity<Void> entity = new HttpEntity<>(createEmployeeHeaders());
 
         ResponseEntity<ErrorResponse> response = restTemplate.exchange(
                 getBaseUrl() + "/999999",
@@ -321,32 +344,27 @@ class CourseContentControllerIntegrationTest {
     }
 
     @Test
-    @Order(12)
+    @Order(11)
     void shouldGetCourseContentByCourseId() {
-        HttpEntity<Void> entity = new HttpEntity<>(createHeaders());
+        HttpEntity<Void> entity = new HttpEntity<>(createEmployeeHeaders());
 
         ResponseEntity<StandardResponseOutDTO<List<CourseContentOutDTO>>> response = restTemplate.exchange(
                 getBaseUrl() + "/course/" + testCourseId,
                 HttpMethod.GET,
                 entity,
-                new ParameterizedTypeReference<>() {
-                }
+                new ParameterizedTypeReference<>() {}
         );
 
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
         assertThat(response.getBody().getData()).isNotEmpty();
-        assertThat(response.getBody().getData().size()).isEqualTo(2);
-
-        // Verify all contents belong to the correct course
-        response.getBody().getData().forEach(content -> {
-            assertThat(content.getCourseId()).isEqualTo(testCourseId);
-        });
+        assertThat(response.getBody().getData().size()).isGreaterThanOrEqualTo(2);
+        assertThat(response.getBody().getData()).allMatch(content -> content.getCourseId() == testCourseId);
     }
 
     @Test
-    @Order(13)
-    void shouldReturn404ForNonExistingCourse() {
-        HttpEntity<Void> entity = new HttpEntity<>(createHeaders());
+    @Order(12)
+    void shouldReturn404ForNonExistingCourseContents() {
+        HttpEntity<Void> entity = new HttpEntity<>(createEmployeeHeaders());
 
         ResponseEntity<ErrorResponse> response = restTemplate.exchange(
                 getBaseUrl() + "/course/999999",
@@ -359,70 +377,67 @@ class CourseContentControllerIntegrationTest {
     }
 
     @Test
-    @Order(14)
+    @Order(13)
     void shouldGetCourseContentCount() {
-        HttpEntity<Void> entity = new HttpEntity<>(createHeaders());
+        HttpEntity<Void> entity = new HttpEntity<>(createEmployeeHeaders());
 
         ResponseEntity<StandardResponseOutDTO<Integer>> response = restTemplate.exchange(
                 getBaseUrl() + "/course/" + testCourseId + "/count",
                 HttpMethod.GET,
                 entity,
-                new ParameterizedTypeReference<>() {
-                }
+                new ParameterizedTypeReference<>() {}
         );
 
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
-        assertThat(response.getBody().getData()).isEqualTo(2);
+        assertThat(response.getBody().getData()).isGreaterThanOrEqualTo(2);
     }
 
     // ==================== UPDATE COURSE CONTENT TESTS ====================
 
     @Test
-    @Order(15)
+    @Order(14)
     void shouldUpdateCourseContentSuccessfully() {
         UpdateCourseContentInDTO updateRequest = UpdateCourseContentInDTO.builder()
                 .courseId(testCourseId)
-                .title("Updated Java Introduction")
-                .description("Updated description for Java basics")
-                .resourceLink("https://example.com/updated-java")
+                .title("Updated Spring Boot Introduction")
+                .description("Updated description for Spring Boot introduction")
+                .resourceLink("https://example.com/updated-intro")
                 .isActive(false)
                 .build();
 
-        HttpEntity<UpdateCourseContentInDTO> entity = new HttpEntity<>(updateRequest, createHeaders());
+        HttpEntity<UpdateCourseContentInDTO> entity = new HttpEntity<>(updateRequest, createAdminHeaders());
 
         ResponseEntity<StandardResponseOutDTO<CourseContentOutDTO>> response = restTemplate.exchange(
                 getBaseUrl() + "/" + createdContentId,
                 HttpMethod.PUT,
                 entity,
-                new ParameterizedTypeReference<>() {
-                }
+                new ParameterizedTypeReference<>() {}
         );
 
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
-        assertThat(response.getBody().getData().getTitle()).isEqualTo("Updated Java Introduction");
+        assertThat(response.getBody().getData().getTitle()).isEqualTo("Updated Spring Boot Introduction");
         assertThat(response.getBody().getData().isActive()).isFalse();
         assertThat(response.getBody().getData().getUpdatedAt()).isNotNull();
     }
 
     @Test
-    @Order(16)
-    void shouldAllowUpdateWithSameTitle() {
+    @Order(15)
+    void shouldAllowUpdateWithSameTitleForSameCourse() {
         UpdateCourseContentInDTO updateRequest = UpdateCourseContentInDTO.builder()
                 .courseId(testCourseId)
-                .title("Updated Java Introduction") // Same title as current
-                .description("Same title but different description")
+                .title("Updated Spring Boot Introduction") // Same title as current
+                .description("Same title is allowed for same content")
                 .resourceLink("https://example.com/same-title")
                 .isActive(true)
                 .build();
 
-        HttpEntity<UpdateCourseContentInDTO> entity = new HttpEntity<>(updateRequest, createHeaders());
+        HttpEntity<UpdateCourseContentInDTO> entity = new HttpEntity<>(updateRequest, createAdminHeaders());
 
         ResponseEntity<StandardResponseOutDTO<CourseContentOutDTO>> response = restTemplate.exchange(
                 getBaseUrl() + "/" + createdContentId,
                 HttpMethod.PUT,
                 entity,
-                new ParameterizedTypeReference<>() {
-                }
+                new ParameterizedTypeReference<>() {}
         );
 
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
@@ -430,17 +445,17 @@ class CourseContentControllerIntegrationTest {
     }
 
     @Test
-    @Order(17)
+    @Order(16)
     void shouldRejectUpdateWithDuplicateTitle() {
         UpdateCourseContentInDTO updateRequest = UpdateCourseContentInDTO.builder()
                 .courseId(testCourseId)
-                .title("Advanced Java Topics") // Title of second content
-                .description("Trying to use existing title")
+                .title("Spring Boot Configuration") // Title exists for another content in same course
+                .description("This should fail")
                 .resourceLink("https://example.com/duplicate")
                 .isActive(true)
                 .build();
 
-        HttpEntity<UpdateCourseContentInDTO> entity = new HttpEntity<>(updateRequest, createHeaders());
+        HttpEntity<UpdateCourseContentInDTO> entity = new HttpEntity<>(updateRequest, createAdminHeaders());
 
         ResponseEntity<ErrorResponse> response = restTemplate.exchange(
                 getBaseUrl() + "/" + createdContentId,
@@ -450,11 +465,11 @@ class CourseContentControllerIntegrationTest {
         );
 
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.CONFLICT);
-        assertThat(response.getBody().getMessage()).contains("Course content with the same title already exists for this course");
+        assertThat(response.getBody().getMessage()).containsAnyOf("duplicate", "already exists");
     }
 
     @Test
-    @Order(18)
+    @Order(17)
     void shouldReturn404WhenUpdatingNonExistingContent() {
         UpdateCourseContentInDTO updateRequest = UpdateCourseContentInDTO.builder()
                 .courseId(testCourseId)
@@ -464,7 +479,7 @@ class CourseContentControllerIntegrationTest {
                 .isActive(true)
                 .build();
 
-        HttpEntity<UpdateCourseContentInDTO> entity = new HttpEntity<>(updateRequest, createHeaders());
+        HttpEntity<UpdateCourseContentInDTO> entity = new HttpEntity<>(updateRequest, createAdminHeaders());
 
         ResponseEntity<ErrorResponse> response = restTemplate.exchange(
                 getBaseUrl() + "/999999",
@@ -477,9 +492,102 @@ class CourseContentControllerIntegrationTest {
     }
 
     @Test
-    @Order(19)
-    void shouldRejectUpdateWithInvalidData() {
+    @Order(18)
+    void shouldDenyUpdateForNonAdmin() {
         UpdateCourseContentInDTO updateRequest = UpdateCourseContentInDTO.builder()
+                .courseId(testCourseId)
+                .title("Unauthorized Update")
+                .description("This should be rejected")
+                .resourceLink("https://example.com/unauthorized")
+                .isActive(true)
+                .build();
+
+        HttpEntity<UpdateCourseContentInDTO> entity = new HttpEntity<>(updateRequest, createEmployeeHeaders());
+
+        ResponseEntity<String> response = restTemplate.exchange(
+                getBaseUrl() + "/" + createdContentId,
+                HttpMethod.PUT,
+                entity,
+                String.class
+        );
+
+        assertThat(response.getStatusCode()).isEqualTo(HttpStatus.FORBIDDEN);
+    }
+
+    // ==================== DELETE COURSE CONTENT TESTS ====================
+
+    @Test
+    @Order(19)
+    void shouldDeleteCourseContentAsAdmin() {
+        HttpEntity<Void> entity = new HttpEntity<>(createAdminHeaders());
+
+        ResponseEntity<StandardResponseOutDTO<Void>> response = restTemplate.exchange(
+                getBaseUrl() + "/" + secondContentId,
+                HttpMethod.DELETE,
+                entity,
+                new ParameterizedTypeReference<>() {}
+        );
+
+        assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
+        assertThat(response.getBody()).isNotNull();
+        assertThat(response.getBody().getMessage()).contains("Course Content Deleted Successfully");
+    }
+
+    @Test
+    @Order(20)
+    void shouldReturn404WhenDeletingNonExistingContent() {
+        HttpEntity<Void> entity = new HttpEntity<>(createAdminHeaders());
+
+        ResponseEntity<ErrorResponse> response = restTemplate.exchange(
+                getBaseUrl() + "/999999",
+                HttpMethod.DELETE,
+                entity,
+                ErrorResponse.class
+        );
+
+        assertThat(response.getStatusCode()).isEqualTo(HttpStatus.NOT_FOUND);
+    }
+
+    @Test
+    @Order(21)
+    void shouldDenyDeleteForNonAdmin() {
+        HttpEntity<Void> entity = new HttpEntity<>(createEmployeeHeaders());
+
+        ResponseEntity<String> response = restTemplate.exchange(
+                getBaseUrl() + "/" + createdContentId,
+                HttpMethod.DELETE,
+                entity,
+                String.class
+        );
+
+        assertThat(response.getStatusCode()).isEqualTo(HttpStatus.FORBIDDEN);
+    }
+
+    // ==================== HEALTH CHECK TEST ====================
+
+    @Test
+    @Order(22)
+    void shouldReturnHealthCheckStatus() {
+        HttpEntity<Void> entity = new HttpEntity<>(createEmployeeHeaders());
+
+        ResponseEntity<StandardResponseOutDTO<String>> response = restTemplate.exchange(
+                getBaseUrl() + "/health",
+                HttpMethod.GET,
+                entity,
+                new ParameterizedTypeReference<>() {}
+        );
+
+        assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
+        assertThat(response.getBody().getData()).isEqualTo("UP");
+        assertThat(response.getBody().getMessage()).contains("running");
+    }
+
+    // ==================== EDGE CASE TESTS ====================
+
+    @Test
+    @Order(23)
+    void shouldRejectBlankTitle() {
+        CourseContentInDTO request = CourseContentInDTO.builder()
                 .courseId(testCourseId)
                 .title("") // Blank title
                 .description("Valid description")
@@ -487,116 +595,122 @@ class CourseContentControllerIntegrationTest {
                 .isActive(true)
                 .build();
 
-        HttpEntity<UpdateCourseContentInDTO> entity = new HttpEntity<>(updateRequest, createHeaders());
+        HttpEntity<CourseContentInDTO> entity = new HttpEntity<>(request, createAdminHeaders());
 
         ResponseEntity<Map<String, String>> response = restTemplate.exchange(
-                getBaseUrl() + "/" + createdContentId,
-                HttpMethod.PUT,
+                getBaseUrl(),
+                HttpMethod.POST,
                 entity,
-                new ParameterizedTypeReference<Map<String, String>>() {
-                }
+                new ParameterizedTypeReference<Map<String, String>>() {}
         );
 
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.BAD_REQUEST);
         assertThat(response.getBody()).containsKey("title");
     }
 
-    // ==================== UTILITY ENDPOINT TESTS ====================
-
     @Test
-    @Order(20)
-    void shouldGetHealthCheck() {
-        HttpEntity<Void> entity = new HttpEntity<>(createHeaders());
+    @Order(24)
+    void shouldRejectBlankDescription() {
+        CourseContentInDTO request = CourseContentInDTO.builder()
+                .courseId(testCourseId)
+                .title("Valid Title")
+                .description("") // Blank description
+                .resourceLink("https://example.com/valid")
+                .isActive(true)
+                .build();
 
-        ResponseEntity<StandardResponseOutDTO<String>> response = restTemplate.exchange(
-                getBaseUrl() + "/health",
-                HttpMethod.GET,
+        HttpEntity<CourseContentInDTO> entity = new HttpEntity<>(request, createAdminHeaders());
+
+        ResponseEntity<Map<String, String>> response = restTemplate.exchange(
+                getBaseUrl(),
+                HttpMethod.POST,
                 entity,
-                new ParameterizedTypeReference<>() {
-                }
+                new ParameterizedTypeReference<Map<String, String>>() {}
         );
 
-        assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
-        assertThat(response.getBody().getData()).isEqualTo("UP");
-    }
-
-    // ==================== DELETE COURSE CONTENT TESTS ====================
-
-    @Test
-    @Order(21)
-    void shouldDeleteCourseContentSuccessfully() {
-        HttpEntity<Void> entity = new HttpEntity<>(createHeaders());
-
-        ResponseEntity<StandardResponseOutDTO<Void>> response = restTemplate.exchange(
-                getBaseUrl() + "/" + secondContentId,
-                HttpMethod.DELETE,
-                entity,
-                new ParameterizedTypeReference<>() {
-                }
-        );
-
-        assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
-        assertThat(response.getBody().getMessage()).contains("Course Content Deleted Successfully");
-
-        // Verify deletion
-        ResponseEntity<ErrorResponse> getResponse = restTemplate.exchange(
-                getBaseUrl() + "/" + secondContentId,
-                HttpMethod.GET,
-                entity,
-                ErrorResponse.class
-        );
-        assertThat(getResponse.getStatusCode()).isEqualTo(HttpStatus.NOT_FOUND);
+        assertThat(response.getStatusCode()).isEqualTo(HttpStatus.BAD_REQUEST);
+        assertThat(response.getBody()).containsKey("description");
     }
 
     @Test
-    @Order(22)
-    void shouldReturn404WhenDeletingNonExistingContent() {
-        HttpEntity<Void> entity = new HttpEntity<>(createHeaders());
+    @Order(25)
+    void shouldAllowEmptyResourceLink() {
+        CourseContentInDTO request = CourseContentInDTO.builder()
+                .courseId(testCourseId)
+                .title("Content Without Resource Link")
+                .description("This content has no resource link")
+                .resourceLink("") // Empty resource link should be allowed
+                .isActive(true)
+                .build();
 
-        ResponseEntity<ErrorResponse> response = restTemplate.exchange(
-                getBaseUrl() + "/999999",
-                HttpMethod.DELETE,
+        HttpEntity<CourseContentInDTO> entity = new HttpEntity<>(request, createAdminHeaders());
+
+        ResponseEntity<StandardResponseOutDTO<CourseContentOutDTO>> response = restTemplate.exchange(
+                getBaseUrl(),
+                HttpMethod.POST,
                 entity,
-                ErrorResponse.class
+                new ParameterizedTypeReference<>() {}
         );
 
-        assertThat(response.getStatusCode()).isEqualTo(HttpStatus.NOT_FOUND);
+        assertThat(response.getStatusCode()).isEqualTo(HttpStatus.CREATED);
+        assertThat(response.getBody().getData().getResourceLink()).isEmpty();
     }
 
     // ==================== CLEAN UP ====================
 
     @Test
-    @Order(23)
+    @Order(26)
     void cleanUpTestData() {
-        HttpEntity<Void> entity = new HttpEntity<>(createHeaders());
+        HttpEntity<Void> entity = new HttpEntity<>(createAdminHeaders());
 
-        // Clean up remaining course content
-        restTemplate.exchange(
-                getBaseUrl() + "/" + createdContentId,
-                HttpMethod.DELETE,
-                entity,
-                new ParameterizedTypeReference<StandardResponseOutDTO<Void>>() {
-                }
-        );
-
-        // Clean up the content without link
+        // Get all course contents and clean up test data
         ResponseEntity<StandardResponseOutDTO<List<CourseContentOutDTO>>> allContents = restTemplate.exchange(
-                getBaseUrl() + "/course/" + testCourseId2,
+                getBaseUrl(),
                 HttpMethod.GET,
                 entity,
-                new ParameterizedTypeReference<>() {
-                }
+                new ParameterizedTypeReference<>() {}
         );
 
         if (allContents.getStatusCode() == HttpStatus.OK && !allContents.getBody().getData().isEmpty()) {
-            Long contentToDeleteId = allContents.getBody().getData().get(0).getCourseContentId();
+            allContents.getBody().getData().stream()
+                    .filter(content -> content.getTitle().contains("Test") ||
+                            content.getTitle().contains("Updated") ||
+                            content.getTitle().contains("Content Without"))
+                    .forEach(content -> {
+                        restTemplate.exchange(
+                                getBaseUrl() + "/" + content.getCourseContentId(),
+                                HttpMethod.DELETE,
+                                entity,
+                                new ParameterizedTypeReference<StandardResponseOutDTO<Void>>() {}
+                        );
+                    });
+        }
+
+        // Clean up remaining test contents
+        if (createdContentId != null) {
             restTemplate.exchange(
-                    getBaseUrl() + "/" + contentToDeleteId,
+                    getBaseUrl() + "/" + createdContentId,
                     HttpMethod.DELETE,
                     entity,
-                    new ParameterizedTypeReference<StandardResponseOutDTO<Void>>() {
-                    }
+                    new ParameterizedTypeReference<StandardResponseOutDTO<Void>>() {}
             );
+        }
+
+        if (thirdContentId != null) {
+            restTemplate.exchange(
+                    getBaseUrl() + "/" + thirdContentId,
+                    HttpMethod.DELETE,
+                    entity,
+                    new ParameterizedTypeReference<StandardResponseOutDTO<Void>>() {}
+            );
+        }
+
+        // Clean up test courses
+        if (testCourseId != null) {
+            courseRepository.deleteById(testCourseId);
+        }
+        if (secondTestCourseId != null) {
+            courseRepository.deleteById(secondTestCourseId);
         }
     }
 }

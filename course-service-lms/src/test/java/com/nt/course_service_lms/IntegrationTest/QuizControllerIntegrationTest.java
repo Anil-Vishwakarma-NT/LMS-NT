@@ -1,686 +1,617 @@
 package com.nt.course_service_lms.IntegrationTest;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.nt.course_service_lms.config.JwtUtil;
+import com.nt.course_service_lms.config.TestSecurityConfig;
+import com.nt.course_service_lms.controller.QuizController;
 import com.nt.course_service_lms.dto.inDTO.QuizCreateInDTO;
 import com.nt.course_service_lms.dto.inDTO.QuizUpdateInDTO;
 import com.nt.course_service_lms.dto.outDTO.QuizOutDTO;
-import com.nt.course_service_lms.dto.outDTO.StandardResponseOutDTO;
-import com.nt.course_service_lms.entity.Course;
-import com.nt.course_service_lms.entity.CourseContent;
-import com.nt.course_service_lms.entity.Quiz;
-import com.nt.course_service_lms.exception.ErrorResponse;
-import com.nt.course_service_lms.repository.CourseContentRepository;
-import com.nt.course_service_lms.repository.CourseRepository;
-import com.nt.course_service_lms.repository.QuizRepository;
-import org.junit.jupiter.api.MethodOrderer;
-import org.junit.jupiter.api.Order;
+import com.nt.course_service_lms.exception.ResourceAlreadyExistsException;
+import com.nt.course_service_lms.exception.ResourceNotFoundException;
+import com.nt.course_service_lms.service.QuizService;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.TestMethodOrder;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.boot.test.web.client.TestRestTemplate;
-import org.springframework.boot.test.web.server.LocalServerPort;
-import org.springframework.core.ParameterizedTypeReference;
-import org.springframework.http.HttpEntity;
-import org.springframework.http.HttpHeaders;
-import org.springframework.http.HttpMethod;
-import org.springframework.http.HttpStatus;
+import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
+import org.springframework.context.annotation.Import;
 import org.springframework.http.MediaType;
-import org.springframework.http.ResponseEntity;
 import org.springframework.test.context.ActiveProfiles;
+import org.springframework.test.context.bean.override.mockito.MockitoBean;
+import org.springframework.test.web.servlet.MockMvc;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
+import java.util.Arrays;
 import java.util.List;
-import java.util.Map;
 
-import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyLong;
+import static org.mockito.Mockito.doNothing;
+import static org.mockito.Mockito.doThrow;
+import static org.mockito.Mockito.when;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
+@WebMvcTest(QuizController.class)
+@ExtendWith(MockitoExtension.class)
+@Import(TestSecurityConfig.class)
 @ActiveProfiles("test")
-@TestMethodOrder(MethodOrderer.OrderAnnotation.class)
 class QuizControllerIntegrationTest {
 
-    @LocalServerPort
-    private int port;
+    @Autowired
+    private MockMvc mockMvc;
 
     @Autowired
-    private TestRestTemplate restTemplate;
+    private ObjectMapper objectMapper;
 
-    @Autowired
-    private QuizRepository quizRepository;
+    @MockitoBean
+    private QuizService quizService;
 
-    @Autowired
-    private CourseRepository courseRepository;
+    @MockitoBean
+    private JwtUtil jwtUtil;
 
-    @Autowired
-    private CourseContentRepository courseContentRepository;
+    private QuizCreateInDTO quizCreateInDTO;
+    private QuizUpdateInDTO quizUpdateInDTO;
+    private QuizOutDTO quizOutDTO;
 
-    private static Long createdQuizId;
-    private static Long secondQuizId;
-    private static Long thirdQuizId;
-    private static Long testCourseId;
-    private static Long testCourseContentId;
-    private static Long secondCourseId;
-
-    private String getBaseUrl() {
-        return "http://localhost:" + port + "/api/service-api/quizzes";
-    }
-
-    private HttpHeaders createHeaders() {
-        HttpHeaders headers = new HttpHeaders();
-        headers.setContentType(MediaType.APPLICATION_JSON);
-        return headers;
-    }
-
-    // ==================== SETUP TEST DATA ====================
-
-    @Test
-    @Order(1)
-    void setupTestData() {
-        // Create test courses directly using repository
-        Course testCourse = Course.builder()
-                .title("Java Programming Course")
-                .ownerId(1L)
-                .description("Comprehensive Java Course")
-                .level("BEGINNER")
-                .isActive(true)
-                .createdAt(LocalDateTime.now())
-                .updatedAt(LocalDateTime.now())
-                .build();
-        Course savedCourse = courseRepository.save(testCourse);
-        testCourseId = savedCourse.getCourseId();
-
-        // Create second test course
-        Course secondCourse = Course.builder()
-                .title("Advanced Spring Course")
-                .ownerId(2L)
-                .description("Advanced Spring Framework")
-                .level("ADVANCED")
-                .isActive(true)
-                .createdAt(LocalDateTime.now())
-                .updatedAt(LocalDateTime.now())
-                .build();
-        Course savedSecondCourse = courseRepository.save(secondCourse);
-        secondCourseId = savedSecondCourse.getCourseId();
-
-        // Create test course content (removed contentType field)
-        CourseContent testCourseContent = CourseContent.builder()
-                .courseId(testCourseId)
-                .title("Introduction Module")
-                .description("Module covering basic concepts")
-                .resourceLink("https://example.com/intro")
-                .isActive(true)
-                .createdAt(LocalDateTime.now())
-                .updatedAt(LocalDateTime.now())
-                .build();
-        CourseContent savedContent = courseContentRepository.save(testCourseContent);
-        testCourseContentId = savedContent.getCourseContentId();
-
-        // Create test quizzes directly using repository
-        Quiz testQuiz1 = Quiz.builder()
+    @BeforeEach
+    void setUp() {
+        // Initialize test data
+        quizCreateInDTO = QuizCreateInDTO.builder()
                 .parentType("course")
-                .parentId(testCourseId)
-                .title("Java Basics Quiz")
-                .description("Test your Java fundamentals")
+                .parentId(1L)
+                .title("Java Fundamentals Quiz")
+                .description("A comprehensive quiz covering Java basics")
                 .timeLimit(60)
                 .attemptsAllowed(3)
-                .passingScore(new BigDecimal("70.00"))
-                .randomizeQuestions(false)
-                .showResults(true)
-                .isActive(true)
-                .createdBy(1)
-                .createdAt(LocalDateTime.now())
-                .updatedAt(LocalDateTime.now())
-                .build();
-        Quiz savedQuiz1 = quizRepository.save(testQuiz1);
-        createdQuizId = savedQuiz1.getQuizId();
-
-        Quiz testQuiz2 = Quiz.builder()
-                .parentType("course")
-                .parentId(testCourseId)
-                .title("Java Advanced Quiz")
-                .description("Advanced Java concepts")
-                .timeLimit(90)
-                .attemptsAllowed(2)
-                .passingScore(new BigDecimal("80.00"))
+                .passingScore(BigDecimal.valueOf(70.00))
                 .randomizeQuestions(true)
                 .showResults(false)
-                .isActive(false)
+                .isActive(true)
                 .createdBy(1)
-                .createdAt(LocalDateTime.now())
-                .updatedAt(LocalDateTime.now())
                 .build();
-        Quiz savedQuiz2 = quizRepository.save(testQuiz2);
-        secondQuizId = savedQuiz2.getQuizId();
 
-        Quiz testQuiz3 = Quiz.builder()
-                .parentType("course-content")
-                .parentId(testCourseContentId)
-                .title("Module Assessment Quiz")
-                .description("Assessment for introduction module")
-                .timeLimit(30)
-                .attemptsAllowed(1)
-                .passingScore(new BigDecimal("60.00"))
+        quizUpdateInDTO = QuizUpdateInDTO.builder()
+                .title("Updated Java Fundamentals Quiz")
+                .description("Updated description for Java basics quiz")
+                .timeLimit(90)
+                .attemptsAllowed(2)
+                .passingScore(BigDecimal.valueOf(75.00))
                 .randomizeQuestions(false)
                 .showResults(true)
                 .isActive(true)
+                .build();
+
+        quizOutDTO = QuizOutDTO.builder()
+                .quizId(1L)
+                .parentType("course")
+                .parentId(1L)
+                .title("Java Fundamentals Quiz")
+                .description("A comprehensive quiz covering Java basics")
+                .timeLimit(60)
+                .attemptsAllowed(3)
+                .passingScore(BigDecimal.valueOf(70.00))
+                .randomizeQuestions(true)
+                .showResults(false)
+                .isActive(true)
                 .createdBy(1)
                 .createdAt(LocalDateTime.now())
                 .updatedAt(LocalDateTime.now())
                 .build();
-        Quiz savedQuiz3 = quizRepository.save(testQuiz3);
-        thirdQuizId = savedQuiz3.getQuizId();
     }
 
-    // ==================== CREATE QUIZ TESTS ====================
+    @Test
+    void createQuiz_ShouldReturnCreatedQuiz_WhenValidInput() throws Exception {
+        // Given
+        when(quizService.createQuiz(any(QuizCreateInDTO.class))).thenReturn(quizOutDTO);
+
+        // When & Then
+        mockMvc.perform(post("/api/service-api/quizzes")
+                        .header("X-Test-Role", "ADMIN")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(quizCreateInDTO)))
+                .andExpect(status().isCreated())
+                .andExpect(jsonPath("$.status").value("SUCCESS"))
+                .andExpect(jsonPath("$.message").value("Quiz created successfully"))
+                .andExpect(jsonPath("$.data.quizId").value(1L))
+                .andExpect(jsonPath("$.data.title").value("Java Fundamentals Quiz"))
+                .andExpect(jsonPath("$.data.parentType").value("course"))
+                .andExpect(jsonPath("$.data.parentId").value(1L))
+                .andExpect(jsonPath("$.data.timeLimit").value(60))
+                .andExpect(jsonPath("$.data.attemptsAllowed").value(3))
+                .andExpect(jsonPath("$.data.passingScore").value(70.00))
+                .andExpect(jsonPath("$.data.randomizeQuestions").value(true))
+                .andExpect(jsonPath("$.data.showResults").value(false))
+                .andExpect(jsonPath("$.data.isActive").value(true));
+    }
 
     @Test
-    @Order(2)
-    void shouldCreateQuizSuccessfully() {
-        QuizCreateInDTO request = QuizCreateInDTO.builder()
+    void createQuiz_ShouldReturnBadRequest_WhenInvalidInput() throws Exception {
+        // Given - Invalid quiz with blank title
+        QuizCreateInDTO invalidQuiz = QuizCreateInDTO.builder()
                 .parentType("course")
-                .parentId(testCourseId)
-                .title("New Quiz Creation Test")
-                .description("Testing quiz creation functionality")
-                .timeLimit(120)
-                .attemptsAllowed(5)
-                .passingScore(new BigDecimal("75.00"))
-                .randomizeQuestions(true)
-                .showResults(true)
+                .parentId(1L)
+                .title("")
+                .description("Description")
+                .attemptsAllowed(3)
                 .isActive(true)
                 .createdBy(1)
                 .build();
 
-        HttpEntity<QuizCreateInDTO> entity = new HttpEntity<>(request, createHeaders());
-
-        ResponseEntity<StandardResponseOutDTO<QuizOutDTO>> response = restTemplate.exchange(
-                getBaseUrl(),
-                HttpMethod.POST,
-                entity,
-                new ParameterizedTypeReference<>() {
-                }
-        );
-
-        assertThat(response.getStatusCode()).isEqualTo(HttpStatus.CREATED);
-        assertThat(response.getBody()).isNotNull();
-        assertThat(response.getBody().getData().getTitle()).isEqualTo("New Quiz Creation Test");
-        assertThat(response.getBody().getData().getParentType()).isEqualTo("course");
-        assertThat(response.getBody().getData().getParentId()).isEqualTo(testCourseId);
-        assertThat(response.getBody().getData().getTimeLimit()).isEqualTo(120);
-        assertThat(response.getBody().getData().getAttemptsAllowed()).isEqualTo(5);
-        assertThat(response.getBody().getData().getIsActive()).isTrue();
-        assertThat(response.getBody().getData().getCreatedAt()).isNotNull();
+        // When & Then
+        mockMvc.perform(post("/api/service-api/quizzes")
+                        .header("X-Test-Role", "ADMIN")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(invalidQuiz)))
+                .andExpect(status().isBadRequest());
     }
 
     @Test
-    @Order(3)
-    void shouldCreateCourseContentQuizSuccessfully() {
-        QuizCreateInDTO request = QuizCreateInDTO.builder()
+    void createQuiz_ShouldReturnBadRequest_WhenInvalidParentType() throws Exception {
+        // Given - Invalid parent type
+        QuizCreateInDTO invalidQuiz = QuizCreateInDTO.builder()
+                .parentType("invalid-type")
+                .parentId(1L)
+                .title("Valid Title")
+                .description("Description")
+                .attemptsAllowed(3)
+                .isActive(true)
+                .createdBy(1)
+                .build();
+
+        // When & Then
+        mockMvc.perform(post("/api/service-api/quizzes")
+                        .header("X-Test-Role", "ADMIN")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(invalidQuiz)))
+                .andExpect(status().isBadRequest());
+    }
+
+    @Test
+    void createQuiz_ShouldReturnBadRequest_WhenNegativeAttemptsAllowed() throws Exception {
+        // Given - Invalid attempts allowed
+        QuizCreateInDTO invalidQuiz = QuizCreateInDTO.builder()
+                .parentType("course")
+                .parentId(1L)
+                .title("Valid Title")
+                .description("Description")
+                .attemptsAllowed(0)
+                .isActive(true)
+                .createdBy(1)
+                .build();
+
+        // When & Then
+        mockMvc.perform(post("/api/service-api/quizzes")
+                        .header("X-Test-Role", "ADMIN")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(invalidQuiz)))
+                .andExpect(status().isBadRequest());
+    }
+
+    @Test
+    void createQuiz_ShouldReturnConflict_WhenQuizAlreadyExists() throws Exception {
+        // Given
+        when(quizService.createQuiz(any(QuizCreateInDTO.class)))
+                .thenThrow(new ResourceAlreadyExistsException("Quiz with this title already exists"));
+
+        // When & Then
+        mockMvc.perform(post("/api/service-api/quizzes")
+                        .header("X-Test-Role", "ADMIN")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(quizCreateInDTO)))
+                .andExpect(status().isConflict());
+    }
+
+    @Test
+    void createQuiz_ShouldReturnForbidden_WhenNotAdmin() throws Exception {
+        // When & Then
+        mockMvc.perform(post("/api/service-api/quizzes")
+                        .header("X-Test-Role", "EMPLOYEE")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(quizCreateInDTO)))
+                .andExpect(status().isForbidden());
+    }
+
+    @Test
+    void getAllQuizzes_ShouldReturnListOfQuizzes_WhenQuizzesExist() throws Exception {
+        // Given
+        List<QuizOutDTO> quizzes = Arrays.asList(quizOutDTO);
+        when(quizService.getAllQuizzes()).thenReturn(quizzes);
+
+        // When & Then
+        mockMvc.perform(get("/api/service-api/quizzes")
+                        .header("X-Test-Role", "ADMIN"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.status").value("SUCCESS"))
+                .andExpect(jsonPath("$.message").value("All quizzes retrieved successfully"))
+                .andExpect(jsonPath("$.data").isArray())
+                .andExpect(jsonPath("$.data[0].quizId").value(1L))
+                .andExpect(jsonPath("$.data[0].title").value("Java Fundamentals Quiz"))
+                .andExpect(jsonPath("$.data[0].parentType").value("course"));
+    }
+
+    @Test
+    void getAllQuizzes_ShouldReturnNotFound_WhenNoQuizzesExist() throws Exception {
+        // Given
+        when(quizService.getAllQuizzes()).thenThrow(new ResourceNotFoundException("No quizzes found"));
+
+        // When & Then
+        mockMvc.perform(get("/api/service-api/quizzes")
+                        .header("X-Test-Role", "ADMIN"))
+                .andExpect(status().isNotFound());
+    }
+
+    @Test
+    void getAllQuizzes_ShouldReturnForbidden_WhenNotAdmin() throws Exception {
+        // When & Then
+        mockMvc.perform(get("/api/service-api/quizzes")
+                        .header("X-Test-Role", "EMPLOYEE"))
+                .andExpect(status().isForbidden());
+    }
+
+    @Test
+    void getQuizById_ShouldReturnQuiz_WhenQuizExists() throws Exception {
+        // Given
+        when(quizService.getQuizById(1L)).thenReturn(quizOutDTO);
+
+        // When & Then
+        mockMvc.perform(get("/api/service-api/quizzes/1")
+                        .header("X-Test-Role", "ADMIN"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.status").value("SUCCESS"))
+                .andExpect(jsonPath("$.message").value("Quiz retrieved successfully"))
+                .andExpect(jsonPath("$.data.quizId").value(1L))
+                .andExpect(jsonPath("$.data.title").value("Java Fundamentals Quiz"))
+                .andExpect(jsonPath("$.data.parentId").value(1L));
+    }
+
+    @Test
+    void getQuizById_ShouldReturnQuiz_WhenEmployeeAccess() throws Exception {
+        // Given
+        when(quizService.getQuizById(1L)).thenReturn(quizOutDTO);
+
+        // When & Then
+        mockMvc.perform(get("/api/service-api/quizzes/1")
+                        .header("X-Test-Role", "EMPLOYEE"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.status").value("SUCCESS"))
+                .andExpect(jsonPath("$.message").value("Quiz retrieved successfully"))
+                .andExpect(jsonPath("$.data.quizId").value(1L));
+    }
+
+    @Test
+    void getQuizById_ShouldReturnNotFound_WhenQuizDoesNotExist() throws Exception {
+        // Given
+        when(quizService.getQuizById(999L)).thenThrow(new ResourceNotFoundException("Quiz not found"));
+
+        // When & Then
+        mockMvc.perform(get("/api/service-api/quizzes/999")
+                        .header("X-Test-Role", "ADMIN"))
+                .andExpect(status().isNotFound());
+    }
+
+    @Test
+    void getQuizzesByCourse_ShouldReturnQuizzes_WhenCourseHasQuizzes() throws Exception {
+        // Given
+        List<QuizOutDTO> quizzes = Arrays.asList(quizOutDTO);
+        when(quizService.getQuizzesByCourse(1L)).thenReturn(quizzes);
+
+        // When & Then
+        mockMvc.perform(get("/api/service-api/quizzes/course/1")
+                        .header("X-Test-Role", "ADMIN"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.status").value("SUCCESS"))
+                .andExpect(jsonPath("$.message").value("Course quizzes retrieved successfully"))
+                .andExpect(jsonPath("$.data").isArray())
+                .andExpect(jsonPath("$.data[0].quizId").value(1L))
+                .andExpect(jsonPath("$.data[0].parentType").value("course"))
+                .andExpect(jsonPath("$.data[0].parentId").value(1L));
+    }
+
+    @Test
+    void getQuizzesByCourse_ShouldReturnQuizzes_WhenEmployeeAccess() throws Exception {
+        // Given
+        List<QuizOutDTO> quizzes = Arrays.asList(quizOutDTO);
+        when(quizService.getQuizzesByCourse(1L)).thenReturn(quizzes);
+
+        // When & Then
+        mockMvc.perform(get("/api/service-api/quizzes/course/1")
+                        .header("X-Test-Role", "EMPLOYEE"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.status").value("SUCCESS"))
+                .andExpect(jsonPath("$.message").value("Course quizzes retrieved successfully"));
+    }
+
+    @Test
+    void getQuizzesByCourse_ShouldReturnNotFound_WhenCourseHasNoQuizzes() throws Exception {
+        // Given
+        when(quizService.getQuizzesByCourse(999L)).thenThrow(new ResourceNotFoundException("No quizzes found for course"));
+
+        // When & Then
+        mockMvc.perform(get("/api/service-api/quizzes/course/999")
+                        .header("X-Test-Role", "ADMIN"))
+                .andExpect(status().isNotFound());
+    }
+
+    @Test
+    void getQuizzesByCourseContent_ShouldReturnQuizzes_WhenCourseContentHasQuizzes() throws Exception {
+        // Given
+        QuizOutDTO courseContentQuiz = QuizOutDTO.builder()
+                .quizId(2L)
                 .parentType("course-content")
-                .parentId(testCourseContentId)
-                .title("Content Quiz Test")
+                .parentId(1L)
+                .title("Content Quiz")
                 .description("Quiz for course content")
-                .timeLimit(45)
+                .timeLimit(30)
                 .attemptsAllowed(2)
-                .passingScore(new BigDecimal("65.00"))
+                .passingScore(BigDecimal.valueOf(80.00))
                 .randomizeQuestions(false)
-                .showResults(false)
-                .isActive(true)
-                .createdBy(2)
-                .build();
-
-        HttpEntity<QuizCreateInDTO> entity = new HttpEntity<>(request, createHeaders());
-
-        ResponseEntity<StandardResponseOutDTO<QuizOutDTO>> response = restTemplate.exchange(
-                getBaseUrl(),
-                HttpMethod.POST,
-                entity,
-                new ParameterizedTypeReference<>() {
-                }
-        );
-
-        assertThat(response.getStatusCode()).isEqualTo(HttpStatus.CREATED);
-        assertThat(response.getBody().getData().getParentType()).isEqualTo("course-content");
-        assertThat(response.getBody().getData().getShowResults()).isFalse();
-    }
-
-    @Test
-    @Order(4)
-    void shouldRejectDuplicateQuizTitle() {
-        QuizCreateInDTO request = QuizCreateInDTO.builder()
-                .parentType("course")
-                .parentId(testCourseId)
-                .title("Java Basics Quiz") // Same title and parent as existing quiz
-                .description("Another quiz with same title")
-                .timeLimit(60)
-                .attemptsAllowed(1)
+                .showResults(true)
                 .isActive(true)
                 .createdBy(1)
+                .createdAt(LocalDateTime.now())
+                .updatedAt(LocalDateTime.now())
                 .build();
 
-        HttpEntity<QuizCreateInDTO> entity = new HttpEntity<>(request, createHeaders());
+        List<QuizOutDTO> quizzes = Arrays.asList(courseContentQuiz);
+        when(quizService.getQuizzesByCourseContent(1L)).thenReturn(quizzes);
 
-        ResponseEntity<ErrorResponse> response = restTemplate.exchange(
-                getBaseUrl(),
-                HttpMethod.POST,
-                entity,
-                ErrorResponse.class
-        );
-
-        assertThat(response.getStatusCode()).isEqualTo(HttpStatus.CONFLICT);
-        assertThat(response.getBody().getMessage()).contains("Quiz Exists");
+        // When & Then
+        mockMvc.perform(get("/api/service-api/quizzes/course-content/1")
+                        .header("X-Test-Role", "ADMIN"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.status").value("SUCCESS"))
+                .andExpect(jsonPath("$.message").value("Course content quizzes retrieved successfully"))
+                .andExpect(jsonPath("$.data").isArray())
+                .andExpect(jsonPath("$.data[0].quizId").value(2L))
+                .andExpect(jsonPath("$.data[0].parentType").value("course-content"))
+                .andExpect(jsonPath("$.data[0].parentId").value(1L));
     }
 
     @Test
-    @Order(5)
-    void shouldAllowSameTitleForDifferentParent() {
-        QuizCreateInDTO request = QuizCreateInDTO.builder()
+    void getQuizzesByCourseContent_ShouldReturnQuizzes_WhenEmployeeAccess() throws Exception {
+        // Given
+        List<QuizOutDTO> quizzes = Arrays.asList(quizOutDTO);
+        when(quizService.getQuizzesByCourseContent(1L)).thenReturn(quizzes);
+
+        // When & Then
+        mockMvc.perform(get("/api/service-api/quizzes/course-content/1")
+                        .header("X-Test-Role", "EMPLOYEE"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.status").value("SUCCESS"))
+                .andExpect(jsonPath("$.message").value("Course content quizzes retrieved successfully"));
+    }
+
+    @Test
+    void getQuizzesByCourseContent_ShouldReturnNotFound_WhenCourseContentHasNoQuizzes() throws Exception {
+        // Given
+        when(quizService.getQuizzesByCourseContent(999L)).thenThrow(new ResourceNotFoundException("No quizzes found for course content"));
+
+        // When & Then
+        mockMvc.perform(get("/api/service-api/quizzes/course-content/999")
+                        .header("X-Test-Role", "ADMIN"))
+                .andExpect(status().isNotFound());
+    }
+
+    @Test
+    void updateQuiz_ShouldReturnUpdatedQuiz_WhenValidInput() throws Exception {
+        // Given
+        QuizOutDTO updatedQuiz = QuizOutDTO.builder()
+                .quizId(1L)
                 .parentType("course")
-                .parentId(secondCourseId) // Different parent
-                .title("Java Basics Quiz") // Same title as existing quiz but different parent
-                .description("Same title but different course")
-                .timeLimit(60)
-                .attemptsAllowed(1)
-                .isActive(true)
-                .createdBy(2)
-                .build();
-
-        HttpEntity<QuizCreateInDTO> entity = new HttpEntity<>(request, createHeaders());
-
-        ResponseEntity<StandardResponseOutDTO<QuizOutDTO>> response = restTemplate.exchange(
-                getBaseUrl(),
-                HttpMethod.POST,
-                entity,
-                new ParameterizedTypeReference<>() {
-                }
-        );
-
-        assertThat(response.getStatusCode()).isEqualTo(HttpStatus.CREATED);
-        assertThat(response.getBody().getData().getParentId()).isEqualTo(secondCourseId);
-    }
-
-    @Test
-    @Order(6)
-    void shouldRejectInvalidQuizData() {
-        QuizCreateInDTO request = QuizCreateInDTO.builder()
-                .parentType("invalid-parent") // Invalid parent type
-                .parentId(testCourseId)
-                .title("AB") // Too short
-                .attemptsAllowed(0) // Invalid - must be at least 1
-                .isActive(true)
-                .build();
-
-        HttpEntity<QuizCreateInDTO> entity = new HttpEntity<>(request, createHeaders());
-
-        ResponseEntity<Map<String, String>> response = restTemplate.exchange(
-                getBaseUrl(),
-                HttpMethod.POST,
-                entity,
-                new ParameterizedTypeReference<Map<String, String>>() {
-                }
-        );
-
-        assertThat(response.getStatusCode()).isEqualTo(HttpStatus.BAD_REQUEST);
-        assertThat(response.getBody()).containsKey("parentType");
-        assertThat(response.getBody()).containsKey("attemptsAllowed");
-    }
-
-    @Test
-    @Order(7)
-    void shouldRejectQuizForNonExistentParent() {
-        QuizCreateInDTO request = QuizCreateInDTO.builder()
-                .parentType("course")
-                .parentId(999999L) // Non-existent course
-                .title("Valid Quiz Title")
-                .attemptsAllowed(1)
-                .isActive(true)
-                .createdBy(1)
-                .build();
-
-        HttpEntity<QuizCreateInDTO> entity = new HttpEntity<>(request, createHeaders());
-
-        ResponseEntity<ErrorResponse> response = restTemplate.exchange(
-                getBaseUrl(),
-                HttpMethod.POST,
-                entity,
-                ErrorResponse.class
-        );
-
-        assertThat(response.getStatusCode()).isEqualTo(HttpStatus.NOT_FOUND);
-        assertThat(response.getBody().getMessage()).contains("Not Found");
-    }
-
-    // ==================== GET QUIZ TESTS ====================
-
-    @Test
-    @Order(8)
-    void shouldGetAllActiveQuizzes() {
-        HttpEntity<Void> entity = new HttpEntity<>(createHeaders());
-
-        ResponseEntity<StandardResponseOutDTO<List<QuizOutDTO>>> response = restTemplate.exchange(
-                getBaseUrl(),
-                HttpMethod.GET,
-                entity,
-                new ParameterizedTypeReference<>() {
-                }
-        );
-
-        assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
-        assertThat(response.getBody().getData()).isNotEmpty();
-        // Should only return active quizzes (secondQuiz is inactive)
-        assertThat(response.getBody().getData()).allMatch(quiz -> quiz.getIsActive());
-    }
-
-    @Test
-    @Order(9)
-    void shouldGetQuizById() {
-        HttpEntity<Void> entity = new HttpEntity<>(createHeaders());
-
-        ResponseEntity<StandardResponseOutDTO<QuizOutDTO>> response = restTemplate.exchange(
-                getBaseUrl() + "/" + createdQuizId,
-                HttpMethod.GET,
-                entity,
-                new ParameterizedTypeReference<>() {
-                }
-        );
-
-        assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
-        assertThat(response.getBody().getData().getQuizId()).isEqualTo(createdQuizId);
-        assertThat(response.getBody().getData().getTitle()).isEqualTo("Java Basics Quiz");
-        assertThat(response.getBody().getData().getTimeLimit()).isEqualTo(60);
-    }
-
-    @Test
-    @Order(10)
-    void shouldReturn404ForNonExistingQuiz() {
-        HttpEntity<Void> entity = new HttpEntity<>(createHeaders());
-
-        ResponseEntity<ErrorResponse> response = restTemplate.exchange(
-                getBaseUrl() + "/999999",
-                HttpMethod.GET,
-                entity,
-                ErrorResponse.class
-        );
-
-        assertThat(response.getStatusCode()).isEqualTo(HttpStatus.NOT_FOUND);
-        assertThat(response.getBody().getMessage()).contains("No Quiz With ID");
-    }
-
-    @Test
-    @Order(11)
-    void shouldGetQuizzesByCourse() {
-        HttpEntity<Void> entity = new HttpEntity<>(createHeaders());
-
-        ResponseEntity<StandardResponseOutDTO<List<QuizOutDTO>>> response = restTemplate.exchange(
-                getBaseUrl() + "/course/" + testCourseId,
-                HttpMethod.GET,
-                entity,
-                new ParameterizedTypeReference<>() {
-                }
-        );
-
-        assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
-        assertThat(response.getBody().getData()).isNotEmpty();
-        // Should only return active quizzes for the course
-        assertThat(response.getBody().getData()).allMatch(quiz ->
-                quiz.getParentType().equals("course") &&
-                        quiz.getParentId().equals(testCourseId) &&
-                        quiz.getIsActive()
-        );
-    }
-
-    @Test
-    @Order(12)
-    void shouldReturn404ForCourseWithNoActiveQuizzes() {
-        HttpEntity<Void> entity = new HttpEntity<>(createHeaders());
-
-        ResponseEntity<ErrorResponse> response = restTemplate.exchange(
-                getBaseUrl() + "/course/999999",
-                HttpMethod.GET,
-                entity,
-                ErrorResponse.class
-        );
-
-        assertThat(response.getStatusCode()).isEqualTo(HttpStatus.NOT_FOUND);
-        assertThat(response.getBody().getMessage()).contains("No Quiz Found for this CourseID");
-    }
-
-    @Test
-    @Order(13)
-    void shouldGetQuizzesByCourseContent() {
-        HttpEntity<Void> entity = new HttpEntity<>(createHeaders());
-
-        ResponseEntity<StandardResponseOutDTO<List<QuizOutDTO>>> response = restTemplate.exchange(
-                getBaseUrl() + "/course-content/" + testCourseContentId,
-                HttpMethod.GET,
-                entity,
-                new ParameterizedTypeReference<>() {
-                }
-        );
-
-        assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
-        assertThat(response.getBody().getData()).isNotEmpty();
-        assertThat(response.getBody().getData()).allMatch(quiz ->
-                quiz.getParentType().equals("course-content") &&
-                        quiz.getParentId().equals(testCourseContentId) &&
-                        quiz.getIsActive()
-        );
-    }
-
-    @Test
-    @Order(14)
-    void shouldReturn404ForCourseContentWithNoActiveQuizzes() {
-        HttpEntity<Void> entity = new HttpEntity<>(createHeaders());
-
-        ResponseEntity<ErrorResponse> response = restTemplate.exchange(
-                getBaseUrl() + "/course-content/999999",
-                HttpMethod.GET,
-                entity,
-                ErrorResponse.class
-        );
-
-        assertThat(response.getStatusCode()).isEqualTo(HttpStatus.NOT_FOUND);
-        assertThat(response.getBody().getMessage()).contains("No Quiz Found for this Coursecontent");
-    }
-
-    // ==================== UPDATE QUIZ TESTS ====================
-
-    @Test
-    @Order(15)
-    void shouldUpdateQuizSuccessfully() {
-        QuizUpdateInDTO updateRequest = QuizUpdateInDTO.builder()
-                .title("Updated Java Basics Quiz")
-                .description("Updated description for Java basics")
+                .parentId(1L)
+                .title("Updated Java Fundamentals Quiz")
+                .description("Updated description for Java basics quiz")
                 .timeLimit(90)
-                .attemptsAllowed(5)
-                .passingScore(new BigDecimal("75.00"))
-                .randomizeQuestions(true)
-                .showResults(false)
-                .isActive(false)
+                .attemptsAllowed(2)
+                .passingScore(BigDecimal.valueOf(75.00))
+                .randomizeQuestions(false)
+                .showResults(true)
+                .isActive(true)
+                .createdBy(1)
+                .createdAt(LocalDateTime.now())
+                .updatedAt(LocalDateTime.now())
                 .build();
 
-        HttpEntity<QuizUpdateInDTO> entity = new HttpEntity<>(updateRequest, createHeaders());
+        when(quizService.updateQuiz(anyLong(), any(QuizUpdateInDTO.class))).thenReturn(updatedQuiz);
 
-        ResponseEntity<StandardResponseOutDTO<QuizOutDTO>> response = restTemplate.exchange(
-                getBaseUrl() + "/" + createdQuizId,
-                HttpMethod.PUT,
-                entity,
-                new ParameterizedTypeReference<>() {
-                }
-        );
-
-        assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
-        assertThat(response.getBody().getData().getTitle()).isEqualTo("Updated Java Basics Quiz");
-        assertThat(response.getBody().getData().getTimeLimit()).isEqualTo(90);
-        assertThat(response.getBody().getData().getAttemptsAllowed()).isEqualTo(5);
-        assertThat(response.getBody().getData().getRandomizeQuestions()).isTrue();
-        assertThat(response.getBody().getData().getShowResults()).isFalse();
-        assertThat(response.getBody().getData().getIsActive()).isFalse();
-        assertThat(response.getBody().getData().getUpdatedAt()).isNotNull();
+        // When & Then
+        mockMvc.perform(put("/api/service-api/quizzes/1")
+                        .header("X-Test-Role", "ADMIN")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(quizUpdateInDTO)))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.status").value("SUCCESS"))
+                .andExpect(jsonPath("$.message").value("Quiz updated successfully"))
+                .andExpect(jsonPath("$.data.quizId").value(1L))
+                .andExpect(jsonPath("$.data.title").value("Updated Java Fundamentals Quiz"))
+                .andExpect(jsonPath("$.data.timeLimit").value(90))
+                .andExpect(jsonPath("$.data.attemptsAllowed").value(2))
+                .andExpect(jsonPath("$.data.passingScore").value(75.00))
+                .andExpect(jsonPath("$.data.randomizeQuestions").value(false))
+                .andExpect(jsonPath("$.data.showResults").value(true));
     }
 
     @Test
-    @Order(16)
-    void shouldAllowUpdateWithSameTitle() {
-        QuizUpdateInDTO updateRequest = QuizUpdateInDTO.builder()
-                .title("Updated Java Basics Quiz") // Same title as current
-                .description("Same title but different description")
-                .timeLimit(100)
+    void updateQuiz_ShouldReturnBadRequest_WhenInvalidTimeLimit() throws Exception {
+        // Given - Invalid time limit exceeding maximum
+        QuizUpdateInDTO invalidUpdate = QuizUpdateInDTO.builder()
+                .title("Valid Title")
+                .timeLimit(700) // Exceeds 600 minutes limit
+                .attemptsAllowed(2)
+                .isActive(true)
                 .build();
 
-        HttpEntity<QuizUpdateInDTO> entity = new HttpEntity<>(updateRequest, createHeaders());
-
-        ResponseEntity<StandardResponseOutDTO<QuizOutDTO>> response = restTemplate.exchange(
-                getBaseUrl() + "/" + createdQuizId,
-                HttpMethod.PUT,
-                entity,
-                new ParameterizedTypeReference<>() {
-                }
-        );
-
-        assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
-        assertThat(response.getBody().getData().getTimeLimit()).isEqualTo(100);
+        // When & Then
+        mockMvc.perform(put("/api/service-api/quizzes/1")
+                        .header("X-Test-Role", "ADMIN")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(invalidUpdate)))
+                .andExpect(status().isBadRequest());
     }
 
     @Test
-    @Order(17)
-    void shouldReturn404WhenUpdatingNonExistingQuiz() {
-        QuizUpdateInDTO updateRequest = QuizUpdateInDTO.builder()
-                .title("Valid Update Title")
-                .description("Valid description")
+    void updateQuiz_ShouldReturnNotFound_WhenQuizDoesNotExist() throws Exception {
+        // Given
+        when(quizService.updateQuiz(anyLong(), any(QuizUpdateInDTO.class)))
+                .thenThrow(new ResourceNotFoundException("Quiz not found"));
+
+        // When & Then
+        mockMvc.perform(put("/api/service-api/quizzes/999")
+                        .header("X-Test-Role", "ADMIN")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(quizUpdateInDTO)))
+                .andExpect(status().isNotFound());
+    }
+
+    @Test
+    void updateQuiz_ShouldReturnConflict_WhenTitleAlreadyExists() throws Exception {
+        // Given
+        when(quizService.updateQuiz(anyLong(), any(QuizUpdateInDTO.class)))
+                .thenThrow(new ResourceAlreadyExistsException("Quiz with this title already exists"));
+
+        // When & Then
+        mockMvc.perform(put("/api/service-api/quizzes/1")
+                        .header("X-Test-Role", "ADMIN")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(quizUpdateInDTO)))
+                .andExpect(status().isConflict());
+    }
+
+    @Test
+    void updateQuiz_ShouldReturnForbidden_WhenNotAdmin() throws Exception {
+        // When & Then
+        mockMvc.perform(put("/api/service-api/quizzes/1")
+                        .header("X-Test-Role", "EMPLOYEE")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(quizUpdateInDTO)))
+                .andExpect(status().isForbidden());
+    }
+
+    @Test
+    void deleteQuiz_ShouldReturnSuccess_WhenQuizExists() throws Exception {
+        // Given
+        doNothing().when(quizService).deleteQuiz(1L);
+
+        // When & Then
+        mockMvc.perform(delete("/api/service-api/quizzes/1")
+                        .header("X-Test-Role", "ADMIN"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.status").value("SUCCESS"))
+                .andExpect(jsonPath("$.message").value("Quiz deleted successfully"))
+                .andExpect(jsonPath("$.data").value("Quiz deleted successfully"));
+    }
+
+    @Test
+    void deleteQuiz_ShouldReturnNotFound_WhenQuizDoesNotExist() throws Exception {
+        // Given
+        doThrow(new ResourceNotFoundException("Quiz not found")).when(quizService).deleteQuiz(999L);
+
+        // When & Then
+        mockMvc.perform(delete("/api/service-api/quizzes/999")
+                        .header("X-Test-Role", "ADMIN"))
+                .andExpect(status().isNotFound());
+    }
+
+    @Test
+    void deleteQuiz_ShouldReturnForbidden_WhenNotAdmin() throws Exception {
+        // When & Then
+        mockMvc.perform(delete("/api/service-api/quizzes/1")
+                        .header("X-Test-Role", "EMPLOYEE"))
+                .andExpect(status().isForbidden());
+    }
+
+    @Test
+    void createQuiz_ShouldReturnBadRequest_WhenExceedingMaxAttempts() throws Exception {
+        // Given - Invalid attempts exceeding maximum
+        QuizCreateInDTO invalidQuiz = QuizCreateInDTO.builder()
+                .parentType("course")
+                .parentId(1L)
+                .title("Valid Title")
+                .description("Description")
+                .attemptsAllowed(15) // Exceeds maximum of 10
+                .isActive(true)
+                .createdBy(1)
                 .build();
 
-        HttpEntity<QuizUpdateInDTO> entity = new HttpEntity<>(updateRequest, createHeaders());
-
-        ResponseEntity<ErrorResponse> response = restTemplate.exchange(
-                getBaseUrl() + "/999999",
-                HttpMethod.PUT,
-                entity,
-                ErrorResponse.class
-        );
-
-        assertThat(response.getStatusCode()).isEqualTo(HttpStatus.NOT_FOUND);
-        assertThat(response.getBody().getMessage()).contains("No Quiz Found");
+        // When & Then
+        mockMvc.perform(post("/api/service-api/quizzes")
+                        .header("X-Test-Role", "ADMIN")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(invalidQuiz)))
+                .andExpect(status().isBadRequest());
     }
 
     @Test
-    @Order(18)
-    void shouldValidateUpdateData() {
-        QuizUpdateInDTO updateRequest = QuizUpdateInDTO.builder()
-                .title("AB") // Too short
-                .timeLimit(0) // Invalid
-                .attemptsAllowed(11) // Exceeds maximum
+    void createQuiz_ShouldReturnBadRequest_WhenNegativePassingScore() throws Exception {
+        // Given - Invalid negative passing score
+        QuizCreateInDTO invalidQuiz = QuizCreateInDTO.builder()
+                .parentType("course")
+                .parentId(1L)
+                .title("Valid Title")
+                .description("Description")
+                .attemptsAllowed(3)
+                .passingScore(BigDecimal.valueOf(-10.00)) // Negative score
+                .isActive(true)
+                .createdBy(1)
                 .build();
 
-        HttpEntity<QuizUpdateInDTO> entity = new HttpEntity<>(updateRequest, createHeaders());
-
-        ResponseEntity<Map<String, String>> response = restTemplate.exchange(
-                getBaseUrl() + "/" + createdQuizId,
-                HttpMethod.PUT,
-                entity,
-                new ParameterizedTypeReference<Map<String, String>>() {
-                }
-        );
-
-        assertThat(response.getStatusCode()).isEqualTo(HttpStatus.BAD_REQUEST);
-
-    }
-
-    // ==================== DELETE QUIZ TESTS ====================
-
-    @Test
-    @Order(19)
-    void shouldSoftDeleteQuizSuccessfully() {
-        HttpEntity<Void> entity = new HttpEntity<>(createHeaders());
-
-        ResponseEntity<StandardResponseOutDTO<String>> response = restTemplate.exchange(
-                getBaseUrl() + "/" + secondQuizId,
-                HttpMethod.DELETE,
-                entity,
-                new ParameterizedTypeReference<>() {
-                }
-        );
-
-        assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
-        assertThat(response.getBody().getData()).isEqualTo("Quiz deleted successfully");
-        assertThat(response.getBody().getMessage()).isEqualTo("Quiz deleted successfully");
-
-        // Verify soft delete - quiz should still exist but be inactive
-        Quiz deletedQuiz = quizRepository.findById(secondQuizId).orElse(null);
-        assertThat(deletedQuiz).isNotNull();
-        assertThat(deletedQuiz.getIsActive()).isFalse();
+        // When & Then
+        mockMvc.perform(post("/api/service-api/quizzes")
+                        .header("X-Test-Role", "ADMIN")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(invalidQuiz)))
+                .andExpect(status().isBadRequest());
     }
 
     @Test
-    @Order(20)
-    void shouldReturn404WhenDeletingNonExistingQuiz() {
-        HttpEntity<Void> entity = new HttpEntity<>(createHeaders());
+    void createQuiz_ShouldReturnBadRequest_WhenTitleTooLong() throws Exception {
+        // Given - Title exceeding 255 characters
+        String longTitle = "A".repeat(256);
+        QuizCreateInDTO invalidQuiz = QuizCreateInDTO.builder()
+                .parentType("course")
+                .parentId(1L)
+                .title(longTitle)
+                .description("Description")
+                .attemptsAllowed(3)
+                .isActive(true)
+                .createdBy(1)
+                .build();
 
-        ResponseEntity<ErrorResponse> response = restTemplate.exchange(
-                getBaseUrl() + "/999999",
-                HttpMethod.DELETE,
-                entity,
-                ErrorResponse.class
-        );
-
-        assertThat(response.getStatusCode()).isEqualTo(HttpStatus.NOT_FOUND);
-        assertThat(response.getBody().getMessage()).contains("No Quiz Found");
-    }
-
-    // ==================== EDGE CASES AND ERROR HANDLING ====================
-
-    @Test
-    @Order(21)
-    void shouldHandleInvalidPathVariable() {
-        HttpEntity<Void> entity = new HttpEntity<>(createHeaders());
-
-        ResponseEntity<ErrorResponse> response = restTemplate.exchange(
-                getBaseUrl() + "/invalid-id",
-                HttpMethod.GET,
-                entity,
-                ErrorResponse.class
-        );
-
-        assertThat(response.getStatusCode()).isEqualTo(HttpStatus.BAD_REQUEST);
-        assertThat(response.getBody().getMessage()).contains("must be of type");
+        // When & Then
+        mockMvc.perform(post("/api/service-api/quizzes")
+                        .header("X-Test-Role", "ADMIN")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(invalidQuiz)))
+                .andExpect(status().isBadRequest());
     }
 
     @Test
-    @Order(22)
-    void shouldHandleEmptyRequestBody() {
-        HttpEntity<String> entity = new HttpEntity<>("{}", createHeaders());
+    void createQuiz_ShouldReturnBadRequest_WhenDescriptionTooLong() throws Exception {
+        // Given - Description exceeding 1000 characters
+        String longDescription = "A".repeat(1001);
+        QuizCreateInDTO invalidQuiz = QuizCreateInDTO.builder()
+                .parentType("course")
+                .parentId(1L)
+                .title("Valid Title")
+                .description(longDescription)
+                .attemptsAllowed(3)
+                .isActive(true)
+                .createdBy(1)
+                .build();
 
-        ResponseEntity<Map<String, String>> response = restTemplate.exchange(
-                getBaseUrl(),
-                HttpMethod.POST,
-                entity,
-                new ParameterizedTypeReference<Map<String, String>>() {
-                }
-        );
-
-        assertThat(response.getStatusCode()).isEqualTo(HttpStatus.BAD_REQUEST);
-        assertThat(response.getBody()).containsKey("parentType");
-        assertThat(response.getBody()).containsKey("parentId");
-        assertThat(response.getBody()).containsKey("title");
-    }
-
-    // ==================== CLEAN UP ====================
-
-    @Test
-    @Order(23)
-    void cleanUpTestData() {
-        // Clean up quizzes
-        quizRepository.deleteAll();
-
-        // Clean up course content
-        courseContentRepository.deleteAll();
-
-        // Clean up courses
-        courseRepository.deleteAll();
-
-        // Verify cleanup
-        assertThat(quizRepository.count()).isEqualTo(0);
-        assertThat(courseRepository.count()).isEqualTo(0);
-        assertThat(courseContentRepository.count()).isEqualTo(0);
+        // When & Then
+        mockMvc.perform(post("/api/service-api/quizzes")
+                        .header("X-Test-Role", "ADMIN")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(invalidQuiz)))
+                .andExpect(status().isBadRequest());
     }
 }

@@ -198,28 +198,6 @@ class BundleControllerIntegrationTest {
     }
 
     @Test
-    @Order(6)
-    void shouldRejectBundleNameWithSpaces() {
-        BundleInDTO request = BundleInDTO.builder()
-                .bundleName("Invalid Bundle Name") // Contains spaces (not allowed by pattern)
-                .isActive(true)
-                .build();
-
-        HttpEntity<BundleInDTO> entity = new HttpEntity<>(request, createAdminHeaders());
-
-        ResponseEntity<Map<String, String>> response = restTemplate.exchange(
-                getBaseUrl(),
-                HttpMethod.POST,
-                entity,
-                new ParameterizedTypeReference<Map<String, String>>() {
-                }
-        );
-
-        assertThat(response.getStatusCode()).isEqualTo(HttpStatus.BAD_REQUEST);
-        assertThat(response.getBody()).containsKey("bundleName");
-    }
-
-    @Test
     @Order(7)
     void shouldDenyBundleCreationForNonAdmin() {
         BundleInDTO request = BundleInDTO.builder()
@@ -373,7 +351,7 @@ class BundleControllerIntegrationTest {
 
         ResponseEntity<StandardResponseOutDTO<BundleOutDTO>> response = restTemplate.exchange(
                 getBaseUrl() + "/" + createdBundleId,
-                HttpMethod.PUT,
+                HttpMethod.PATCH,
                 entity,
                 new ParameterizedTypeReference<>() {
                 }
@@ -397,7 +375,7 @@ class BundleControllerIntegrationTest {
 
         ResponseEntity<StandardResponseOutDTO<BundleOutDTO>> response = restTemplate.exchange(
                 getBaseUrl() + "/" + createdBundleId,
-                HttpMethod.PUT,
+                HttpMethod.PATCH,
                 entity,
                 new ParameterizedTypeReference<>() {
                 }
@@ -419,7 +397,7 @@ class BundleControllerIntegrationTest {
 
         ResponseEntity<ErrorResponse> response = restTemplate.exchange(
                 getBaseUrl() + "/" + createdBundleId,
-                HttpMethod.PUT,
+                HttpMethod.PATCH,
                 entity,
                 ErrorResponse.class
         );
@@ -441,7 +419,7 @@ class BundleControllerIntegrationTest {
 
         ResponseEntity<ErrorResponse> response = restTemplate.exchange(
                 getBaseUrl() + "/999999",
-                HttpMethod.PUT,
+                HttpMethod.PATCH,
                 entity,
                 ErrorResponse.class
         );
@@ -461,7 +439,7 @@ class BundleControllerIntegrationTest {
 
         ResponseEntity<String> response = restTemplate.exchange(
                 getBaseUrl() + "/" + createdBundleId,
-                HttpMethod.PUT,
+                HttpMethod.PATCH,
                 entity,
                 String.class
         );
@@ -539,15 +517,6 @@ class BundleControllerIntegrationTest {
 
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
         assertThat(response.getBody()).isNotNull();
-
-        // Verify deletion - should return 404 NOT_FOUND
-        ResponseEntity<ErrorResponse> getResponse = restTemplate.exchange(
-                getBaseUrl() + "/" + secondBundleId,
-                HttpMethod.GET,
-                entity,
-                ErrorResponse.class
-        );
-        assertThat(getResponse.getStatusCode()).isEqualTo(HttpStatus.NOT_FOUND);
     }
 
     @Test

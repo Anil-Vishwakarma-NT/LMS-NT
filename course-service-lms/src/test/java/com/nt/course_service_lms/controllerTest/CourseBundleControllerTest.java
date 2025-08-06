@@ -2,6 +2,7 @@ package com.nt.course_service_lms.controllerTest;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.nt.course_service_lms.config.JwtUtil;
+import com.nt.course_service_lms.config.ServiceAuthenticationFilter;
 import com.nt.course_service_lms.config.TestAuthenticationFilter;
 import com.nt.course_service_lms.config.TestSecurityConfig;
 import com.nt.course_service_lms.controller.CourseBundleController;
@@ -16,6 +17,9 @@ import com.nt.course_service_lms.exception.ResourceAlreadyExistsException;
 import com.nt.course_service_lms.exception.ResourceNotFoundException;
 import com.nt.course_service_lms.exception.ResourceNotValidException;
 import com.nt.course_service_lms.service.CourseBundleService;
+import jakarta.servlet.FilterChain;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -50,7 +54,6 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @WebMvcTest(CourseBundleController.class)
 @ExtendWith(MockitoExtension.class)
 @Import(TestSecurityConfig.class)
-@ActiveProfiles("test")
 class CourseBundleControllerTest {
 
     @Autowired
@@ -63,7 +66,7 @@ class CourseBundleControllerTest {
     private CourseBundleService courseBundleService;
 
     @MockitoBean
-    private TestAuthenticationFilter testAuthenticationFilter;
+    private ServiceAuthenticationFilter serviceAuthenticationFilter;
 
     @MockitoBean
     private JwtUtil jwtUtil;
@@ -78,6 +81,13 @@ class CourseBundleControllerTest {
 
     @BeforeEach
     void setUp() throws Exception {
+
+        doAnswer(invocation -> {
+            FilterChain filterChain = invocation.getArgument(2);
+            filterChain.doFilter(invocation.getArgument(0), invocation.getArgument(1));
+            return null;
+        }).when(serviceAuthenticationFilter).doFilter(any(HttpServletRequest.class), any(HttpServletResponse.class), any(FilterChain.class));
+
         // Initialize test data
         courseBundleInDTO = CourseBundleInDTO.builder()
                 .courseBundleId(1L)
@@ -208,7 +218,7 @@ class CourseBundleControllerTest {
     }
 
     @Test
-    @WithMockUser(roles = "USER")
+    @WithMockUser(roles = "EMPLOYEE")
     void createCourseBundle_ShouldReturnForbidden_WhenNotAdmin() throws Exception {
         // When & Then
         mockMvc.perform(post("/api/service-api/course-bundles")
@@ -238,7 +248,7 @@ class CourseBundleControllerTest {
     }
 
     @Test
-    @WithMockUser(roles = "USER")
+    @WithMockUser(roles = "EMPLOYEE")
     void getAllCourseBundles_ShouldReturnListOfCourseBundles_WhenUserRole() throws Exception {
         // Given
         List<CourseBundleOutDTO> courseBundles = Arrays.asList(courseBundleOutDTO);
@@ -279,7 +289,7 @@ class CourseBundleControllerTest {
     }
 
     @Test
-    @WithMockUser(roles = "USER")
+    @WithMockUser(roles = "EMPLOYEE")
     void getCourseBundleById_ShouldReturnCourseBundle_WhenUserRole() throws Exception {
         // Given
         when(courseBundleService.getCourseBundleById(1L)).thenReturn(courseBundleOutDTO);
@@ -319,7 +329,7 @@ class CourseBundleControllerTest {
     }
 
     @Test
-    @WithMockUser(roles = "USER")
+    @WithMockUser(roles = "EMPLOYEE")
     void deleteCourseBundle_ShouldReturnForbidden_WhenNotAdmin() throws Exception {
         // When & Then
         mockMvc.perform(delete("/api/service-api/course-bundles/1")
@@ -380,7 +390,7 @@ class CourseBundleControllerTest {
     }
 
     @Test
-    @WithMockUser(roles = "USER")
+    @WithMockUser(roles = "EMPLOYEE")
     void updateCourseBundle_ShouldReturnForbidden_WhenNotAdmin() throws Exception {
         // When & Then
         mockMvc.perform(put("/api/service-api/course-bundles/1")
@@ -419,11 +429,11 @@ class CourseBundleControllerTest {
                 .andExpect(jsonPath("$.status").value("SUCCESS"))
                 .andExpect(jsonPath("$.message").value("Course bundles with id retrieved successfully."))
                 .andExpect(jsonPath("$.data").isArray())
-                .andExpect(jsonPath("$.data[0].courseBundleId").value(1L));
+                .andExpect(jsonPath("$.data[0].courseId").value(1L));
     }
 
     @Test
-    @WithMockUser(roles = "USER")
+    @WithMockUser(roles = "EMPLOYEE")
     void getAllCoursesByBundleId_ShouldReturnCourses_WhenUserRole() throws Exception {
         // Given
         List<CourseInfoOutDTO> courseBundles = Arrays.asList(courseInfoOutDTO);
@@ -467,7 +477,7 @@ class CourseBundleControllerTest {
     }
 
     @Test
-    @WithMockUser(roles = "USER")
+    @WithMockUser(roles = "EMPLOYEE")
     void getAllBundleInfo_ShouldReturnBundleInfo_WhenUserRole() throws Exception {
         // Given
         List<BundleInfoOutDTO> bundleInfoList = Arrays.asList(bundleInfoOutDTO);
@@ -498,7 +508,7 @@ class CourseBundleControllerTest {
     }
 
     @Test
-    @WithMockUser(roles = "USER")
+    @WithMockUser(roles = "EMPLOYEE")
     void getRecentBundles_ShouldReturnForbidden_WhenNotAdmin() throws Exception {
         // When & Then
         mockMvc.perform(get("/api/service-api/course-bundles/recent"))
@@ -524,7 +534,7 @@ class CourseBundleControllerTest {
     }
 
     @Test
-    @WithMockUser(roles = "USER")
+    @WithMockUser(roles = "EMPLOYEE")
     void findCourseIdsByBundleId_ShouldReturnCourseIds_WhenUserRole() throws Exception {
         // Given
         List<Long> courseIds = Arrays.asList(1L, 2L);
