@@ -26,9 +26,40 @@ public final class CommonConstants {
     public static final int NUMBER_THREE = 3;
 
     /**
+     * Number 4 constant.
+     */
+    public static final int NUMBER_FOUR = 4;
+
+    /**
      * Number 5 constant.
      */
     public static final int NUMBER_FIVE = 5;
+
+    /**
+     * Number 6 constant.
+     */
+    public static final int NUMBER_SIX = 6;
+
+    /**
+     * Number 7 constant.
+     */
+    public static final int NUMBER_SEVEN = 7;
+
+    /**
+     * Number 8 constant.
+     */
+    public static final int NUMBER_EIGHT = 8;
+
+    /**
+     * Number 9 constant.
+     */
+    public static final int NUMBER_NINE = 9;
+
+    /**
+     * Number 12 constant.
+     */
+    public static final int NUMBER_TWELVE = 12;
+
     /**
      * Number 16 constant.
      */

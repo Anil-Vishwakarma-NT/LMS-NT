@@ -5,39 +5,53 @@ import com.nt.user_service_lms.constants.UserConstants;
 import com.nt.user_service_lms.converter.GroupDTOConverter;
 import com.nt.user_service_lms.converter.UserDTOConverter;
 import com.nt.user_service_lms.dto.inDTO.GroupInDTO;
-import com.nt.user_service_lms.dto.outDTO.*;
-import com.nt.user_service_lms.entities.*;
-import com.nt.user_service_lms.exception.ResourceNotFoundException;
-import com.nt.user_service_lms.exception.UnauthorizedAccessException;
+import com.nt.user_service_lms.dto.outDTO.GroupOutDTO;
+import com.nt.user_service_lms.entities.Group;
+import com.nt.user_service_lms.entities.User;
+import com.nt.user_service_lms.entities.UserGroup;
 import com.nt.user_service_lms.feignClient.CourseMicroserviceClient;
-import com.nt.user_service_lms.repository.*;
+import com.nt.user_service_lms.repository.EnrollmentRepository;
+import com.nt.user_service_lms.repository.GroupRepository;
+import com.nt.user_service_lms.repository.UserGroupRepository;
+import com.nt.user_service_lms.repository.UserRepository;
 import com.nt.user_service_lms.service.serviceImpl.GroupServiceImpl;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
-import org.springframework.http.ResponseEntity;
 
 import java.time.LocalDateTime;
-import java.util.*;
+import java.util.List;
+import java.util.Optional;
 
-import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.ArgumentMatchers.*;
-import static org.mockito.Mockito.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyLong;
+import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.Mockito.doNothing;
+import static org.mockito.Mockito.when;
 
 class GroupServiceImplTest {
 
     @InjectMocks
     private GroupServiceImpl groupService;
 
-    @Mock private GroupRepository groupRepository;
-    @Mock private UserRepository userRepository;
-    @Mock private UserDTOConverter userDTOConverter;
-    @Mock private UserGroupRepository userGroupRepository;
-    @Mock private EnrollmentRepository enrollmentRepository;
-    @Mock private CourseMicroserviceClient courseMicroserviceClient;
-    @Mock private GroupDTOConverter groupDTOConverter;
+    @Mock
+    private GroupRepository groupRepository;
+    @Mock
+    private UserRepository userRepository;
+    @Mock
+    private UserDTOConverter userDTOConverter;
+    @Mock
+    private UserGroupRepository userGroupRepository;
+    @Mock
+    private EnrollmentRepository enrollmentRepository;
+    @Mock
+    private CourseMicroserviceClient courseMicroserviceClient;
+    @Mock
+    private GroupDTOConverter groupDTOConverter;
 
     private User user;
     private Group group;
@@ -88,7 +102,7 @@ class GroupServiceImplTest {
         doNothing().when(groupRepository).softDeleteByGroupId(10L);
 
         var response = groupService.deleteGroup(10L);
-        assertTrue(response.getStatus()=="SUCCESS");
+        assertTrue(response.getStatus() == "SUCCESS");
         assertEquals(GroupConstants.GROUP_DELETED, response.getData().getMessage());
     }
 
@@ -99,7 +113,7 @@ class GroupServiceImplTest {
     void testUpdateGroup_Success() {
         when(groupRepository.findById(10L)).thenReturn(Optional.of(group));
         var result = groupService.updateGroup(10L, "Updated Name");
-        assertTrue(result.getStatus()=="SUCCESS");
+        assertTrue(result.getStatus() == "SUCCESS");
     }
 
     @Test
@@ -110,7 +124,7 @@ class GroupServiceImplTest {
         doNothing().when(enrollmentRepository).softDeleteByGroupIdAndUserId(10L, 2L);
 
         var result = groupService.removeUserFromGroup(2L, 10L);
-        assertTrue(result.getStatus()=="SUCCESS");
+        assertTrue(result.getStatus() == "SUCCESS");
     }
 
     @Test
@@ -123,7 +137,7 @@ class GroupServiceImplTest {
         when(groupDTOConverter.groupToOutDto(any(), anyString())).thenReturn(gout);
 
         var result = groupService.getGroups(user.getEmail());
-        assertTrue(result.getStatus()=="SUCCESS");
+        assertTrue(result.getStatus() == "SUCCESS");
     }
 
     @Test
@@ -133,7 +147,7 @@ class GroupServiceImplTest {
         when(groupDTOConverter.groupToOutDto(any(), anyString())).thenReturn(new GroupOutDTO());
 
         var result = groupService.getAllGroups();
-        assertTrue(result.getStatus()=="SUCCESS");
+        assertTrue(result.getStatus() == "SUCCESS");
     }
 
     @Test
@@ -149,7 +163,7 @@ class GroupServiceImplTest {
         when(groupDTOConverter.groupToOutDto(any(), anyString())).thenReturn(new GroupOutDTO());
 
         var result = groupService.getAllActiveGroups();
-        assertTrue(result.getStatus()=="SUCCESS");
+        assertTrue(result.getStatus() == "SUCCESS");
     }
 
     @Test
@@ -159,6 +173,6 @@ class GroupServiceImplTest {
         when(userGroupRepository.findAllByGroupId(anyLong())).thenReturn(List.of());
 
         var result = groupService.getRecentGroupSummaries();
-        assertTrue(result.getStatus()=="SUCCESS");
+        assertTrue(result.getStatus() == "SUCCESS");
     }
 }

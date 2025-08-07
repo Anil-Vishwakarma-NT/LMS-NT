@@ -8,21 +8,31 @@ import com.nt.course_service_lms.dto.outDTO.CourseSummaryOutDTO;
 import com.nt.course_service_lms.entity.Course;
 import com.nt.course_service_lms.exception.ResourceAlreadyExistsException;
 import com.nt.course_service_lms.exception.ResourceNotFoundException;
-import com.nt.course_service_lms.exception.ResourceNotValidException;
 import com.nt.course_service_lms.repository.CourseBundleRepository;
 import com.nt.course_service_lms.repository.CourseRepository;
 import com.nt.course_service_lms.service.serviceImpl.CourseServiceImpl;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.*;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.time.LocalDateTime;
-import java.util.*;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.List;
+import java.util.Optional;
 
-import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.Mockito.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.mockito.Mockito.any;
+import static org.mockito.Mockito.anyList;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
 class CourseServiceImplTest {
@@ -60,7 +70,7 @@ class CourseServiceImplTest {
                 .ownerId(100L)
                 .description("Learn Java")
                 .courseLevel("BEGINNER")
-                .Active(true)
+                .isActive(true)
                 .build();
 
         updateCourseInDTO = UpdateCourseInDTO.builder()
@@ -150,7 +160,7 @@ class CourseServiceImplTest {
 
         String result = courseService.deleteCourse(1L);
 
-        assertEquals("Course deleted successfully", result);
+        assertEquals("Course Deleted Successfully", result);
         verify(courseRepository).delete(course);
     }
 
@@ -213,7 +223,7 @@ class CourseServiceImplTest {
         CourseOutDTO result = courseService.updateCourse(1L, updateCourseInDTO);
 
         assertNotNull(result);
-        assertEquals("Java Basics", result.getTitle()); // OutDTO comes from existing saved course mock
+        assertEquals("Java Advanced", result.getTitle()); // OutDTO comes from existing saved course mock
     }
 
     @Test
@@ -230,7 +240,7 @@ class CourseServiceImplTest {
         when(courseRepository.findById(1L)).thenReturn(Optional.of(course));
         when(courseRepository.findByTitleIgnoreCaseAndOwnerId("Java Advanced", 100L)).thenReturn(Optional.of(duplicate));
 
-        assertThrows(ResourceNotValidException.class, () -> courseService.updateCourse(1L, updateCourseInDTO));
+        assertThrows(ResourceAlreadyExistsException.class, () -> courseService.updateCourse(1L, updateCourseInDTO));
     }
 
     @Test

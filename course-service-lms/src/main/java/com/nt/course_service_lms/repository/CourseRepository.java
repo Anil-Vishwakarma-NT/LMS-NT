@@ -53,48 +53,57 @@ public interface CourseRepository extends JpaRepository<Course, Long> {
     @Query("SELECT c.courseId FROM Course c WHERE c.courseId IN :courseIds")
     List<Long> findExistingIds(@Param("courseIds") List<Long> courseIds);
 
+    /**
+     * find recent data for dashboard.
+     * @return recent courses and bundles
+     */
     @Query(value = """
-SELECT * FROM (
-    SELECT
-        'COURSE' as type,
-        c.course_id as id,
-        c.title as name,
-        c.description,
-        c.level,
-        c.created_at,
-        c.updated_at,
-        0 as course_count
-    FROM course c
-    WHERE c.is_active = true
-    ORDER BY c.created_at DESC
-    LIMIT 5
-) courses
-UNION ALL
-SELECT * FROM (
-    SELECT
-        'BUNDLE' as type,
-        b.bundle_id as id,
-        b.bundle_name as name,
-        '' as description,
-        '' as level,
-        b.created_at,
-        b.updated_at,
-        COALESCE(cb.course_count, 0) as course_count
-    FROM bundle b
-    LEFT JOIN (
-        SELECT bundle_id, COUNT(*) as course_count
-        FROM course_bundle
-        GROUP BY bundle_id
-    ) cb ON b.bundle_id = cb.bundle_id
-    WHERE b.is_active = true
-    ORDER BY b.created_at DESC
-    LIMIT 5
-) bundles
-ORDER BY created_at DESC
-""", nativeQuery = true)
+            SELECT * FROM (
+                SELECT
+                    'COURSE' as type,
+                    c.course_id as id,
+                    c.title as name,
+                    c.description,
+                    c.level,
+                    c.created_at,
+                    c.updated_at,
+                    0 as course_count
+                FROM course c
+                WHERE c.is_active = true
+                ORDER BY c.created_at DESC
+                LIMIT 5
+            ) courses
+            UNION ALL
+            SELECT * FROM (
+                SELECT
+                    'BUNDLE' as type,
+                    b.bundle_id as id,
+                    b.bundle_name as name,
+                    '' as description,
+                    '' as level,
+                    b.created_at,
+                    b.updated_at,
+                    COALESCE(cb.course_count, 0) as course_count
+                FROM bundle b
+                LEFT JOIN (
+                    SELECT bundle_id, COUNT(*) as course_count
+                    FROM course_bundle
+                    GROUP BY bundle_id
+                ) cb ON b.bundle_id = cb.bundle_id
+                WHERE b.is_active = true
+                ORDER BY b.created_at DESC
+                LIMIT 5
+            ) bundles
+            ORDER BY created_at DESC
+            """, nativeQuery = true)
     List<Object[]> findRecentDashboardData();
 
 
+    /**
+     * fina existing courses by Ids.
+     * @param courseIds
+     * @return course of given Ids
+     */
     List<Course> findByCourseIdIn(List<Long> courseIds);
 
 }

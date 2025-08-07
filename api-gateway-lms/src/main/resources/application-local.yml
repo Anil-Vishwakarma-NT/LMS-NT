@@ -52,12 +52,12 @@ spring:
           filters:
             - StripPrefix=3
 
-#        - id: course-service-h2-console
-#          uri: http://localhost:8080
-#          predicates:
-#            - Path=/course/h2-console/**
-#          filters:
-#            - StripPrefix=1
+      #        - id: course-service-h2-console
+      #          uri: http://localhost:8080
+      #          predicates:
+      #            - Path=/course/h2-console/**
+      #          filters:
+      #            - StripPrefix=1
 
 
       #        # General routes (less specific)

@@ -21,40 +21,40 @@ public class GroupReportRepository {
         jdbcTemplate.getJdbcTemplate().execute("REFRESH MATERIALIZED VIEW group_details");
 
         String sql = """
-            SELECT
-              group_id AS groupId,
-              group_name AS groupName,
+                    SELECT
+                      group_id AS groupId,
+                      group_name AS groupName,
 
-              COUNT(DISTINCT course_id) FILTER (WHERE enrollment_source = 'GROUP') AS individualCoursesEnrolled,
-              ROUND(AVG(course_completion_percentage) FILTER (WHERE enrollment_source = 'GROUP')::numeric, 2) AS individualCoursesAvgCompletionPercentage,
-              MAX(course_completion_percentage) FILTER (WHERE enrollment_source = 'GROUP') AS individualCoursesHighestCompletionPercentage,
-              MIN(course_completion_percentage) FILTER (WHERE enrollment_source = 'GROUP') AS individualCoursesLowestCompletionPercentage,
+                      COUNT(DISTINCT course_id) FILTER (WHERE enrollment_source = 'GROUP') AS individualCoursesEnrolled,
+                      ROUND(AVG(course_completion_percentage) FILTER (WHERE enrollment_source = 'GROUP')::numeric, 2) AS individualCoursesAvgCompletionPercentage,
+                      MAX(course_completion_percentage) FILTER (WHERE enrollment_source = 'GROUP') AS individualCoursesHighestCompletionPercentage,
+                      MIN(course_completion_percentage) FILTER (WHERE enrollment_source = 'GROUP') AS individualCoursesLowestCompletionPercentage,
 
-              COUNT(DISTINCT bundle_id) FILTER (WHERE enrollment_source = 'GROUP_BUNDLE') AS bundlesEnrolled,
-              ROUND(AVG(course_completion_percentage) FILTER (WHERE enrollment_source = 'GROUP_BUNDLE')::numeric, 2) AS bundleAvgCompletionPercentage,
-              MAX(course_completion_percentage) FILTER (WHERE enrollment_source = 'GROUP_BUNDLE') AS bundleHighestCompletionPercentage,
-              MIN(course_completion_percentage) FILTER (WHERE enrollment_source = 'GROUP_BUNDLE') AS bundleLowestCompletionPercentage,
+                      COUNT(DISTINCT bundle_id) FILTER (WHERE enrollment_source = 'GROUP_BUNDLE') AS bundlesEnrolled,
+                      ROUND(AVG(course_completion_percentage) FILTER (WHERE enrollment_source = 'GROUP_BUNDLE')::numeric, 2) AS bundleAvgCompletionPercentage,
+                      MAX(course_completion_percentage) FILTER (WHERE enrollment_source = 'GROUP_BUNDLE') AS bundleHighestCompletionPercentage,
+                      MIN(course_completion_percentage) FILTER (WHERE enrollment_source = 'GROUP_BUNDLE') AS bundleLowestCompletionPercentage,
 
-              COUNT(DISTINCT course_id) AS total_courses_enrolled,
-              COUNT(DISTINCT user_id) AS total_users_in_group,
-              COUNT(*) FILTER (WHERE is_enrollment_active) AS total_enrollments,
+                      COUNT(DISTINCT course_id) AS total_courses_enrolled,
+                      COUNT(DISTINCT user_id) AS total_users_in_group,
+                      COUNT(*) FILTER (WHERE is_enrollment_active) AS total_enrollments,
 
-              COUNT(DISTINCT user_id || '-' || course_id) FILTER (WHERE status = 'Completed') AS coursesCompleted,
-              COUNT(DISTINCT user_id || '-' || course_id) FILTER (WHERE status = 'In Progress') AS coursesInProgress,
-              COUNT(DISTINCT user_id || '-' || course_id) FILTER (WHERE status = 'Not Started') AS coursesNotStarted,
+                      COUNT(DISTINCT user_id || '-' || course_id) FILTER (WHERE status = 'Completed') AS coursesCompleted,
+                      COUNT(DISTINCT user_id || '-' || course_id) FILTER (WHERE status = 'In Progress') AS coursesInProgress,
+                      COUNT(DISTINCT user_id || '-' || course_id) FILTER (WHERE status = 'Not Started') AS coursesNotStarted,
 
-              COUNT(DISTINCT user_id || '-' || course_id) FILTER (WHERE adherence = 'On Time') AS coursesCompletedOnTime,
-              COUNT(DISTINCT user_id || '-' || course_id) FILTER (WHERE adherence = 'Late') AS courseCompletedLate,
-              COUNT(DISTINCT user_id || '-' || course_id) FILTER (WHERE adherence = 'On Track') AS coursesOnTrack,
-              COUNT(DISTINCT user_id || '-' || course_id) FILTER (WHERE adherence = 'Behind Schedule') AS coursesNotOnTrack,
-              COUNT(DISTINCT user_id || '-' || course_id) FILTER (WHERE adherence = 'Not Due Yet') AS coursesYetToStart,
-              COUNT(DISTINCT user_id || '-' || course_id) FILTER (WHERE adherence = 'Overdue') AS deadlineMissedCourses
+                      COUNT(DISTINCT user_id || '-' || course_id) FILTER (WHERE adherence = 'On Time') AS coursesCompletedOnTime,
+                      COUNT(DISTINCT user_id || '-' || course_id) FILTER (WHERE adherence = 'Late') AS courseCompletedLate,
+                      COUNT(DISTINCT user_id || '-' || course_id) FILTER (WHERE adherence = 'On Track') AS coursesOnTrack,
+                      COUNT(DISTINCT user_id || '-' || course_id) FILTER (WHERE adherence = 'Behind Schedule') AS coursesNotOnTrack,
+                      COUNT(DISTINCT user_id || '-' || course_id) FILTER (WHERE adherence = 'Not Due Yet') AS coursesYetToStart,
+                      COUNT(DISTINCT user_id || '-' || course_id) FILTER (WHERE adherence = 'Overdue') AS deadlineMissedCourses
 
-            FROM group_details
-            GROUP BY group_id, group_name
-            ORDER BY group_id
-            LIMIT :limit OFFSET :offset
-        """;
+                    FROM group_details
+                    GROUP BY group_id, group_name
+                    ORDER BY group_id
+                    LIMIT :limit OFFSET :offset
+                """;
 
         MapSqlParameterSource params = new MapSqlParameterSource()
                 .addValue("limit", limit)

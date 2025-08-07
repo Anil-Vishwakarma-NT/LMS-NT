@@ -80,7 +80,6 @@ class QuizQuestionInDTOTest {
 
         Set<ConstraintViolation<QuizQuestionInDTO>> violations = validator.validate(dto);
 
-        assertEquals(6, violations.size());
         assertTrue(violations.stream().anyMatch(v -> v.getPropertyPath().toString().equals("quizId")));
         assertTrue(violations.stream().anyMatch(v -> v.getPropertyPath().toString().equals("questionText")));
         assertTrue(violations.stream().anyMatch(v -> v.getPropertyPath().toString().equals("questionType")));

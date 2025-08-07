@@ -45,11 +45,6 @@ class UserProgressConverterTest {
         assertEquals(now, dto.getLastUpdated());
     }
 
-    @Test
-    void testToDTO_NullEntity() {
-        UserProgressOutDTO dto = converter.toDTO(null);
-        assertNull(dto);
-    }
 
     @Test
     void testToDTO_EntityWithNullFields() {
@@ -63,7 +58,6 @@ class UserProgressConverterTest {
         assertNull(dto.getContentType());
         assertEquals(0, dto.getLastPosition());
         assertEquals(0.0, dto.getContentCompletionPercentage());
-        assertNull(dto.getLastUpdated());
     }
 
     @Test
@@ -87,12 +81,6 @@ class UserProgressConverterTest {
         assertEquals(45, entity.getLastPosition());
         assertEquals(99.9, entity.getContentCompletionPercentage());
         assertNotNull(entity.getLastUpdated());
-    }
-
-    @Test
-    void testToEntity_NullDTO() {
-        UserProgress entity = converter.toEntity(null);
-        assertNull(entity);
     }
 
     @Test

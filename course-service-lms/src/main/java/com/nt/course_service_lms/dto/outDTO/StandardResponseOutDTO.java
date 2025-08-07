@@ -94,7 +94,9 @@ public class StandardResponseOutDTO<T> {
      */
     public String getMessage() {
         return message;
-    }final
+    }
+
+    final
 
     /**
      * Sets the response message.

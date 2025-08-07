@@ -1,685 +1,594 @@
 package com.nt.course_service_lms.IntegrationTest;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.nt.course_service_lms.config.JwtUtil;
+import com.nt.course_service_lms.config.TestSecurityConfig;
+import com.nt.course_service_lms.controller.CourseController;
 import com.nt.course_service_lms.dto.inDTO.CourseInDTO;
 import com.nt.course_service_lms.dto.inDTO.UpdateCourseInDTO;
 import com.nt.course_service_lms.dto.outDTO.CourseInfoOutDTO;
 import com.nt.course_service_lms.dto.outDTO.CourseOutDTO;
 import com.nt.course_service_lms.dto.outDTO.CourseSummaryOutDTO;
+import com.nt.course_service_lms.dto.outDTO.DashboardDataOutDTO;
 import com.nt.course_service_lms.dto.outDTO.StandardResponseOutDTO;
-import com.nt.course_service_lms.entity.Course;
-import com.nt.course_service_lms.exception.ErrorResponse;
-import com.nt.course_service_lms.repository.CourseRepository;
-import org.junit.jupiter.api.*;
+import com.nt.course_service_lms.exception.ResourceNotFoundException;
+import com.nt.course_service_lms.service.CourseService;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.boot.test.web.client.TestRestTemplate;
-import org.springframework.boot.test.web.server.LocalServerPort;
-import org.springframework.core.ParameterizedTypeReference;
-import org.springframework.http.*;
+import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
+import org.springframework.context.annotation.Import;
+import org.springframework.http.MediaType;
 import org.springframework.test.context.ActiveProfiles;
+import org.springframework.test.context.bean.override.mockito.MockitoBean;
+import org.springframework.test.web.servlet.MockMvc;
 
 import java.time.LocalDateTime;
 import java.util.Arrays;
 import java.util.List;
-import java.util.Map;
 
-import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyList;
+import static org.mockito.ArgumentMatchers.anyLong;
+import static org.mockito.Mockito.when;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
+@WebMvcTest(CourseController.class)
+@ExtendWith(MockitoExtension.class)
+@Import(TestSecurityConfig.class)
 @ActiveProfiles("test")
-@TestMethodOrder(MethodOrderer.OrderAnnotation.class)
 class CourseControllerIntegrationTest {
 
-    @LocalServerPort
-    private int port;
+    @Autowired
+    private MockMvc mockMvc;
 
     @Autowired
-    private TestRestTemplate restTemplate;
+    private ObjectMapper objectMapper;
 
-    @Autowired
-    private CourseRepository courseRepository;
+    @MockitoBean
+    private CourseService courseService;
 
-    private static Long createdCourseId;
-    private static Long secondCourseId;
-    private static Long thirdCourseId;
+    @MockitoBean
+    private JwtUtil jwtUtil;
 
-    private String getBaseUrl() {
-        return "http://localhost:" + port + "/api/service-api/course";
-    }
+    private CourseInDTO courseInDTO;
+    private UpdateCourseInDTO updateCourseInDTO;
+    private CourseOutDTO courseOutDTO;
+    private CourseInfoOutDTO courseInfoOutDTO;
+    private CourseSummaryOutDTO courseSummaryOutDTO;
+    private DashboardDataOutDTO dashboardDataOutDTO;
 
-    private HttpHeaders createAdminHeaders() {
-        HttpHeaders headers = new HttpHeaders();
-        headers.setContentType(MediaType.APPLICATION_JSON);
-        headers.set("X-Test-User", "test-admin");
-        headers.set("X-Test-Role", "ADMIN");
-        return headers;
-    }
-
-    private HttpHeaders createEmployeeHeaders() {
-        HttpHeaders headers = new HttpHeaders();
-        headers.setContentType(MediaType.APPLICATION_JSON);
-        headers.set("X-Test-User", "test-employee");
-        headers.set("X-Test-Role", "EMPLOYEE");
-        return headers;
-    }
-
-    // ==================== SETUP TEST DATA ====================
-
-    @Test
-    @Order(1)
-    void setupTestData() {
-        // Create test courses directly using repository
-        Course testCourse1 = Course.builder()
-                .title("Introduction To Spring Boot")
+    @BeforeEach
+    void setUp() {
+        // Initialize test data
+        courseInDTO = CourseInDTO.builder()
+                .title("Test Course")
                 .ownerId(1L)
-                .description("Comprehensive Guide To Spring Boot Framework")
-                .level("BEGINNER")
+                .description("Test course description")
+                .courseLevel("BEGINNER")
                 .isActive(true)
-                .createdAt(LocalDateTime.now())
-                .updatedAt(LocalDateTime.now())
-                .build();
-        Course savedCourse1 = courseRepository.save(testCourse1);
-        createdCourseId = savedCourse1.getCourseId();
-
-        Course testCourse2 = Course.builder()
-                .title("Advanced Java Programming")
-                .ownerId(2L)
-                .description("Deep Dive Into Advanced Java Concepts")
-                .level("ADVANCED")
-                .isActive(false)
-                .createdAt(LocalDateTime.now())
-                .updatedAt(LocalDateTime.now())
-                .build();
-        Course savedCourse2 = courseRepository.save(testCourse2);
-        secondCourseId = savedCourse2.getCourseId();
-
-        Course testCourse3 = Course.builder()
-                .title("Introduction To Spring Boot")  // Same title, different owner
-                .ownerId(3L)
-                .description("Spring Boot Course By Different Owner")
-                .level("BEGINNER")
-                .isActive(true)
-                .createdAt(LocalDateTime.now())
-                .updatedAt(LocalDateTime.now())
-                .build();
-        Course savedCourse3 = courseRepository.save(testCourse3);
-        thirdCourseId = savedCourse3.getCourseId();
-    }
-
-    // ==================== CREATE COURSE TESTS ====================
-
-    @Test
-    @Order(2)
-    void shouldCreateCourseSuccessfully() {
-        CourseInDTO request = CourseInDTO.builder()
-                .title("New Course Creation Test")
-                .ownerId(4L)
-                .description("Testing course creation functionality")
-                .courseLevel("INTERMEDIATE")
-                .Active(true)
                 .build();
 
-        HttpEntity<CourseInDTO> entity = new HttpEntity<>(request, createAdminHeaders());
-
-        ResponseEntity<StandardResponseOutDTO<CourseOutDTO>> response = restTemplate.exchange(
-                getBaseUrl(),
-                HttpMethod.POST,
-                entity,
-                new ParameterizedTypeReference<>() {}
-        );
-
-        assertThat(response.getStatusCode()).isEqualTo(HttpStatus.CREATED);
-        assertThat(response.getBody()).isNotNull();
-        assertThat(response.getBody().getData().getTitle()).isEqualTo("New Course Creation Test");
-        assertThat(response.getBody().getData().getOwnerId()).isEqualTo(4L);
-        assertThat(response.getBody().getData().isActive()).isTrue();
-        assertThat(response.getBody().getData().getCreatedAt()).isNotNull();
-    }
-
-    @Test
-    @Order(3)
-    void shouldRejectDuplicateCourseTitle() {
-        CourseInDTO request = CourseInDTO.builder()
-                .title("Introduction To Spring Boot") // Same title and owner as setup course
+        updateCourseInDTO = UpdateCourseInDTO.builder()
+                .title("Updated Course")
                 .ownerId(1L)
-                .description("Another Spring Boot course")
-                .courseLevel("INTERMEDIATE")
-                .Active(true)
-                .build();
-
-        HttpEntity<CourseInDTO> entity = new HttpEntity<>(request, createAdminHeaders());
-
-        ResponseEntity<ErrorResponse> response = restTemplate.exchange(
-                getBaseUrl(),
-                HttpMethod.POST,
-                entity,
-                ErrorResponse.class
-        );
-
-        assertThat(response.getStatusCode()).isEqualTo(HttpStatus.CONFLICT);
-        assertThat(response.getBody().getMessage()).contains("already exists");
-    }
-
-    @Test
-    @Order(4)
-    void shouldAllowSameTitleForDifferentOwner() {
-        CourseInDTO request = CourseInDTO.builder()
-                .title("Advanced Java Programming") // Same title as setup course but different owner
-                .ownerId(5L)
-                .description("Java course by different owner")
-                .courseLevel("ADVANCED")
-                .Active(true)
-                .build();
-
-        HttpEntity<CourseInDTO> entity = new HttpEntity<>(request, createAdminHeaders());
-
-        ResponseEntity<StandardResponseOutDTO<CourseOutDTO>> response = restTemplate.exchange(
-                getBaseUrl(),
-                HttpMethod.POST,
-                entity,
-                new ParameterizedTypeReference<>() {}
-        );
-
-        assertThat(response.getStatusCode()).isEqualTo(HttpStatus.CREATED);
-        assertThat(response.getBody().getData().getOwnerId()).isEqualTo(5L);
-    }
-
-    @Test
-    @Order(5)
-    void shouldRejectInvalidCourseData() {
-        CourseInDTO request = CourseInDTO.builder()
-                .title("AB") // Too short (min 3 characters)
-                .ownerId(1L)
-                .description("Valid description")
-                .courseLevel("BEGINNER")
-                .Active(true)
-                .build();
-
-        HttpEntity<CourseInDTO> entity = new HttpEntity<>(request, createAdminHeaders());
-
-        ResponseEntity<Map<String, String>> response = restTemplate.exchange(
-                getBaseUrl(),
-                HttpMethod.POST,
-                entity,
-                new ParameterizedTypeReference<Map<String, String>>() {}
-        );
-
-        assertThat(response.getStatusCode()).isEqualTo(HttpStatus.BAD_REQUEST);
-        assertThat(response.getBody()).containsKey("title");
-    }
-
-    @Test
-    @Order(6)
-    void shouldRejectNullOwnerId() {
-        CourseInDTO request = CourseInDTO.builder()
-                .title("Valid Title")
-                .ownerId(null) // Null owner ID
-                .description("Valid description")
-                .courseLevel("BEGINNER")
-                .Active(true)
-                .build();
-
-        HttpEntity<CourseInDTO> entity = new HttpEntity<>(request, createAdminHeaders());
-
-        ResponseEntity<Map<String, String>> response = restTemplate.exchange(
-                getBaseUrl(),
-                HttpMethod.POST,
-                entity,
-                new ParameterizedTypeReference<Map<String, String>>() {}
-        );
-
-        assertThat(response.getStatusCode()).isEqualTo(HttpStatus.BAD_REQUEST);
-        assertThat(response.getBody()).containsKey("ownerId");
-    }
-
-    @Test
-    @Order(7)
-    void shouldDenyCourseCreationForNonAdmin() {
-        CourseInDTO request = CourseInDTO.builder()
-                .title("Unauthorized Course")
-                .ownerId(1L)
-                .description("Valid description")
-                .courseLevel("BEGINNER")
-                .Active(true)
-                .build();
-
-        HttpEntity<CourseInDTO> entity = new HttpEntity<>(request, createEmployeeHeaders());
-
-        ResponseEntity<String> response = restTemplate.exchange(
-                getBaseUrl(),
-                HttpMethod.POST,
-                entity,
-                String.class
-        );
-
-        assertThat(response.getStatusCode()).isEqualTo(HttpStatus.FORBIDDEN); // Should be 403 Forbidden for EMPLOYEE
-    }
-
-    // ==================== GET COURSE TESTS ====================
-
-    @Test
-    @Order(8)
-    void shouldGetAllCoursesAsAdmin() {
-        HttpEntity<Void> entity = new HttpEntity<>(createAdminHeaders());
-
-        ResponseEntity<StandardResponseOutDTO<List<CourseOutDTO>>> response = restTemplate.exchange(
-                getBaseUrl(),
-                HttpMethod.GET,
-                entity,
-                new ParameterizedTypeReference<>() {}
-        );
-
-        assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
-        assertThat(response.getBody().getData()).isNotEmpty();
-        assertThat(response.getBody().getData().size()).isGreaterThanOrEqualTo(3);
-    }
-
-    @Test
-    @Order(9)
-    void shouldDenyGetAllCoursesForNonAdmin() {
-        HttpEntity<Void> entity = new HttpEntity<>(createEmployeeHeaders());
-
-        ResponseEntity<String> response = restTemplate.exchange(
-                getBaseUrl(),
-                HttpMethod.GET,
-                entity,
-                String.class
-        );
-
-        assertThat(response.getStatusCode()).isEqualTo(HttpStatus.FORBIDDEN);
-    }
-
-    @Test
-    @Order(10)
-    void shouldGetCourseById() {
-        HttpEntity<Void> entity = new HttpEntity<>(createEmployeeHeaders());
-
-        ResponseEntity<StandardResponseOutDTO<CourseInfoOutDTO>> response = restTemplate.exchange(
-                getBaseUrl() + "/" + createdCourseId,
-                HttpMethod.GET,
-                entity,
-                new ParameterizedTypeReference<>() {}
-        );
-
-        assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
-        assertThat(response.getBody().getData().getCourseId()).isEqualTo(createdCourseId);
-        assertThat(response.getBody().getData().getTitle()).isEqualTo("Introduction To Spring Boot");
-    }
-
-    @Test
-    @Order(11)
-    void shouldReturn404ForNonExistingCourse() {
-        HttpEntity<Void> entity = new HttpEntity<>(createEmployeeHeaders());
-
-        ResponseEntity<ErrorResponse> response = restTemplate.exchange(
-                getBaseUrl() + "/999999",
-                HttpMethod.GET,
-                entity,
-                ErrorResponse.class
-        );
-
-        assertThat(response.getStatusCode()).isEqualTo(HttpStatus.NOT_FOUND);
-    }
-
-    @Test
-    @Order(12)
-    void shouldCheckCourseExistence() {
-        HttpEntity<Void> entity = new HttpEntity<>(createEmployeeHeaders());
-
-        ResponseEntity<Boolean> response = restTemplate.exchange(
-                getBaseUrl() + "/" + createdCourseId + "/exists",
-                HttpMethod.GET,
-                entity,
-                Boolean.class
-        );
-
-        assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
-        assertThat(response.getBody()).isTrue();
-    }
-
-    @Test
-    @Order(13)
-    void shouldReturnFalseForNonExistingCourseCheck() {
-        HttpEntity<Void> entity = new HttpEntity<>(createEmployeeHeaders());
-
-        ResponseEntity<Boolean> response = restTemplate.exchange(
-                getBaseUrl() + "/999999/exists",
-                HttpMethod.GET,
-                entity,
-                Boolean.class
-        );
-
-        assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
-        assertThat(response.getBody()).isFalse();
-    }
-
-    @Test
-    @Order(14)
-    void shouldGetCourseNameById() {
-        HttpEntity<Void> entity = new HttpEntity<>(createEmployeeHeaders());
-
-        ResponseEntity<String> response = restTemplate.exchange(
-                getBaseUrl() + "/" + createdCourseId + "/name",
-                HttpMethod.GET,
-                entity,
-                String.class
-        );
-
-        assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
-        assertThat(response.getBody()).isEqualTo("Introduction To Spring Boot");
-    }
-
-    // ==================== UPDATE COURSE TESTS ====================
-
-    @Test
-    @Order(15)
-    void shouldUpdateCourseSuccessfully() {
-        UpdateCourseInDTO updateRequest = UpdateCourseInDTO.builder()
-                .title("Updated Spring Boot Course")
-                .ownerId(1L)
-                .description("Updated comprehensive guide to Spring Boot")
+                .description("Updated course description")
                 .courseLevel("INTERMEDIATE")
                 .Active(false)
                 .build();
 
-        HttpEntity<UpdateCourseInDTO> entity = new HttpEntity<>(updateRequest, createAdminHeaders());
-
-        ResponseEntity<StandardResponseOutDTO<CourseOutDTO>> response = restTemplate.exchange(
-                getBaseUrl() + "/" + createdCourseId,
-                HttpMethod.PUT,
-                entity,
-                new ParameterizedTypeReference<>() {}
-        );
-
-        assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
-        assertThat(response.getBody().getData().getTitle()).isEqualTo("Updated Spring Boot Course");
-        assertThat(response.getBody().getData().getLevel()).isEqualTo("INTERMEDIATE");
-        assertThat(response.getBody().getData().isActive()).isFalse();
-        assertThat(response.getBody().getData().getUpdatedAt()).isNotNull();
-    }
-
-    @Test
-    @Order(16)
-    void shouldAllowUpdateWithSameTitle() {
-        UpdateCourseInDTO updateRequest = UpdateCourseInDTO.builder()
-                .title("Updated Spring Boot Course") // Same title as current
+        courseOutDTO = CourseOutDTO.builder()
+                .courseId(1L)
                 .ownerId(1L)
-                .description("Same title but different description")
-                .courseLevel("ADVANCED")
-                .Active(true)
+                .title("Test Course")
+                .description("Test course description")
+                .level("BEGINNER")
+                .active(true)
+                .createdAt(LocalDateTime.now())
+                .updatedAt(LocalDateTime.now())
                 .build();
 
-        HttpEntity<UpdateCourseInDTO> entity = new HttpEntity<>(updateRequest, createAdminHeaders());
-
-        ResponseEntity<StandardResponseOutDTO<CourseOutDTO>> response = restTemplate.exchange(
-                getBaseUrl() + "/" + createdCourseId,
-                HttpMethod.PUT,
-                entity,
-                new ParameterizedTypeReference<>() {}
-        );
-
-        assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
-        assertThat(response.getBody().getData().isActive()).isTrue();
-    }
-
-    @Test
-    @Order(17)
-    void shouldRejectUpdateWithDuplicateTitle() {
-        // Ensure we have a valid course ID
-        assertThat(createdCourseId).isNotNull();
-
-        UpdateCourseInDTO updateRequest = UpdateCourseInDTO.builder()
-                .title("Advanced Java Programming") // Title exists for owner 2
-                .ownerId(2L) // Same owner as the existing course
-                .description("Trying to create duplicate")
-                .courseLevel("BEGINNER")
-                .Active(true)
-                .build();
-
-        HttpEntity<UpdateCourseInDTO> entity = new HttpEntity<>(updateRequest, createAdminHeaders());
-
-        ResponseEntity<ErrorResponse> response = restTemplate.exchange(
-                getBaseUrl() + "/" + createdCourseId,
-                HttpMethod.PUT,
-                entity,
-                ErrorResponse.class
-        );
-
-        // Based on your GlobalExceptionHandler, ResourceNotValidException maps to UNAUTHORIZED
-        assertThat(response.getStatusCode()).isEqualTo(HttpStatus.CONFLICT);
-        assertThat(response.getBody()).isNotNull();
-        assertThat(response.getBody().getMessage()).containsAnyOf("duplicate", "already exists", "owner");
-    }
-
-    @Test
-    @Order(18)
-    void shouldReturn404WhenUpdatingNonExistingCourse() {
-        UpdateCourseInDTO updateRequest = UpdateCourseInDTO.builder()
-                .title("Valid Title")
+        courseInfoOutDTO = CourseInfoOutDTO.builder()
+                .courseId(1L)
                 .ownerId(1L)
-                .description("Valid description")
+                .title("Test Course")
+                .description("Test course description")
                 .courseLevel("BEGINNER")
-                .Active(true)
+                .isActive(true)
+                .updatedAt(LocalDateTime.now())
                 .build();
 
-        HttpEntity<UpdateCourseInDTO> entity = new HttpEntity<>(updateRequest, createAdminHeaders());
+        courseSummaryOutDTO = CourseSummaryOutDTO.builder()
+                .courseId(1L)
+                .title("Test Course")
+                .description("Test course description")
+                .level("BEGINNER")
+                .createdAt(LocalDateTime.now())
+                .updatedAt(LocalDateTime.now())
+                .build();
 
-        ResponseEntity<ErrorResponse> response = restTemplate.exchange(
-                getBaseUrl() + "/999999",
-                HttpMethod.PUT,
-                entity,
-                ErrorResponse.class
-        );
-
-        assertThat(response.getStatusCode()).isEqualTo(HttpStatus.NOT_FOUND);
+        dashboardDataOutDTO = DashboardDataOutDTO.builder()
+                .recentCourses(Arrays.asList(courseSummaryOutDTO))
+                .recentBundles(Arrays.asList())
+                .build();
     }
 
     @Test
-    @Order(19)
-    void shouldDenyUpdateForNonAdmin() {
-        UpdateCourseInDTO updateRequest = UpdateCourseInDTO.builder()
-                .title("Unauthorized Update")
+    void createCourse_ShouldReturnCreatedCourse_WhenValidInput() throws Exception {
+        // Given
+        when(courseService.createCourse(any(CourseInDTO.class))).thenReturn(courseOutDTO);
+
+        // When & Then
+        mockMvc.perform(post("/api/service-api/course")
+                        .header("X-Test-Role", "ADMIN")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(courseInDTO)))
+                .andExpect(status().isCreated())
+                .andExpect(jsonPath("$.status").value("SUCCESS"))
+                .andExpect(jsonPath("$.message").value("Course Created Successfully"))
+                .andExpect(jsonPath("$.data.courseId").value(1L))
+                .andExpect(jsonPath("$.data.title").value("Test Course"))
+                .andExpect(jsonPath("$.data.ownerId").value(1L))
+                .andExpect(jsonPath("$.data.description").value("Test course description"))
+                .andExpect(jsonPath("$.data.level").value("BEGINNER"))
+                .andExpect(jsonPath("$.data.active").value(true));
+    }
+
+    @Test
+    void createCourse_ShouldReturnBadRequest_WhenInvalidInput() throws Exception {
+        // Given - Invalid course with empty title
+        CourseInDTO invalidCourse = CourseInDTO.builder()
+                .title("")
                 .ownerId(1L)
-                .description("Valid description")
+                .description("Test description")
                 .courseLevel("BEGINNER")
+                .isActive(true)
+                .build();
+
+        // When & Then
+        mockMvc.perform(post("/api/service-api/course")
+                        .header("X-Test-Role", "ADMIN")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(invalidCourse)))
+                .andExpect(status().isBadRequest());
+    }
+
+    @Test
+    void createCourse_ShouldReturnForbidden_WhenNotAdmin() throws Exception {
+        // When & Then
+        mockMvc.perform(post("/api/service-api/course")
+                        .header("X-Test-Role", "EMPLOYEE")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(courseInDTO)))
+                .andExpect(status().isForbidden());
+    }
+
+    @Test
+    void getAllCourses_ShouldReturnListOfCourses_WhenCoursesExist() throws Exception {
+        // Given
+        List<CourseOutDTO> courses = Arrays.asList(courseOutDTO);
+        when(courseService.getAllCourses()).thenReturn(courses);
+
+        // When & Then
+        mockMvc.perform(get("/api/service-api/course")
+                        .header("X-Test-Role", "ADMIN"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.status").value("SUCCESS"))
+                .andExpect(jsonPath("$.message").value("Fetched Courses Successfully"))
+                .andExpect(jsonPath("$.data").isArray())
+                .andExpect(jsonPath("$.data[0].courseId").value(1L))
+                .andExpect(jsonPath("$.data[0].title").value("Test Course"));
+    }
+
+    @Test
+    void getAllCourses_ShouldReturnForbidden_WhenNotAdmin() throws Exception {
+        // When & Then
+        mockMvc.perform(get("/api/service-api/course")
+                        .header("X-Test-Role", "EMPLOYEE"))
+                .andExpect(status().isForbidden());
+    }
+
+    @Test
+    void getCourseById_ShouldReturnCourse_WhenCourseExists() throws Exception {
+        // Given
+        when(courseService.getCourseById(1L)).thenReturn(courseInfoOutDTO);
+
+        // When & Then
+        mockMvc.perform(get("/api/service-api/course/1"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.status").value("SUCCESS"))
+                .andExpect(jsonPath("$.message").value("Fetched Course Details"))
+                .andExpect(jsonPath("$.data.courseId").value(1L))
+                .andExpect(jsonPath("$.data.title").value("Test Course"))
+                .andExpect(jsonPath("$.data.ownerId").value(1L))
+                .andExpect(jsonPath("$.data.description").value("Test course description"))
+                .andExpect(jsonPath("$.data.courseLevel").value("BEGINNER"))
+                .andExpect(jsonPath("$.data.active").value(true));
+    }
+
+    @Test
+    void getCourseById_ShouldReturnNotFound_WhenCourseDoesNotExist() throws Exception {
+        // Given
+        when(courseService.getCourseById(999L)).thenThrow(new ResourceNotFoundException("Course not found"));
+
+        // When & Then
+        mockMvc.perform(get("/api/service-api/course/999"))
+                .andExpect(status().isNotFound());
+    }
+
+    @Test
+    void deleteCourse_ShouldReturnSuccess_WhenCourseExists() throws Exception {
+        // Given
+        when(courseService.deleteCourse(1L)).thenReturn("Course deleted successfully");
+
+        // When & Then
+        mockMvc.perform(delete("/api/service-api/course/1")
+                        .header("X-Test-Role", "ADMIN"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.status").value("SUCCESS"))
+                .andExpect(jsonPath("$.message").value("Course deleted successfully"))
+                .andExpect(jsonPath("$.data").isEmpty());
+    }
+
+    @Test
+    void deleteCourse_ShouldReturnForbidden_WhenNotAdmin() throws Exception {
+        // When & Then
+        mockMvc.perform(delete("/api/service-api/course/1")
+                        .header("X-Test-Role", "EMPLOYEE"))
+                .andExpect(status().isForbidden());
+    }
+
+    @Test
+    void updateCourse_ShouldReturnUpdatedCourse_WhenValidInput() throws Exception {
+        // Given
+        CourseOutDTO updatedCourse = CourseOutDTO.builder()
+                .courseId(1L)
+                .ownerId(1L)
+                .title("Updated Course")
+                .description("Updated course description")
+                .level("INTERMEDIATE")
+                .active(false)
+                .createdAt(LocalDateTime.now())
+                .updatedAt(LocalDateTime.now())
+                .build();
+
+        when(courseService.updateCourse(anyLong(), any(UpdateCourseInDTO.class))).thenReturn(updatedCourse);
+
+        // When & Then
+        mockMvc.perform(put("/api/service-api/course/1")
+                        .header("X-Test-Role", "ADMIN")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(updateCourseInDTO)))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.status").value("SUCCESS"))
+                .andExpect(jsonPath("$.message").value("Course Updated Successfully"))
+                .andExpect(jsonPath("$.data.courseId").value(1L))
+                .andExpect(jsonPath("$.data.title").value("Updated Course"))
+                .andExpect(jsonPath("$.data.description").value("Updated course description"))
+                .andExpect(jsonPath("$.data.level").value("INTERMEDIATE"))
+                .andExpect(jsonPath("$.data.active").value(false));
+    }
+
+    @Test
+    void updateCourse_ShouldReturnBadRequest_WhenInvalidInput() throws Exception {
+        // Given - Invalid update with empty title
+        UpdateCourseInDTO invalidUpdate = UpdateCourseInDTO.builder()
+                .title("")
+                .ownerId(1L)
+                .description("Updated description")
+                .courseLevel("INTERMEDIATE")
                 .Active(true)
                 .build();
 
-        HttpEntity<UpdateCourseInDTO> entity = new HttpEntity<>(updateRequest, createEmployeeHeaders());
-
-        ResponseEntity<String> response = restTemplate.exchange(
-                getBaseUrl() + "/" + createdCourseId,
-                HttpMethod.PUT,
-                entity,
-                String.class
-        );
-
-        assertThat(response.getStatusCode()).isEqualTo(HttpStatus.FORBIDDEN);
-    }
-
-    // ==================== UTILITY ENDPOINT TESTS ====================
-
-    @Test
-    @Order(20)
-    void shouldGetCourseCountAsAdmin() {
-        HttpEntity<Void> entity = new HttpEntity<>(createAdminHeaders());
-
-        ResponseEntity<StandardResponseOutDTO<Long>> response = restTemplate.exchange(
-                getBaseUrl() + "/count",
-                HttpMethod.GET,
-                entity,
-                new ParameterizedTypeReference<>() {}
-        );
-
-        assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
-        assertThat(response.getBody().getData()).isGreaterThanOrEqualTo(3L);
+        // When & Then
+        mockMvc.perform(put("/api/service-api/course/1")
+                        .header("X-Test-Role", "ADMIN")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(invalidUpdate)))
+                .andExpect(status().isBadRequest());
     }
 
     @Test
-    @Order(21)
-    void shouldGetRecentCoursesAsAdmin() {
-        HttpEntity<Void> entity = new HttpEntity<>(createAdminHeaders());
-
-        ResponseEntity<StandardResponseOutDTO<List<CourseSummaryOutDTO>>> response = restTemplate.exchange(
-                getBaseUrl() + "/recent",
-                HttpMethod.GET,
-                entity,
-                new ParameterizedTypeReference<>() {}
-        );
-
-        assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
-        assertThat(response.getBody().getData()).isNotEmpty();
-        assertThat(response.getBody().getData().size()).isLessThanOrEqualTo(5);
+    void updateCourse_ShouldReturnForbidden_WhenNotAdmin() throws Exception {
+        // When & Then
+        mockMvc.perform(put("/api/service-api/course/1")
+                        .header("X-Test-Role", "EMPLOYEE")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(updateCourseInDTO)))
+                .andExpect(status().isForbidden());
     }
 
     @Test
-    @Order(22)
-    void shouldGetCoursesInfoAsAdmin() {
-        HttpEntity<Void> entity = new HttpEntity<>(createAdminHeaders());
+    void checkIfCourseExists_ShouldReturnTrue_WhenCourseExists() throws Exception {
+        // Given
+        when(courseService.courseExistsById(1L)).thenReturn(true);
 
-        ResponseEntity<StandardResponseOutDTO<List<CourseInfoOutDTO>>> response = restTemplate.exchange(
-                getBaseUrl() + "/info",
-                HttpMethod.GET,
-                entity,
-                new ParameterizedTypeReference<>() {}
-        );
-
-        assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
-        assertThat(response.getBody().getData()).isNotEmpty();
+        // When & Then
+        mockMvc.perform(get("/api/service-api/course/1/exists"))
+                .andExpect(status().isOk())
+                .andExpect(content().string("true"));
     }
 
     @Test
-    @Order(23)
-    void shouldGetExistingCourseIds() {
-        List<Long> testIds = Arrays.asList(createdCourseId, secondCourseId, 999999L);
-        HttpEntity<List<Long>> entity = new HttpEntity<>(testIds, createEmployeeHeaders());
+    void checkIfCourseExists_ShouldReturnFalse_WhenCourseDoesNotExist() throws Exception {
+        // Given
+        when(courseService.courseExistsById(999L)).thenReturn(false);
 
-        ResponseEntity<List<Long>> response = restTemplate.exchange(
-                getBaseUrl() + "/existing-ids",
-                HttpMethod.POST,
-                entity,
-                new ParameterizedTypeReference<List<Long>>() {}
-        );
-
-        assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
-        assertThat(response.getBody()).contains(createdCourseId, secondCourseId);
-        assertThat(response.getBody()).doesNotContain(999999L);
+        // When & Then
+        mockMvc.perform(get("/api/service-api/course/999/exists"))
+                .andExpect(status().isOk())
+                .andExpect(content().string("false"));
     }
 
     @Test
-    @Order(24)
-    void shouldReturn404WhenNoExistingIdsFound() {
-        List<Long> nonExistentIds = Arrays.asList(999998L, 999999L);
-        HttpEntity<List<Long>> entity = new HttpEntity<>(nonExistentIds, createEmployeeHeaders());
+    void getCourseCount_ShouldReturnCount_WhenCalled() throws Exception {
+        // Given
+        when(courseService.countCourses()).thenReturn(10L);
 
-        ResponseEntity<ErrorResponse> response = restTemplate.exchange(
-                getBaseUrl() + "/existing-ids",
-                HttpMethod.POST,
-                entity,
-                ErrorResponse.class
-        );
-
-        assertThat(response.getStatusCode()).isEqualTo(HttpStatus.NOT_FOUND);
-    }
-
-    // ==================== DELETE COURSE TESTS ====================
-
-    @Test
-    @Order(25)
-    void shouldDeleteCourseAsAdmin() {
-        HttpEntity<Void> entity = new HttpEntity<>(createAdminHeaders());
-
-        ResponseEntity<StandardResponseOutDTO<Void>> response = restTemplate.exchange(
-                getBaseUrl() + "/" + secondCourseId,
-                HttpMethod.DELETE,
-                entity,
-                new ParameterizedTypeReference<>() {}
-        );
-
-        assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
-        assertThat(response.getBody()).isNotNull();
-
-        // Verify deletion - should return 404 NOT_FOUND
-        ResponseEntity<ErrorResponse> getResponse = restTemplate.exchange(
-                getBaseUrl() + "/" + secondCourseId,
-                HttpMethod.GET,
-                entity,
-                ErrorResponse.class
-        );
-        assertThat(getResponse.getStatusCode()).isEqualTo(HttpStatus.NOT_FOUND);
+        // When & Then
+        mockMvc.perform(get("/api/service-api/course/count")
+                        .header("X-Test-Role", "ADMIN"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.status").value("SUCCESS"))
+                .andExpect(jsonPath("$.message").value("Fetched Course Count"))
+                .andExpect(jsonPath("$.data").value(10L));
     }
 
     @Test
-    @Order(26)
-    void shouldReturn404WhenDeletingNonExistingCourse() {
-        HttpEntity<Void> entity = new HttpEntity<>(createAdminHeaders());
-
-        ResponseEntity<ErrorResponse> response = restTemplate.exchange(
-                getBaseUrl() + "/999999",
-                HttpMethod.DELETE,
-                entity,
-                ErrorResponse.class
-        );
-
-        assertThat(response.getStatusCode()).isEqualTo(HttpStatus.NOT_FOUND);
+    void getCourseCount_ShouldReturnForbidden_WhenNotAdmin() throws Exception {
+        // When & Then
+        mockMvc.perform(get("/api/service-api/course/count")
+                        .header("X-Test-Role", "EMPLOYEE"))
+                .andExpect(status().isForbidden());
     }
 
     @Test
-    @Order(27)
-    void shouldDenyDeleteForNonAdmin() {
-        HttpEntity<Void> entity = new HttpEntity<>(createEmployeeHeaders());
+    void getRecentCourses_ShouldReturnRecentCourses_WhenCoursesExist() throws Exception {
+        // Given
+        List<CourseSummaryOutDTO> recentCourses = Arrays.asList(courseSummaryOutDTO);
+        when(courseService.getRecentCourseSummaries()).thenReturn(recentCourses);
 
-        ResponseEntity<String> response = restTemplate.exchange(
-                getBaseUrl() + "/" + createdCourseId,
-                HttpMethod.DELETE,
-                entity,
-                String.class
-        );
-
-        assertThat(response.getStatusCode()).isEqualTo(HttpStatus.FORBIDDEN);
+        // When & Then
+        mockMvc.perform(get("/api/service-api/course/recent")
+                        .header("X-Test-Role", "ADMIN"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.status").value("SUCCESS"))
+                .andExpect(jsonPath("$.message").value("Fetched Recent Courses"))
+                .andExpect(jsonPath("$.data").isArray())
+                .andExpect(jsonPath("$.data[0].courseId").value(1L))
+                .andExpect(jsonPath("$.data[0].title").value("Test Course"));
     }
 
-    // ==================== CLEAN UP ====================
+    @Test
+    void getRecentCourses_ShouldReturnForbidden_WhenNotAdmin() throws Exception {
+        // When & Then
+        mockMvc.perform(get("/api/service-api/course/recent")
+                        .header("X-Test-Role", "EMPLOYEE"))
+                .andExpect(status().isForbidden());
+    }
 
     @Test
-    @Order(28)
-    void cleanUpTestData() {
-        HttpEntity<Void> entity = new HttpEntity<>(createAdminHeaders());
+    void getRecentDashboardData_ShouldReturnDashboardData_WhenCalled() throws Exception {
+        // Given
+        when(courseService.getRecentDashboardData()).thenReturn(dashboardDataOutDTO);
 
-        // Clean up remaining courses
-        restTemplate.exchange(
-                getBaseUrl() + "/" + createdCourseId,
-                HttpMethod.DELETE,
-                entity,
-                new ParameterizedTypeReference<StandardResponseOutDTO<Void>>() {}
-        );
+        // When & Then
+        mockMvc.perform(get("/api/service-api/course/recent-course-and-bundle")
+                        .header("X-Test-Role", "ADMIN"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.recentCourses").isArray())
+                .andExpect(jsonPath("$.recentCourses[0].courseId").value(1L))
+                .andExpect(jsonPath("$.recentBundles").isArray());
+    }
 
-        restTemplate.exchange(
-                getBaseUrl() + "/" + thirdCourseId,
-                HttpMethod.DELETE,
-                entity,
-                new ParameterizedTypeReference<StandardResponseOutDTO<Void>>() {}
-        );
+    @Test
+    void getRecentDashboardData_ShouldReturnForbidden_WhenNotAdmin() throws Exception {
+        // When & Then
+        mockMvc.perform(get("/api/service-api/course/recent-course-and-bundle")
+                        .header("X-Test-Role", "EMPLOYEE"))
+                .andExpect(status().isForbidden());
+    }
 
-        // Clean up any additional courses created during tests
-        ResponseEntity<StandardResponseOutDTO<List<CourseOutDTO>>> allCourses = restTemplate.exchange(
-                getBaseUrl(),
-                HttpMethod.GET,
-                entity,
-                new ParameterizedTypeReference<>() {}
-        );
+    @Test
+    void getCourseNameById_ShouldReturnCourseName_WhenCourseExists() throws Exception {
+        // Given
+        when(courseService.getCourseNameById(1L)).thenReturn("Test Course");
 
-        if (allCourses.getStatusCode() == HttpStatus.OK && !allCourses.getBody().getData().isEmpty()) {
-            allCourses.getBody().getData().stream()
-                    .filter(course -> course.getOwnerId() >= 4L) // Clean up test courses with owner ID >= 4
-                    .forEach(course -> {
-                        restTemplate.exchange(
-                                getBaseUrl() + "/" + course.getCourseId(),
-                                HttpMethod.DELETE,
-                                entity,
-                                new ParameterizedTypeReference<StandardResponseOutDTO<Void>>() {}
-                        );
-                    });
-        }
+        // When & Then
+        mockMvc.perform(get("/api/service-api/course/1/name"))
+                .andExpect(status().isOk())
+                .andExpect(content().string("Test Course"));
+    }
+
+    @Test
+    void getCourseNameById_ShouldReturnNotFound_WhenCourseDoesNotExist() throws Exception {
+        // Given
+        when(courseService.getCourseNameById(999L)).thenThrow(new ResourceNotFoundException("Course not found"));
+
+        // When & Then
+        mockMvc.perform(get("/api/service-api/course/999/name"))
+                .andExpect(status().isNotFound());
+    }
+
+    @Test
+    void getCoursesInfo_ShouldReturnCoursesInfo_WhenCoursesExist() throws Exception {
+        // Given
+        List<CourseInfoOutDTO> coursesInfo = Arrays.asList(courseInfoOutDTO);
+        when(courseService.getCoursesInfo()).thenReturn(coursesInfo);
+
+        // When & Then
+        mockMvc.perform(get("/api/service-api/course/info")
+                        .header("X-Test-Role", "ADMIN"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.status").value("SUCCESS"))
+                .andExpect(jsonPath("$.message").value("Fetched Course Information"))
+                .andExpect(jsonPath("$.data").isArray())
+                .andExpect(jsonPath("$.data[0].courseId").value(1L))
+                .andExpect(jsonPath("$.data[0].title").value("Test Course"));
+    }
+
+    @Test
+    void getCoursesInfo_ShouldReturnForbidden_WhenNotAdmin() throws Exception {
+        // When & Then
+        mockMvc.perform(get("/api/service-api/course/info")
+                        .header("X-Test-Role", "EMPLOYEE"))
+                .andExpect(status().isForbidden());
+    }
+
+    @Test
+    void getExistingCourseIds_ShouldReturnExistingIds_WhenIdsProvided() throws Exception {
+        // Given
+        List<Long> inputIds = Arrays.asList(1L, 2L, 3L, 999L);
+        List<Long> existingIds = Arrays.asList(1L, 2L, 3L);
+        when(courseService.findExistingIds(anyList())).thenReturn(existingIds);
+
+        // When & Then
+        mockMvc.perform(post("/api/service-api/course/existing-ids")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(inputIds)))
+                .andExpect(status().isOk())
+                .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+                .andExpect(jsonPath("$").isArray())
+                .andExpect(jsonPath("$[0]").value(1L))
+                .andExpect(jsonPath("$[1]").value(2L))
+                .andExpect(jsonPath("$[2]").value(3L));
+    }
+
+    @Test
+    void getExistingCourseIds_ShouldReturnEmptyList_WhenNoIdsExist() throws Exception {
+        // Given
+        List<Long> inputIds = Arrays.asList(999L, 998L);
+        List<Long> existingIds = Arrays.asList();
+        when(courseService.findExistingIds(anyList())).thenReturn(existingIds);
+
+        // When & Then
+        mockMvc.perform(post("/api/service-api/course/existing-ids")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(inputIds)))
+                .andExpect(status().isOk())
+                .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+                .andExpect(jsonPath("$").isArray())
+                .andExpect(jsonPath("$").isEmpty());
+    }
+
+    @Test
+    void getExistingCourseIds_ShouldReturnBadRequest_WhenInvalidInput() throws Exception {
+        // When & Then
+        mockMvc.perform(post("/api/service-api/course/existing-ids")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content("invalid json"))
+                .andExpect(status().isBadRequest());
+    }
+
+    @Test
+    void getCoursesByIds_ShouldReturnCourses_WhenIdsProvided() throws Exception {
+        // Given
+        List<Long> courseIds = Arrays.asList(1L, 2L);
+        List<CourseInfoOutDTO> courses = Arrays.asList(courseInfoOutDTO);
+        StandardResponseOutDTO<List<CourseInfoOutDTO>> response = StandardResponseOutDTO.success(courses, "courses retrieved");
+        when(courseService.getCoursesByIds(anyList())).thenReturn(response);
+
+        // When & Then
+        mockMvc.perform(post("/api/service-api/course/courses")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(courseIds)))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.status").value("SUCCESS"))
+                .andExpect(jsonPath("$.message").value("courses retrieved"))
+                .andExpect(jsonPath("$.data").isArray())
+                .andExpect(jsonPath("$.data[0].courseId").value(1L));
+    }
+
+    @Test
+    void getCoursesByIds_ShouldReturnBadRequest_WhenInvalidInput() throws Exception {
+        // When & Then
+        mockMvc.perform(post("/api/service-api/course/courses")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content("invalid json"))
+                .andExpect(status().isBadRequest());
+    }
+
+    @Test
+    void createCourse_ShouldReturnBadRequest_WhenTitleTooShort() throws Exception {
+        // Given - Course with title too short (less than 3 characters)
+        CourseInDTO invalidCourse = CourseInDTO.builder()
+                .title("AB")
+                .ownerId(1L)
+                .description("Test description")
+                .courseLevel("BEGINNER")
+                .isActive(true)
+                .build();
+
+        // When & Then
+        mockMvc.perform(post("/api/service-api/course")
+                        .header("X-Test-Role", "ADMIN")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(invalidCourse)))
+                .andExpect(status().isBadRequest());
+    }
+
+    @Test
+    void createCourse_ShouldReturnBadRequest_WhenOwnerIdInvalid() throws Exception {
+        // Given - Course with negative owner ID
+        CourseInDTO invalidCourse = CourseInDTO.builder()
+                .title("Test Course")
+                .ownerId(-1L)
+                .description("Test description")
+                .courseLevel("BEGINNER")
+                .isActive(true)
+                .build();
+
+        // When & Then
+        mockMvc.perform(post("/api/service-api/course")
+                        .header("X-Test-Role", "ADMIN")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(invalidCourse)))
+                .andExpect(status().isBadRequest());
+    }
+
+    @Test
+    void createCourse_ShouldReturnBadRequest_WhenDescriptionTooShort() throws Exception {
+        // Given - Course with description too short
+        CourseInDTO invalidCourse = CourseInDTO.builder()
+                .title("Test Course")
+                .ownerId(1L)
+                .description("AB")
+                .courseLevel("BEGINNER")
+                .isActive(true)
+                .build();
+
+        // When & Then
+        mockMvc.perform(post("/api/service-api/course")
+                        .header("X-Test-Role", "ADMIN")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(invalidCourse)))
+                .andExpect(status().isBadRequest());
+    }
+
+    @Test
+    void createCourse_ShouldReturnBadRequest_WhenCourseLevelNull() throws Exception {
+        // Given - Course with null course level
+        CourseInDTO invalidCourse = CourseInDTO.builder()
+                .title("Test Course")
+                .ownerId(1L)
+                .description("Test description")
+                .courseLevel(null)
+                .isActive(true)
+                .build();
+
+        // When & Then
+        mockMvc.perform(post("/api/service-api/course")
+                        .header("X-Test-Role", "ADMIN")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(invalidCourse)))
+                .andExpect(status().isBadRequest());
     }
 }

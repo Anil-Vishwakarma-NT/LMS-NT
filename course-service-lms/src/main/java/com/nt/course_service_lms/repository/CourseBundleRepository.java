@@ -53,6 +53,12 @@ public interface CourseBundleRepository extends JpaRepository<CourseBundle, Long
     @Query("SELECT bc.courseId FROM CourseBundle bc WHERE bc.bundleId = :bundleId")
     List<Long> findCourseIdsByBundleId(@Param("bundleId") Long bundleId);
 
-
-    Optional<CourseBundle> findByBundleIdAndCourseId(Long bundleId , Long courseId);
+    /**
+     * find course bundle by bundle id and course id.
+     *
+     * @param bundleId
+     * @param courseId
+     * @return course bundle
+     */
+    Optional<CourseBundle> findByBundleIdAndCourseId(Long bundleId, Long courseId);
 }

@@ -1,7 +1,12 @@
 package com.nt.user_service_lms.service.serviceImpl;
 
 import com.nt.user_service_lms.constants.CommonConstants;
-import com.nt.user_service_lms.dto.outDTO.*;
+import com.nt.user_service_lms.dto.outDTO.CourseDeadlinesDTO;
+import com.nt.user_service_lms.dto.outDTO.CourseInfoOutDTO;
+import com.nt.user_service_lms.dto.outDTO.StandardResponseOutDTO;
+import com.nt.user_service_lms.dto.outDTO.UserCourseEnrollDetails;
+import com.nt.user_service_lms.dto.outDTO.UserOutDTO;
+import com.nt.user_service_lms.dto.outDTO.UsersDetailsViewDTO;
 import com.nt.user_service_lms.entities.Enrollment;
 import com.nt.user_service_lms.entities.Role;
 import com.nt.user_service_lms.entities.User;
@@ -213,11 +218,12 @@ public class UserServiceImpl implements UserService {
 
     /**
      * Get user details by user email.
+     *
      * @param email
      * @return
      */
     @Override
-    public StandardResponseOutDTO<UserOutDTO> getUserDetailsByEmail(String email){
+    public StandardResponseOutDTO<UserOutDTO> getUserDetailsByEmail(String email) {
         Optional<User> user = userRepository.findByEmailIgnoreCase(email);
 
         if (user.isPresent()) {
@@ -226,7 +232,7 @@ public class UserServiceImpl implements UserService {
             userOutDTO.setFirstName(user.get().getFirstName());
             userOutDTO.setLastName(user.get().getLastName());
 
-            return StandardResponseOutDTO.success(userOutDTO ,"User details fetched.");
+            return StandardResponseOutDTO.success(userOutDTO, "User details fetched.");
         } else {
             return StandardResponseOutDTO.error(USER_NOT_FOUND);
         }
@@ -234,11 +240,12 @@ public class UserServiceImpl implements UserService {
 
     /**
      * get user details by user id.
+     *
      * @param userId
      * @return
      */
     @Override
-    public StandardResponseOutDTO<UserOutDTO> getUserDetailsByUserId(Long userId){
+    public StandardResponseOutDTO<UserOutDTO> getUserDetailsByUserId(Long userId) {
         Optional<User> user = userRepository.findById(userId);
 
         if (user.isPresent()) {
@@ -247,9 +254,9 @@ public class UserServiceImpl implements UserService {
             userOutDTO.setFirstName(user.get().getFirstName());
             userOutDTO.setLastName(user.get().getLastName());
 
-            return StandardResponseOutDTO.success(userOutDTO ,"User details fetched.");
+            return StandardResponseOutDTO.success(userOutDTO, "User details fetched.");
         } else {
-            return StandardResponseOutDTO.success(null ,USER_NOT_FOUND);
+            return StandardResponseOutDTO.success(null, USER_NOT_FOUND);
         }
     }
 }

@@ -79,6 +79,7 @@ public interface UserRepository extends JpaRepository<User, Long> {
 
     /**
      * Get list of managers.
+     *
      * @param roleId
      * @return
      */

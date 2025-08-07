@@ -6,9 +6,7 @@ import com.nt.user_service_lms.dto.outDTO.CourseDeadlinesDTO;
 import com.nt.user_service_lms.dto.outDTO.StandardResponseOutDTO;
 import com.nt.user_service_lms.dto.outDTO.UserCourseEnrollDetails;
 import com.nt.user_service_lms.dto.outDTO.UserOutDTO;
-import com.nt.user_service_lms.entities.User;
 import com.nt.user_service_lms.exception.UnauthorizedAccessException;
-import com.nt.user_service_lms.repository.UserRepository;
 import com.nt.user_service_lms.service.UserService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -25,7 +23,6 @@ import org.springframework.web.bind.annotation.RestController;
 import java.nio.file.AccessDeniedException;
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
 
 /**
  * REST controller for managing user-related operations.
@@ -57,8 +54,8 @@ public class UserController {
      */
     @GetMapping("/getUserId")
     public ResponseEntity<StandardResponseOutDTO<UserOutDTO>> getUserIdByEmail(@RequestParam final String email) {
-             StandardResponseOutDTO<UserOutDTO> userdto = userService.getUserDetailsByEmail(email);
-             return new ResponseEntity<>(userdto , HttpStatus.OK);
+        StandardResponseOutDTO<UserOutDTO> userdto = userService.getUserDetailsByEmail(email);
+        return new ResponseEntity<>(userdto, HttpStatus.OK);
     }
 
     /**
@@ -83,7 +80,7 @@ public class UserController {
         }
 
         StandardResponseOutDTO<UserOutDTO> userdto = userService.getUserDetailsByEmail(username);
-        return new ResponseEntity<>(userdto , HttpStatus.OK);
+        return new ResponseEntity<>(userdto, HttpStatus.OK);
     }
 
     /**
@@ -96,12 +93,12 @@ public class UserController {
     @GetMapping("/{userId}")
     public ResponseEntity<StandardResponseOutDTO<UserOutDTO>> getUserNameById(@PathVariable final long userId) {
         StandardResponseOutDTO<UserOutDTO> userdto = userService.getUserDetailsByUserId(userId);
-        if (userdto.getData() == null ) {
+        if (userdto.getData() == null) {
             return ResponseEntity
                     .status(HttpStatus.NOT_FOUND)
                     .body(StandardResponseOutDTO.error("User not found"));
         }
-        return new ResponseEntity<>(userdto , HttpStatus.OK);
+        return new ResponseEntity<>(userdto, HttpStatus.OK);
     }
 
     /**
@@ -147,6 +144,7 @@ public class UserController {
 
     /**
      * Retrieves user statistics like total enrollments and groups.
+     *
      * @param userId
      * @return Map of String and long.
      */

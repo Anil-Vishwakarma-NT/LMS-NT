@@ -67,7 +67,6 @@ public class BundleInDTO {
     private boolean isActive;
 
 
-
     /**
      * Checks if the object is equal.
      *
@@ -86,7 +85,8 @@ public class BundleInDTO {
     }
 
     /**
-     * generates hashcode
+     * generates hashcode.
+     *
      * @return int
      */
     @Override

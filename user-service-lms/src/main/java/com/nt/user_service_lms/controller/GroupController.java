@@ -2,18 +2,17 @@ package com.nt.user_service_lms.controller;
 
 import com.nt.user_service_lms.config.ServicePrincipal;
 import com.nt.user_service_lms.dto.inDTO.GroupInDTO;
+import com.nt.user_service_lms.dto.outDTO.BundleOutDTO;
+import com.nt.user_service_lms.dto.outDTO.CourseInfoOutDTO;
+import com.nt.user_service_lms.dto.outDTO.GroupBundleOutDTO;
 import com.nt.user_service_lms.dto.outDTO.GroupCourseOutDTO;
-import com.nt.user_service_lms.dto.outDTO.GroupUserOutDTO;
-import com.nt.user_service_lms.dto.outDTO.MessageOutDTO;
 import com.nt.user_service_lms.dto.outDTO.GroupOutDTO;
 import com.nt.user_service_lms.dto.outDTO.GroupSummaryOutDTO;
-import com.nt.user_service_lms.dto.outDTO.CourseInfoOutDTO;
-import com.nt.user_service_lms.dto.outDTO.BundleOutDTO;
-import com.nt.user_service_lms.dto.outDTO.UserGroupOutDTO;
-import com.nt.user_service_lms.dto.outDTO.GroupBundleOutDTO;
+import com.nt.user_service_lms.dto.outDTO.GroupUserOutDTO;
+import com.nt.user_service_lms.dto.outDTO.MessageOutDTO;
 import com.nt.user_service_lms.dto.outDTO.StandardResponseOutDTO;
+import com.nt.user_service_lms.dto.outDTO.UserGroupOutDTO;
 import com.nt.user_service_lms.exception.UnauthorizedAccessException;
-import com.nt.user_service_lms.repository.UserRepository;
 import com.nt.user_service_lms.service.GroupService;
 import jakarta.validation.Valid;
 import lombok.extern.slf4j.Slf4j;
@@ -23,16 +22,15 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
-import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.DeleteMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
-
+import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
 
@@ -73,7 +71,7 @@ public class GroupController {
      */
     @PostMapping("/create-group")
     @PreAuthorize("hasRole('ADMIN')")
-      public ResponseEntity<StandardResponseOutDTO<MessageOutDTO>> createGroup(@Valid @RequestBody final GroupInDTO groupInDTO) {
+    public ResponseEntity<StandardResponseOutDTO<MessageOutDTO>> createGroup(@Valid @RequestBody final GroupInDTO groupInDTO) {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
 
         if (!(authentication.getPrincipal() instanceof ServicePrincipal principal)) {
@@ -138,8 +136,8 @@ public class GroupController {
      */
     @PostMapping("/add-user")
     @PreAuthorize("hasRole('ADMIN')")
-        public ResponseEntity<StandardResponseOutDTO<MessageOutDTO>> addUserToGroup(
-                @Valid @RequestBody final GroupInDTO groupInDTO) {
+    public ResponseEntity<StandardResponseOutDTO<MessageOutDTO>> addUserToGroup(
+            @Valid @RequestBody final GroupInDTO groupInDTO) {
         log.info("Attempting to add user with ID: to group with ID: {}", groupInDTO.getGroupId());
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
 
@@ -220,14 +218,14 @@ public class GroupController {
 
     /**
      * Retrieves courses associated with a specific user within a group context.
-     *
+     * <p>
      * This endpoint returns detailed information about courses that are accessible to
      * a specific user within the context of a particular group.
      *
      * @param groupId the Data Transfer Object containing group ID and user ID
-     *                   for the course retrieval operation
+     *                for the course retrieval operation
      * @return ResponseEntity containing a StandardResponseOutDTO with list of GroupCourseOutDTO
-     *         and HTTP status OK (200)
+     * and HTTP status OK (200)
      */
     @GetMapping("emp/group-courses/{groupId}")
     @PreAuthorize("hasRole('ADMIN') or hasRole('EMPLOYEE')")
@@ -381,14 +379,14 @@ public class GroupController {
 
     /**
      * Retrieves bundles associated with a specific user within a group context.
-     *
+     * <p>
      * This endpoint returns detailed information about courses that are accessible to
      * a specific user within the context of a particular group.
      *
      * @param groupInDTO the Data Transfer Object containing group ID and user ID
      *                   for the course retrieval operation
      * @return ResponseEntity containing a StandardResponseOutDTO with list of BundleInfoOutDTO
-     *         and HTTP status OK (200)
+     * and HTTP status OK (200)
      */
     @PostMapping("/user-bundles")
     public ResponseEntity<StandardResponseOutDTO<List<BundleOutDTO>>> getUserBundlesInGroups(
@@ -401,12 +399,12 @@ public class GroupController {
 
     /**
      * Retrieves groups associated with a specific user within a group context.
-     *
+     * <p>
      * This endpoint returns detailed information about courses that are accessible to
      * a specific user within the context of a particular group.
      *
      * @return ResponseEntity containing a StandardResponseOutDTO with list of UserGroupOutDTO
-     *         and HTTP status OK (200)
+     * and HTTP status OK (200)
      */
     @GetMapping("/user-groups")
     @PreAuthorize("hasRole('ADMIN') or hasRole('EMPLOYEE')")
@@ -424,6 +422,7 @@ public class GroupController {
 
     /**
      * Retrieves bundles of the group by group ID.
+     *
      * @param groupId
      * @return list of groupbundleoutDTO.
      */

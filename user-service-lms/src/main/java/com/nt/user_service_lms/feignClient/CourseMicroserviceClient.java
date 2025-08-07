@@ -3,19 +3,19 @@ package com.nt.user_service_lms.feignClient;
 
 import com.nt.user_service_lms.config.FeignTokenInterceptor;
 import com.nt.user_service_lms.dto.outDTO.BundleInfoOutDTO;
+import com.nt.user_service_lms.dto.outDTO.BundleOutDTO;
 import com.nt.user_service_lms.dto.outDTO.CourseInfoOutDTO;
 import com.nt.user_service_lms.dto.outDTO.CourseProgressWithMetaDTO;
-import com.nt.user_service_lms.dto.outDTO.StandardResponseOutDTO;
-import com.nt.user_service_lms.dto.outDTO.BundleOutDTO;
 import com.nt.user_service_lms.dto.outDTO.MessageOutDTO;
+import com.nt.user_service_lms.dto.outDTO.StandardResponseOutDTO;
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 
 import java.util.List;
 
@@ -159,6 +159,7 @@ public interface CourseMicroserviceClient {
      */
     @GetMapping("/bundles/{id}")
     ResponseEntity<StandardResponseOutDTO<BundleOutDTO>> getBundleById(@PathVariable Long id);
+
     /**
      * Get courses info by list of courseIds.
      *
@@ -189,5 +190,4 @@ public interface CourseMicroserviceClient {
                                                                                  @RequestParam Long courseId);
 
 
-
-    }
+}

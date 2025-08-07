@@ -1,19 +1,16 @@
 package com.nt.user_service_lms.controller;
 
 import com.nt.user_service_lms.dto.inDTO.RegisterDto;
-import com.nt.user_service_lms.dto.outDTO.AdminDashboardStatsOutDTO;
-import com.nt.user_service_lms.dto.outDTO.UsersDetailsViewDTO;
 import com.nt.user_service_lms.dto.inDTO.UserInDTO;
+import com.nt.user_service_lms.dto.outDTO.AdminDashboardStatsOutDTO;
 import com.nt.user_service_lms.dto.outDTO.MessageOutDTO;
 import com.nt.user_service_lms.dto.outDTO.StandardResponseOutDTO;
 import com.nt.user_service_lms.dto.outDTO.UserCourseEnrollDetails;
 import com.nt.user_service_lms.dto.outDTO.UserOutDTO;
+import com.nt.user_service_lms.dto.outDTO.UsersDetailsViewDTO;
 import com.nt.user_service_lms.service.AdminService;
 import com.nt.user_service_lms.service.GroupService;
 import com.nt.user_service_lms.service.UserService;
-import com.nt.user_service_lms.service.serviceImpl.AdminServiceImpl;
-import com.nt.user_service_lms.service.serviceImpl.GroupServiceImpl;
-import com.nt.user_service_lms.service.serviceImpl.UserServiceImpl;
 import jakarta.validation.Valid;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -208,6 +205,7 @@ public class AdminController {
                 .success(usersDetailsViewDTOS, "Fetched Recent Users");
         return ResponseEntity.ok(standardResponseOutDTO);
     }
+
     /**
      * Deletes registered users in the system.
      *
@@ -217,8 +215,8 @@ public class AdminController {
 
     @DeleteMapping("/bundle")
     public ResponseEntity<StandardResponseOutDTO<MessageOutDTO>> deleteBundle(@RequestParam final Long bundleId) {
-         StandardResponseOutDTO<MessageOutDTO> response = adminService.deleteBundle(bundleId);
-         return  new ResponseEntity<>(response, HttpStatus.OK);
+        StandardResponseOutDTO<MessageOutDTO> response = adminService.deleteBundle(bundleId);
+        return new ResponseEntity<>(response, HttpStatus.OK);
     }
 
     /**
@@ -236,11 +234,10 @@ public class AdminController {
     }
 
 
-
-
     /**
      * Retrieves all courses enrolled by the currently authenticated user.
      * Uses custom ServicePrincipal authentication to identify the user.
+     *
      * @param userId the Id of user
      * @return ResponseEntity containing StandardResponseOutDTO with list of UserCourseEnrollDetails
      */
@@ -252,6 +249,10 @@ public class AdminController {
         return ResponseEntity.ok(StandardResponseOutDTO.success(enrolledCourses, "Fetched enrolled courses successfully"));
     }
 
+    /**
+     * Fetch admin dashboard details.
+     * @return dto containing dashboard statistics
+     */
     @GetMapping("/admin-dashboard-stats")
     public ResponseEntity<StandardResponseOutDTO<AdminDashboardStatsOutDTO>> getAdminDashboardStats() {
         StandardResponseOutDTO<AdminDashboardStatsOutDTO> standardResponseOutDTO = adminService.getAdminStats();

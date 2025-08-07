@@ -5,7 +5,6 @@ import com.nt.course_service_lms.dto.inDTO.QuizAttemptUpdateInDTO;
 import com.nt.course_service_lms.dto.outDTO.QuizAttemptDetailsByCourseIDOutDTO;
 import com.nt.course_service_lms.dto.outDTO.QuizAttemptDetailsByUserIDOutDTO;
 import com.nt.course_service_lms.dto.outDTO.QuizAttemptOutDTO;
-import com.nt.course_service_lms.dto.outDTO.QuizSubmissionResultOutDTO;
 import com.nt.course_service_lms.dto.outDTO.UserQuizAttemptDetailsOutDTO;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;

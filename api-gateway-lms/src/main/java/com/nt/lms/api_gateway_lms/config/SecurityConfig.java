@@ -60,7 +60,7 @@ public class SecurityConfig {
      *   <li>Custom exception handling for unauthorized and forbidden access</li>
      * </ul>
      *
-     * @param http the {@link ServerHttpSecurity} instance to configure security settings
+     * @param http          the {@link ServerHttpSecurity} instance to configure security settings
      * @param jwtAuthFilter the JWT authentication filter for processing JWT tokens
      * @return configured {@link SecurityWebFilterChain} for the application
      * @throws Exception if configuration fails

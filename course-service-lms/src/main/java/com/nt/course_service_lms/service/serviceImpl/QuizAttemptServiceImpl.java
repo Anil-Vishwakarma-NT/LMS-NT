@@ -8,11 +8,8 @@ import com.nt.course_service_lms.dto.outDTO.CourseOutDTO;
 import com.nt.course_service_lms.dto.outDTO.QuizAttemptDetailsByCourseIDOutDTO;
 import com.nt.course_service_lms.dto.outDTO.QuizAttemptDetailsByUserIDOutDTO;
 import com.nt.course_service_lms.dto.outDTO.QuizAttemptOutDTO;
-import com.nt.course_service_lms.dto.outDTO.QuizSubmissionResultOutDTO;
 import com.nt.course_service_lms.dto.outDTO.UserQuizAttemptDetailsOutDTO;
-import com.nt.course_service_lms.dto.outDTO.UserResponseOutDTO;
 import com.nt.course_service_lms.dto.outDTO.UserResponseWithCorrectAnswerOutDTO;
-import com.nt.course_service_lms.entity.Course;
 import com.nt.course_service_lms.entity.Quiz;
 import com.nt.course_service_lms.entity.QuizAttempt;
 import com.nt.course_service_lms.entity.QuizQuestion;
@@ -51,18 +48,8 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 /**
- * Service implementation for QuizAttempt operations in the Learning Management System.
- * This class provides comprehensive functionality for managing quiz attempts including
- * creation, updating, retrieval, completion, abandonment, and timeout operations.
- *
- * <p>The service ensures proper validation of quiz attempt states and enforces
- * business rules such as maximum allowed attempts per user per quiz.</p>
- *
- * <p>All operations are transactional to ensure data consistency and integrity.</p>
- *
- * @author Course Service LMS Team
- * @version 1.0
- * @since 1.0
+ * Service implementation for managing quiz attempts in the Learning Management System.
+ * Provides operations for creating, updating, retrieving, and managing quiz attempt lifecycle.
  */
 @Service
 @RequiredArgsConstructor
@@ -71,44 +58,41 @@ import java.util.stream.Collectors;
 public class QuizAttemptServiceImpl implements QuizAttemptService {
 
     /**
-     * Constant representing the "IN_PROGRESS" status for quiz attempts.
-     * This status indicates that a quiz attempt is currently active and ongoing.
+     * Status constant for ongoing quiz attempts.
+     * Used to identify active quiz sessions.
      */
     public static final String IN_PROGRESS = "IN_PROGRESS";
 
     /**
-     * Repository for performing CRUD operations on QuizAttempt entities.
-     * Provides access to the underlying database for quiz attempt data.
+     * Repository for quiz attempt database operations.
+     * Handles CRUD operations for QuizAttempt entities.
      */
     private final QuizAttemptRepository quizAttemptRepository;
 
     /**
-     * Repository for performing CRUD operations on Quiz entities.
-     * Used to validate quiz existence and retrieve quiz configuration.
+     * Repository for quiz database operations.
+     * Used for quiz validation and configuration retrieval.
      */
     private final QuizRepository quizRepository;
 
+    /**
+     * Repository for user response database operations.
+     * Manages user answers and response data.
+     */
     private final UserResponseRepository userResponseRepository;
 
+    /**
+     * Repository for quiz question database operations.
+     * Handles quiz question retrieval and validation.
+     */
     private final QuizQuestionRepository quizQuestionRepository;
 
     /**
-     * Creates a new quiz attempt for a user and quiz combination.
+     * Creates a new quiz attempt for a user.
+     * Validates quiz existence and enforces attempt limits.
      *
-     * <p>This method performs the following operations:</p>
-     * <ul>
-     *   <li>Validates input parameters (userId and quizId)</li>
-     *   <li>Checks if the quiz exists</li>
-     *   <li>Verifies if user has any active attempts for the quiz</li>
-     *   <li>Calculates the next attempt number</li>
-     *   <li>Validates against maximum allowed attempts</li>
-     *   <li>Creates and saves the new quiz attempt</li>
-     * </ul>
-     *
-     * @param dto the data transfer object containing user ID and quiz ID for creating the attempt
-     * @return QuizAttemptOutDTO containing the created attempt details with remaining attempts count
-     * @throws ResourceNotValidException if input validation fails or maximum attempts exceeded
-     * @throws ResourceNotFoundException if the specified quiz is not found
+     * @param dto the quiz attempt creation data
+     * @return QuizAttemptOutDTO the created attempt details
      */
     @Override
     public QuizAttemptOutDTO createQuizAttempt(final QuizAttemptCreateInDTO dto) {
@@ -172,23 +156,12 @@ public class QuizAttemptServiceImpl implements QuizAttemptService {
     }
 
     /**
-     * Updates an existing quiz attempt with new information.
+     * Updates an existing quiz attempt with new data.
+     * Validates status transitions and auto-sets finished timestamp.
      *
-     * <p>This method allows updating various fields of a quiz attempt including:</p>
-     * <ul>
-     *   <li>Finished timestamp</li>
-     *   <li>Score details</li>
-     *   <li>Status (with validation for valid transitions)</li>
-     * </ul>
-     *
-     * <p>The method automatically sets the finished timestamp when the status
-     * is changed to COMPLETED, ABANDONED, or TIMED_OUT.</p>
-     *
-     * @param quizAttemptId the unique identifier of the quiz attempt to update
-     * @param dto           the data transfer object containing the fields to update
-     * @return QuizAttemptOutDTO containing the updated attempt details
-     * @throws ResourceNotValidException if the quiz attempt ID is null or status transition is invalid
-     * @throws ResourceNotFoundException if the quiz attempt with the given ID is not found
+     * @param quizAttemptId the attempt ID to update
+     * @param dto the update data
+     * @return QuizAttemptOutDTO the updated attempt details
      */
     @Override
     public QuizAttemptOutDTO updateQuizAttempt(final Long quizAttemptId, final QuizAttemptUpdateInDTO dto) {
@@ -236,10 +209,10 @@ public class QuizAttemptServiceImpl implements QuizAttemptService {
 
     /**
      * Retrieves a quiz attempt by its unique identifier.
+     * Returns empty optional if attempt not found.
      *
-     * @param quizAttemptId the unique identifier of the quiz attempt to retrieve
-     * @return Optional containing QuizAttemptOutDTO if found, empty otherwise
-     * @throws ResourceNotValidException if the quiz attempt ID is null
+     * @param quizAttemptId the attempt ID to retrieve
+     * @return Optional<QuizAttemptOutDTO> the attempt details if found
      */
     @Override
     @Transactional(readOnly = true)
@@ -256,10 +229,10 @@ public class QuizAttemptServiceImpl implements QuizAttemptService {
 
     /**
      * Retrieves all quiz attempts with pagination support.
+     * Returns paginated results with sorting capabilities.
      *
-     * @param pageable the pagination information including page number, size, and sorting
-     * @return Page containing QuizAttemptOutDTO objects with pagination metadata
-     * @throws ResourceNotValidException if the pageable parameter is null
+     * @param pageable the pagination parameters
+     * @return Page<QuizAttemptOutDTO> paginated attempt results
      */
     @Override
     @Transactional(readOnly = true)
@@ -279,11 +252,11 @@ public class QuizAttemptServiceImpl implements QuizAttemptService {
     }
 
     /**
-     * Retrieves all quiz attempts for a specific user, ordered by creation date (newest first).
+     * Retrieves all quiz attempts for a specific user.
+     * Returns attempts ordered by creation date descending.
      *
-     * @param userId the unique identifier of the user whose attempts to retrieve
-     * @return List of QuizAttemptOutDTO objects ordered by creation date descending
-     * @throws ResourceNotValidException if the user ID is null
+     * @param userId the user ID to filter by
+     * @return List<QuizAttemptOutDTO> user's quiz attempts
      */
     @Override
     @Transactional(readOnly = true)
@@ -301,11 +274,11 @@ public class QuizAttemptServiceImpl implements QuizAttemptService {
     }
 
     /**
-     * Retrieves all quiz attempts for a specific quiz, ordered by creation date (newest first).
+     * Retrieves all quiz attempts for a specific quiz.
+     * Returns attempts ordered by creation date descending.
      *
-     * @param quizId the unique identifier of the quiz whose attempts to retrieve
-     * @return List of QuizAttemptOutDTO objects ordered by creation date descending
-     * @throws ResourceNotValidException if the quiz ID is null
+     * @param quizId the quiz ID to filter by
+     * @return List<QuizAttemptOutDTO> quiz's attempt history
      */
     @Override
     @Transactional(readOnly = true)
@@ -323,13 +296,12 @@ public class QuizAttemptServiceImpl implements QuizAttemptService {
     }
 
     /**
-     * Retrieves all quiz attempts for a specific user and quiz combination,
-     * ordered by attempt number (highest first).
+     * Retrieves quiz attempts for a specific user and quiz combination.
+     * Returns attempts ordered by attempt number descending.
      *
-     * @param userId the unique identifier of the user
-     * @param quizId the unique identifier of the quiz
-     * @return List of QuizAttemptOutDTO objects ordered by attempt number descending
-     * @throws ResourceNotValidException if either user ID or quiz ID is null
+     * @param userId the user ID
+     * @param quizId the quiz ID
+     * @return List<QuizAttemptOutDTO> matching attempts
      */
     @Override
     @Transactional(readOnly = true)
@@ -347,11 +319,11 @@ public class QuizAttemptServiceImpl implements QuizAttemptService {
     }
 
     /**
-     * Retrieves all quiz attempts with a specific status, ordered by creation date (newest first).
+     * Retrieves quiz attempts filtered by status.
+     * Returns attempts ordered by creation date descending.
      *
-     * @param status the status to filter by (IN_PROGRESS, COMPLETED, ABANDONED, TIMED_OUT)
-     * @return List of QuizAttemptOutDTO objects with the specified status
-     * @throws ResourceNotValidException if the status is null, empty, or invalid
+     * @param status the status to filter by
+     * @return List<QuizAttemptOutDTO> matching attempts
      */
     @Override
     @Transactional(readOnly = true)
@@ -373,12 +345,12 @@ public class QuizAttemptServiceImpl implements QuizAttemptService {
     }
 
     /**
-     * Retrieves the most recent quiz attempt for a specific user and quiz combination.
+     * Retrieves the most recent attempt for a user and quiz.
+     * Returns empty optional if no attempts found.
      *
-     * @param userId the unique identifier of the user
-     * @param quizId the unique identifier of the quiz
-     * @return Optional containing the latest QuizAttemptOutDTO if found, empty otherwise
-     * @throws ResourceNotValidException if either user ID or quiz ID is null
+     * @param userId the user ID
+     * @param quizId the quiz ID
+     * @return Optional<QuizAttemptOutDTO> latest attempt if exists
      */
     @Override
     @Transactional(readOnly = true)
@@ -395,10 +367,9 @@ public class QuizAttemptServiceImpl implements QuizAttemptService {
 
     /**
      * Permanently deletes a quiz attempt from the system.
+     * Validates attempt existence before deletion.
      *
-     * @param quizAttemptId the unique identifier of the quiz attempt to delete
-     * @throws ResourceNotValidException if the quiz attempt ID is null
-     * @throws ResourceNotFoundException if the quiz attempt with the given ID is not found
+     * @param quizAttemptId the attempt ID to delete
      */
     @Override
     public void deleteQuizAttempt(final Long quizAttemptId) {
@@ -417,16 +388,12 @@ public class QuizAttemptServiceImpl implements QuizAttemptService {
     }
 
     /**
-     * Marks a quiz attempt as completed and records the score details.
+     * Marks a quiz attempt as completed with score details.
+     * Only IN_PROGRESS attempts can be completed.
      *
-     * <p>This method can only be called on attempts with "IN_PROGRESS" status.
-     * It automatically sets the finished timestamp to the current time.</p>
-     *
-     * @param quizAttemptId the unique identifier of the quiz attempt to complete
-     * @param scoreDetails  the score details or results of the completed attempt
-     * @return QuizAttemptOutDTO containing the completed attempt details
-     * @throws ResourceNotValidException if the quiz attempt ID is null or attempt cannot be completed
-     * @throws ResourceNotFoundException if the quiz attempt with the given ID is not found
+     * @param quizAttemptId the attempt ID to complete
+     * @param scoreDetails the completion score data
+     * @return QuizAttemptOutDTO the completed attempt
      */
     @Override
     public QuizAttemptOutDTO completeAttempt(final Long quizAttemptId, final String scoreDetails) {
@@ -455,14 +422,10 @@ public class QuizAttemptServiceImpl implements QuizAttemptService {
 
     /**
      * Marks a quiz attempt as abandoned by the user.
+     * Only IN_PROGRESS attempts can be abandoned.
      *
-     * <p>This method can only be called on attempts with "IN_PROGRESS" status.
-     * It automatically sets the finished timestamp to the current time.</p>
-     *
-     * @param quizAttemptId the unique identifier of the quiz attempt to abandon
-     * @return QuizAttemptOutDTO containing the abandoned attempt details
-     * @throws ResourceNotValidException if the quiz attempt ID is null or attempt cannot be abandoned
-     * @throws ResourceNotFoundException if the quiz attempt with the given ID is not found
+     * @param quizAttemptId the attempt ID to abandon
+     * @return QuizAttemptOutDTO the abandoned attempt
      */
     @Override
     public QuizAttemptOutDTO abandonAttempt(final Long quizAttemptId) {
@@ -489,15 +452,11 @@ public class QuizAttemptServiceImpl implements QuizAttemptService {
     }
 
     /**
-     * Marks a quiz attempt as timed out due to exceeding the time limit.
+     * Marks a quiz attempt as timed out due to time limit.
+     * Only IN_PROGRESS attempts can be timed out.
      *
-     * <p>This method can only be called on attempts with "IN_PROGRESS" status.
-     * It automatically sets the finished timestamp to the current time.</p>
-     *
-     * @param quizAttemptId the unique identifier of the quiz attempt to time out
-     * @return QuizAttemptOutDTO containing the timed out attempt details
-     * @throws ResourceNotValidException if the quiz attempt ID is null or attempt cannot be timed out
-     * @throws ResourceNotFoundException if the quiz attempt with the given ID is not found
+     * @param quizAttemptId the attempt ID to time out
+     * @return QuizAttemptOutDTO the timed out attempt
      */
     @Override
     public QuizAttemptOutDTO timeOutAttempt(final Long quizAttemptId) {
@@ -523,6 +482,14 @@ public class QuizAttemptServiceImpl implements QuizAttemptService {
         return convertToOutDTO(savedAttempt);
     }
 
+    /**
+     * Retrieves detailed user attempt information for a course.
+     * Includes responses, scores, and question details with optimized queries.
+     *
+     * @param userId the user ID
+     * @param courseId the course ID
+     * @return List<UserQuizAttemptDetailsOutDTO> detailed attempt data
+     */
     @Override
     public List<UserQuizAttemptDetailsOutDTO> getUserAttemptDetails(Long userId, Long courseId) {
         try {
@@ -685,7 +652,14 @@ public class QuizAttemptServiceImpl implements QuizAttemptService {
     }
 
     /**
-     * Convert UserResponse entity to UserResponseWithCorrectAnswerOutDTO
+     * Converts UserResponse entity to DTO with additional question data.
+     * Includes correct answers, question text, and options for comprehensive response data.
+     *
+     * @param userResponse the user response entity
+     * @param correctAnswersByQuestionId map of question ID to correct answer
+     * @param questionTextByQuestionId map of question ID to question text
+     * @param optionsByQuestionId map of question ID to options
+     * @return UserResponseWithCorrectAnswerOutDTO complete response data
      */
     private UserResponseWithCorrectAnswerOutDTO convertToUserResponseWithCorrectAnswerOutDTO(
             UserResponse userResponse, Map<Long, String> correctAnswersByQuestionId,
@@ -712,7 +686,11 @@ public class QuizAttemptServiceImpl implements QuizAttemptService {
     }
 
     /**
-     * Safely convert Timestamp or LocalDateTime objects to LocalDateTime
+     * Safely converts timestamp objects to LocalDateTime.
+     * Handles Timestamp and LocalDateTime object types with null safety.
+     *
+     * @param timestamp the timestamp object to convert
+     * @return LocalDateTime the converted timestamp or null
      */
     private LocalDateTime convertTimestampToLocalDateTime(Object timestamp) {
         if (timestamp == null) {
@@ -729,7 +707,11 @@ public class QuizAttemptServiceImpl implements QuizAttemptService {
     }
 
     /**
-     * Determine submission type based on attempt status
+     * Determines submission type based on attempt status.
+     * Maps attempt status to user-friendly submission types.
+     *
+     * @param status the attempt status
+     * @return String the submission type
      */
     private String determineSubmissionType(String status) {
         switch (status) {
@@ -747,11 +729,11 @@ public class QuizAttemptServiceImpl implements QuizAttemptService {
     }
 
     /**
-     * Checks if a quiz attempt exists with the given ID.
+     * Checks if a quiz attempt exists by ID.
+     * Validates existence without loading the full entity.
      *
-     * @param quizAttemptId the unique identifier of the quiz attempt to check
-     * @return true if the quiz attempt exists, false otherwise
-     * @throws ResourceNotValidException if the quiz attempt ID is null
+     * @param quizAttemptId the attempt ID to check
+     * @return boolean true if exists, false otherwise
      */
     @Override
     @Transactional(readOnly = true)
@@ -764,12 +746,12 @@ public class QuizAttemptServiceImpl implements QuizAttemptService {
     }
 
     /**
-     * Counts the total number of attempts made by a user for a specific quiz.
+     * Counts total attempts by a user for a specific quiz.
+     * Returns the number of attempts regardless of status.
      *
-     * @param userId the unique identifier of the user
-     * @param quizId the unique identifier of the quiz
-     * @return the total count of attempts made by the user for the quiz
-     * @throws ResourceNotValidException if either user ID or quiz ID is null
+     * @param userId the user ID
+     * @param quizId the quiz ID
+     * @return long the count of attempts
      */
     @Override
     @Transactional(readOnly = true)
@@ -783,6 +765,13 @@ public class QuizAttemptServiceImpl implements QuizAttemptService {
         return quizAttemptRepository.countByUserIdAndQuizId(userId, quizId);
     }
 
+    /**
+     * Retrieves detailed quiz attempt information grouped by user.
+     * Includes course details and comprehensive attempt data with responses.
+     *
+     * @param userId the user ID to get details for
+     * @return List<QuizAttemptDetailsByUserIDOutDTO> user's attempt details by course
+     */
     @Transactional(readOnly = true)
     public List<QuizAttemptDetailsByUserIDOutDTO> getQuizAttemptDetailsByUserID(Long userId) {
         List<Object[]> results = quizAttemptRepository.findQuizAttemptDetailsByUserId(userId);
@@ -822,6 +811,13 @@ public class QuizAttemptServiceImpl implements QuizAttemptService {
                 .collect(Collectors.toList());
     }
 
+    /**
+     * Retrieves detailed quiz attempt information grouped by course.
+     * Includes user details and comprehensive attempt data with responses.
+     *
+     * @param courseId the course ID to get details for
+     * @return List<QuizAttemptDetailsByCourseIDOutDTO> course's attempt details by user
+     */
     public List<QuizAttemptDetailsByCourseIDOutDTO> getQuizAttemptDetailsByCourseID(Long courseId) {
         List<Object[]> results = quizAttemptRepository.findQuizAttemptDetailsByCourseId(courseId);
 
@@ -911,18 +907,34 @@ public class QuizAttemptServiceImpl implements QuizAttemptService {
         return new ArrayList<>(userGroupedData.values());
     }
 
-    // Helper class to parse score_details JSON
+    /**
+     * Helper class for parsing score details from JSON.
+     * Contains score metrics and submission information.
+     */
     private static class ScoreDetails {
+        /** Total score achieved in the attempt */
         BigDecimal totalScore = BigDecimal.ZERO;
+        /** Maximum possible score for the quiz */
         BigDecimal maxPossibleScore = BigDecimal.ZERO;
+        /** Percentage score achieved */
         BigDecimal percentageScore = BigDecimal.ZERO;
+        /** Number of correct answers */
         Long correctAnswers = 0L;
+        /** Total number of questions */
         Long totalQuestions = 0L;
+        /** Type of submission (manual, auto, etc.) */
         String submissionType = "MANUAL";
+        /** Timestamp when attempt was submitted */
         LocalDateTime submittedAt;
     }
 
-    // Helper method to safely convert various timestamp types to LocalDateTime
+    /**
+     * Safely converts various timestamp types to LocalDateTime.
+     * Handles Timestamp, String, and Long timestamp formats.
+     *
+     * @param value the timestamp value to convert
+     * @return LocalDateTime converted timestamp or null
+     */
     private LocalDateTime convertToLocalDateTime(Object value) {
         if (value == null) {
             return null;
@@ -952,7 +964,13 @@ public class QuizAttemptServiceImpl implements QuizAttemptService {
         return null;
     }
 
-    // Helper method to parse score_details JSON
+    /**
+     * Parses score details from JSON string to ScoreDetails object.
+     * Handles malformed JSON gracefully with default values.
+     *
+     * @param scoreDetailsJson the JSON string to parse
+     * @return ScoreDetails parsed score information
+     */
     private ScoreDetails parseScoreDetails(String scoreDetailsJson) {
         ScoreDetails details = new ScoreDetails();
 
@@ -984,6 +1002,13 @@ public class QuizAttemptServiceImpl implements QuizAttemptService {
         return details;
     }
 
+    /**
+     * Builds CourseOutDTO from database query result row.
+     * Maps course fields from Object array to structured DTO.
+     *
+     * @param row the query result row containing course data
+     * @return CourseOutDTO the course information
+     */
     private CourseOutDTO buildCourseOutDTO(Object[] row) {
         return CourseOutDTO.builder()
                 .courseId(((Number) row[23]).longValue())        // c.course_id - index 23
@@ -997,6 +1022,13 @@ public class QuizAttemptServiceImpl implements QuizAttemptService {
                 .build();
     }
 
+    /**
+     * Builds UserQuizAttemptDetailsOutDTO from grouped attempt data.
+     * Processes attempt rows to create comprehensive attempt details with statistics.
+     *
+     * @param attemptRows the list of rows for a single attempt
+     * @return UserQuizAttemptDetailsOutDTO complete attempt details
+     */
     private UserQuizAttemptDetailsOutDTO buildUserQuizAttemptDetailsOutDTO(List<Object[]> attemptRows) {
         Object[] firstRow = attemptRows.get(0);
 
@@ -1054,6 +1086,13 @@ public class QuizAttemptServiceImpl implements QuizAttemptService {
                 .build();
     }
 
+    /**
+     * Builds UserResponseWithCorrectAnswerOutDTO from database row.
+     * Maps user response fields including question details and correct answers.
+     *
+     * @param row the query result row containing response data
+     * @return UserResponseWithCorrectAnswerOutDTO complete response information
+     */
     private UserResponseWithCorrectAnswerOutDTO buildUserResponseWithCorrectAnswerOutDTO(Object[] row) {
         return UserResponseWithCorrectAnswerOutDTO.builder()
                 .responseId(((Number) row[10]).longValue())       // ur.response_id
@@ -1072,14 +1111,11 @@ public class QuizAttemptServiceImpl implements QuizAttemptService {
     }
 
     /**
-     * Converts a QuizAttempt entity to a QuizAttemptOutDTO for external representation.
+     * Converts QuizAttempt entity to QuizAttemptOutDTO.
+     * Maps all entity fields to corresponding DTO fields for external representation.
      *
-     * <p>This method performs a field-by-field mapping from the entity to the DTO,
-     * ensuring that all relevant data is transferred while maintaining proper
-     * separation between internal entity structure and external API contracts.</p>
-     *
-     * @param quizAttempt the QuizAttempt entity to convert
-     * @return QuizAttemptOutDTO containing the converted data
+     * @param quizAttempt the entity to convert
+     * @return QuizAttemptOutDTO the converted DTO
      */
     private QuizAttemptOutDTO convertToOutDTO(final QuizAttempt quizAttempt) {
         QuizAttemptOutDTO dto = new QuizAttemptOutDTO();
@@ -1097,18 +1133,11 @@ public class QuizAttemptServiceImpl implements QuizAttemptService {
     }
 
     /**
-     * Validates if the given status is one of the allowed quiz attempt statuses.
+     * Validates if the given status is allowed for quiz attempts.
+     * Checks against predefined valid status values.
      *
-     * <p>Valid statuses are:</p>
-     * <ul>
-     *   <li>IN_PROGRESS - Quiz is currently being taken</li>
-     *   <li>COMPLETED - Quiz has been successfully completed</li>
-     *   <li>ABANDONED - Quiz was abandoned by the user</li>
-     *   <li>TIMED_OUT - Quiz exceeded the time limit</li>
-     * </ul>
-     *
-     * @param status the status string to validate
-     * @return true if the status is valid, false otherwise
+     * @param status the status to validate
+     * @return boolean true if valid, false otherwise
      */
     private boolean isValidStatus(final String status) {
         return status.equals("IN_PROGRESS")
@@ -1117,15 +1146,12 @@ public class QuizAttemptServiceImpl implements QuizAttemptService {
     }
 
     /**
-     * Validates if a status transition from the current status to the new status is valid.
+     * Validates if status transition is allowed based on business rules.
+     * Prevents changes from final states (COMPLETED, ABANDONED, TIMED_OUT).
      *
-     * <p>Business rule: Once a quiz attempt is marked as COMPLETED, ABANDONED, or TIMED_OUT,
-     * the status cannot be changed to any other state. This ensures data integrity and
-     * prevents manipulation of completed attempts.</p>
-     *
-     * @param currentStatus the current status of the quiz attempt
-     * @param newStatus     the new status to transition to
-     * @return true if the transition is invalid, false if it's valid
+     * @param currentStatus the current attempt status
+     * @param newStatus the desired new status
+     * @return boolean true if transition is invalid, false if valid
      */
     private boolean isInvalidStatusTransition(final String currentStatus, final String newStatus) {
         // Once completed, abandoned, or timed out, status cannot be changed

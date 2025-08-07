@@ -79,7 +79,7 @@ public final class CommonConstants {
     /**
      * Constant representing the enrollment type bundle to group.
      */
-    public static final String  GROUP_BUNDLE_ENROL = "GROUP_BUNDLE";
+    public static final String GROUP_BUNDLE_ENROL = "GROUP_BUNDLE";
 
     private CommonConstants() {
         // Prevent instantiation

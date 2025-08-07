@@ -81,13 +81,13 @@ public class GroupInDTO {
     /**
      * Constructs a new {@code GroupInDTO} instance with the provided values.
      *
-     * @param teamAlpha       the name of the group or team.
-     * @param l               the ID of the group (purpose should be clarified).
-     * @param l1              the ID of the owner or creator (purpose should be clarified).
-     * @param list            the list of user IDs or members associated with the group.
-     * @param list1           the list of admin IDs or roles (purpose should be clarified).
-     * @param localDateTime   the creation date and time of the group.
-     * @param now             the current date and time for reference or modification.
+     * @param teamAlpha     the name of the group or team.
+     * @param l             the ID of the group (purpose should be clarified).
+     * @param l1            the ID of the owner or creator (purpose should be clarified).
+     * @param list          the list of user IDs or members associated with the group.
+     * @param list1         the list of admin IDs or roles (purpose should be clarified).
+     * @param localDateTime the creation date and time of the group.
+     * @param now           the current date and time for reference or modification.
      * @param <T>
      */
     public <T> GroupInDTO(final String teamAlpha, final long l, final long l1, final List<T> list, final List<T> list1,

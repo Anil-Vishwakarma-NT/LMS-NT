@@ -58,13 +58,13 @@ public class RsaDecryptUtil {
      * @param encryptedText the Base64-encoded RSA-encrypted text to decrypt.
      *                      Must not be null or empty.
      * @return the decrypted text as a UTF-8 string
-     * @throws RuntimeException if decryption fails due to:
-     *                         <ul>
-     *                           <li>Invalid private key format</li>
-     *                           <li>Invalid encrypted text format</li>
-     *                           <li>Cryptographic operation failures</li>
-     *                           <li>Base64 decoding errors</li>
-     *                         </ul>
+     * @throws RuntimeException         if decryption fails due to:
+     *                                  <ul>
+     *                                    <li>Invalid private key format</li>
+     *                                    <li>Invalid encrypted text format</li>
+     *                                    <li>Cryptographic operation failures</li>
+     *                                    <li>Base64 decoding errors</li>
+     *                                  </ul>
      * @throws IllegalArgumentException if encryptedText is null or empty
      */
     public String decrypt(final String encryptedText) {

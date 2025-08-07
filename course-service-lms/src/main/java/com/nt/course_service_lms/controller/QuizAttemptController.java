@@ -6,7 +6,6 @@ import com.nt.course_service_lms.dto.inDTO.QuizAttemptUpdateInDTO;
 import com.nt.course_service_lms.dto.outDTO.QuizAttemptDetailsByCourseIDOutDTO;
 import com.nt.course_service_lms.dto.outDTO.QuizAttemptDetailsByUserIDOutDTO;
 import com.nt.course_service_lms.dto.outDTO.QuizAttemptOutDTO;
-import com.nt.course_service_lms.dto.outDTO.QuizSubmissionResultOutDTO;
 import com.nt.course_service_lms.dto.outDTO.StandardResponseOutDTO;
 import com.nt.course_service_lms.dto.outDTO.UserQuizAttemptDetailsOutDTO;
 import com.nt.course_service_lms.service.QuizAttemptService;
@@ -18,7 +17,6 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PageableDefault;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.access.method.P;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -305,7 +303,7 @@ public class QuizAttemptController {
     @GetMapping("/user/{userId}/quiz/course/{courseId}")
     @PreAuthorize("hasAnyRole('ADMIN', 'EMPLOYEE')")
     public StandardResponseOutDTO<List<UserQuizAttemptDetailsOutDTO>> getUserAttemptDetails(@PathVariable Long userId, @PathVariable Long courseId) {
-        List<UserQuizAttemptDetailsOutDTO> quizSubmissionResultOutDTOS = quizAttemptService.getUserAttemptDetails(userId,courseId);
+        List<UserQuizAttemptDetailsOutDTO> quizSubmissionResultOutDTOS = quizAttemptService.getUserAttemptDetails(userId, courseId);
         StandardResponseOutDTO<List<UserQuizAttemptDetailsOutDTO>> standardResponseOutDTO = StandardResponseOutDTO.success(quizSubmissionResultOutDTOS, "Fetched user attempt details");
         return standardResponseOutDTO;
     }

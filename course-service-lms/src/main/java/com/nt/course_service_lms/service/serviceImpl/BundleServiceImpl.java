@@ -63,10 +63,10 @@ public class BundleServiceImpl implements BundleService {
      * @param bundleInDTO the DTO containing the bundle details
      * @return the created {@link BundleOutDTO}
      * @throws ResourceAlreadyExistsException if a bundle with the same name already exists
-     * @throws RuntimeException if there is a general error during bundle creation
+     * @throws RuntimeException               if there is a general error during bundle creation
      */
     @Override
-    public StandardResponseOutDTO<BundleOutDTO> createBundle(final BundleInDTO bundleInDTO) {
+    public BundleOutDTO createBundle(final BundleInDTO bundleInDTO) {
         try {
             log.info("Attempting to create a new bundle: {}", bundleInDTO.getBundleName());
 
@@ -84,7 +84,7 @@ public class BundleServiceImpl implements BundleService {
             log.info("Bundle '{}' created successfully with ID: {}", savedBundle.getBundleName(), savedBundle.getBundleId());
 
             // Convert entity to output DTO
-            return StandardResponseOutDTO.success(bundleConverter.toOutDTO(savedBundle), null);
+            return bundleConverter.toOutDTO(savedBundle);
         } catch (ResourceAlreadyExistsException e) {
             throw e;
         } catch (Exception e) {
@@ -320,15 +320,15 @@ public class BundleServiceImpl implements BundleService {
 
     /**
      * Get bundle By ids.
+     *
      * @param bundleIds
      * @return bunldeOutDTO
      */
     @Override
-    public StandardResponseOutDTO<List<BundleOutDTO>> getBundlesByIds(List<Long> bundleIds) {
-        List <Bundle> bundles = bundleRepository.findByBundleIdIn(bundleIds);
-        BundleConverter bundleConverter = new BundleConverter();
+    public StandardResponseOutDTO<List<BundleOutDTO>> getBundlesByIds(final List<Long> bundleIds) {
+        List<Bundle> bundles = bundleRepository.findByBundleIdIn(bundleIds);
         List<BundleOutDTO> bundleInfo = bundles.stream().map(bundleConverter::toOutDTO).collect(Collectors.toList());
-        return StandardResponseOutDTO.success(bundleInfo,"Bundle info retrieved.");
+        return StandardResponseOutDTO.success(bundleInfo, "Bundle info retrieved.");
 
     }
 }

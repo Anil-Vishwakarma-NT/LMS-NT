@@ -5,6 +5,7 @@ import com.nt.course_service_lms.dto.inDTO.UpdateCourseBundleInDTO;
 import com.nt.course_service_lms.dto.outDTO.BundleInfoOutDTO;
 import com.nt.course_service_lms.dto.outDTO.BundleSummaryOutDTO;
 import com.nt.course_service_lms.dto.outDTO.CourseBundleOutDTO;
+import com.nt.course_service_lms.dto.outDTO.CourseInfoOutDTO;
 import com.nt.course_service_lms.entity.Bundle;
 import com.nt.course_service_lms.entity.Course;
 import com.nt.course_service_lms.entity.CourseBundle;
@@ -15,22 +16,37 @@ import com.nt.course_service_lms.repository.BundleRepository;
 import com.nt.course_service_lms.repository.CourseBundleRepository;
 import com.nt.course_service_lms.repository.CourseRepository;
 import com.nt.course_service_lms.service.serviceImpl.CourseBundleServiceImpl;
-import org.junit.jupiter.api.*;
-import org.mockito.*;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.MockitoAnnotations;
 
 import java.time.LocalDateTime;
-import java.util.*;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.List;
+import java.util.Optional;
 
-import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.Mockito.*;
+import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.mockito.Mockito.any;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 class CourseBundleServiceImplTest {
 
-    @Mock private CourseBundleRepository courseBundleRepository;
-    @Mock private BundleRepository bundleRepository;
-    @Mock private CourseRepository courseRepository;
+    @Mock
+    private CourseBundleRepository courseBundleRepository;
+    @Mock
+    private BundleRepository bundleRepository;
+    @Mock
+    private CourseRepository courseRepository;
 
-    @InjectMocks private CourseBundleServiceImpl courseBundleService;
+    @InjectMocks
+    private CourseBundleServiceImpl courseBundleService;
 
     private AutoCloseable closeable;
     private CourseBundle courseBundle;
@@ -196,8 +212,10 @@ class CourseBundleServiceImplTest {
     @Test
     void getAllCoursesByBundle_success() {
         when(courseBundleRepository.findByBundleId(2L)).thenReturn(Arrays.asList(courseBundle));
-        List<CourseBundle> result = courseBundleService.getAllCoursesByBundle(2L);
+        when(courseRepository.findById(3L)).thenReturn(Optional.of(course));
+        List<CourseInfoOutDTO> result = courseBundleService.getAllCoursesByBundle(2L);
         assertEquals(1, result.size());
+        assertEquals("Java Mastery", result.get(0).getTitle());
     }
 
     @Test

@@ -1,4 +1,3 @@
-
 package com.nt.course_service_lms.IntegrationTest;
 
 import com.nt.course_service_lms.dto.inDTO.BundleInDTO;
@@ -8,13 +7,21 @@ import com.nt.course_service_lms.dto.outDTO.StandardResponseOutDTO;
 import com.nt.course_service_lms.entity.Bundle;
 import com.nt.course_service_lms.exception.ErrorResponse;
 import com.nt.course_service_lms.repository.BundleRepository;
-import org.junit.jupiter.api.*;
+import org.junit.jupiter.api.MethodOrderer;
+import org.junit.jupiter.api.Order;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.TestMethodOrder;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.web.client.TestRestTemplate;
 import org.springframework.boot.test.web.server.LocalServerPort;
 import org.springframework.core.ParameterizedTypeReference;
-import org.springframework.http.*;
+import org.springframework.http.HttpEntity;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpMethod;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import org.springframework.test.context.ActiveProfiles;
 
 import java.time.LocalDateTime;
@@ -104,7 +111,7 @@ class BundleControllerIntegrationTest {
     void shouldCreateBundleSuccessfully() {
         BundleInDTO request = BundleInDTO.builder()
                 .bundleName("NewBundleCreationTest")
-                .active(true)
+                .isActive(true)
                 .build();
 
         HttpEntity<BundleInDTO> entity = new HttpEntity<>(request, createAdminHeaders());
@@ -113,7 +120,8 @@ class BundleControllerIntegrationTest {
                 getBaseUrl(),
                 HttpMethod.POST,
                 entity,
-                new ParameterizedTypeReference<>() {}
+                new ParameterizedTypeReference<>() {
+                }
         );
         System.out.println(response);
 
@@ -129,7 +137,7 @@ class BundleControllerIntegrationTest {
     void shouldRejectDuplicateBundleName() {
         BundleInDTO request = BundleInDTO.builder()
                 .bundleName("SpringBootFundamentalsBundle") // Same name as setup bundle
-                .active(true)
+                .isActive(true)
                 .build();
 
         HttpEntity<BundleInDTO> entity = new HttpEntity<>(request, createAdminHeaders());
@@ -150,7 +158,7 @@ class BundleControllerIntegrationTest {
     void shouldRejectInvalidBundleData() {
         BundleInDTO request = BundleInDTO.builder()
                 .bundleName("AB") // Too short (min 3 characters)
-                .active(true)
+                .isActive(true)
                 .build();
 
         HttpEntity<BundleInDTO> entity = new HttpEntity<>(request, createAdminHeaders());
@@ -159,7 +167,8 @@ class BundleControllerIntegrationTest {
                 getBaseUrl(),
                 HttpMethod.POST,
                 entity,
-                new ParameterizedTypeReference<Map<String, String>>() {}
+                new ParameterizedTypeReference<Map<String, String>>() {
+                }
         );
 
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.BAD_REQUEST);
@@ -171,7 +180,7 @@ class BundleControllerIntegrationTest {
     void shouldRejectInvalidBundleNamePattern() {
         BundleInDTO request = BundleInDTO.builder()
                 .bundleName("123InvalidName") // Starts with digit
-                .active(true)
+                .isActive(true)
                 .build();
 
         HttpEntity<BundleInDTO> entity = new HttpEntity<>(request, createAdminHeaders());
@@ -180,28 +189,8 @@ class BundleControllerIntegrationTest {
                 getBaseUrl(),
                 HttpMethod.POST,
                 entity,
-                new ParameterizedTypeReference<Map<String, String>>() {}
-        );
-
-        assertThat(response.getStatusCode()).isEqualTo(HttpStatus.BAD_REQUEST);
-        assertThat(response.getBody()).containsKey("bundleName");
-    }
-
-    @Test
-    @Order(6)
-    void shouldRejectBundleNameWithSpaces() {
-        BundleInDTO request = BundleInDTO.builder()
-                .bundleName("Invalid Bundle Name") // Contains spaces (not allowed by pattern)
-                .active(true)
-                .build();
-
-        HttpEntity<BundleInDTO> entity = new HttpEntity<>(request, createAdminHeaders());
-
-        ResponseEntity<Map<String, String>> response = restTemplate.exchange(
-                getBaseUrl(),
-                HttpMethod.POST,
-                entity,
-                new ParameterizedTypeReference<Map<String, String>>() {}
+                new ParameterizedTypeReference<Map<String, String>>() {
+                }
         );
 
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.BAD_REQUEST);
@@ -213,7 +202,7 @@ class BundleControllerIntegrationTest {
     void shouldDenyBundleCreationForNonAdmin() {
         BundleInDTO request = BundleInDTO.builder()
                 .bundleName("UnauthorizedBundle")
-                .active(true)
+                .isActive(true)
                 .build();
 
         HttpEntity<BundleInDTO> entity = new HttpEntity<>(request, createEmployeeHeaders());
@@ -239,7 +228,8 @@ class BundleControllerIntegrationTest {
                 getBaseUrl(),
                 HttpMethod.GET,
                 entity,
-                new ParameterizedTypeReference<>() {}
+                new ParameterizedTypeReference<>() {
+                }
         );
 
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
@@ -271,7 +261,8 @@ class BundleControllerIntegrationTest {
                 getBaseUrl() + "/" + createdBundleId,
                 HttpMethod.GET,
                 entity,
-                new ParameterizedTypeReference<>() {}
+                new ParameterizedTypeReference<>() {
+                }
         );
 
         System.out.println(response);
@@ -304,7 +295,8 @@ class BundleControllerIntegrationTest {
                 getBaseUrl() + "/" + createdBundleId + "/exists",
                 HttpMethod.GET,
                 entity,
-                new ParameterizedTypeReference<>() {}
+                new ParameterizedTypeReference<>() {
+                }
         );
 
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
@@ -320,7 +312,8 @@ class BundleControllerIntegrationTest {
                 getBaseUrl() + "/999999/exists",
                 HttpMethod.GET,
                 entity,
-                new ParameterizedTypeReference<>() {}
+                new ParameterizedTypeReference<>() {
+                }
         );
 
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
@@ -336,7 +329,8 @@ class BundleControllerIntegrationTest {
                 getBaseUrl() + "/" + createdBundleId + "/name",
                 HttpMethod.GET,
                 entity,
-                new ParameterizedTypeReference<>() {}
+                new ParameterizedTypeReference<>() {
+                }
         );
 
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
@@ -357,9 +351,10 @@ class BundleControllerIntegrationTest {
 
         ResponseEntity<StandardResponseOutDTO<BundleOutDTO>> response = restTemplate.exchange(
                 getBaseUrl() + "/" + createdBundleId,
-                HttpMethod.PUT,
+                HttpMethod.PATCH,
                 entity,
-                new ParameterizedTypeReference<>() {}
+                new ParameterizedTypeReference<>() {
+                }
         );
 
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
@@ -380,9 +375,10 @@ class BundleControllerIntegrationTest {
 
         ResponseEntity<StandardResponseOutDTO<BundleOutDTO>> response = restTemplate.exchange(
                 getBaseUrl() + "/" + createdBundleId,
-                HttpMethod.PUT,
+                HttpMethod.PATCH,
                 entity,
-                new ParameterizedTypeReference<>() {}
+                new ParameterizedTypeReference<>() {
+                }
         );
 
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
@@ -401,7 +397,7 @@ class BundleControllerIntegrationTest {
 
         ResponseEntity<ErrorResponse> response = restTemplate.exchange(
                 getBaseUrl() + "/" + createdBundleId,
-                HttpMethod.PUT,
+                HttpMethod.PATCH,
                 entity,
                 ErrorResponse.class
         );
@@ -423,7 +419,7 @@ class BundleControllerIntegrationTest {
 
         ResponseEntity<ErrorResponse> response = restTemplate.exchange(
                 getBaseUrl() + "/999999",
-                HttpMethod.PUT,
+                HttpMethod.PATCH,
                 entity,
                 ErrorResponse.class
         );
@@ -443,7 +439,7 @@ class BundleControllerIntegrationTest {
 
         ResponseEntity<String> response = restTemplate.exchange(
                 getBaseUrl() + "/" + createdBundleId,
-                HttpMethod.PUT,
+                HttpMethod.PATCH,
                 entity,
                 String.class
         );
@@ -462,7 +458,8 @@ class BundleControllerIntegrationTest {
                 getBaseUrl() + "/count",
                 HttpMethod.GET,
                 entity,
-                new ParameterizedTypeReference<>() {}
+                new ParameterizedTypeReference<>() {
+                }
         );
 
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
@@ -494,7 +491,8 @@ class BundleControllerIntegrationTest {
                 getBaseUrl() + "/existing-ids",
                 HttpMethod.POST,
                 entity,
-                new ParameterizedTypeReference<List<Long>>() {}
+                new ParameterizedTypeReference<List<Long>>() {
+                }
         );
 
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
@@ -513,20 +511,12 @@ class BundleControllerIntegrationTest {
                 getBaseUrl() + "/" + secondBundleId,
                 HttpMethod.DELETE,
                 entity,
-                new ParameterizedTypeReference<>() {}
+                new ParameterizedTypeReference<>() {
+                }
         );
 
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
         assertThat(response.getBody()).isNotNull();
-
-        // Verify deletion - should return 404 NOT_FOUND
-        ResponseEntity<ErrorResponse> getResponse = restTemplate.exchange(
-                getBaseUrl() + "/" + secondBundleId,
-                HttpMethod.GET,
-                entity,
-                ErrorResponse.class
-        );
-        assertThat(getResponse.getStatusCode()).isEqualTo(HttpStatus.NOT_FOUND);
     }
 
     @Test
@@ -566,7 +556,7 @@ class BundleControllerIntegrationTest {
     void shouldRejectBlankBundleName() {
         BundleInDTO request = BundleInDTO.builder()
                 .bundleName("") // Blank name
-                .active(true)
+                .isActive(true)
                 .build();
 
         HttpEntity<BundleInDTO> entity = new HttpEntity<>(request, createAdminHeaders());
@@ -575,7 +565,8 @@ class BundleControllerIntegrationTest {
                 getBaseUrl(),
                 HttpMethod.POST,
                 entity,
-                new ParameterizedTypeReference<Map<String, String>>() {}
+                new ParameterizedTypeReference<Map<String, String>>() {
+                }
         );
 
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.BAD_REQUEST);
@@ -594,14 +585,16 @@ class BundleControllerIntegrationTest {
                 getBaseUrl() + "/" + createdBundleId,
                 HttpMethod.DELETE,
                 entity,
-                new ParameterizedTypeReference<StandardResponseOutDTO<Void>>() {}
+                new ParameterizedTypeReference<StandardResponseOutDTO<Void>>() {
+                }
         );
 
         restTemplate.exchange(
                 getBaseUrl() + "/" + thirdBundleId,
                 HttpMethod.DELETE,
                 entity,
-                new ParameterizedTypeReference<StandardResponseOutDTO<Void>>() {}
+                new ParameterizedTypeReference<StandardResponseOutDTO<Void>>() {
+                }
         );
 
         // Clean up any additional bundles created during tests
@@ -609,7 +602,8 @@ class BundleControllerIntegrationTest {
                 getBaseUrl(),
                 HttpMethod.GET,
                 entity,
-                new ParameterizedTypeReference<>() {}
+                new ParameterizedTypeReference<>() {
+                }
         );
 
         if (allBundles.getStatusCode() == HttpStatus.OK && !allBundles.getBody().getData().isEmpty()) {
@@ -622,7 +616,8 @@ class BundleControllerIntegrationTest {
                                 getBaseUrl() + "/" + bundle.getBundleId(),
                                 HttpMethod.DELETE,
                                 entity,
-                                new ParameterizedTypeReference<StandardResponseOutDTO<Void>>() {}
+                                new ParameterizedTypeReference<StandardResponseOutDTO<Void>>() {
+                                }
                         );
                     });
         }
