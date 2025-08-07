@@ -309,7 +309,8 @@ class CourseBundleControllerIntegrationTest {
 
         HttpEntity<CourseBundleInDTO> createEntity = new HttpEntity<>(request, createAdminHeaders());
         restTemplate.exchange(getBaseUrl(), HttpMethod.POST, createEntity,
-                new ParameterizedTypeReference<StandardResponseOutDTO<CourseBundle>>() {});
+                new ParameterizedTypeReference<StandardResponseOutDTO<CourseBundle>>() {
+                });
 
         HttpEntity<Void> entity = new HttpEntity<>(createAdminHeaders());
 
@@ -459,7 +460,8 @@ class CourseBundleControllerIntegrationTest {
         HttpEntity<CourseBundleInDTO> createEntity = new HttpEntity<>(request, createAdminHeaders());
         ResponseEntity<StandardResponseOutDTO<CourseBundle>> createResponse = restTemplate.exchange(
                 getBaseUrl(), HttpMethod.POST, createEntity,
-                new ParameterizedTypeReference<StandardResponseOutDTO<CourseBundle>>() {});
+                new ParameterizedTypeReference<StandardResponseOutDTO<CourseBundle>>() {
+                });
 
         Long courseBundleToDelete = createResponse.getBody().getData().getCourseBundleId();
 
@@ -734,13 +736,23 @@ class CourseBundleControllerIntegrationTest {
         courseBundleRepository.deleteAll();
 
         // Clean up courses
-        if (testCourseId1 != null) courseRepository.deleteById(testCourseId1);
-        if (testCourseId2 != null) courseRepository.deleteById(testCourseId2);
-        if (testCourseId3 != null) courseRepository.deleteById(testCourseId3);
+        if (testCourseId1 != null) {
+            courseRepository.deleteById(testCourseId1);
+        }
+        if (testCourseId2 != null) {
+            courseRepository.deleteById(testCourseId2);
+        }
+        if (testCourseId3 != null) {
+            courseRepository.deleteById(testCourseId3);
+        }
 
         // Clean up bundles
-        if (testBundleId1 != null) bundleRepository.deleteById(testBundleId1);
-        if (testBundleId2 != null) bundleRepository.deleteById(testBundleId2);
+        if (testBundleId1 != null) {
+            bundleRepository.deleteById(testBundleId1);
+        }
+        if (testBundleId2 != null) {
+            bundleRepository.deleteById(testBundleId2);
+        }
 
         System.out.println("Test data cleanup completed");
     }

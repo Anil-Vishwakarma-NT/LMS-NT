@@ -321,6 +321,10 @@ public class AdminServiceImpl implements AdminService {
         }
     }
 
+    /**
+     * Fetch admin dashboard statistics.
+     * @return dto containing admin dashboard statistics
+     */
     @Override
     public StandardResponseOutDTO<AdminDashboardStatsOutDTO> getAdminStats() {
         log.info("Fetching admin dashboard statistics");

@@ -74,54 +74,60 @@ public class TestAuthenticationFilter extends OncePerRequestFilter {
                                     HttpServletResponse response,
                                     FilterChain filterChain) throws ServletException, IOException {
 
-        log.debug("Processing test authentication for: {}", request.getRequestURI());
-
-        // Check for role-specific headers to control authentication
         String testRole = request.getHeader("X-Test-Role");
-        String testUser = request.getHeader("X-Test-User");
 
-        List<SimpleGrantedAuthority> authorities;
-        String userId;
-        String userEmail;
-        String fullName;
+        // Only set authentication if the test role header is provided
+        if (testRole != null && !testRole.isBlank()) {
+            log.debug("Processing test authentication for role: {}", testRole);
 
-        // Set authentication based on test role (only ADMIN and EMPLOYEE supported)
-        if ("EMPLOYEE".equals(testRole)) {
-            authorities = List.of(new SimpleGrantedAuthority("ROLE_EMPLOYEE"));
-            userId = "test-employee-id";
-            userEmail = "employee@example.com";
-            fullName = testUser != null ? testUser : "Test Employee";
+            String testUser = request.getHeader("X-Test-User");
+            List<SimpleGrantedAuthority> authorities;
+            String userId;
+            String userEmail;
+            String fullName;
+
+            // Set authentication based on the provided role
+            if ("EMPLOYEE".equals(testRole)) {
+                authorities = List.of(new SimpleGrantedAuthority("ROLE_EMPLOYEE"));
+                userId = "test-employee-id";
+                userEmail = "employee@example.com";
+                fullName = testUser != null ? testUser : "Test Employee";
+            } else if ("USER".equals(testRole)) {
+                authorities = List.of(new SimpleGrantedAuthority("ROLE_USER"));
+                userId = "test-user-id";
+                userEmail = "user@example.com";
+                fullName = testUser != null ? testUser : "Test User";
+            } else {
+                // Default to ADMIN for any other non-blank role
+                authorities = List.of(new SimpleGrantedAuthority("ROLE_ADMIN"));
+                userId = "test-admin-id";
+                userEmail = "admin@example.com";
+                fullName = testUser != null ? testUser : "Test Admin";
+            }
+
+            ServicePrincipal principal = new ServicePrincipal.Builder()
+                    .serviceId("test-service")
+                    .userId(userId)
+                    .userEmail(userEmail)
+                    .userFullName(fullName)
+                    .originalTokenType("SERVICE")
+                    .build();
+
+            UsernamePasswordAuthenticationToken authentication =
+                    new UsernamePasswordAuthenticationToken(principal, null, authorities);
+
+            SecurityContextHolder.getContext().setAuthentication(authentication);
+
+            try {
+                filterChain.doFilter(request, response);
+            } finally {
+                SecurityContextHolder.clearContext();
+            }
         } else {
-            // Default ADMIN role
-            authorities = List.of(new SimpleGrantedAuthority("ROLE_ADMIN"));
-            userId = "test-admin-id";
-            userEmail = "admin@example.com";
-            fullName = testUser != null ? testUser : "Test Admin";
-        }
-
-        // Create ServicePrincipal
-        ServicePrincipal principal = new ServicePrincipal.Builder()
-                .serviceId("test-service")
-                .userId(userId)
-                .userEmail(userEmail)
-                .userFullName(fullName)
-                .originalTokenType("SERVICE")
-                .build();
-
-        // Set authentication in SecurityContext
-        UsernamePasswordAuthenticationToken authentication =
-                new UsernamePasswordAuthenticationToken(principal, null, authorities);
-
-        SecurityContextHolder.getContext().setAuthentication(authentication);
-
-        log.debug("Set test authentication - User: {}, Role: {}, Authorities: {}",
-                userEmail, testRole, authorities);
-
-        try {
+            // If no role header, proceed without setting authentication
+            // This allows SecurityConfig to handle it as an unauthenticated request
+            log.debug("No X-Test-Role header found, proceeding as unauthenticated.");
             filterChain.doFilter(request, response);
-        } finally {
-            // Clear authentication after request
-            SecurityContextHolder.clearContext();
         }
     }
 

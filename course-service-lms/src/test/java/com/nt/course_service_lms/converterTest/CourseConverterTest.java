@@ -29,7 +29,7 @@ class CourseConverterTest {
         dto.setOwnerId(1L);
         dto.setDescription("description");
         dto.setCourseLevel("BEGINNER");
-        dto.setActive(true);
+        dto.setIsActive(true);
 
         Course entity = CourseConvertors.courseInDTOToCourse(dto);
 
@@ -150,7 +150,7 @@ class CourseConverterTest {
         assertThat(dto.getOwnerId()).isEqualTo(22L);
         assertThat(dto.getDescription()).isEqualTo("Backend Dev");
         assertThat(dto.getCourseLevel()).isEqualTo("BEGINNER");
-        assertThat(dto.isActive()).isFalse();
+        assertThat(dto.getIsActive()).isFalse();
     }
 
     @Test

@@ -53,6 +53,10 @@ public interface CourseRepository extends JpaRepository<Course, Long> {
     @Query("SELECT c.courseId FROM Course c WHERE c.courseId IN :courseIds")
     List<Long> findExistingIds(@Param("courseIds") List<Long> courseIds);
 
+    /**
+     * find recent data for dashboard.
+     * @return recent courses and bundles
+     */
     @Query(value = """
             SELECT * FROM (
                 SELECT
@@ -95,6 +99,11 @@ public interface CourseRepository extends JpaRepository<Course, Long> {
     List<Object[]> findRecentDashboardData();
 
 
+    /**
+     * fina existing courses by Ids.
+     * @param courseIds
+     * @return course of given Ids
+     */
     List<Course> findByCourseIdIn(List<Long> courseIds);
 
 }

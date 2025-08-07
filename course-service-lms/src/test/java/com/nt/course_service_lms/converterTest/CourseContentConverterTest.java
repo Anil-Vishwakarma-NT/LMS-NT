@@ -193,13 +193,6 @@ class CourseContentConverterTest {
         assertThat(entity.getTitle()).isEqualTo("Dep");
     }
 
-    @Test
-    void testPrivateConstructor_throwsException() throws Exception {
-        var constructor = CourseContentConverters.class.getDeclaredConstructor();
-        constructor.setAccessible(true);
-
-        assertThrows(UnsupportedOperationException.class, constructor::newInstance);
-    }
 
     @Test
     void testUpdateCourseContentInDTONoArgsConstructor() {

@@ -325,9 +325,8 @@ public class BundleServiceImpl implements BundleService {
      * @return bunldeOutDTO
      */
     @Override
-    public StandardResponseOutDTO<List<BundleOutDTO>> getBundlesByIds(List<Long> bundleIds) {
+    public StandardResponseOutDTO<List<BundleOutDTO>> getBundlesByIds(final List<Long> bundleIds) {
         List<Bundle> bundles = bundleRepository.findByBundleIdIn(bundleIds);
-        BundleConverter bundleConverter = new BundleConverter();
         List<BundleOutDTO> bundleInfo = bundles.stream().map(bundleConverter::toOutDTO).collect(Collectors.toList());
         return StandardResponseOutDTO.success(bundleInfo, "Bundle info retrieved.");
 

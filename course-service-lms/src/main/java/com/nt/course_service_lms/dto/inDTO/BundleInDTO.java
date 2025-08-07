@@ -85,7 +85,7 @@ public class BundleInDTO {
     }
 
     /**
-     * generates hashcode
+     * generates hashcode.
      *
      * @return int
      */

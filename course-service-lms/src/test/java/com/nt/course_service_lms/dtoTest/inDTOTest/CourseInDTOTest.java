@@ -116,7 +116,7 @@ class CourseInDTOTest {
                 .ownerId(5L)
                 .description("Spring Boot for beginners")
                 .courseLevel("BEGINNER")
-                .Active(true)
+                .isActive(true)
                 .build();
 
         Set<ConstraintViolation<CourseInDTO>> violations = validator.validate(dto);
@@ -133,20 +133,20 @@ class CourseInDTOTest {
         dto1.setOwnerId(2L);
         dto1.setDescription("D");
         dto1.setCourseLevel("ADVANCED");
-        dto1.setActive(true);
+        dto1.setIsActive(true);
 
         assertEquals("T", dto1.getTitle());
         assertEquals(2L, dto1.getOwnerId());
         assertEquals("D", dto1.getDescription());
         assertEquals("ADVANCED", dto1.getCourseLevel());
-        assertTrue(dto1.isActive());
+        assertTrue(dto1.getIsActive());
 
         CourseInDTO dto2 = new CourseInDTO("X", 3L, "Y", "INTERMEDIATE", false);
         assertEquals("X", dto2.getTitle());
         assertEquals(3L, dto2.getOwnerId());
         assertEquals("Y", dto2.getDescription());
         assertEquals("INTERMEDIATE", dto2.getCourseLevel());
-        assertFalse(dto2.isActive());
+        assertFalse(dto2.getIsActive());
     }
 
     @Test

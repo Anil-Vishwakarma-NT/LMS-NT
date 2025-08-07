@@ -74,7 +74,7 @@ class CourseControllerIntegrationTest {
                 .ownerId(1L)
                 .description("Test course description")
                 .courseLevel("BEGINNER")
-                .Active(true)
+                .isActive(true)
                 .build();
 
         updateCourseInDTO = UpdateCourseInDTO.builder()
@@ -150,7 +150,7 @@ class CourseControllerIntegrationTest {
                 .ownerId(1L)
                 .description("Test description")
                 .courseLevel("BEGINNER")
-                .Active(true)
+                .isActive(true)
                 .build();
 
         // When & Then
@@ -524,7 +524,7 @@ class CourseControllerIntegrationTest {
                 .ownerId(1L)
                 .description("Test description")
                 .courseLevel("BEGINNER")
-                .Active(true)
+                .isActive(true)
                 .build();
 
         // When & Then
@@ -543,7 +543,7 @@ class CourseControllerIntegrationTest {
                 .ownerId(-1L)
                 .description("Test description")
                 .courseLevel("BEGINNER")
-                .Active(true)
+                .isActive(true)
                 .build();
 
         // When & Then
@@ -562,7 +562,7 @@ class CourseControllerIntegrationTest {
                 .ownerId(1L)
                 .description("AB")
                 .courseLevel("BEGINNER")
-                .Active(true)
+                .isActive(true)
                 .build();
 
         // When & Then
@@ -581,7 +581,7 @@ class CourseControllerIntegrationTest {
                 .ownerId(1L)
                 .description("Test description")
                 .courseLevel(null)
-                .Active(true)
+                .isActive(true)
                 .build();
 
         // When & Then

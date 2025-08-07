@@ -55,7 +55,10 @@ public class BundleController {
     public ResponseEntity<StandardResponseOutDTO<BundleOutDTO>> createBundle(@Valid @RequestBody final BundleInDTO bundleInDTO) {
         log.info("Received request to create bundle: {}", bundleInDTO.getBundleName());
         BundleOutDTO createdBundle = bundleService.createBundle(bundleInDTO);
-        StandardResponseOutDTO<BundleOutDTO> standardResponseOutDTO = StandardResponseOutDTO.success(createdBundle, "Bundle Created Successfully");
+        StandardResponseOutDTO<BundleOutDTO> standardResponseOutDTO = StandardResponseOutDTO.success(
+                createdBundle,
+                "Bundle Created Successfully"
+        );
         return ResponseEntity.status(HttpStatus.CREATED)
                 .body(standardResponseOutDTO);
     }

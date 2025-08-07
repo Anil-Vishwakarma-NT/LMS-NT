@@ -161,7 +161,8 @@ class CourseContentControllerIntegrationTest {
                 getBaseUrl(),
                 HttpMethod.POST,
                 entity,
-                new ParameterizedTypeReference<>() {}
+                new ParameterizedTypeReference<>() {
+                }
         );
 
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.CREATED);
@@ -237,7 +238,8 @@ class CourseContentControllerIntegrationTest {
                 getBaseUrl(),
                 HttpMethod.POST,
                 entity,
-                new ParameterizedTypeReference<Map<String, String>>() {}
+                new ParameterizedTypeReference<Map<String, String>>() {
+                }
         );
 
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.BAD_REQUEST);
@@ -261,7 +263,8 @@ class CourseContentControllerIntegrationTest {
                 getBaseUrl(),
                 HttpMethod.POST,
                 entity,
-                new ParameterizedTypeReference<Map<String, String>>() {}
+                new ParameterizedTypeReference<Map<String, String>>() {
+                }
         );
 
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.BAD_REQUEST);
@@ -302,7 +305,8 @@ class CourseContentControllerIntegrationTest {
                 getBaseUrl(),
                 HttpMethod.GET,
                 entity,
-                new ParameterizedTypeReference<>() {}
+                new ParameterizedTypeReference<>() {
+                }
         );
 
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
@@ -319,7 +323,8 @@ class CourseContentControllerIntegrationTest {
                 getBaseUrl() + "/" + createdContentId,
                 HttpMethod.GET,
                 entity,
-                new ParameterizedTypeReference<>() {}
+                new ParameterizedTypeReference<>() {
+                }
         );
 
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
@@ -352,7 +357,8 @@ class CourseContentControllerIntegrationTest {
                 getBaseUrl() + "/course/" + testCourseId,
                 HttpMethod.GET,
                 entity,
-                new ParameterizedTypeReference<>() {}
+                new ParameterizedTypeReference<>() {
+                }
         );
 
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
@@ -385,7 +391,8 @@ class CourseContentControllerIntegrationTest {
                 getBaseUrl() + "/course/" + testCourseId + "/count",
                 HttpMethod.GET,
                 entity,
-                new ParameterizedTypeReference<>() {}
+                new ParameterizedTypeReference<>() {
+                }
         );
 
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
@@ -411,7 +418,8 @@ class CourseContentControllerIntegrationTest {
                 getBaseUrl() + "/" + createdContentId,
                 HttpMethod.PUT,
                 entity,
-                new ParameterizedTypeReference<>() {}
+                new ParameterizedTypeReference<>() {
+                }
         );
 
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
@@ -437,7 +445,8 @@ class CourseContentControllerIntegrationTest {
                 getBaseUrl() + "/" + createdContentId,
                 HttpMethod.PUT,
                 entity,
-                new ParameterizedTypeReference<>() {}
+                new ParameterizedTypeReference<>() {
+                }
         );
 
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
@@ -525,7 +534,8 @@ class CourseContentControllerIntegrationTest {
                 getBaseUrl() + "/" + secondContentId,
                 HttpMethod.DELETE,
                 entity,
-                new ParameterizedTypeReference<>() {}
+                new ParameterizedTypeReference<>() {
+                }
         );
 
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
@@ -574,7 +584,8 @@ class CourseContentControllerIntegrationTest {
                 getBaseUrl() + "/health",
                 HttpMethod.GET,
                 entity,
-                new ParameterizedTypeReference<>() {}
+                new ParameterizedTypeReference<>() {
+                }
         );
 
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
@@ -601,7 +612,8 @@ class CourseContentControllerIntegrationTest {
                 getBaseUrl(),
                 HttpMethod.POST,
                 entity,
-                new ParameterizedTypeReference<Map<String, String>>() {}
+                new ParameterizedTypeReference<Map<String, String>>() {
+                }
         );
 
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.BAD_REQUEST);
@@ -625,7 +637,8 @@ class CourseContentControllerIntegrationTest {
                 getBaseUrl(),
                 HttpMethod.POST,
                 entity,
-                new ParameterizedTypeReference<Map<String, String>>() {}
+                new ParameterizedTypeReference<Map<String, String>>() {
+                }
         );
 
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.BAD_REQUEST);
@@ -649,7 +662,8 @@ class CourseContentControllerIntegrationTest {
                 getBaseUrl(),
                 HttpMethod.POST,
                 entity,
-                new ParameterizedTypeReference<>() {}
+                new ParameterizedTypeReference<>() {
+                }
         );
 
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.CREATED);
@@ -668,7 +682,8 @@ class CourseContentControllerIntegrationTest {
                 getBaseUrl(),
                 HttpMethod.GET,
                 entity,
-                new ParameterizedTypeReference<>() {}
+                new ParameterizedTypeReference<>() {
+                }
         );
 
         if (allContents.getStatusCode() == HttpStatus.OK && !allContents.getBody().getData().isEmpty()) {
@@ -681,7 +696,8 @@ class CourseContentControllerIntegrationTest {
                                 getBaseUrl() + "/" + content.getCourseContentId(),
                                 HttpMethod.DELETE,
                                 entity,
-                                new ParameterizedTypeReference<StandardResponseOutDTO<Void>>() {}
+                                new ParameterizedTypeReference<StandardResponseOutDTO<Void>>() {
+                                }
                         );
                     });
         }
@@ -692,7 +708,8 @@ class CourseContentControllerIntegrationTest {
                     getBaseUrl() + "/" + createdContentId,
                     HttpMethod.DELETE,
                     entity,
-                    new ParameterizedTypeReference<StandardResponseOutDTO<Void>>() {}
+                    new ParameterizedTypeReference<StandardResponseOutDTO<Void>>() {
+                    }
             );
         }
 
@@ -701,7 +718,8 @@ class CourseContentControllerIntegrationTest {
                     getBaseUrl() + "/" + thirdContentId,
                     HttpMethod.DELETE,
                     entity,
-                    new ParameterizedTypeReference<StandardResponseOutDTO<Void>>() {}
+                    new ParameterizedTypeReference<StandardResponseOutDTO<Void>>() {
+                    }
             );
         }
 

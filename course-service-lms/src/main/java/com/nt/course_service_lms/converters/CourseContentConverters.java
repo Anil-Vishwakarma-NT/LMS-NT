@@ -122,7 +122,8 @@ public final class CourseContentConverters {
 
     /**
      * Legacy method for backward compatibility.
-     *
+     * @param courseContentInDTO convert inDTO to entity
+     * @return Entity
      * @deprecated Use {@link #courseContentInDtoToEntity(CourseContentInDTO)} instead
      */
     @Deprecated

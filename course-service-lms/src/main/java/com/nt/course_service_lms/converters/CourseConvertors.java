@@ -31,7 +31,7 @@ public final class CourseConvertors {
         course.setOwnerId(courseInDTO.getOwnerId());
         course.setDescription(StringUtils.toProperCase(courseInDTO.getDescription()));
         course.setLevel(courseInDTO.getCourseLevel());
-        course.setActive(courseInDTO.isActive());
+        course.setActive(courseInDTO.getIsActive());
         return course;
     }
 

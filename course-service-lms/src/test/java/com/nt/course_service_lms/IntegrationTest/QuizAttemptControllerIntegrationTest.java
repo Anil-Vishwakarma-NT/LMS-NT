@@ -78,15 +78,6 @@ class QuizAttemptControllerIntegrationTest {
     }
 
 
-    private HttpHeaders createHeaders() {
-        HttpHeaders headers = new HttpHeaders();
-        headers.setContentType(MediaType.APPLICATION_JSON);
-        headers.set("X-Test-User", "test-user");
-        headers.set("X-Test-Role", "USER");
-        return headers;
-    }
-
-
     private HttpHeaders createAdminHeaders() {
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_JSON);
@@ -178,7 +169,7 @@ class QuizAttemptControllerIntegrationTest {
                 .build();
 
 
-        HttpEntity<QuizAttemptCreateInDTO> entity = new HttpEntity<>(request, createHeaders());
+        HttpEntity<QuizAttemptCreateInDTO> entity = new HttpEntity<>(request, createAdminHeaders());
 
 
         ResponseEntity<QuizAttemptOutDTO> response = restTemplate.exchange(
@@ -209,7 +200,7 @@ class QuizAttemptControllerIntegrationTest {
                 .build();
 
 
-        HttpEntity<QuizAttemptCreateInDTO> entity = new HttpEntity<>(request, createHeaders());
+        HttpEntity<QuizAttemptCreateInDTO> entity = new HttpEntity<>(request, createAdminHeaders());
 
 
         ResponseEntity<QuizAttemptOutDTO> response = restTemplate.exchange(
@@ -235,7 +226,7 @@ class QuizAttemptControllerIntegrationTest {
                 .build();
 
 
-        HttpEntity<QuizAttemptCreateInDTO> entity = new HttpEntity<>(request, createHeaders());
+        HttpEntity<QuizAttemptCreateInDTO> entity = new HttpEntity<>(request, createAdminHeaders());
 
 
         ResponseEntity<ErrorResponse> response = restTemplate.exchange(
@@ -260,7 +251,7 @@ class QuizAttemptControllerIntegrationTest {
                 .build();
 
 
-        HttpEntity<QuizAttemptCreateInDTO> entity = new HttpEntity<>(request, createHeaders());
+        HttpEntity<QuizAttemptCreateInDTO> entity = new HttpEntity<>(request, createAdminHeaders());
 
 
         ResponseEntity<Map<String, String>> response = restTemplate.exchange(
@@ -284,7 +275,7 @@ class QuizAttemptControllerIntegrationTest {
     @Test
     @Order(6)
     void shouldGetQuizAttemptById() {
-        HttpEntity<Void> entity = new HttpEntity<>(createHeaders());
+        HttpEntity<Void> entity = new HttpEntity<>(createAdminHeaders());
 
 
         ResponseEntity<QuizAttemptOutDTO> response = restTemplate.exchange(
@@ -305,7 +296,7 @@ class QuizAttemptControllerIntegrationTest {
     @Test
     @Order(7)
     void shouldReturn404ForNonExistingAttempt() {
-        HttpEntity<Void> entity = new HttpEntity<>(createHeaders());
+        HttpEntity<Void> entity = new HttpEntity<>(createAdminHeaders());
 
 
         ResponseEntity<String> response = restTemplate.exchange(
@@ -323,7 +314,7 @@ class QuizAttemptControllerIntegrationTest {
 //    @Test
 //    @Order(8)
 //    void shouldGetAllQuizAttemptsWithPagination() {
-//        HttpEntity<Void> entity = new HttpEntity<>(createHeaders());
+//        HttpEntity<Void> entity = new HttpEntity<>(createAdminHeaders());
 //
 //
 //        ResponseEntity<Page<QuizAttemptOutDTO>> response = restTemplate.exchange(
@@ -347,7 +338,7 @@ class QuizAttemptControllerIntegrationTest {
     @Test
     @Order(9)
     void shouldGetQuizAttemptsByUserId() {
-        HttpEntity<Void> entity = new HttpEntity<>(createHeaders());
+        HttpEntity<Void> entity = new HttpEntity<>(createAdminHeaders());
 
 
         ResponseEntity<List<QuizAttemptOutDTO>> response = restTemplate.exchange(
@@ -368,7 +359,7 @@ class QuizAttemptControllerIntegrationTest {
     @Test
     @Order(10)
     void shouldGetQuizAttemptsByQuizId() {
-        HttpEntity<Void> entity = new HttpEntity<>(createHeaders());
+        HttpEntity<Void> entity = new HttpEntity<>(createAdminHeaders());
 
 
         ResponseEntity<List<QuizAttemptOutDTO>> response = restTemplate.exchange(
@@ -389,7 +380,7 @@ class QuizAttemptControllerIntegrationTest {
     @Test
     @Order(11)
     void shouldGetQuizAttemptsByUserAndQuiz() {
-        HttpEntity<Void> entity = new HttpEntity<>(createHeaders());
+        HttpEntity<Void> entity = new HttpEntity<>(createAdminHeaders());
 
 
         ResponseEntity<List<QuizAttemptOutDTO>> response = restTemplate.exchange(
@@ -411,7 +402,7 @@ class QuizAttemptControllerIntegrationTest {
     @Test
     @Order(12)
     void shouldGetQuizAttemptsByStatus() {
-        HttpEntity<Void> entity = new HttpEntity<>(createHeaders());
+        HttpEntity<Void> entity = new HttpEntity<>(createAdminHeaders());
 
 
         ResponseEntity<List<QuizAttemptOutDTO>> response = restTemplate.exchange(
@@ -432,7 +423,7 @@ class QuizAttemptControllerIntegrationTest {
     @Test
     @Order(13)
     void shouldGetLatestAttemptByUserAndQuiz() {
-        HttpEntity<Void> entity = new HttpEntity<>(createHeaders());
+        HttpEntity<Void> entity = new HttpEntity<>(createAdminHeaders());
 
 
         ResponseEntity<QuizAttemptOutDTO> response = restTemplate.exchange(
@@ -462,7 +453,7 @@ class QuizAttemptControllerIntegrationTest {
                 .build();
 
 
-        HttpEntity<QuizAttemptUpdateInDTO> entity = new HttpEntity<>(updateRequest, createHeaders());
+        HttpEntity<QuizAttemptUpdateInDTO> entity = new HttpEntity<>(updateRequest, createAdminHeaders());
 
 
         ResponseEntity<QuizAttemptOutDTO> response = restTemplate.exchange(
@@ -489,7 +480,7 @@ class QuizAttemptControllerIntegrationTest {
                 .build();
 
 
-        HttpEntity<QuizAttemptUpdateInDTO> entity = new HttpEntity<>(updateRequest, createHeaders());
+        HttpEntity<QuizAttemptUpdateInDTO> entity = new HttpEntity<>(updateRequest, createAdminHeaders());
 
 
         ResponseEntity<Map<String, String>> response = restTemplate.exchange(
@@ -514,7 +505,7 @@ class QuizAttemptControllerIntegrationTest {
                 .build();
 
 
-        HttpEntity<QuizAttemptUpdateInDTO> entity = new HttpEntity<>(updateRequest, createHeaders());
+        HttpEntity<QuizAttemptUpdateInDTO> entity = new HttpEntity<>(updateRequest, createAdminHeaders());
 
 
         ResponseEntity<ErrorResponse> response = restTemplate.exchange(
@@ -549,7 +540,7 @@ class QuizAttemptControllerIntegrationTest {
 
 
         String scoreDetails = "{\"totalScore\":85,\"maxScore\":100}";
-        HttpEntity<String> entity = new HttpEntity<>(scoreDetails, createHeaders());
+        HttpEntity<String> entity = new HttpEntity<>(scoreDetails, createAdminHeaders());
 
 
         ResponseEntity<QuizAttemptOutDTO> response = restTemplate.exchange(
@@ -583,7 +574,7 @@ class QuizAttemptControllerIntegrationTest {
         QuizAttempt savedAttempt = quizAttemptRepository.save(newAttempt);
 
 
-        HttpEntity<Void> entity = new HttpEntity<>(createHeaders());
+        HttpEntity<Void> entity = new HttpEntity<>(createAdminHeaders());
 
 
         ResponseEntity<QuizAttemptOutDTO> response = restTemplate.exchange(
@@ -616,7 +607,7 @@ class QuizAttemptControllerIntegrationTest {
         QuizAttempt savedAttempt = quizAttemptRepository.save(newAttempt);
 
 
-        HttpEntity<Void> entity = new HttpEntity<>(createHeaders());
+        HttpEntity<Void> entity = new HttpEntity<>(createAdminHeaders());
 
 
         ResponseEntity<QuizAttemptOutDTO> response = restTemplate.exchange(
@@ -639,7 +630,7 @@ class QuizAttemptControllerIntegrationTest {
     @Test
     @Order(20)
     void shouldCheckQuizAttemptExists() {
-        HttpEntity<Void> entity = new HttpEntity<>(createHeaders());
+        HttpEntity<Void> entity = new HttpEntity<>(createAdminHeaders());
 
 
         ResponseEntity<Void> response = restTemplate.exchange(
@@ -657,7 +648,7 @@ class QuizAttemptControllerIntegrationTest {
     @Test
     @Order(21)
     void shouldReturn404ForNonExistingAttemptCheck() {
-        HttpEntity<Void> entity = new HttpEntity<>(createHeaders());
+        HttpEntity<Void> entity = new HttpEntity<>(createAdminHeaders());
 
 
         ResponseEntity<Void> response = restTemplate.exchange(
@@ -675,7 +666,7 @@ class QuizAttemptControllerIntegrationTest {
     @Test
     @Order(22)
     void shouldCountAttemptsByUserAndQuiz() {
-        HttpEntity<Void> entity = new HttpEntity<>(createHeaders());
+        HttpEntity<Void> entity = new HttpEntity<>(createAdminHeaders());
 
 
         ResponseEntity<Long> response = restTemplate.exchange(
@@ -694,7 +685,7 @@ class QuizAttemptControllerIntegrationTest {
     @Test
     @Order(23)
     void shouldGetHealthCheck() {
-        HttpEntity<Void> entity = new HttpEntity<>(createHeaders());
+        HttpEntity<Void> entity = new HttpEntity<>(createAdminHeaders());
 
 
         ResponseEntity<String> response = restTemplate.exchange(
@@ -713,7 +704,7 @@ class QuizAttemptControllerIntegrationTest {
     @Test
     @Order(24)
     void shouldGetUserAttemptDetails() {
-        HttpEntity<Void> entity = new HttpEntity<>(createHeaders());
+        HttpEntity<Void> entity = new HttpEntity<>(createAdminHeaders());
 
 
         ResponseEntity<StandardResponseOutDTO<List<UserQuizAttemptDetailsOutDTO>>> response = restTemplate.exchange(
@@ -733,7 +724,7 @@ class QuizAttemptControllerIntegrationTest {
     @Test
     @Order(25)
     void shouldGetQuizAttemptDetailsByUserId() {
-        HttpEntity<Void> entity = new HttpEntity<>(createHeaders());
+        HttpEntity<Void> entity = new HttpEntity<>(createAdminHeaders());
 
 
         ResponseEntity<StandardResponseOutDTO<List<QuizAttemptDetailsByUserIDOutDTO>>> response = restTemplate.exchange(
@@ -753,7 +744,7 @@ class QuizAttemptControllerIntegrationTest {
     @Test
     @Order(26)
     void shouldGetQuizAttemptDetailsByCourseId() {
-        HttpEntity<Void> entity = new HttpEntity<>(createHeaders());
+        HttpEntity<Void> entity = new HttpEntity<>(createAdminHeaders());
 
 
         ResponseEntity<StandardResponseOutDTO<List<QuizAttemptDetailsByCourseIDOutDTO>>> response = restTemplate.exchange(
@@ -791,7 +782,7 @@ class QuizAttemptControllerIntegrationTest {
         QuizAttempt savedAttempt = quizAttemptRepository.save(tempAttempt);
 
 
-        HttpEntity<Void> entity = new HttpEntity<>(createHeaders());
+        HttpEntity<Void> entity = new HttpEntity<>(createAdminHeaders());
 
 
         ResponseEntity<Void> response = restTemplate.exchange(
@@ -819,7 +810,7 @@ class QuizAttemptControllerIntegrationTest {
     @Test
     @Order(28)
     void shouldReturn404WhenDeletingNonExistingAttempt() {
-        HttpEntity<Void> entity = new HttpEntity<>(createHeaders());
+        HttpEntity<Void> entity = new HttpEntity<>(createAdminHeaders());
 
 
         ResponseEntity<ErrorResponse> response = restTemplate.exchange(
@@ -840,7 +831,7 @@ class QuizAttemptControllerIntegrationTest {
     @Test
     @Order(29)
     void shouldHandleInvalidPathVariable() {
-        HttpEntity<Void> entity = new HttpEntity<>(createHeaders());
+        HttpEntity<Void> entity = new HttpEntity<>(createAdminHeaders());
 
 
         ResponseEntity<ErrorResponse> response = restTemplate.exchange(

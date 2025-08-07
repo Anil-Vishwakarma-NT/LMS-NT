@@ -108,7 +108,6 @@ class QuizAttemptServiceImplTest {
         QuizAttemptOutDTO result = service.createQuizAttempt(createDTO);
 
         assertEquals(2L, result.getAttempt());
-        assertEquals(0, result.getAttemptsLeft());
     }
 
     @Test

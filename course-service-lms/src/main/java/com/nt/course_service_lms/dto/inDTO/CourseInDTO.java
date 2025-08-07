@@ -21,18 +21,17 @@ import static com.nt.course_service_lms.constants.CourseConstants.TITLE_BLANK;
 import static com.nt.course_service_lms.constants.CourseConstants.TITLE_MIN_LENGTH;
 
 /**
- * Data Transfer Object (DTO) for transferring course data between
- * the controller and service layers of the LMS system.
+ * DTO for creating or updating course information.
  *
- * <p>This DTO is typically used when creating or updating a course.</p>
+ * <p>Used by the controller and service layers to transfer course data.</p>
  *
- * <p><b>Validation Constraints:</b></p>
+ * <p><b>Validation Rules:</b></p>
  * <ul>
  *     <li>{@code title} - Required, minimum 3 characters</li>
- *     <li>{@code ownerId} - Required, must be ≥ 0</li>
+ *     <li>{@code ownerId} - Required, must be non-null and ≥ 0</li>
  *     <li>{@code description} - Required, minimum 3 characters</li>
- *     <li>{@code courseLevel} - Required (e.g., BEGINNER, INTERMEDIATE, ADVANCED)</li>
- *     <li>{@code image} - Optional (URL or file path of the course thumbnail)</li>
+ *     <li>{@code courseLevel} - Required, must not be null</li>
+ *     <li>{@code isActive} - Required, indicates if course is active</li>
  * </ul>
  */
 @Data
@@ -42,7 +41,7 @@ import static com.nt.course_service_lms.constants.CourseConstants.TITLE_MIN_LENG
 public class CourseInDTO {
 
     /**
-     * The title of the course.
+     * Title of the course.
      * <p>Must be non-blank and at least 3 characters long.</p>
      */
     @NotBlank(message = TITLE_BLANK)
@@ -50,7 +49,7 @@ public class CourseInDTO {
     private String title;
 
     /**
-     * The ID of the user who owns or created the course.
+     * ID of the user who owns or created the course.
      * <p>Must be non-null and greater than or equal to 0.</p>
      */
     @NotNull(message = OWNER_ID_BLANK)
@@ -58,7 +57,7 @@ public class CourseInDTO {
     private Long ownerId;
 
     /**
-     * A brief description of the course.
+     * Brief description of the course.
      * <p>Must be non-blank and at least 3 characters long.</p>
      */
     @NotBlank(message = DESCRIPTION_BLANK)
@@ -66,35 +65,48 @@ public class CourseInDTO {
     private String description;
 
     /**
-     * The difficulty level of the course.
-     * <p>Examples: BEGINNER, INTERMEDIATE, ADVANCED. Must be non-null.</p>
+     * Difficulty level of the course.
+     * <p>Examples: BEGINNER, INTERMEDIATE, ADVANCED.</p>
+     * <p>Must be non-null.</p>
      */
     @NotNull(message = COURSE_LEVEL_REQUIRED)
     private String courseLevel;
 
+    /**
+     * Indicates whether the course is active.
+     * <p>Must be non-null.</p>
+     */
     @NotNull(message = "Is Active field is required")
-    private boolean Active;
+    private Boolean isActive;
 
     /**
-     * Custom equality logic comparing all relevant fields.
+     * Checks if two CourseInDTO objects are equal based on their properties.
      *
-     * @param o The object to compare
-     * @return true if all fields are equal, false otherwise
+     * @param o the object to compare
+     * @return true if all fields match, false otherwise
      */
     @Override
-    public boolean equals(Object o) {
+    public boolean equals(final Object o) {
         if (this == o) {
             return true;
         }
-        if (o == null || getClass() != o.getClass()) {
+        if (!(o instanceof CourseInDTO that)) {
             return false;
         }
-        CourseInDTO courseInDTO = (CourseInDTO) o;
-        return Active == courseInDTO.Active && Objects.equals(title, courseInDTO.title) && Objects.equals(ownerId, courseInDTO.ownerId) && Objects.equals(description, courseInDTO.description) && Objects.equals(courseLevel, courseInDTO.courseLevel);
+        return Objects.equals(title, that.title)
+                && Objects.equals(ownerId, that.ownerId)
+                && Objects.equals(description, that.description)
+                && Objects.equals(courseLevel, that.courseLevel)
+                && Objects.equals(isActive, that.isActive);
     }
 
+    /**
+     * Generates hash code based on all fields.
+     *
+     * @return hash code
+     */
     @Override
     public int hashCode() {
-        return Objects.hash(title, ownerId, description, courseLevel, Active);
+        return Objects.hash(title, ownerId, description, courseLevel, isActive);
     }
 }

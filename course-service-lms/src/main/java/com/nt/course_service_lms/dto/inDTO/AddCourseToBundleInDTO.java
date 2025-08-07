@@ -14,7 +14,7 @@ import java.util.List;
 @Builder
 public class AddCourseToBundleInDTO {
     /**
-     * Bundle Id for bundle
+     * Bundle Id for bundle.
      */
     private Long bundleId;
 

@@ -12,11 +12,9 @@ import com.nt.course_service_lms.service.serviceImpl.CourseContentImpl;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
-import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.time.LocalDateTime;
 import java.util.Arrays;
@@ -32,7 +30,6 @@ import static org.mockito.Mockito.any;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
-@ExtendWith(MockitoExtension.class)
 class CourseContentImplTest {
 
     @Mock
@@ -138,7 +135,7 @@ class CourseContentImplTest {
 
         String result = courseContentService.deleteCourseContent(1L);
 
-        assertEquals("Course content deleted successfully", result);
+        assertEquals("Course Content Deleted Successfully", result);
         verify(courseContentRepository).delete(courseContent);
     }
 

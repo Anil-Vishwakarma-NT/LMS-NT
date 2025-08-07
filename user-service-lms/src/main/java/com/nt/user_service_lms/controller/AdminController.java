@@ -249,6 +249,10 @@ public class AdminController {
         return ResponseEntity.ok(StandardResponseOutDTO.success(enrolledCourses, "Fetched enrolled courses successfully"));
     }
 
+    /**
+     * Fetch admin dashboard details.
+     * @return dto containing dashboard statistics
+     */
     @GetMapping("/admin-dashboard-stats")
     public ResponseEntity<StandardResponseOutDTO<AdminDashboardStatsOutDTO>> getAdminDashboardStats() {
         StandardResponseOutDTO<AdminDashboardStatsOutDTO> standardResponseOutDTO = adminService.getAdminStats();
