@@ -11,8 +11,6 @@
       </profile>
     </annotationProcessing>
     <bytecodeTargetLevel>
-      <module name="api-gateway-lms.main" target="17" />
-      <module name="api-gateway-lms.test" target="17" />
       <module name="api-gateway.main" target="17" />
       <module name="api-gateway.test" target="17" />
       <module name="com.nt.LMS.main" target="17" />

@@ -1,6 +1,7 @@
 package com.nt.course_service_lms.controller;
 
 import com.nt.course_service_lms.dto.inDTO.CourseContentInDTO;
+import com.nt.course_service_lms.dto.inDTO.CourseContentUrlInDTO;
 import com.nt.course_service_lms.dto.inDTO.UpdateCourseContentInDTO;
 import com.nt.course_service_lms.dto.outDTO.CourseContentOutDTO;
 import com.nt.course_service_lms.dto.outDTO.StandardResponseOutDTO;
@@ -9,15 +10,10 @@ import jakarta.validation.Valid;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.DeleteMapping;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
@@ -53,9 +49,10 @@ public class CourseContentController {
      * @param courseContentInDTO DTO containing course content details
      * @return ResponseEntity containing the created CourseContent DTO
      */
-    @PostMapping
+    @PostMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<StandardResponseOutDTO<CourseContentOutDTO>> createCourseContent(
-            @Valid @RequestBody final CourseContentInDTO courseContentInDTO) {
+            @ModelAttribute @Valid final CourseContentInDTO courseContentInDTO) {
 
         log.info("Received request to create course content: {} for course ID: {}",
                 courseContentInDTO.getTitle(), courseContentInDTO.getCourseId());
@@ -69,11 +66,34 @@ public class CourseContentController {
     }
 
     /**
+     * Creates a new CourseContent for a given course.
+     *
+     * @param courseContentUrlInDTO DTO containing course content details
+     * @return ResponseEntity containing the created CourseContent DTO
+     */
+    @PostMapping(consumes = MediaType.APPLICATION_JSON_VALUE)
+    @PreAuthorize("hasRole('ADMIN')")
+    public ResponseEntity<StandardResponseOutDTO<CourseContentOutDTO>> createCourseContent(
+             @Valid @RequestBody final CourseContentUrlInDTO courseContentUrlInDTO) {
+
+        log.info("Received request to create course content: {} for course ID: {}",
+                courseContentUrlInDTO.getTitle(), courseContentUrlInDTO.getCourseId());
+
+        CourseContentOutDTO courseContentOutDTO = courseContentService.createCourseContent(courseContentUrlInDTO);
+        StandardResponseOutDTO<CourseContentOutDTO> response = StandardResponseOutDTO
+                .success(courseContentOutDTO, "Course Content Created Successfully");
+
+        log.info("Course content created with ID: {}", courseContentOutDTO.getCourseContentId());
+        return ResponseEntity.status(HttpStatus.CREATED).body(response);
+    }
+
+    /**
      * Retrieves all course content entries.
      *
      * @return ResponseEntity containing a list of CourseContent DTOs
      */
     @GetMapping
+    @PreAuthorize("hasAnyRole('ADMIN', 'EMPLOYEE')")
     public ResponseEntity<StandardResponseOutDTO<List<CourseContentOutDTO>>> getAllCourseContents() {
         log.info("Received request to fetch all course contents");
 
@@ -92,6 +112,7 @@ public class CourseContentController {
      * @return ResponseEntity containing the CourseContent DTO
      */
     @GetMapping("/{id}")
+    @PreAuthorize("hasAnyRole('ADMIN', 'EMPLOYEE')")
     public ResponseEntity<StandardResponseOutDTO<CourseContentOutDTO>> getCourseContentById(
             @PathVariable final Long id) {
 
@@ -112,6 +133,7 @@ public class CourseContentController {
      * @return ResponseEntity containing a list of CourseContent DTOs
      */
     @GetMapping("/course/{courseId}")
+    @PreAuthorize("hasAnyRole('ADMIN', 'EMPLOYEE')")
     public ResponseEntity<StandardResponseOutDTO<List<CourseContentOutDTO>>> getCourseContentByCourseId(
             @PathVariable final Long courseId) {
 
@@ -132,6 +154,7 @@ public class CourseContentController {
      * @return ResponseEntity containing a confirmation message
      */
     @DeleteMapping("/{id}")
+    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<StandardResponseOutDTO<Void>> deleteCourseContent(@PathVariable final Long id) {
         log.info("Received request to delete course content with ID: {}", id);
 
@@ -150,6 +173,7 @@ public class CourseContentController {
      * @return ResponseEntity containing the updated CourseContent DTO
      */
     @PutMapping("/{id}")
+    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<StandardResponseOutDTO<CourseContentOutDTO>> updateCourseContent(
             @PathVariable final Long id,
             @Valid @RequestBody final UpdateCourseContentInDTO updateCourseContentInDTO) {
@@ -186,6 +210,7 @@ public class CourseContentController {
      * @return ResponseEntity containing the count of course contents
      */
     @GetMapping("/course/{courseId}/count")
+    @PreAuthorize("hasAnyRole('ADMIN', 'EMPLOYEE')")
     public ResponseEntity<StandardResponseOutDTO<Integer>> getCourseContentCount(
             @PathVariable final Long courseId) {
 

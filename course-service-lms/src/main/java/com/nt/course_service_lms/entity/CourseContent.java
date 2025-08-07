@@ -57,6 +57,12 @@ public class CourseContent {
     private String description;
 
     /**
+     * A type of the content section.
+     */
+    @Column(name = "content_type")
+    private String contentType;
+
+    /**
      * An optional URL link to an external resource (e.g., reading material).
      */
     @Column(name = "resource_link")

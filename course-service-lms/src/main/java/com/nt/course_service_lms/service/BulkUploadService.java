@@ -25,4 +25,3 @@ public interface BulkUploadService {
      */
     boolean validateFile(MultipartFile file);
 }
-

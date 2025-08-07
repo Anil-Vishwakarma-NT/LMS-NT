@@ -3,6 +3,7 @@ package com.nt.course_service_lms.service.serviceImpl;
 import com.nt.course_service_lms.constants.CommonConstants;
 import com.nt.course_service_lms.converters.UserProgressConverter;
 import com.nt.course_service_lms.dto.inDTO.CourseContentInDTO;
+import com.nt.course_service_lms.dto.outDTO.CourseContentOutDTO;
 import com.nt.course_service_lms.dto.outDTO.CourseProgressWithMetaDTO;
 import com.nt.course_service_lms.dto.outDTO.UserProgressOutDTO;
 import com.nt.course_service_lms.entity.CourseContent;
@@ -179,7 +180,7 @@ public class UserProgressServiceImpl implements UserProgressService {
      * @return a list of CourseContentInDTO objects representing all content items in the course
      * @throws IllegalArgumentException if userId or courseId is null or negative
      */
-    public List<CourseContentInDTO> getUserCourseContent(final Long userId, final long courseId) {
+    public List<CourseContentOutDTO> getUserCourseContent(final Long userId, final long courseId) {
         log.info("Fetching Course Content for CourseId: {}", courseId);
         List<CourseContent> courseContents = courseContentRepository.findByCourseId(courseId);
         List<UserProgress> userProgressList = userProgressRepository.findProgressByUserIdAndCourseId(userId, courseId);
@@ -195,10 +196,11 @@ public class UserProgressServiceImpl implements UserProgressService {
             log.info("Mapped Progress for CourseContentId {}: {}", content.getCourseContentId(),
                     progressOpt.map(UserProgress::getContentCompletionPercentage).orElse(0.0));
 
-            return new CourseContentInDTO(
+            return new CourseContentOutDTO(
                     content.getCourseId(),
                     content.getTitle(),
                     content.getDescription(),
+                    content.getContentType(),
                     content.getResourceLink(),
                     content.isActive()
             );

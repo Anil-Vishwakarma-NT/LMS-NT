@@ -16,7 +16,17 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
 /**
- * REST controller for bulk upload operations
+ * REST controller for handling bulk upload of quiz questions.
+ * <p>
+ * Provides endpoints to upload quiz questions in bulk from a file and
+ * to download sample templates in CSV or TXT format.
+ * </p>
+ *
+ * <p>
+ * Supported file formats: CSV, Excel, TXT
+ * </p>
+ *
+ * @author
  */
 @RestController
 @RequestMapping("/api/service-api/quiz-questions")
@@ -24,42 +34,52 @@ import org.springframework.web.multipart.MultipartFile;
 @Slf4j
 public class BulkUploadController {
 
+    /**
+     * Service to handle bulk upload logic.
+     */
     private final BulkUploadService bulkUploadService;
 
     /**
-     * Bulk upload quiz questions from file
+     * Endpoint to handle bulk upload of quiz questions.
+     * <p>
+     * Accepts a file and quiz ID and delegates the processing to the service layer.
+     * </p>
      *
-     * @param quizId     Quiz ID
-     * @param file       File containing questions
-     * @param skipErrors Whether to skip errors and continue processing
-     * @return ResponseEntity containing upload results
+     * @param quizId     ID of the quiz to which questions will be uploaded
+     * @param file       Multipart file containing the questions
+     * @param skipErrors Flag to determine whether to continue processing on errors
+     * @return A standardized response containing the result of the upload
      */
     @PostMapping("/bulk-upload")
     public ResponseEntity<StandardResponseOutDTO<BulkUploadResultDTO>> bulkUploadQuestions(
-            @RequestParam Long quizId,
-            @RequestParam MultipartFile file,
-            @RequestParam(defaultValue = "false") boolean skipErrors) {
+            @RequestParam final Long quizId,
+            @RequestParam final MultipartFile file,
+            @RequestParam(defaultValue = "false") final boolean skipErrors) {
 
         log.info("Received bulk upload request for quiz ID: {} with file: {}", quizId, file.getOriginalFilename());
 
-        // Validate file
+        // Validate file format
         if (!bulkUploadService.validateFile(file)) {
             return ResponseEntity.badRequest()
-                    .body(StandardResponseOutDTO.<BulkUploadResultDTO>failure("Invalid file format. Please use CSV, Excel, or TXT files."));
+                    .body(StandardResponseOutDTO.<BulkUploadResultDTO>failure(
+                                    "Invalid file format. Please use CSV, Excel, or TXT files."
+                            )
+                    );
         }
 
-        // Create bulk upload DTO
+        // Prepare DTO
         BulkQuizQuestionInDTO bulkUploadDTO = new BulkQuizQuestionInDTO();
         bulkUploadDTO.setQuizId(quizId);
         bulkUploadDTO.setFile(file);
         bulkUploadDTO.setSkipErrors(skipErrors);
 
-        // Process bulk upload
+        // Process the file
         BulkUploadResultDTO result = bulkUploadService.bulkUploadQuestions(bulkUploadDTO);
 
-        // Determine response status based on results
+        // Return appropriate response based on result
         if (result.getFailedUploads() == 0) {
-            log.info("Bulk upload completed successfully for quiz ID: {}. {} questions uploaded.", quizId, result.getSuccessfulUploads());
+            log.info("Bulk upload completed successfully for quiz ID: {}."
+                    + " {} questions uploaded.", quizId, result.getSuccessfulUploads());
             return ResponseEntity.ok(StandardResponseOutDTO.success(result, "All questions uploaded successfully"));
         } else if (result.getSuccessfulUploads() > 0) {
             log.warn("Bulk upload completed with some errors for quiz ID: {}. Success: {}, Failed: {}",
@@ -74,13 +94,16 @@ public class BulkUploadController {
     }
 
     /**
-     * Download sample template file
+     * Endpoint to download a sample template for bulk upload.
+     * <p>
+     * Generates a sample file content based on the requested format.
+     * </p>
      *
-     * @param format File format (csv, excel, txt)
-     * @return ResponseEntity with sample file content
+     * @param format File format (csv or txt). Defaults to "csv".
+     * @return ResponseEntity containing sample file content
      */
     @GetMapping("/bulk-upload/template")
-    public ResponseEntity<String> downloadTemplate(@RequestParam(defaultValue = "csv") String format) {
+    public ResponseEntity<String> downloadTemplate(@RequestParam(defaultValue = "csv") final String format) {
         log.info("Generating sample template for format: {}", format);
 
         switch (format.toLowerCase()) {
@@ -99,36 +122,74 @@ public class BulkUploadController {
         }
     }
 
+    /**
+     * Helper method to return a sample CSV template for quiz questions.
+     *
+     * @return String containing CSV headers and example rows
+     */
     private String getCsvTemplate() {
-        return "Question Text,Question Type,Options,Correct Answer,Points,Explanation,Required\n" +
-                "\"What is the capital of France?\",MCQ_SINGLE,\"[{\"\"option\"\":\"\"A\"\",\"\"text\"\":\"\"Paris\"\"},{\"\"option\"\":\"\"B\"\",\"\"text\"\":\"\"London\"\"},{\"\"option\"\":\"\"C\"\",\"\"text\"\":\"\"Berlin\"\"},{\"\"option\"\":\"\"D\"\",\"\"text\"\":\"\"Madrid\"\"}]\",\"[\"\"A\"\"]\",1.0,\"Paris is the capital city of France.\",true\n" +
-                "\"Select all prime numbers\",MCQ_MULTIPLE,\"[{\"\"option\"\":\"\"A\"\",\"\"text\"\":\"\"2\"\"},{\"\"option\"\":\"\"B\"\",\"\"text\"\":\"\"3\"\"},{\"\"option\"\":\"\"C\"\",\"\"text\"\":\"\"4\"\"},{\"\"option\"\":\"\"D\"\",\"\"text\"\":\"\"5\"\"}]\",\"[\"\"A\"\",\"\"B\"\",\"\"D\"\"]\",2.0,\"Prime numbers are 2, 3, and 5.\",true\n" +
-                "\"What is 2+2?\",SHORT_ANSWER,\"\",\"4\",1.0,\"Basic arithmetic.\",false";
+        return "Question Text,Question Type,Options,Correct Answer,Points,Explanation,Required\n"
+                + "\"What is the capital of France?\",MCQ_SINGLE,\"[\"\"Paris\"\""
+                + ",\"\"London\"\",\"\"Berlin\"\",\"\"Madrid\"\"]\",\"[\"\"Paris\"\"]\",1.0,\"Paris"
+                + " is the capital city of France.\",true\n"
+                + "\"Select all prime numbers\",MCQ_MULTIPLE,\"[\"\"2\"\",\"\"3\"\","
+                + "\"\"4\"\",\"\"5\"\"]\",\"[\"\"2\"\",\"\"3\"\",\"\"5\"\"]\",2.0,"
+                + "\"Prime numbers are 2, 3, and 5.\",true\n"
+                + "\"What is 2+2?\",SHORT_ANSWER,\"[]\",\"[\"\"4\"\"]\",1.0,"
+                + "\"Basic arithmetic.\",false\n"
+                + "\"Which programming languages are object-oriented?\","
+                + "MCQ_MULTIPLE,\"[\"\"Java\"\",\"\"Python\"\",\"\"C\"\""
+                + ",\"\"JavaScript\"\"]\",\"[\"\"Java\"\",\"\"Python\"\","
+                + "\"\"JavaScript\"\"]\",3.0,\"Java, Python, and JavaScript support OOP.\",true\n"
+                + "\"What does API stand for?\",SHORT_ANSWER,\"[]\","
+                + "\"[\"\"Application Programming Interface\"\"]\",1.5,\"API"
+                + " is a set of protocols and tools for building software applications.\",true";
     }
 
+    /**
+     * Helper method to return a sample TXT template for quiz questions.
+     *
+     * @return String containing sample TXT-formatted quiz question rows
+     */
     private String getTxtTemplate() {
-        return "QUESTION: What is the capital of France?\n" +
-                "TYPE: MCQ_SINGLE\n" +
-                "OPTIONS: [{\"option\":\"A\",\"text\":\"Paris\"},{\"option\":\"B\",\"text\":\"London\"},{\"option\":\"C\",\"text\":\"Berlin\"},{\"option\":\"D\",\"text\":\"Madrid\"}]\n" +
-                "ANSWER: [\"A\"]\n" +
-                "POINTS: 1.0\n" +
-                "EXPLANATION: Paris is the capital city of France.\n" +
-                "REQUIRED: true\n" +
-                "\n" +
-                "QUESTION: Select all prime numbers\n" +
-                "TYPE: MCQ_MULTIPLE\n" +
-                "OPTIONS: [{\"option\":\"A\",\"text\":\"2\"},{\"option\":\"B\",\"text\":\"3\"},{\"option\":\"C\",\"text\":\"4\"},{\"option\":\"D\",\"text\":\"5\"}]\n" +
-                "ANSWER: [\"A\",\"B\",\"D\"]\n" +
-                "POINTS: 2.0\n" +
-                "EXPLANATION: Prime numbers are 2, 3, and 5.\n" +
-                "REQUIRED: true\n" +
-                "\n" +
-                "QUESTION: What is 2+2?\n" +
-                "TYPE: SHORT_ANSWER\n" +
-                "OPTIONS: \n" +
-                "ANSWER: 4\n" +
-                "POINTS: 1.0\n" +
-                "EXPLANATION: Basic arithmetic.\n" +
-                "REQUIRED: false";
+        return "QUESTION: What is the capital of France?\n"
+                + "TYPE: MCQ_SINGLE\n"
+                + "OPTIONS: [\"Paris\",\"London\",\"Berlin\",\"Madrid\"]\n"
+                + "ANSWER: [\"Paris\"]\n"
+                + "POINTS: 1.0\n"
+                + "EXPLANATION: Paris is the capital city of France.\n"
+                + "REQUIRED: true\n"
+                + "\n"
+                + "QUESTION: Select all prime numbers\n"
+                + "TYPE: MCQ_MULTIPLE\n"
+                + "OPTIONS: [\"2\",\"3\",\"4\",\"5\"]\n"
+                + "ANSWER: [\"2\",\"3\",\"5\"]\n"
+                + "POINTS: 2.0\n"
+                + "EXPLANATION: Prime numbers are 2, 3, and 5.\n"
+                + "REQUIRED: true\n"
+                + "\n"
+                + "QUESTION: What is 2+2?\n"
+                + "TYPE: SHORT_ANSWER\n"
+                + "OPTIONS: []\n"
+                + "ANSWER: [\"4\"]\n"
+                + "POINTS: 1.0\n"
+                + "EXPLANATION: Basic arithmetic.\n"
+                + "REQUIRED: false\n"
+                + "\n"
+                + "QUESTION: Which programming languages are object-oriented?\n"
+                + "TYPE: MCQ_MULTIPLE\n"
+                + "OPTIONS: [\"Java\",\"Python\",\"C\",\"JavaScript\"]\n"
+                + "ANSWER: [\"Java\",\"Python\",\"JavaScript\"]\n"
+                + "POINTS: 3.0\n"
+                + "EXPLANATION: Java, Python, and JavaScript support object-oriented programming.\n"
+                + "REQUIRED: true\n"
+                + "\n"
+                + "QUESTION: What does API stand for?\n"
+                + "TYPE: SHORT_ANSWER\n"
+                + "OPTIONS: []\n"
+                + "ANSWER: [\"Application Programming Interface\"]\n"
+                + "POINTS: 1.5\n"
+                + "EXPLANATION: API is a set of protocols and tools for building software applications.\n"
+                + "REQUIRED: true";
     }
 }

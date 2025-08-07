@@ -119,4 +119,11 @@ public interface UserResponseRepository extends JpaRepository<UserResponse, Long
      */
     @Query("SELECT MAX(ur.attempt) FROM UserResponse ur WHERE ur.userId = :userId AND ur.quizId = :quizId")
     Long getMaxAttemptByUserIdAndQuizId(@Param("userId") Long userId, @Param("quizId") Long quizId);
+
+    // UserResponseRepository - Bulk fetch with IN clauses
+    @Query("SELECT ur FROM UserResponse ur WHERE ur.userId = :userId " +
+            "AND ur.quizId IN :quizIds AND ur.attempt IN :attempts")
+    List<UserResponse> findByUserIdAndQuizIdInAndAttemptIn(@Param("userId") Long userId,
+                                                           @Param("quizIds") List<Long> quizIds,
+                                                           @Param("attempts") List<Long> attempts);
 }

@@ -25,6 +25,6 @@ public class QuizSubmissionResultOutDTO {
     private Long correctAnswers;
     private Long totalQuestions;
     private BigDecimal percentageScore;
-    private String submissionType; // "MANUAL" or "AUTO_TIMEOUT"
+    private String submissionType;
     private LocalDateTime submittedAt;
 }

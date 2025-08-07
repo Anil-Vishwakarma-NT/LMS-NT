@@ -20,6 +20,11 @@ import java.time.LocalDateTime;
 @AllArgsConstructor
 @Builder
 public class CourseSummaryOutDTO {
+    /**
+     * The title or name of the course.
+     */
+    private Long courseId;
+
 
     /**
      * The title or name of the course.

@@ -8,6 +8,7 @@ import com.nt.course_service_lms.entity.Bundle;
 import com.nt.course_service_lms.exception.ResourceAlreadyExistsException;
 import com.nt.course_service_lms.exception.ResourceNotFoundException;
 import com.nt.course_service_lms.repository.BundleRepository;
+import com.nt.course_service_lms.repository.CourseBundleRepository;
 import com.nt.course_service_lms.service.serviceImpl.BundleServiceImpl;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
@@ -37,6 +38,9 @@ class BundleServiceImplTest {
 
     @Mock
     private BundleRepository bundleRepository;
+
+    @Mock
+    private CourseBundleRepository courseBundleRepository;
 
     @Mock
     private BundleConverter bundleConverter;
@@ -182,10 +186,21 @@ class BundleServiceImplTest {
 
     @Test
     void deleteBundle_success() {
+        // Arrange: Mock the findById call to return the test bundle
         when(bundleRepository.findById(1L)).thenReturn(Optional.of(testBundle));
 
+        // Arrange: Mock the new dependency call in the deleteBundle method
+        when(courseBundleRepository.findByBundleId(1L)).thenReturn(Collections.emptyList());
+
+        // Act & Assert: Ensure no exception is thrown
         assertDoesNotThrow(() -> bundleService.deleteBundle(1L));
-        verify(bundleRepository).delete(testBundle);
+
+        // Assert: Verify that save() was called on the bundle repository,
+        // confirming a soft delete was performed.
+        verify(bundleRepository).save(testBundle);
+
+        // Optional Assert: You can also verify that the bundle is now inactive
+        assertFalse(testBundle.isActive());
     }
 
     @Test

@@ -1,6 +1,7 @@
 package com.nt.course_service_lms.converters;
 
 import com.nt.course_service_lms.dto.inDTO.CourseContentInDTO;
+import com.nt.course_service_lms.dto.inDTO.CourseContentUrlInDTO;
 import com.nt.course_service_lms.dto.inDTO.UpdateCourseContentInDTO;
 import com.nt.course_service_lms.dto.outDTO.CourseContentOutDTO;
 import com.nt.course_service_lms.entity.CourseContent;
@@ -34,11 +35,32 @@ public final class CourseContentConverters {
         courseContent.setCourseId(courseContentInDTO.getCourseId());
         courseContent.setTitle(courseContentInDTO.getTitle());
         courseContent.setDescription(courseContentInDTO.getDescription());
-        courseContent.setResourceLink(courseContentInDTO.getResourceLink());
+        courseContent.setContentType(courseContentInDTO.getContentType());
         courseContent.setActive(courseContentInDTO.isActive());
         return courseContent;
     }
 
+    /**
+     * Converts a {@link CourseContentInDTO} to a {@link CourseContent} entity.
+     * This method is typically used when creating course content.
+     *
+     * @param courseContentUrlInDTO the DTO object containing course content data
+     * @return the corresponding CourseContent entity
+     */
+    public static CourseContent courseContentInDtoToEntity(final CourseContentUrlInDTO courseContentUrlInDTO) {
+        if (courseContentUrlInDTO == null) {
+            return null;
+        }
+
+        CourseContent courseContent = new CourseContent();
+        courseContent.setCourseId(courseContentUrlInDTO.getCourseId());
+        courseContent.setTitle(courseContentUrlInDTO.getTitle());
+        courseContent.setDescription(courseContentUrlInDTO.getDescription());
+        courseContent.setContentType(courseContentUrlInDTO.getContentType());
+        courseContent.setActive(courseContentUrlInDTO.getIsActive());
+        courseContent.setResourceLink(courseContentUrlInDTO.getYoutubeUrl());
+        return courseContent;
+    }
     /**
      * Converts a {@link CourseContent} entity to a {@link CourseContentOutDTO}.
      * This method is typically used when returning course content data.
@@ -56,6 +78,7 @@ public final class CourseContentConverters {
         outDTO.setCourseId(courseContent.getCourseId());
         outDTO.setTitle(courseContent.getTitle());
         outDTO.setDescription(courseContent.getDescription());
+        outDTO.setContentType(courseContent.getContentType());
         outDTO.setResourceLink(courseContent.getResourceLink());
         outDTO.setActive(courseContent.isActive());
         outDTO.setCreatedAt(courseContent.getCreatedAt());
@@ -118,5 +141,16 @@ public final class CourseContentConverters {
         courseContent.setResourceLink(updateDTO.getResourceLink());
         courseContent.setActive(updateDTO.isActive());
         return courseContent;
+    }
+
+    /**
+     * Legacy method for backward compatibility.
+     * @param courseContentInDTO convert inDTO to entity
+     * @return Entity
+     * @deprecated Use {@link #courseContentInDtoToEntity(CourseContentInDTO)} instead
+     */
+    @Deprecated
+    public static CourseContent courseContentDtoToCourseContent(final CourseContentInDTO courseContentInDTO) {
+        return courseContentInDtoToEntity(courseContentInDTO);
     }
 }

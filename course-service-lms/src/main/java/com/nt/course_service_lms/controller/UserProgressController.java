@@ -54,7 +54,7 @@ public class UserProgressController {
     }
 
     @GetMapping("/meta-courseId")
-    public CourseProgressWithMetaDTO getCourseProgressWithMetaCourseId( @RequestParam final int courseId) {
+    public CourseProgressWithMetaDTO getCourseProgressWithMetaCourseId(@RequestParam final int courseId) {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
 
         if (!(authentication.getPrincipal() instanceof ServicePrincipal principal)) {
@@ -62,9 +62,9 @@ public class UserProgressController {
         }
         System.out.println("USER" + principal);
 
-          String userId = principal.getUserId();
+        String userId = principal.getUserId();
         System.out.println("USERID" + userId);
-        return userProgressService.getCourseProgressWithMeta(Long.parseLong(userId), (long)courseId);
+        return userProgressService.getCourseProgressWithMeta(Long.parseLong(userId), (long) courseId);
     }
 
     /**

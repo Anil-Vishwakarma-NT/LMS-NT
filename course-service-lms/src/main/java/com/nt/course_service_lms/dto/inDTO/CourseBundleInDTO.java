@@ -15,17 +15,21 @@ import static com.nt.course_service_lms.constants.CourseBundleConstants.COURSE_I
 import static com.nt.course_service_lms.constants.CourseBundleConstants.COURSE_ID_POSITIVE;
 
 /**
- * CourseBundlePostDTO is a lightweight Data Transfer Object used specifically for creating
- * or updating the relationship between a course and a bundle in the LMS system.
+ * Data Transfer Object for representing the association between a course and a bundle
+ * within the Learning Management System (LMS).
  *
- * <p>This DTO omits the name fields and focuses only on ID references,
- * making it suitable for POST/PUT operations where only IDs are needed.</p>
+ * <p>This DTO is intended for POST and PUT requests to add or update course-bundle mappings.</p>
  *
- * <p><b>Validation Rules:</b></p>
+ * <p><b>Validation:</b></p>
  * <ul>
  *     <li>{@code bundleId} - Must be non-null and positive</li>
  *     <li>{@code courseId} - Must be non-null and positive</li>
+ *     <li>{@code isActive} - Must be non-null (indicates if the relationship is currently active)</li>
  * </ul>
+ *
+ * <p><b>Note:</b> The {@code courseBundleId} field is optional and usually managed by the system.</p>
+ *
+ * @author
  */
 @Data
 @NoArgsConstructor
@@ -34,32 +38,42 @@ import static com.nt.course_service_lms.constants.CourseBundleConstants.COURSE_I
 public class CourseBundleInDTO {
 
     /**
-     * Unique identifier for the course-bundle relationship.
-     * <p>This ID is optional for POST requests and typically auto-generated.</p>
+     * Unique identifier for the course-bundle mapping.
+     * <p>This is typically auto-generated and used for internal tracking.</p>
      */
     private long courseBundleId;
 
     /**
-     * The ID of the bundle this course is being added to.
-     * <p>Must be a positive non-null value.</p>
+     * The ID of the bundle to which the course is being associated.
+     * <p>Must be a positive non-null value, validated at the API level.</p>
      */
     @NotNull(message = BUNDLE_ID_NOT_NULL)
     @Positive(message = BUNDLE_ID_POSITIVE)
     private Long bundleId;
 
     /**
-     * The ID of the course being added to the bundle.
-     * <p>Must be a positive non-null value.</p>
+     * The ID of the course that is being added to the bundle.
+     * <p>Must be a positive non-null value, validated at the API level.</p>
      */
     @NotNull(message = COURSE_ID_NOT_NULL)
     @Positive(message = COURSE_ID_POSITIVE)
     private Long courseId;
 
+    /**
+     * Indicates whether the course-bundle association is active.
+     * <p>If false, the course may not be accessible from the bundle.</p>
+     */
     @NotNull(message = "Is Active field is required")
     private boolean isActive;
 
+    /**
+     * Custom equality check based on all fields of the DTO.
+     *
+     * @param o the object to compare with
+     * @return {@code true} if all properties match, else {@code false}
+     */
     @Override
-    public boolean equals(Object o) {
+    public boolean equals(final Object o) {
         if (this == o) {
             return true;
         }
@@ -67,9 +81,17 @@ public class CourseBundleInDTO {
             return false;
         }
         CourseBundleInDTO that = (CourseBundleInDTO) o;
-        return courseBundleId == that.courseBundleId && isActive == that.isActive && Objects.equals(bundleId, that.bundleId) && Objects.equals(courseId, that.courseId);
+        return courseBundleId == that.courseBundleId
+                && isActive == that.isActive
+                && Objects.equals(bundleId, that.bundleId)
+                && Objects.equals(courseId, that.courseId);
     }
 
+    /**
+     * Computes the hash code based on all fields.
+     *
+     * @return hash code as integer
+     */
     @Override
     public int hashCode() {
         return Objects.hash(courseBundleId, bundleId, courseId, isActive);

@@ -9,18 +9,11 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.Objects;
 
-import static com.nt.course_service_lms.constants.CourseContentConstants.COURSE_ID_NOT_NULL;
-import static com.nt.course_service_lms.constants.CourseContentConstants.COURSE_ID_VALID;
-import static com.nt.course_service_lms.constants.CourseContentConstants.DESCRIPTION_NOT_BLANK;
-import static com.nt.course_service_lms.constants.CourseContentConstants.DESCRIPTION_SIZE_EXCEED;
-import static com.nt.course_service_lms.constants.CourseContentConstants.DESCRIPTION_SIZE_EXCEED_VALUE;
-import static com.nt.course_service_lms.constants.CourseContentConstants.RESOURCE_LINK_INVALID;
-import static com.nt.course_service_lms.constants.CourseContentConstants.TITLE_NOT_BLANK;
-import static com.nt.course_service_lms.constants.CourseContentConstants.TITLE_SIZE_EXCEED;
-import static com.nt.course_service_lms.constants.CourseContentConstants.TITLE_SIZE_EXCEED_VALUE;
+import static com.nt.course_service_lms.constants.CourseContentConstants.*;
 
 /**
  * Data Transfer Object (DTO) for transferring course content data between the
@@ -69,15 +62,18 @@ public class CourseContentInDTO {
     private String description;
 
     /**
+     * The title of the course content.
+     * <p>Required field with a maximum of 100 characters.</p>
+     */
+    @NotBlank(message = CONTENT_TYPE_NOT_BLANK)
+    private String contentType;
+
+    /**
      * The optional URL to additional learning resources.
      * <p>If provided, must be a valid HTTP, HTTPS, or FTP link.</p>
      */
-    @NotNull(message = "Resource Link should not be empty")
-    @Pattern(
-            regexp = "^$|^(https?|ftp)://.*$",
-            message = RESOURCE_LINK_INVALID
-    )
-    private String resourceLink;
+    @NotNull(message = "Resource file should not be empty")
+    private MultipartFile file;
 
     @NotNull(message = "Is Active field is required")
     private boolean isActive;
@@ -91,11 +87,11 @@ public class CourseContentInDTO {
             return false;
         }
         CourseContentInDTO that = (CourseContentInDTO) o;
-        return courseId == that.courseId && isActive == that.isActive && Objects.equals(title, that.title) && Objects.equals(description, that.description) && Objects.equals(resourceLink, that.resourceLink);
+        return courseId == that.courseId && isActive == that.isActive && Objects.equals(title, that.title) && Objects.equals(description, that.description) && Objects.equals(contentType, that.contentType) && Objects.equals(file, that.file);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(courseId, title, description, resourceLink, isActive);
+        return Objects.hash(courseId, title, description,contentType, file, isActive);
     }
 }

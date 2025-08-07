@@ -10,6 +10,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -35,31 +36,6 @@ public class QuizSubmissionController {
     private QuizSubmissionService quizSubmissionService;
 
     /**
-     * Handles manual quiz submission by a user.
-     * This endpoint is used when a user explicitly submits their quiz responses.
-     *
-     * @param quizAttemptId The unique identifier of the quiz attempt being submitted
-     * @param submissionDTO The data transfer object containing user responses and submission details
-     * @return ResponseEntity containing the quiz submission result wrapped in a standard response format
-     * @throws jakarta.validation.ConstraintViolationException if the submission data is invalid
-     */
-    @PostMapping("/manual/{quizAttemptId}")
-    public ResponseEntity<StandardResponseOutDTO<QuizSubmissionResultOutDTO>> submitQuizManually(
-            @PathVariable final Long quizAttemptId,
-            @Valid @RequestBody final QuizSubmissionInDTO submissionDTO) {
-
-        log.info("Manual quiz submission request for attempt: {}", quizAttemptId);
-
-        QuizSubmissionResultOutDTO result = quizSubmissionService.submitQuizManually(
-                quizAttemptId, submissionDTO.getUserResponses());
-
-        StandardResponseOutDTO<QuizSubmissionResultOutDTO> response =
-                StandardResponseOutDTO.success(result, "Quiz submitted manually successfully");
-
-        return new ResponseEntity<>(response, HttpStatus.OK);
-    }
-
-    /**
      * Handles automatic quiz submission when the quiz timer expires.
      * This endpoint is triggered when a quiz attempt times out and needs to be auto-submitted.
      *
@@ -68,6 +44,7 @@ public class QuizSubmissionController {
      * @return ResponseEntity containing the quiz submission result wrapped in a standard response format
      */
     @PostMapping("/timeout/{quizAttemptId}")
+    @PreAuthorize("hasAnyRole('ADMIN', 'EMPLOYEE')")
     public ResponseEntity<StandardResponseOutDTO<QuizSubmissionResultOutDTO>> submitQuizOnTimeout(
             @PathVariable final Long quizAttemptId,
             @RequestBody final QuizSubmissionInDTO submissionDTO) {
@@ -95,6 +72,7 @@ public class QuizSubmissionController {
      * @throws jakarta.validation.ConstraintViolationException if the submission data is invalid
      */
     @PostMapping("/{quizAttemptId}")
+    @PreAuthorize("hasAnyRole('ADMIN', 'EMPLOYEE')")
     public ResponseEntity<StandardResponseOutDTO<QuizSubmissionResultOutDTO>> submitQuiz(
             @PathVariable final Long quizAttemptId,
             @Valid @RequestBody final QuizSubmissionInDTO submissionDTO,

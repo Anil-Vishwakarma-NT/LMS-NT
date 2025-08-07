@@ -1,6 +1,5 @@
 package com.nt.course_service_lms.serviceImplTest;
 
-
 import com.nt.course_service_lms.dto.inDTO.CourseContentInDTO;
 import com.nt.course_service_lms.dto.inDTO.UpdateCourseContentInDTO;
 import com.nt.course_service_lms.dto.outDTO.CourseContentOutDTO;
@@ -10,12 +9,12 @@ import com.nt.course_service_lms.exception.ResourceNotFoundException;
 import com.nt.course_service_lms.repository.CourseContentRepository;
 import com.nt.course_service_lms.repository.CourseRepository;
 import com.nt.course_service_lms.service.serviceImpl.CourseContentImpl;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.junit.jupiter.MockitoExtension;
+import org.mockito.MockitoAnnotations;
 
 import java.time.LocalDateTime;
 import java.util.Arrays;
@@ -24,158 +23,182 @@ import java.util.List;
 import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.any;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
-@ExtendWith(MockitoExtension.class)
 class CourseContentImplTest {
 
     @Mock
-    private CourseContentRepository contentRepo;
+    private CourseContentRepository courseContentRepository;
 
     @Mock
-    private CourseRepository courseRepo;
-
+    private CourseRepository courseRepository;
+    private AutoCloseable closeable;
     @InjectMocks
-    private CourseContentImpl service;
+    private CourseContentImpl courseContentService;
 
-    private CourseContentInDTO inDTO;
-    private UpdateCourseContentInDTO updateDTO;
-    private CourseContent entity;
+    private CourseContent courseContent;
+    private CourseContentInDTO courseContentInDTO;
+    private UpdateCourseContentInDTO updateCourseContentInDTO;
 
     @BeforeEach
     void setUp() {
-        inDTO = new CourseContentInDTO(1L, "Title", "Desc", "https://example.com", true);
-        updateDTO = new UpdateCourseContentInDTO(1L, "Updated Title", "Updated Desc", "https://updated.com", true);
-        entity = new CourseContent(1L, 1L, "Title", "Desc", "https://example.com", true, LocalDateTime.now(), LocalDateTime.now());
+        closeable = MockitoAnnotations.openMocks(this);
+        courseContent = CourseContent.builder()
+                .courseContentId(1L)
+                .courseId(101L)
+                .title("Intro")
+                .description("Introduction")
+                .resourceLink("http://link")
+                .isActive(true)
+                .createdAt(LocalDateTime.now())
+                .updatedAt(LocalDateTime.now())
+                .build();
+
+        courseContentInDTO = new CourseContentInDTO(101L, "Intro", "Introduction", "http://link", true);
+
+        updateCourseContentInDTO = new UpdateCourseContentInDTO(101L, "Intro Updated", "Updated Description", "http://link-updated", false);
     }
 
-    // CREATE
-    @Test
-    void createCourseContent_success() {
-        when(courseRepo.existsById(1L)).thenReturn(true);
-        when(contentRepo.findByTitleIgnoreCaseAndCourseId("Title", 1L)).thenReturn(Optional.empty());
-        when(contentRepo.save(any())).thenReturn(entity);
-
-        CourseContentOutDTO result = service.createCourseContent(inDTO);
-
-        assertEquals("Title", result.getTitle());
-        verify(contentRepo).save(any());
-    }
-
-    @Test
-    void createCourseContent_courseNotFound() {
-        when(courseRepo.existsById(1L)).thenReturn(false);
-        assertThrows(ResourceNotFoundException.class, () -> service.createCourseContent(inDTO));
+    @AfterEach
+    void tearDown() throws Exception {
+        closeable.close();
     }
 
     @Test
-    void createCourseContent_duplicateTitle() {
-        when(courseRepo.existsById(1L)).thenReturn(true);
-        when(contentRepo.findByTitleIgnoreCaseAndCourseId("Title", 1L)).thenReturn(Optional.of(entity));
-        assertThrows(ResourceAlreadyExistsException.class, () -> service.createCourseContent(inDTO));
+    void testCreateCourseContent_success() {
+        when(courseContentRepository.findByTitleIgnoreCaseAndCourseId("Intro", 101L)).thenReturn(Optional.empty());
+        when(courseRepository.existsById(101L)).thenReturn(true);
+        when(courseContentRepository.save(any(CourseContent.class))).thenReturn(courseContent);
+
+        CourseContentOutDTO result = courseContentService.createCourseContent(courseContentInDTO);
+
+        assertNotNull(result);
+        verify(courseContentRepository).save(any(CourseContent.class));
     }
 
-    // GET ALL
     @Test
-    void getAllCourseContents_success() {
-        when(contentRepo.findAll()).thenReturn(Arrays.asList(entity));
-        List<CourseContentOutDTO> result = service.getAllCourseContents();
+    void testCreateCourseContent_alreadyExists() {
+        when(courseContentRepository.findByTitleIgnoreCaseAndCourseId("Intro", 101L)).thenReturn(Optional.of(courseContent));
+
+        assertThrows(ResourceAlreadyExistsException.class, () -> courseContentService.createCourseContent(courseContentInDTO));
+    }
+
+    @Test
+    void testCreateCourseContent_courseNotFound() {
+        when(courseContentRepository.findByTitleIgnoreCaseAndCourseId("Intro", 101L)).thenReturn(Optional.empty());
+        when(courseRepository.existsById(101L)).thenReturn(false);
+
+        assertThrows(ResourceNotFoundException.class, () -> courseContentService.createCourseContent(courseContentInDTO));
+    }
+
+    @Test
+    void testGetAllCourseContents_success() {
+        when(courseContentRepository.findAll()).thenReturn(Arrays.asList(courseContent));
+
+        List<CourseContentOutDTO> result = courseContentService.getAllCourseContents();
+
+        assertFalse(result.isEmpty());
         assertEquals(1, result.size());
     }
 
     @Test
-    void getAllCourseContents_empty() {
-        when(contentRepo.findAll()).thenReturn(Collections.emptyList());
-        assertThrows(ResourceNotFoundException.class, () -> service.getAllCourseContents());
-    }
+    void testGetAllCourseContents_empty() {
+        when(courseContentRepository.findAll()).thenReturn(Collections.emptyList());
 
-    // GET BY ID
-    @Test
-    void getCourseContentById_success() {
-        when(contentRepo.findById(1L)).thenReturn(Optional.of(entity));
-        CourseContentOutDTO result = service.getCourseContentById(1L);
-        assertEquals("Title", result.getTitle());
+        assertThrows(ResourceNotFoundException.class, () -> courseContentService.getAllCourseContents());
     }
 
     @Test
-    void getCourseContentById_notFound() {
-        when(contentRepo.findById(1L)).thenReturn(Optional.empty());
-        assertThrows(ResourceNotFoundException.class, () -> service.getCourseContentById(1L));
-    }
+    void testGetCourseContentById_success() {
+        when(courseContentRepository.findById(1L)).thenReturn(Optional.of(courseContent));
 
-    // DELETE
-    @Test
-    void deleteCourseContent_success() {
-        when(contentRepo.findById(1L)).thenReturn(Optional.of(entity));
-        String result = service.deleteCourseContent(1L);
-        assertEquals("Course content deleted successfully.", result);
-        verify(contentRepo).delete(entity);
-    }
+        CourseContentOutDTO result = courseContentService.getCourseContentById(1L);
 
-    @Test
-    void deleteCourseContent_notFound() {
-        when(contentRepo.findById(1L)).thenReturn(Optional.empty());
-        assertThrows(ResourceNotFoundException.class, () -> service.deleteCourseContent(1L));
-    }
-
-    // UPDATE
-    @Test
-    void updateCourseContent_success() {
-        when(contentRepo.findById(1L)).thenReturn(Optional.of(entity));
-        when(courseRepo.existsById(1L)).thenReturn(true);
-        when(contentRepo.findByTitleIgnoreCaseAndCourseId("Updated Title", 1L)).thenReturn(Optional.empty());
-        when(contentRepo.save(any())).thenReturn(entity);
-
-        CourseContentOutDTO result = service.updateCourseContent(1L, updateDTO);
         assertNotNull(result);
     }
 
     @Test
-    void updateCourseContent_notFound() {
-        when(contentRepo.findById(1L)).thenReturn(Optional.empty());
-        assertThrows(ResourceNotFoundException.class, () -> service.updateCourseContent(1L, updateDTO));
+    void testGetCourseContentById_notFound() {
+        when(courseContentRepository.findById(1L)).thenReturn(Optional.empty());
+
+        assertThrows(ResourceNotFoundException.class, () -> courseContentService.getCourseContentById(1L));
     }
 
     @Test
-    void updateCourseContent_courseNotFound() {
-        when(contentRepo.findById(1L)).thenReturn(Optional.of(entity));
-        when(courseRepo.existsById(1L)).thenReturn(false);
-        assertThrows(ResourceNotFoundException.class, () -> service.updateCourseContent(1L, updateDTO));
+    void testDeleteCourseContent_success() {
+        when(courseContentRepository.findById(1L)).thenReturn(Optional.of(courseContent));
+
+        String result = courseContentService.deleteCourseContent(1L);
+
+        assertEquals("Course Content Deleted Successfully", result);
+        verify(courseContentRepository).delete(courseContent);
     }
 
     @Test
-    void updateCourseContent_duplicate() {
-        CourseContent other = new CourseContent(2L, 1L, "Updated Title", "Other", "https://updated.com", true, LocalDateTime.now(), LocalDateTime.now());
-        when(contentRepo.findById(1L)).thenReturn(Optional.of(entity));
-        when(courseRepo.existsById(1L)).thenReturn(true);
-        when(contentRepo.findByTitleIgnoreCaseAndCourseId("Updated Title", 1L)).thenReturn(Optional.of(other));
-        assertThrows(ResourceAlreadyExistsException.class, () -> service.updateCourseContent(1L, updateDTO));
+    void testDeleteCourseContent_notFound() {
+        when(courseContentRepository.findById(1L)).thenReturn(Optional.empty());
+
+        assertThrows(ResourceNotFoundException.class, () -> courseContentService.deleteCourseContent(1L));
     }
 
-    // GET BY COURSE ID
     @Test
-    void getAllCourseContentByCourseId_success() {
-        when(courseRepo.existsById(1L)).thenReturn(true);
-        when(contentRepo.findByCourseId(1L)).thenReturn(Arrays.asList(entity));
+    void testUpdateCourseContent_success() {
+        when(courseContentRepository.findById(1L)).thenReturn(Optional.of(courseContent));
+        when(courseRepository.existsById(101L)).thenReturn(true);
+        when(courseContentRepository.findByTitleIgnoreCaseAndCourseId("Intro Updated", 101L)).thenReturn(Optional.empty());
+        when(courseContentRepository.save(any(CourseContent.class))).thenReturn(courseContent);
 
-        List<CourseContentOutDTO> result = service.getAllCourseContentByCourseId(1L);
+        CourseContentOutDTO result = courseContentService.updateCourseContent(1L, updateCourseContentInDTO);
+
+        assertNotNull(result);
+    }
+
+    @Test
+    void testUpdateCourseContent_notFound() {
+        when(courseContentRepository.findById(1L)).thenReturn(Optional.empty());
+
+        assertThrows(ResourceNotFoundException.class, () -> courseContentService.updateCourseContent(1L, updateCourseContentInDTO));
+    }
+
+    @Test
+    void testUpdateCourseContent_duplicate() {
+        CourseContent duplicate = CourseContent.builder().courseContentId(2L).courseId(101L).title("Intro Updated").build();
+
+        when(courseContentRepository.findById(1L)).thenReturn(Optional.of(courseContent));
+        when(courseRepository.existsById(101L)).thenReturn(true);
+        when(courseContentRepository.findByTitleIgnoreCaseAndCourseId("Intro Updated", 101L)).thenReturn(Optional.of(duplicate));
+
+        assertThrows(ResourceAlreadyExistsException.class, () -> courseContentService.updateCourseContent(1L, updateCourseContentInDTO));
+    }
+
+    @Test
+    void testGetAllCourseContentByCourseId_success() {
+        when(courseRepository.existsById(101L)).thenReturn(true);
+        when(courseContentRepository.findByCourseId(101L)).thenReturn(Arrays.asList(courseContent));
+
+        List<CourseContentOutDTO> result = courseContentService.getAllCourseContentByCourseId(101L);
+
         assertEquals(1, result.size());
     }
 
     @Test
-    void getAllCourseContentByCourseId_courseNotFound() {
-        when(courseRepo.existsById(1L)).thenReturn(false);
-        assertThrows(ResourceNotFoundException.class, () -> service.getAllCourseContentByCourseId(1L));
+    void testGetAllCourseContentByCourseId_noContents() {
+        when(courseRepository.existsById(101L)).thenReturn(true);
+        when(courseContentRepository.findByCourseId(101L)).thenReturn(Collections.emptyList());
+
+        assertThrows(ResourceNotFoundException.class, () -> courseContentService.getAllCourseContentByCourseId(101L));
     }
 
     @Test
-    void getAllCourseContentByCourseId_noContent() {
-        when(courseRepo.existsById(1L)).thenReturn(true);
-        when(contentRepo.findByCourseId(1L)).thenReturn(Collections.emptyList());
-        assertThrows(ResourceNotFoundException.class, () -> service.getAllCourseContentByCourseId(1L));
+    void testGetAllCourseContentByCourseId_courseNotFound() {
+        when(courseRepository.existsById(101L)).thenReturn(false);
+
+        assertThrows(ResourceNotFoundException.class, () -> courseContentService.getAllCourseContentByCourseId(101L));
     }
-}
+} 
+

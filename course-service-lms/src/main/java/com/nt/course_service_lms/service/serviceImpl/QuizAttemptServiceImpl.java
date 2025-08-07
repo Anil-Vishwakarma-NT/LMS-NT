@@ -1,14 +1,25 @@
 package com.nt.course_service_lms.service.serviceImpl;
 
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.nt.course_service_lms.dto.inDTO.QuizAttemptCreateInDTO;
 import com.nt.course_service_lms.dto.inDTO.QuizAttemptUpdateInDTO;
+import com.nt.course_service_lms.dto.outDTO.CourseOutDTO;
+import com.nt.course_service_lms.dto.outDTO.QuizAttemptDetailsByCourseIDOutDTO;
+import com.nt.course_service_lms.dto.outDTO.QuizAttemptDetailsByUserIDOutDTO;
 import com.nt.course_service_lms.dto.outDTO.QuizAttemptOutDTO;
+import com.nt.course_service_lms.dto.outDTO.UserQuizAttemptDetailsOutDTO;
+import com.nt.course_service_lms.dto.outDTO.UserResponseWithCorrectAnswerOutDTO;
 import com.nt.course_service_lms.entity.Quiz;
 import com.nt.course_service_lms.entity.QuizAttempt;
+import com.nt.course_service_lms.entity.QuizQuestion;
+import com.nt.course_service_lms.entity.UserResponse;
 import com.nt.course_service_lms.exception.ResourceNotFoundException;
 import com.nt.course_service_lms.exception.ResourceNotValidException;
 import com.nt.course_service_lms.repository.QuizAttemptRepository;
+import com.nt.course_service_lms.repository.QuizQuestionRepository;
 import com.nt.course_service_lms.repository.QuizRepository;
+import com.nt.course_service_lms.repository.UserResponseRepository;
 import com.nt.course_service_lms.service.QuizAttemptService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -18,24 +29,27 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.math.BigDecimal;
+import java.math.RoundingMode;
+import java.sql.Timestamp;
+import java.time.Instant;
 import java.time.LocalDateTime;
+import java.time.ZoneOffset;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.Objects;
 import java.util.Optional;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 /**
- * Service implementation for QuizAttempt operations in the Learning Management System.
- * This class provides comprehensive functionality for managing quiz attempts including
- * creation, updating, retrieval, completion, abandonment, and timeout operations.
- *
- * <p>The service ensures proper validation of quiz attempt states and enforces
- * business rules such as maximum allowed attempts per user per quiz.</p>
- *
- * <p>All operations are transactional to ensure data consistency and integrity.</p>
- *
- * @author Course Service LMS Team
- * @version 1.0
- * @since 1.0
+ * Service implementation for managing quiz attempts in the Learning Management System.
+ * Provides operations for creating, updating, retrieving, and managing quiz attempt lifecycle.
  */
 @Service
 @RequiredArgsConstructor
@@ -44,40 +58,41 @@ import java.util.stream.Collectors;
 public class QuizAttemptServiceImpl implements QuizAttemptService {
 
     /**
-     * Constant representing the "IN_PROGRESS" status for quiz attempts.
-     * This status indicates that a quiz attempt is currently active and ongoing.
+     * Status constant for ongoing quiz attempts.
+     * Used to identify active quiz sessions.
      */
     public static final String IN_PROGRESS = "IN_PROGRESS";
 
     /**
-     * Repository for performing CRUD operations on QuizAttempt entities.
-     * Provides access to the underlying database for quiz attempt data.
+     * Repository for quiz attempt database operations.
+     * Handles CRUD operations for QuizAttempt entities.
      */
     private final QuizAttemptRepository quizAttemptRepository;
 
     /**
-     * Repository for performing CRUD operations on Quiz entities.
-     * Used to validate quiz existence and retrieve quiz configuration.
+     * Repository for quiz database operations.
+     * Used for quiz validation and configuration retrieval.
      */
     private final QuizRepository quizRepository;
 
     /**
-     * Creates a new quiz attempt for a user and quiz combination.
+     * Repository for user response database operations.
+     * Manages user answers and response data.
+     */
+    private final UserResponseRepository userResponseRepository;
+
+    /**
+     * Repository for quiz question database operations.
+     * Handles quiz question retrieval and validation.
+     */
+    private final QuizQuestionRepository quizQuestionRepository;
+
+    /**
+     * Creates a new quiz attempt for a user.
+     * Validates quiz existence and enforces attempt limits.
      *
-     * <p>This method performs the following operations:</p>
-     * <ul>
-     *   <li>Validates input parameters (userId and quizId)</li>
-     *   <li>Checks if the quiz exists</li>
-     *   <li>Verifies if user has any active attempts for the quiz</li>
-     *   <li>Calculates the next attempt number</li>
-     *   <li>Validates against maximum allowed attempts</li>
-     *   <li>Creates and saves the new quiz attempt</li>
-     * </ul>
-     *
-     * @param dto the data transfer object containing user ID and quiz ID for creating the attempt
-     * @return QuizAttemptOutDTO containing the created attempt details with remaining attempts count
-     * @throws ResourceNotValidException if input validation fails or maximum attempts exceeded
-     * @throws ResourceNotFoundException if the specified quiz is not found
+     * @param dto the quiz attempt creation data
+     * @return QuizAttemptOutDTO the created attempt details
      */
     @Override
     public QuizAttemptOutDTO createQuizAttempt(final QuizAttemptCreateInDTO dto) {
@@ -141,23 +156,12 @@ public class QuizAttemptServiceImpl implements QuizAttemptService {
     }
 
     /**
-     * Updates an existing quiz attempt with new information.
+     * Updates an existing quiz attempt with new data.
+     * Validates status transitions and auto-sets finished timestamp.
      *
-     * <p>This method allows updating various fields of a quiz attempt including:</p>
-     * <ul>
-     *   <li>Finished timestamp</li>
-     *   <li>Score details</li>
-     *   <li>Status (with validation for valid transitions)</li>
-     * </ul>
-     *
-     * <p>The method automatically sets the finished timestamp when the status
-     * is changed to COMPLETED, ABANDONED, or TIMED_OUT.</p>
-     *
-     * @param quizAttemptId the unique identifier of the quiz attempt to update
-     * @param dto           the data transfer object containing the fields to update
-     * @return QuizAttemptOutDTO containing the updated attempt details
-     * @throws ResourceNotValidException if the quiz attempt ID is null or status transition is invalid
-     * @throws ResourceNotFoundException if the quiz attempt with the given ID is not found
+     * @param quizAttemptId the attempt ID to update
+     * @param dto the update data
+     * @return QuizAttemptOutDTO the updated attempt details
      */
     @Override
     public QuizAttemptOutDTO updateQuizAttempt(final Long quizAttemptId, final QuizAttemptUpdateInDTO dto) {
@@ -205,10 +209,10 @@ public class QuizAttemptServiceImpl implements QuizAttemptService {
 
     /**
      * Retrieves a quiz attempt by its unique identifier.
+     * Returns empty optional if attempt not found.
      *
-     * @param quizAttemptId the unique identifier of the quiz attempt to retrieve
-     * @return Optional containing QuizAttemptOutDTO if found, empty otherwise
-     * @throws ResourceNotValidException if the quiz attempt ID is null
+     * @param quizAttemptId the attempt ID to retrieve
+     * @return Optional<QuizAttemptOutDTO> the attempt details if found
      */
     @Override
     @Transactional(readOnly = true)
@@ -225,10 +229,10 @@ public class QuizAttemptServiceImpl implements QuizAttemptService {
 
     /**
      * Retrieves all quiz attempts with pagination support.
+     * Returns paginated results with sorting capabilities.
      *
-     * @param pageable the pagination information including page number, size, and sorting
-     * @return Page containing QuizAttemptOutDTO objects with pagination metadata
-     * @throws ResourceNotValidException if the pageable parameter is null
+     * @param pageable the pagination parameters
+     * @return Page<QuizAttemptOutDTO> paginated attempt results
      */
     @Override
     @Transactional(readOnly = true)
@@ -248,11 +252,11 @@ public class QuizAttemptServiceImpl implements QuizAttemptService {
     }
 
     /**
-     * Retrieves all quiz attempts for a specific user, ordered by creation date (newest first).
+     * Retrieves all quiz attempts for a specific user.
+     * Returns attempts ordered by creation date descending.
      *
-     * @param userId the unique identifier of the user whose attempts to retrieve
-     * @return List of QuizAttemptOutDTO objects ordered by creation date descending
-     * @throws ResourceNotValidException if the user ID is null
+     * @param userId the user ID to filter by
+     * @return List<QuizAttemptOutDTO> user's quiz attempts
      */
     @Override
     @Transactional(readOnly = true)
@@ -270,11 +274,11 @@ public class QuizAttemptServiceImpl implements QuizAttemptService {
     }
 
     /**
-     * Retrieves all quiz attempts for a specific quiz, ordered by creation date (newest first).
+     * Retrieves all quiz attempts for a specific quiz.
+     * Returns attempts ordered by creation date descending.
      *
-     * @param quizId the unique identifier of the quiz whose attempts to retrieve
-     * @return List of QuizAttemptOutDTO objects ordered by creation date descending
-     * @throws ResourceNotValidException if the quiz ID is null
+     * @param quizId the quiz ID to filter by
+     * @return List<QuizAttemptOutDTO> quiz's attempt history
      */
     @Override
     @Transactional(readOnly = true)
@@ -292,13 +296,12 @@ public class QuizAttemptServiceImpl implements QuizAttemptService {
     }
 
     /**
-     * Retrieves all quiz attempts for a specific user and quiz combination,
-     * ordered by attempt number (highest first).
+     * Retrieves quiz attempts for a specific user and quiz combination.
+     * Returns attempts ordered by attempt number descending.
      *
-     * @param userId the unique identifier of the user
-     * @param quizId the unique identifier of the quiz
-     * @return List of QuizAttemptOutDTO objects ordered by attempt number descending
-     * @throws ResourceNotValidException if either user ID or quiz ID is null
+     * @param userId the user ID
+     * @param quizId the quiz ID
+     * @return List<QuizAttemptOutDTO> matching attempts
      */
     @Override
     @Transactional(readOnly = true)
@@ -316,11 +319,11 @@ public class QuizAttemptServiceImpl implements QuizAttemptService {
     }
 
     /**
-     * Retrieves all quiz attempts with a specific status, ordered by creation date (newest first).
+     * Retrieves quiz attempts filtered by status.
+     * Returns attempts ordered by creation date descending.
      *
-     * @param status the status to filter by (IN_PROGRESS, COMPLETED, ABANDONED, TIMED_OUT)
-     * @return List of QuizAttemptOutDTO objects with the specified status
-     * @throws ResourceNotValidException if the status is null, empty, or invalid
+     * @param status the status to filter by
+     * @return List<QuizAttemptOutDTO> matching attempts
      */
     @Override
     @Transactional(readOnly = true)
@@ -342,12 +345,12 @@ public class QuizAttemptServiceImpl implements QuizAttemptService {
     }
 
     /**
-     * Retrieves the most recent quiz attempt for a specific user and quiz combination.
+     * Retrieves the most recent attempt for a user and quiz.
+     * Returns empty optional if no attempts found.
      *
-     * @param userId the unique identifier of the user
-     * @param quizId the unique identifier of the quiz
-     * @return Optional containing the latest QuizAttemptOutDTO if found, empty otherwise
-     * @throws ResourceNotValidException if either user ID or quiz ID is null
+     * @param userId the user ID
+     * @param quizId the quiz ID
+     * @return Optional<QuizAttemptOutDTO> latest attempt if exists
      */
     @Override
     @Transactional(readOnly = true)
@@ -364,10 +367,9 @@ public class QuizAttemptServiceImpl implements QuizAttemptService {
 
     /**
      * Permanently deletes a quiz attempt from the system.
+     * Validates attempt existence before deletion.
      *
-     * @param quizAttemptId the unique identifier of the quiz attempt to delete
-     * @throws ResourceNotValidException if the quiz attempt ID is null
-     * @throws ResourceNotFoundException if the quiz attempt with the given ID is not found
+     * @param quizAttemptId the attempt ID to delete
      */
     @Override
     public void deleteQuizAttempt(final Long quizAttemptId) {
@@ -386,16 +388,12 @@ public class QuizAttemptServiceImpl implements QuizAttemptService {
     }
 
     /**
-     * Marks a quiz attempt as completed and records the score details.
+     * Marks a quiz attempt as completed with score details.
+     * Only IN_PROGRESS attempts can be completed.
      *
-     * <p>This method can only be called on attempts with "IN_PROGRESS" status.
-     * It automatically sets the finished timestamp to the current time.</p>
-     *
-     * @param quizAttemptId the unique identifier of the quiz attempt to complete
-     * @param scoreDetails  the score details or results of the completed attempt
-     * @return QuizAttemptOutDTO containing the completed attempt details
-     * @throws ResourceNotValidException if the quiz attempt ID is null or attempt cannot be completed
-     * @throws ResourceNotFoundException if the quiz attempt with the given ID is not found
+     * @param quizAttemptId the attempt ID to complete
+     * @param scoreDetails the completion score data
+     * @return QuizAttemptOutDTO the completed attempt
      */
     @Override
     public QuizAttemptOutDTO completeAttempt(final Long quizAttemptId, final String scoreDetails) {
@@ -424,14 +422,10 @@ public class QuizAttemptServiceImpl implements QuizAttemptService {
 
     /**
      * Marks a quiz attempt as abandoned by the user.
+     * Only IN_PROGRESS attempts can be abandoned.
      *
-     * <p>This method can only be called on attempts with "IN_PROGRESS" status.
-     * It automatically sets the finished timestamp to the current time.</p>
-     *
-     * @param quizAttemptId the unique identifier of the quiz attempt to abandon
-     * @return QuizAttemptOutDTO containing the abandoned attempt details
-     * @throws ResourceNotValidException if the quiz attempt ID is null or attempt cannot be abandoned
-     * @throws ResourceNotFoundException if the quiz attempt with the given ID is not found
+     * @param quizAttemptId the attempt ID to abandon
+     * @return QuizAttemptOutDTO the abandoned attempt
      */
     @Override
     public QuizAttemptOutDTO abandonAttempt(final Long quizAttemptId) {
@@ -458,15 +452,11 @@ public class QuizAttemptServiceImpl implements QuizAttemptService {
     }
 
     /**
-     * Marks a quiz attempt as timed out due to exceeding the time limit.
+     * Marks a quiz attempt as timed out due to time limit.
+     * Only IN_PROGRESS attempts can be timed out.
      *
-     * <p>This method can only be called on attempts with "IN_PROGRESS" status.
-     * It automatically sets the finished timestamp to the current time.</p>
-     *
-     * @param quizAttemptId the unique identifier of the quiz attempt to time out
-     * @return QuizAttemptOutDTO containing the timed out attempt details
-     * @throws ResourceNotValidException if the quiz attempt ID is null or attempt cannot be timed out
-     * @throws ResourceNotFoundException if the quiz attempt with the given ID is not found
+     * @param quizAttemptId the attempt ID to time out
+     * @return QuizAttemptOutDTO the timed out attempt
      */
     @Override
     public QuizAttemptOutDTO timeOutAttempt(final Long quizAttemptId) {
@@ -493,11 +483,257 @@ public class QuizAttemptServiceImpl implements QuizAttemptService {
     }
 
     /**
-     * Checks if a quiz attempt exists with the given ID.
+     * Retrieves detailed user attempt information for a course.
+     * Includes responses, scores, and question details with optimized queries.
      *
-     * @param quizAttemptId the unique identifier of the quiz attempt to check
-     * @return true if the quiz attempt exists, false otherwise
-     * @throws ResourceNotValidException if the quiz attempt ID is null
+     * @param userId the user ID
+     * @param courseId the course ID
+     * @return List<UserQuizAttemptDetailsOutDTO> detailed attempt data
+     */
+    @Override
+    public List<UserQuizAttemptDetailsOutDTO> getUserAttemptDetails(Long userId, Long courseId) {
+        try {
+            // Single query to get all quiz attempts for user in the course with quiz details
+            // This replaces multiple separate queries
+            List<Object[]> attemptData = quizAttemptRepository.findUserAttemptDetailsWithQuizInfo(userId, courseId);
+
+            if (attemptData.isEmpty()) {
+                return new ArrayList<>();
+            }
+
+            // Extract unique quiz IDs and attempt info for bulk queries
+            Set<Long> quizIds = new HashSet<>();
+            Set<String> attemptKeys = new HashSet<>();
+
+            for (Object[] data : attemptData) {
+                Long quizId = (Long) data[2]; // quiz_id from the query
+                Long attempt = (Long) data[1]; // attempt from the query
+                quizIds.add(quizId);
+                attemptKeys.add(userId + "_" + quizId + "_" + attempt);
+            }
+
+            // Bulk fetch all user responses for all attempts in one query
+            List<UserResponse> allUserResponses = userResponseRepository
+                    .findByUserIdAndQuizIdInAndAttemptIn(userId, new ArrayList<>(quizIds),
+                            attemptData.stream().map(data -> (Long) data[1]).collect(Collectors.toList()));
+
+            // Bulk fetch all quiz questions for all quizzes in one query
+            List<QuizQuestion> allQuizQuestions = quizQuestionRepository
+                    .findByQuizIdInOrderByQuizIdAscPositionAsc(new ArrayList<>(quizIds));
+
+            // Group data by quiz_id and attempt for efficient processing
+            Map<String, List<UserResponse>> responsesByAttempt = allUserResponses.stream()
+                    .collect(Collectors.groupingBy(r -> r.getUserId() + "_" + r.getQuizId() + "_" + r.getAttempt()));
+
+            Map<Long, List<QuizQuestion>> questionsByQuiz = allQuizQuestions.stream()
+                    .collect(Collectors.groupingBy(QuizQuestion::getQuizId));
+
+            // Create a map of questionId to correct answer for quick lookup
+            Map<Long, String> correctAnswersByQuestionId = allQuizQuestions.stream()
+                    .collect(Collectors.toMap(QuizQuestion::getQuestionId, QuizQuestion::getCorrectAnswer));
+
+            // Create a map of questionId to question text for quick lookup
+            Map<Long, String> questionTextByQuestionId = allQuizQuestions.stream()
+                    .collect(Collectors.toMap(QuizQuestion::getQuestionId, QuizQuestion::getQuestionText));
+
+            // Create a map of questionId to options for quick lookup
+            Map<Long, String> optionsByQuestionId = allQuizQuestions.stream()
+                    .collect(Collectors.toMap(QuizQuestion::getQuestionId,
+                            q -> q.getOptions() != null ? q.getOptions() : ""));
+
+            // Pre-calculate max scores for each quiz to avoid repeated calculations
+            Map<Long, BigDecimal> maxScoresByQuiz = questionsByQuiz.entrySet().stream()
+                    .collect(Collectors.toMap(
+                            Map.Entry::getKey,
+                            entry -> entry.getValue().stream()
+                                    .map(QuizQuestion::getPoints)
+                                    .reduce(BigDecimal.ZERO, BigDecimal::add)
+                    ));
+
+            List<UserQuizAttemptDetailsOutDTO> results = new ArrayList<>();
+
+            // Process each attempt
+            for (Object[] data : attemptData) {
+                // Extract data from the joined query result with proper type conversion
+                Long quizAttemptId = (Long) data[0];
+                Long attempt = (Long) data[1];
+                Long quizId = (Long) data[2];
+
+                // Convert Timestamp to LocalDateTime safely
+                LocalDateTime startedAt = convertTimestampToLocalDateTime(data[3]);
+                LocalDateTime finishedAt = convertTimestampToLocalDateTime(data[4]);
+
+                String scoreDetails = (String) data[5];
+                String status = (String) data[6];
+
+                // Convert Timestamp to LocalDateTime safely
+                LocalDateTime createdAt = convertTimestampToLocalDateTime(data[7]);
+                LocalDateTime updatedAt = convertTimestampToLocalDateTime(data[8]);
+
+                String quizTitle = (String) data[9];
+                String quizDescription = (String) data[10];
+                Integer timeLimit = (Integer) data[11];
+                Integer attemptsAllowed = (Integer) data[12];
+                BigDecimal passingScore = (BigDecimal) data[13];
+
+                String attemptKey = userId + "_" + quizId + "_" + attempt;
+
+                // Get responses for this specific attempt
+                List<UserResponse> attemptResponses = responsesByAttempt.getOrDefault(attemptKey, new ArrayList<>());
+
+                // Get questions for this quiz
+                List<QuizQuestion> quizQuestions = questionsByQuiz.getOrDefault(quizId, new ArrayList<>());
+
+                // Calculate scores and statistics
+                BigDecimal totalScore = attemptResponses.stream()
+                        .map(UserResponse::getPointsEarned)
+                        .reduce(BigDecimal.ZERO, BigDecimal::add);
+
+                BigDecimal maxPossibleScore = maxScoresByQuiz.getOrDefault(quizId, BigDecimal.ZERO);
+
+                long correctAnswers = attemptResponses.stream()
+                        .mapToLong(response -> response.getIsCorrect() ? 1L : 0L)
+                        .sum();
+
+                long totalQuestions = quizQuestions.size();
+
+                BigDecimal percentageScore = maxPossibleScore.compareTo(BigDecimal.ZERO) > 0
+                        ? totalScore.multiply(BigDecimal.valueOf(100))
+                        .divide(maxPossibleScore, 2, RoundingMode.HALF_UP)
+                        : BigDecimal.ZERO;
+
+                // Convert responses to DTOs with correct answers, question text, and options
+                List<UserResponseWithCorrectAnswerOutDTO> responseOutDTOs = attemptResponses.stream()
+                        .map(response -> convertToUserResponseWithCorrectAnswerOutDTO(response, correctAnswersByQuestionId, questionTextByQuestionId, optionsByQuestionId))
+                        .collect(Collectors.toList());
+
+                // Build QuizAttemptOutDTO from query data
+                QuizAttemptOutDTO attemptOutDTO = QuizAttemptOutDTO.builder()
+                        .quizAttemptId(quizAttemptId)
+                        .attempt(attempt)
+                        .quizId(quizId)
+                        .userId(userId)
+                        .startedAt(startedAt)
+                        .finishedAt(finishedAt)
+                        .scoreDetails(scoreDetails)
+                        .status(status)
+                        .createdAt(createdAt)
+                        .updatedAt(updatedAt)
+                        .build();
+
+                // Determine submission type
+                String submissionType = determineSubmissionType(status);
+
+                // Build the result DTO
+                UserQuizAttemptDetailsOutDTO resultDTO = UserQuizAttemptDetailsOutDTO.builder()
+                        .quizAttempt(attemptOutDTO)
+                        .userResponses(responseOutDTOs)
+                        .totalScore(totalScore)
+                        .maxPossibleScore(maxPossibleScore)
+                        .correctAnswers(correctAnswers)
+                        .totalQuestions(totalQuestions)
+                        .percentageScore(percentageScore)
+                        .submissionType(submissionType)
+                        .submittedAt(finishedAt)
+                        .build();
+
+                results.add(resultDTO);
+            }
+
+            // Sort results by attempt number (most recent first)
+            results.sort((a, b) -> b.getQuizAttempt().getAttempt().compareTo(a.getQuizAttempt().getAttempt()));
+
+            return results;
+
+        } catch (Exception e) {
+            log.error("Error fetching user attempt details for userId: {} and courseId: {}", userId, courseId, e);
+            throw new RuntimeException("Failed to fetch user attempt details", e);
+        }
+    }
+
+    /**
+     * Converts UserResponse entity to DTO with additional question data.
+     * Includes correct answers, question text, and options for comprehensive response data.
+     *
+     * @param userResponse the user response entity
+     * @param correctAnswersByQuestionId map of question ID to correct answer
+     * @param questionTextByQuestionId map of question ID to question text
+     * @param optionsByQuestionId map of question ID to options
+     * @return UserResponseWithCorrectAnswerOutDTO complete response data
+     */
+    private UserResponseWithCorrectAnswerOutDTO convertToUserResponseWithCorrectAnswerOutDTO(
+            UserResponse userResponse, Map<Long, String> correctAnswersByQuestionId,
+            Map<Long, String> questionTextByQuestionId, Map<Long, String> optionsByQuestionId) {
+
+        String correctAnswer = correctAnswersByQuestionId.get(userResponse.getQuestionId());
+        String questionText = questionTextByQuestionId.get(userResponse.getQuestionId());
+        String options = optionsByQuestionId.get(userResponse.getQuestionId());
+
+        return UserResponseWithCorrectAnswerOutDTO.builder()
+                .responseId(userResponse.getResponseId())
+                .userId(userResponse.getUserId())
+                .quizId(userResponse.getQuizId())
+                .questionId(userResponse.getQuestionId())
+                .questionText(questionText)
+                .attempt(userResponse.getAttempt())
+                .options(options)
+                .userAnswer(userResponse.getUserAnswer())
+                .correctAnswer(correctAnswer)
+                .isCorrect(userResponse.getIsCorrect())
+                .pointsEarned(userResponse.getPointsEarned())
+                .answeredAt(userResponse.getAnsweredAt())
+                .build();
+    }
+
+    /**
+     * Safely converts timestamp objects to LocalDateTime.
+     * Handles Timestamp and LocalDateTime object types with null safety.
+     *
+     * @param timestamp the timestamp object to convert
+     * @return LocalDateTime the converted timestamp or null
+     */
+    private LocalDateTime convertTimestampToLocalDateTime(Object timestamp) {
+        if (timestamp == null) {
+            return null;
+        }
+
+        if (timestamp instanceof java.sql.Timestamp) {
+            return ((java.sql.Timestamp) timestamp).toLocalDateTime();
+        } else if (timestamp instanceof java.time.LocalDateTime) {
+            return (java.time.LocalDateTime) timestamp;
+        } else {
+            throw new IllegalArgumentException("Unsupported timestamp type: " + timestamp.getClass());
+        }
+    }
+
+    /**
+     * Determines submission type based on attempt status.
+     * Maps attempt status to user-friendly submission types.
+     *
+     * @param status the attempt status
+     * @return String the submission type
+     */
+    private String determineSubmissionType(String status) {
+        switch (status) {
+            case "COMPLETED":
+                return "MANUAL_SUBMIT";
+            case "TIMED_OUT":
+                return "AUTO_SUBMIT";
+            case "ABANDONED":
+                return "ABANDONED";
+            case "IN_PROGRESS":
+                return "IN_PROGRESS";
+            default:
+                return "UNKNOWN";
+        }
+    }
+
+    /**
+     * Checks if a quiz attempt exists by ID.
+     * Validates existence without loading the full entity.
+     *
+     * @param quizAttemptId the attempt ID to check
+     * @return boolean true if exists, false otherwise
      */
     @Override
     @Transactional(readOnly = true)
@@ -510,12 +746,12 @@ public class QuizAttemptServiceImpl implements QuizAttemptService {
     }
 
     /**
-     * Counts the total number of attempts made by a user for a specific quiz.
+     * Counts total attempts by a user for a specific quiz.
+     * Returns the number of attempts regardless of status.
      *
-     * @param userId the unique identifier of the user
-     * @param quizId the unique identifier of the quiz
-     * @return the total count of attempts made by the user for the quiz
-     * @throws ResourceNotValidException if either user ID or quiz ID is null
+     * @param userId the user ID
+     * @param quizId the quiz ID
+     * @return long the count of attempts
      */
     @Override
     @Transactional(readOnly = true)
@@ -530,14 +766,356 @@ public class QuizAttemptServiceImpl implements QuizAttemptService {
     }
 
     /**
-     * Converts a QuizAttempt entity to a QuizAttemptOutDTO for external representation.
+     * Retrieves detailed quiz attempt information grouped by user.
+     * Includes course details and comprehensive attempt data with responses.
      *
-     * <p>This method performs a field-by-field mapping from the entity to the DTO,
-     * ensuring that all relevant data is transferred while maintaining proper
-     * separation between internal entity structure and external API contracts.</p>
+     * @param userId the user ID to get details for
+     * @return List<QuizAttemptDetailsByUserIDOutDTO> user's attempt details by course
+     */
+    @Transactional(readOnly = true)
+    public List<QuizAttemptDetailsByUserIDOutDTO> getQuizAttemptDetailsByUserID(Long userId) {
+        List<Object[]> results = quizAttemptRepository.findQuizAttemptDetailsByUserId(userId);
+
+        if (results.isEmpty()) {
+            return Collections.emptyList();
+        }
+
+        // Group results by course - using correct index for c.course_id
+        Map<Long, List<Object[]>> groupedByCourse = results.stream()
+                .filter(row -> row[23] != null) // Ensure c.course_id is not null
+                .collect(Collectors.groupingBy(row -> ((Number) row[23]).longValue())); // c.course_id is at index 23
+
+        return groupedByCourse.entrySet().stream()
+                .map(courseEntry -> {
+                    Long courseId = courseEntry.getKey();
+                    List<Object[]> courseResults = courseEntry.getValue();
+
+                    // Build course DTO from first row
+                    Object[] firstRow = courseResults.get(0);
+                    CourseOutDTO courseOutDTO = buildCourseOutDTO(firstRow);
+
+                    // Group by quiz attempt
+                    Map<String, List<Object[]>> groupedByAttempt = courseResults.stream()
+                            .collect(Collectors.groupingBy(row ->
+                                    row[0] + "_" + row[1] + "_" + row[2])); // quiz_attempt_id + attempt + quiz_id
+
+                    List<UserQuizAttemptDetailsOutDTO> attemptDetails = groupedByAttempt.entrySet().stream()
+                            .map(attemptEntry -> buildUserQuizAttemptDetailsOutDTO(attemptEntry.getValue()))
+                            .collect(Collectors.toList());
+
+                    return QuizAttemptDetailsByUserIDOutDTO.builder()
+                            .courseOutDTO(courseOutDTO)
+                            .userQuizAttemptDetailsOutDTOS(attemptDetails)
+                            .build();
+                })
+                .collect(Collectors.toList());
+    }
+
+    /**
+     * Retrieves detailed quiz attempt information grouped by course.
+     * Includes user details and comprehensive attempt data with responses.
      *
-     * @param quizAttempt the QuizAttempt entity to convert
-     * @return QuizAttemptOutDTO containing the converted data
+     * @param courseId the course ID to get details for
+     * @return List<QuizAttemptDetailsByCourseIDOutDTO> course's attempt details by user
+     */
+    public List<QuizAttemptDetailsByCourseIDOutDTO> getQuizAttemptDetailsByCourseID(Long courseId) {
+        List<Object[]> results = quizAttemptRepository.findQuizAttemptDetailsByCourseId(courseId);
+
+        if (results.isEmpty()) {
+            return new ArrayList<>();
+        }
+
+        Map<Long, QuizAttemptDetailsByCourseIDOutDTO> userGroupedData = new LinkedHashMap<>();
+        Map<String, UserQuizAttemptDetailsOutDTO> attemptDetailsMap = new HashMap<>();
+
+        for (Object[] row : results) {
+            Long userId = ((Number) row[4]).longValue();
+            Long quizAttemptId = ((Number) row[0]).longValue();
+            Long attempt = ((Number) row[1]).longValue();
+
+            // Create unique key for attempt
+            String attemptKey = userId + "_" + quizAttemptId + "_" + attempt;
+
+            // Create or get user DTO (only once per user)
+            QuizAttemptDetailsByCourseIDOutDTO userDto = userGroupedData.computeIfAbsent(userId, k ->
+                    QuizAttemptDetailsByCourseIDOutDTO.builder()
+                            .userId(userId)
+                            .userName((String) row[5])
+                            .firstName((String) row[7])
+                            .lastName((String) row[8])
+                            .userQuizAttemptDetailsOutDTOS(new ArrayList<>())
+                            .build()
+            );
+
+            // Create or get attempt details (only once per attempt)
+            UserQuizAttemptDetailsOutDTO attemptDetails = attemptDetailsMap.computeIfAbsent(attemptKey, k -> {
+                // Parse score_details JSON to extract pre-calculated values
+                String scoreDetailsJson = (String) row[11];
+                ScoreDetails scoreDetails = parseScoreDetails(scoreDetailsJson);
+
+                QuizAttemptOutDTO quizAttempt = QuizAttemptOutDTO.builder()
+                        .quizAttemptId(quizAttemptId)
+                        .attempt(attempt)
+                        .quizId(((Number) row[2]).longValue())
+                        .userId(userId)
+                        .startedAt(convertToLocalDateTime(row[9]))
+                        .finishedAt(convertToLocalDateTime(row[10]))
+                        .scoreDetails(scoreDetailsJson)
+                        .status((String) row[12])
+                        .createdAt(null) // Not in your current query
+                        .updatedAt(null) // Not in your current query
+                        .build();
+
+                UserQuizAttemptDetailsOutDTO details = UserQuizAttemptDetailsOutDTO.builder()
+                        .quizAttempt(quizAttempt)
+                        .userResponses(new ArrayList<>())
+                        // Use pre-calculated values from score_details
+                        .totalScore(scoreDetails.totalScore)
+                        .maxPossibleScore(scoreDetails.maxPossibleScore)
+                        .correctAnswers(scoreDetails.correctAnswers)
+                        .totalQuestions(scoreDetails.totalQuestions)
+                        .percentageScore(scoreDetails.percentageScore)
+                        .submissionType(scoreDetails.submissionType)
+                        .submittedAt(scoreDetails.submittedAt)
+                        .build();
+
+                userDto.getUserQuizAttemptDetailsOutDTOS().add(details);
+                return details;
+            });
+
+            // Add response data if present (only create response objects)
+            if (row[13] != null) { // response_id is not null
+                UserResponseWithCorrectAnswerOutDTO response = UserResponseWithCorrectAnswerOutDTO.builder()
+                        .responseId(((Number) row[13]).longValue())
+                        .userId(userId)
+                        .quizId(((Number) row[2]).longValue())
+                        .questionId(row[14] != null ? ((Number) row[14]).longValue() : null)
+                        .attempt(attempt)
+                        .questionText((String) row[15])
+                        .options((String) row[21]) // Updated index for options
+                        .userAnswer((String) row[17])
+                        .correctAnswer((String) row[22]) // Updated index for correct_answer
+                        .isCorrect((Boolean) row[18])
+                        .pointsEarned(row[19] != null ? (BigDecimal) row[19] : BigDecimal.ZERO)
+                        .answeredAt(convertToLocalDateTime(row[20]))
+                        .build();
+
+                attemptDetails.getUserResponses().add(response);
+            }
+        }
+
+        return new ArrayList<>(userGroupedData.values());
+    }
+
+    /**
+     * Helper class for parsing score details from JSON.
+     * Contains score metrics and submission information.
+     */
+    private static class ScoreDetails {
+        /** Total score achieved in the attempt */
+        BigDecimal totalScore = BigDecimal.ZERO;
+        /** Maximum possible score for the quiz */
+        BigDecimal maxPossibleScore = BigDecimal.ZERO;
+        /** Percentage score achieved */
+        BigDecimal percentageScore = BigDecimal.ZERO;
+        /** Number of correct answers */
+        Long correctAnswers = 0L;
+        /** Total number of questions */
+        Long totalQuestions = 0L;
+        /** Type of submission (manual, auto, etc.) */
+        String submissionType = "MANUAL";
+        /** Timestamp when attempt was submitted */
+        LocalDateTime submittedAt;
+    }
+
+    /**
+     * Safely converts various timestamp types to LocalDateTime.
+     * Handles Timestamp, String, and Long timestamp formats.
+     *
+     * @param value the timestamp value to convert
+     * @return LocalDateTime converted timestamp or null
+     */
+    private LocalDateTime convertToLocalDateTime(Object value) {
+        if (value == null) {
+            return null;
+        }
+
+        if (value instanceof Timestamp) {
+            return ((Timestamp) value).toLocalDateTime();
+        } else if (value instanceof String) {
+            try {
+                // Handle string timestamps like "2025-07-16 16:33:09.651786"
+                String timestampStr = (String) value;
+                // Remove potential microseconds if present
+                if (timestampStr.contains(".") && timestampStr.length() > 23) {
+                    timestampStr = timestampStr.substring(0, 23);
+                }
+                return LocalDateTime.parse(timestampStr.replace(" ", "T"));
+            } catch (Exception e) {
+                log.warn("Failed to parse timestamp string: {}", value, e);
+                return null;
+            }
+        } else if (value instanceof Long) {
+            // Handle Unix timestamp (milliseconds)
+            return LocalDateTime.ofInstant(Instant.ofEpochMilli((Long) value), ZoneOffset.UTC);
+        }
+
+        log.warn("Unexpected timestamp type: {} for value: {}", value.getClass().getName(), value);
+        return null;
+    }
+
+    /**
+     * Parses score details from JSON string to ScoreDetails object.
+     * Handles malformed JSON gracefully with default values.
+     *
+     * @param scoreDetailsJson the JSON string to parse
+     * @return ScoreDetails parsed score information
+     */
+    private ScoreDetails parseScoreDetails(String scoreDetailsJson) {
+        ScoreDetails details = new ScoreDetails();
+
+        if (scoreDetailsJson == null || scoreDetailsJson.trim().isEmpty()) {
+            return details;
+        }
+
+        try {
+            // Simple JSON parsing - you might want to use Jackson or Gson for production
+            ObjectMapper mapper = new ObjectMapper();
+            JsonNode jsonNode = mapper.readTree(scoreDetailsJson);
+
+            details.totalScore = new BigDecimal(jsonNode.get("totalScore").asText());
+            details.maxPossibleScore = new BigDecimal(jsonNode.get("maxPossibleScore").asText());
+            details.percentageScore = new BigDecimal(jsonNode.get("percentageScore").asText());
+            details.correctAnswers = jsonNode.get("correctAnswers").asLong();
+            details.totalQuestions = jsonNode.get("totalQuestions").asLong();
+            details.submissionType = jsonNode.get("submissionType").asText();
+
+            if (jsonNode.has("submittedAt") && !jsonNode.get("submittedAt").isNull()) {
+                details.submittedAt = LocalDateTime.parse(jsonNode.get("submittedAt").asText());
+            }
+
+        } catch (Exception e) {
+            // Log the error and use default values
+            log.warn("Failed to parse score_details JSON: {}", scoreDetailsJson, e);
+        }
+
+        return details;
+    }
+
+    /**
+     * Builds CourseOutDTO from database query result row.
+     * Maps course fields from Object array to structured DTO.
+     *
+     * @param row the query result row containing course data
+     * @return CourseOutDTO the course information
+     */
+    private CourseOutDTO buildCourseOutDTO(Object[] row) {
+        return CourseOutDTO.builder()
+                .courseId(((Number) row[23]).longValue())        // c.course_id - index 23
+                .ownerId(((Number) row[24]).longValue())         // c.owner_id - index 24
+                .title((String) row[25])                         // c.title as course_title - index 25
+                .description((String) row[26])                   // c.description as course_description - index 26
+                .level((String) row[27])                         // c.level as course_level - index 27
+                .active((Boolean) row[28])                       // c.is_active as course_active - index 28
+                .createdAt(row[29] != null ? ((Timestamp) row[29]).toLocalDateTime() : null) // c.created_at - index 29
+                .updatedAt(row[30] != null ? ((Timestamp) row[30]).toLocalDateTime() : null) // c.updated_at - index 30
+                .build();
+    }
+
+    /**
+     * Builds UserQuizAttemptDetailsOutDTO from grouped attempt data.
+     * Processes attempt rows to create comprehensive attempt details with statistics.
+     *
+     * @param attemptRows the list of rows for a single attempt
+     * @return UserQuizAttemptDetailsOutDTO complete attempt details
+     */
+    private UserQuizAttemptDetailsOutDTO buildUserQuizAttemptDetailsOutDTO(List<Object[]> attemptRows) {
+        Object[] firstRow = attemptRows.get(0);
+
+        // Build QuizAttemptOutDTO
+        QuizAttemptOutDTO quizAttemptOutDTO = QuizAttemptOutDTO.builder()
+                .quizAttemptId(((Number) firstRow[0]).longValue())   // qa.quiz_attempt_id
+                .attempt(((Number) firstRow[1]).longValue())         // qa.attempt
+                .quizId(((Number) firstRow[2]).longValue())          // qa.quiz_id
+                .userId(((Number) firstRow[3]).longValue())          // qa.user_id
+                .startedAt(firstRow[4] != null ? ((Timestamp) firstRow[4]).toLocalDateTime() : null)  // qa.started_at
+                .finishedAt(firstRow[5] != null ? ((Timestamp) firstRow[5]).toLocalDateTime() : null) // qa.finished_at
+                .scoreDetails((String) firstRow[6])                  // qa.score_details
+                .status((String) firstRow[7])                        // qa.status as attempt_status
+                .createdAt(firstRow[8] != null ? ((Timestamp) firstRow[8]).toLocalDateTime() : null)  // qa.created_at
+                .updatedAt(firstRow[9] != null ? ((Timestamp) firstRow[9]).toLocalDateTime() : null)  // qa.updated_at
+                .build();
+
+        // Build user responses (filter out null responses)
+        List<UserResponseWithCorrectAnswerOutDTO> userResponses = attemptRows.stream()
+                .filter(row -> row[10] != null) // response_id is not null
+                .map(this::buildUserResponseWithCorrectAnswerOutDTO)
+                .collect(Collectors.toList());
+
+        // Calculate statistics
+        BigDecimal totalScore = userResponses.stream()
+                .map(UserResponseWithCorrectAnswerOutDTO::getPointsEarned)
+                .filter(Objects::nonNull)
+                .reduce(BigDecimal.ZERO, BigDecimal::add);
+
+        BigDecimal maxPossibleScore = attemptRows.stream()
+                .filter(row -> row[20] != null) // qq.points as max_points - index 20
+                .map(row -> (BigDecimal) row[20])
+                .reduce(BigDecimal.ZERO, BigDecimal::add);
+
+        long correctAnswers = userResponses.stream()
+                .mapToLong(response -> Boolean.TRUE.equals(response.getIsCorrect()) ? 1 : 0)
+                .sum();
+
+        long totalQuestions = userResponses.size();
+
+        BigDecimal percentageScore = maxPossibleScore.compareTo(BigDecimal.ZERO) > 0
+                ? totalScore.divide(maxPossibleScore, 4, RoundingMode.HALF_UP).multiply(BigDecimal.valueOf(100))
+                : BigDecimal.ZERO;
+
+        return UserQuizAttemptDetailsOutDTO.builder()
+                .quizAttempt(quizAttemptOutDTO)
+                .userResponses(userResponses)
+                .totalScore(totalScore)
+                .maxPossibleScore(maxPossibleScore)
+                .correctAnswers(correctAnswers)
+                .totalQuestions(totalQuestions)
+                .percentageScore(percentageScore)
+                .submissionType("COMPLETED")
+                .submittedAt(quizAttemptOutDTO.getFinishedAt())
+                .build();
+    }
+
+    /**
+     * Builds UserResponseWithCorrectAnswerOutDTO from database row.
+     * Maps user response fields including question details and correct answers.
+     *
+     * @param row the query result row containing response data
+     * @return UserResponseWithCorrectAnswerOutDTO complete response information
+     */
+    private UserResponseWithCorrectAnswerOutDTO buildUserResponseWithCorrectAnswerOutDTO(Object[] row) {
+        return UserResponseWithCorrectAnswerOutDTO.builder()
+                .responseId(((Number) row[10]).longValue())       // ur.response_id
+                .userId(((Number) row[3]).longValue())            // qa.user_id
+                .quizId(((Number) row[2]).longValue())            // qa.quiz_id
+                .questionId(row[11] != null ? ((Number) row[11]).longValue() : null) // ur.question_id
+                .questionText((String) row[18])                   // qq.question_text - index 18
+                .attempt(((Number) row[1]).longValue())           // qa.attempt
+                .options((String) row[21])                        // qq.options - index 21
+                .userAnswer((String) row[12])                     // ur.user_answer
+                .correctAnswer((String) row[22])                  // qq.correct_answer - index 22
+                .isCorrect((Boolean) row[13])                     // ur.is_correct
+                .pointsEarned(row[14] != null ? (BigDecimal) row[14] : BigDecimal.ZERO) // ur.points_earned
+                .answeredAt(row[15] != null ? ((Timestamp) row[15]).toLocalDateTime() : null) // ur.answered_at
+                .build();
+    }
+
+    /**
+     * Converts QuizAttempt entity to QuizAttemptOutDTO.
+     * Maps all entity fields to corresponding DTO fields for external representation.
+     *
+     * @param quizAttempt the entity to convert
+     * @return QuizAttemptOutDTO the converted DTO
      */
     private QuizAttemptOutDTO convertToOutDTO(final QuizAttempt quizAttempt) {
         QuizAttemptOutDTO dto = new QuizAttemptOutDTO();
@@ -555,18 +1133,11 @@ public class QuizAttemptServiceImpl implements QuizAttemptService {
     }
 
     /**
-     * Validates if the given status is one of the allowed quiz attempt statuses.
+     * Validates if the given status is allowed for quiz attempts.
+     * Checks against predefined valid status values.
      *
-     * <p>Valid statuses are:</p>
-     * <ul>
-     *   <li>IN_PROGRESS - Quiz is currently being taken</li>
-     *   <li>COMPLETED - Quiz has been successfully completed</li>
-     *   <li>ABANDONED - Quiz was abandoned by the user</li>
-     *   <li>TIMED_OUT - Quiz exceeded the time limit</li>
-     * </ul>
-     *
-     * @param status the status string to validate
-     * @return true if the status is valid, false otherwise
+     * @param status the status to validate
+     * @return boolean true if valid, false otherwise
      */
     private boolean isValidStatus(final String status) {
         return status.equals("IN_PROGRESS")
@@ -575,15 +1146,12 @@ public class QuizAttemptServiceImpl implements QuizAttemptService {
     }
 
     /**
-     * Validates if a status transition from the current status to the new status is valid.
+     * Validates if status transition is allowed based on business rules.
+     * Prevents changes from final states (COMPLETED, ABANDONED, TIMED_OUT).
      *
-     * <p>Business rule: Once a quiz attempt is marked as COMPLETED, ABANDONED, or TIMED_OUT,
-     * the status cannot be changed to any other state. This ensures data integrity and
-     * prevents manipulation of completed attempts.</p>
-     *
-     * @param currentStatus the current status of the quiz attempt
-     * @param newStatus     the new status to transition to
-     * @return true if the transition is invalid, false if it's valid
+     * @param currentStatus the current attempt status
+     * @param newStatus the desired new status
+     * @return boolean true if transition is invalid, false if valid
      */
     private boolean isInvalidStatusTransition(final String currentStatus, final String newStatus) {
         // Once completed, abandoned, or timed out, status cannot be changed

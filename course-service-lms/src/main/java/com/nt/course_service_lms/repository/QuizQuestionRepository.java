@@ -81,4 +81,7 @@ public interface QuizQuestionRepository extends JpaRepository<QuizQuestion, Long
      * @return list of all questions for the quiz
      */
     List<QuizQuestion> findByQuizId(Long quizId);
+
+    // QuizQuestionRepository - Bulk fetch with proper ordering
+    List<QuizQuestion> findByQuizIdInOrderByQuizIdAscPositionAsc(List<Long> quizIds);
 }

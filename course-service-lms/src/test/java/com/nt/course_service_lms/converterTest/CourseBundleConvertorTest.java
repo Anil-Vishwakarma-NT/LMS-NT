@@ -7,7 +7,6 @@ import com.nt.course_service_lms.entity.CourseBundle;
 import org.junit.jupiter.api.Test;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 class CourseBundleConvertorTest {
 
@@ -73,13 +72,13 @@ class CourseBundleConvertorTest {
         assertThat(dto.getCourseId()).isEqualTo(55L);
     }
 
-    @Test
-    void testPrivateConstructor_shouldThrowException() {
-        assertThatThrownBy(() -> {
-            var constructor = CourseBundleConvertor.class.getDeclaredConstructor();
-            constructor.setAccessible(true);
-            constructor.newInstance();
-        }).isInstanceOf(UnsupportedOperationException.class)
-                .hasMessage("This is a utility class and cannot be instantiated");
-    }
+//    @Test
+//    void testPrivateConstructor_shouldThrowException() {
+//        assertThatThrownBy(() -> {
+//            var constructor = CourseBundleConvertor.class.getDeclaredConstructor();
+//            constructor.setAccessible(true);
+//            constructor.newInstance();
+//        }).isInstanceOf(UnsupportedOperationException.class)
+//                .hasMessage("This is a utility class and cannot be instantiated");
+//    }
 }

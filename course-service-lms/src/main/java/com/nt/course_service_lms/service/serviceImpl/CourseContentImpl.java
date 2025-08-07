@@ -2,6 +2,7 @@ package com.nt.course_service_lms.service.serviceImpl;
 
 import com.nt.course_service_lms.converters.CourseContentConverters;
 import com.nt.course_service_lms.dto.inDTO.CourseContentInDTO;
+import com.nt.course_service_lms.dto.inDTO.CourseContentUrlInDTO;
 import com.nt.course_service_lms.dto.inDTO.UpdateCourseContentInDTO;
 import com.nt.course_service_lms.dto.outDTO.CourseContentOutDTO;
 import com.nt.course_service_lms.entity.CourseContent;
@@ -9,6 +10,7 @@ import com.nt.course_service_lms.exception.ResourceAlreadyExistsException;
 import com.nt.course_service_lms.exception.ResourceNotFoundException;
 import com.nt.course_service_lms.repository.CourseContentRepository;
 import com.nt.course_service_lms.repository.CourseRepository;
+import com.nt.course_service_lms.repository.UserProgressRepository;
 import com.nt.course_service_lms.service.CourseContentService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -50,18 +52,21 @@ public class CourseContentImpl implements CourseContentService {
      * Used to validate course existence before creating or updating course content.
      */
     private final CourseRepository courseRepository;
-
     /**
      * Constructor-based dependency injection for better testability and immutability.
      *
      * @param courseContentRepository repository for course content operations
      * @param courseRepository        repository for course operations
      */
+    private final S3FileService s3FileService;
+    private final UserProgressRepository userProgressRepository;
     @Autowired
     public CourseContentImpl(final CourseContentRepository courseContentRepository,
-                             final CourseRepository courseRepository) {
+                             final CourseRepository courseRepository, final S3FileService s3FileService, final UserProgressRepository userProgressRepository) {
         this.courseContentRepository = courseContentRepository;
         this.courseRepository = courseRepository;
+        this.s3FileService = s3FileService;
+        this.userProgressRepository = userProgressRepository;
     }
 
     /**
@@ -80,7 +85,46 @@ public class CourseContentImpl implements CourseContentService {
 
             validateCourseContentCreation(courseContentInDTO);
 
+            log.info("Storing video content in S3");
+            String fileName = s3FileService.uploadFile(courseContentInDTO.getFile(), courseContentInDTO.getContentType());
+            log.info("Successfully stored {} content in S3 with name : {}", courseContentInDTO.getContentType(), fileName);
+
+            log.info("Storing content details in database");
             CourseContent courseContent = CourseContentConverters.courseContentInDtoToEntity(courseContentInDTO);
+            courseContent.setResourceLink(fileName);
+            setAuditFields(courseContent);
+
+            CourseContent savedContent = courseContentRepository.save(courseContent);
+            log.info("Successfully created course content with ID: {}", savedContent.getCourseContentId());
+
+            return CourseContentConverters.entityToOutDto(savedContent);
+
+        } catch (ResourceAlreadyExistsException | ResourceNotFoundException e) {
+            log.error("Validation error while creating course content: {}", e.getMessage());
+            throw e;
+        } catch (Exception e) {
+            log.error("Unexpected error while creating course content", e);
+            throw new RuntimeException(GENERAL_ERROR, e);
+        }
+    }
+
+    /**
+     * Creates a new CourseContent and returns the created content as DTO.
+     *
+     * @param courseContentUrlInDTO the DTO containing course content data
+     * @return the created CourseContentOutDTO
+     * @throws ResourceAlreadyExistsException if a course content with the same title already exists for the course
+     * @throws ResourceNotFoundException      if the course does not exist
+     */
+    @Override
+    public CourseContentOutDTO createCourseContent(final CourseContentUrlInDTO courseContentUrlInDTO) {
+        try {
+            log.debug("Creating course content with title: {} for course ID: {}",
+                    courseContentUrlInDTO.getTitle(), courseContentUrlInDTO.getCourseId());
+
+            validateCourseContentCreation(courseContentUrlInDTO);
+
+            CourseContent courseContent = CourseContentConverters.courseContentInDtoToEntity(courseContentUrlInDTO);
             setAuditFields(courseContent);
 
             CourseContent savedContent = courseContentRepository.save(courseContent);
@@ -169,8 +213,26 @@ public class CourseContentImpl implements CourseContentService {
             CourseContent courseContent = courseContentRepository.findById(courseContentId)
                     .orElseThrow(() -> new ResourceNotFoundException(COURSE_CONTENT_NOT_FOUND));
 
+            //courseContentRepository.delete(courseContent);
+
+            String fileS3 = courseContent.getContentType() + "/" + courseContent.getResourceLink();
+
+            if(s3FileService.deleteFile(fileS3)){
+                log.info("Successfully deleted file from S3 with named: {}", fileS3);
+            }else{
+                log.info("file is not present at S3, deleting data from the database");
+            }
+
+//            courseContent.setActive(false);
+//            log.info("Successfully deleted course content with ID: {}", courseContentId);
+//            courseContentRepository.save(courseContent);
+//            log.info("Deleting Data from the database");
+            log.info("Deleting user progress from user_progress table for respective content with id : {}",courseContent.getCourseContentId());
+            userProgressRepository.deleteByContentId(courseContent.getCourseContentId());
+            log.info("Successfully Deleted user progress for respective content with id : {}",courseContent.getCourseContentId());
+            log.info("Deleting course content from course_content table for respective content with id : {}",courseContent.getCourseContentId());
             courseContentRepository.delete(courseContent);
-            log.info("Successfully deleted course content with ID: {}", courseContentId);
+            log.info("Successfully deleted course content for respective content with id : {}",courseContent.getCourseContentId());
 
             return COURSE_CONTENT_DELETED;
 
@@ -271,6 +333,26 @@ public class CourseContentImpl implements CourseContentService {
 
         // Check if course exists
         if (!courseRepository.existsById(courseContentInDTO.getCourseId())) {
+            throw new ResourceNotFoundException(COURSE_NOT_FOUND);
+        }
+    }
+
+    /**
+     * Validates course content creation requirements.
+     *
+     * @param courseContentUrlInDTO details of course content
+     */
+    private void validateCourseContentCreation(final CourseContentUrlInDTO courseContentUrlInDTO) {
+        // Check if course content with same title already exists for the course
+        Optional<CourseContent> existingContent = courseContentRepository
+                .findByTitleIgnoreCaseAndCourseId(courseContentUrlInDTO.getTitle(), courseContentUrlInDTO.getCourseId());
+
+        if (existingContent.isPresent()) {
+            throw new ResourceAlreadyExistsException(COURSE_CONTENT_ALREADY_PRESENT);
+        }
+
+        // Check if course exists
+        if (!courseRepository.existsById(courseContentUrlInDTO.getCourseId())) {
             throw new ResourceNotFoundException(COURSE_NOT_FOUND);
         }
     }

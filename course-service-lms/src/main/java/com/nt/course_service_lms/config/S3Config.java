@@ -11,30 +11,36 @@ import software.amazon.awssdk.regions.Region;
 import software.amazon.awssdk.services.s3.S3Client;
 
 @Configuration
-@Profile("!local")
 public class S3Config {
 
     @Value("${aws.region}")
     private String region;
 
-    @Value("${aws.access-key:}")
+    @Value("${aws.access-key}")
     private String accessKey;
 
-    @Value("${aws.secret-key:}")
+    @Value("${aws.secret-key}")
     private String secretKey;
 
     @Bean
-    public S3Client s3Client() {
-        if (accessKey != null && !accessKey.isBlank() && secretKey != null && !secretKey.isBlank()) {
-            return S3Client.builder()
-                    .region(Region.of(region))
-                    .credentialsProvider(
-                            StaticCredentialsProvider.create(AwsBasicCredentials.create(accessKey, secretKey))
-                    )
-                    .build();
-        }
+    @Profile("local")
+    public S3Client s3ClientLocal() {
+        // For local development - using hardcoded credentials
 
-        // Recommended for production (uses IAM role, environment variables, or ~/.aws/credentials)
+        return S3Client.builder()
+                .region(Region.of(region))
+                .credentialsProvider(
+                        StaticCredentialsProvider.create(
+                                AwsBasicCredentials.create(accessKey, secretKey)
+                        )
+                )
+                .build();
+    }
+
+    @Bean
+    @Profile("!local && !test")
+    public S3Client s3ClientProd() {
+        // For development/production - using IAM roles or environment variables
         return S3Client.builder()
                 .region(Region.of(region))
                 .credentialsProvider(DefaultCredentialsProvider.create())
