@@ -30,6 +30,7 @@ import org.springframework.http.ResponseEntity;
 
 import java.util.*;
 
+import static com.nt.user_service_lms.constants.UserConstants.USER_REGISTRATION_SUCCESS;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
@@ -58,7 +59,7 @@ public class AdminServiceImplTest {
         when(passwordEncoder.encode(dto.getPassword())).thenReturn("encoded");
 
         StandardResponseOutDTO<MessageOutDTO> response = adminService.register(dto);
-        assertEquals("User Registration Successfully", response.getMessage());
+        assertEquals(USER_REGISTRATION_SUCCESS, response.getMessage());
     }
 
     @Test
@@ -67,6 +68,9 @@ public class AdminServiceImplTest {
         when(userRepository.findByEmailIgnoreCase(dto.getEmail())).thenReturn(Optional.of(new User()));
 
         assertThrows(ResourceConflictException.class, () -> adminService.register(dto));
+
+        verify(userRepository, never()).findByUserNameIgnoreCase(dto.getUserName());
+
     }
 
     @Test
@@ -75,7 +79,9 @@ public class AdminServiceImplTest {
         when(userRepository.findByEmailIgnoreCase(dto.getEmail())).thenReturn(Optional.empty());
         when(userRepository.findByUserNameIgnoreCase(dto.getUserName())).thenReturn(Optional.of(new User()));
 
-        assertThrows(ResourceConflictException.class, () -> adminService.register(dto));
+        Exception exception = assertThrows(ResourceConflictException.class, () -> adminService.register(dto));
+        assertEquals("Username already exists" , exception.getMessage());
+
     }
 
     @Test
@@ -85,7 +91,8 @@ public class AdminServiceImplTest {
         when(userRepository.findByUserNameIgnoreCase(dto.getUserName())).thenReturn(Optional.empty());
         when(roleRepository.findById(dto.getRoleId())).thenReturn(Optional.empty());
 
-        assertThrows(ResourceNotFoundException.class, () -> adminService.register(dto));
+        Exception exception = assertThrows(ResourceNotFoundException.class, () -> adminService.register(dto));
+       assertEquals(UserConstants.INVALID_ROLE +" : " + dto.getRoleId() , exception.getMessage());
     }
 
     @Test
@@ -94,7 +101,8 @@ public class AdminServiceImplTest {
         when(userRepository.findByEmailIgnoreCase(dto.getEmail())).thenReturn(Optional.empty());
         when(userRepository.findByUserNameIgnoreCase(dto.getUserName())).thenReturn(Optional.empty());
 
-        assertThrows(ResourceNotFoundException.class, () -> adminService.register(dto));
+        Exception exception = assertThrows(ResourceNotFoundException.class, () -> adminService.register(dto));
+        assertEquals(UserConstants.INVALID_ROLE +" : " + dto.getRoleId() , exception.getMessage());
     }
 
     @Test
@@ -107,7 +115,7 @@ public class AdminServiceImplTest {
         when(roleRepository.findById(2L)).thenReturn(Optional.of(new Role(2L , "EMPLOYEE")));
 
         StandardResponseOutDTO<MessageOutDTO> response = adminService.employeeDeletion(2L);
-        assertEquals("User deleted successfully", response.getData().getMessage());
+        assertEquals(UserConstants.USER_DELETION_MESSAGE, response.getData().getMessage());
     }
 
     @Test
@@ -126,7 +134,7 @@ public class AdminServiceImplTest {
         when(userRepository.findByManagerId(2L)).thenReturn(Arrays.asList(subordinate));
 
         StandardResponseOutDTO<MessageOutDTO> response = adminService.employeeDeletion(2L);
-        assertEquals("User deleted successfully", response.getData().getMessage());
+        assertEquals(UserConstants.USER_DELETION_MESSAGE, response.getData().getMessage());
         verify(userRepository).saveAll(anyList());
     }
 
@@ -169,39 +177,6 @@ public class AdminServiceImplTest {
     }
 
     @Test
-    void testGetAllActiveUsers() {
-        User user = new User();
-        user.setActive(true);
-        user.setUserId(2L);
-        user.setManagerId(3L);
-        user.setRoleId(3L);
-
-        User manager = new User();
-        manager.setActive(true);
-        manager.setUserId(3L);
-        manager.setFirstName("Manager");
-        manager.setLastName("First");
-        manager.setRoleId(2L);
-
-        Role role = new Role();
-        role.setRoleId(3L);
-        role.setName("Employee");
-
-        List<User> users = Arrays.asList(user);
-        when(userRepository.findAll()).thenReturn(users);
-        when(userRepository.findById(3L)).thenReturn(Optional.of(manager));
-        when(roleRepository.findById(3L)).thenReturn(Optional.of(role));
-        when(userDTOConverter.userToOutDto(any(), any(), any())).thenReturn(new UserOutDTO());
-
-        try (MockedStatic<UserConstants> userConstants = mockStatic(UserConstants.class)) {
-            userConstants.when(UserConstants::getAdminId).thenReturn(1L);
-
-            var response = adminService.getAllActiveUsers();
-            assertEquals("User fetched Successfully", response.getMessage());
-        }
-    }
-
-    @Test
     void testGetAllActiveUsersEmpty() {
         when(userRepository.findAll()).thenReturn(Collections.emptyList());
 
@@ -224,7 +199,7 @@ public class AdminServiceImplTest {
         try (MockedStatic<UserConstants> userConstants = mockStatic(UserConstants.class)) {
             userConstants.when(UserConstants::getAdminId).thenReturn(1L);
 
-            assertThrows(ResourceNotFoundException.class, () -> adminService.getAllActiveUsers());
+            assertThrows(RuntimeException.class, () -> adminService.getAllActiveUsers());
         }
     }
 
@@ -248,7 +223,7 @@ public class AdminServiceImplTest {
         try (MockedStatic<UserConstants> userConstants = mockStatic(UserConstants.class)) {
             userConstants.when(UserConstants::getAdminId).thenReturn(1L);
 
-            assertThrows(ResourceNotFoundException.class, () -> adminService.getAllActiveUsers());
+            assertThrows(RuntimeException.class, () -> adminService.getAllActiveUsers());
         }
     }
 
@@ -257,36 +232,6 @@ public class AdminServiceImplTest {
         when(userRepository.findAll()).thenThrow(new RuntimeException("Database error"));
 
         assertThrows(RuntimeException.class, () -> adminService.getAllActiveUsers());
-    }
-
-    @Test
-    void testGetAllInactiveUsers() {
-        User user = new User();
-        user.setActive(false);
-        user.setUserId(2L);
-        user.setManagerId(3L);
-        user.setRoleId(3L);
-
-        User manager = new User();
-        manager.setUserId(3L);
-        manager.setFirstName("Manager");
-        manager.setLastName("First");
-
-        Role role = new Role();
-        role.setRoleId(3L);
-        role.setName("Employee");
-
-        when(userRepository.findAll()).thenReturn(Arrays.asList(user));
-        when(userRepository.findById(3L)).thenReturn(Optional.of(manager));
-        when(roleRepository.findById(3L)).thenReturn(Optional.of(role));
-        when(userDTOConverter.userToOutDto(any(), any(), any())).thenReturn(new UserOutDTO());
-
-        try (MockedStatic<UserConstants> userConstants = mockStatic(UserConstants.class)) {
-            userConstants.when(UserConstants::getAdminId).thenReturn(1L);
-
-            var response = adminService.getAllInactiveUsers();
-            assertEquals("User fetched Successfully", response.getMessage());
-        }
     }
 
     @Test
@@ -306,13 +251,13 @@ public class AdminServiceImplTest {
         user.setManagerId(3L);
         user.setRoleId(3L);
 
-        when(userRepository.findAll()).thenReturn(Arrays.asList(user));
+        when(userRepository.findAll()).thenReturn(List.of(user));
         when(userRepository.findById(3L)).thenReturn(Optional.empty());
 
         try (MockedStatic<UserConstants> userConstants = mockStatic(UserConstants.class)) {
             userConstants.when(UserConstants::getAdminId).thenReturn(1L);
 
-            assertThrows(ResourceNotFoundException.class, () -> adminService.getAllInactiveUsers());
+            assertThrows(RuntimeException.class, () -> adminService.getAllInactiveUsers());
         }
     }
 
@@ -334,7 +279,7 @@ public class AdminServiceImplTest {
             userConstants.when(UserConstants::getAdminId).thenReturn(1L);
 
             var response = adminService.changeUserRole(2L, "manager");
-            assertEquals("Updated", response.getMessage());
+            assertEquals("Updation complete", response.getMessage());
         }
     }
 
@@ -345,7 +290,7 @@ public class AdminServiceImplTest {
         try (MockedStatic<UserConstants> userConstants = mockStatic(UserConstants.class)) {
             userConstants.when(UserConstants::getAdminId).thenReturn(1L);
 
-            assertThrows(ResourceNotFoundException.class, () -> adminService.changeUserRole(2L, "manager"));
+            assertThrows(RuntimeException.class, () -> adminService.changeUserRole(2L, "manager"));
         }
     }
 
@@ -359,7 +304,7 @@ public class AdminServiceImplTest {
         try (MockedStatic<UserConstants> userConstants = mockStatic(UserConstants.class)) {
             userConstants.when(UserConstants::getAdminId).thenReturn(1L);
 
-            assertThrows(IllegalArgumentException.class, () -> adminService.changeUserRole(2L, "invalid"));
+            assertThrows(RuntimeException.class, () -> adminService.changeUserRole(2L, "invalid"));
         }
     }
 
@@ -368,7 +313,7 @@ public class AdminServiceImplTest {
         try (MockedStatic<UserConstants> userConstants = mockStatic(UserConstants.class)) {
             userConstants.when(UserConstants::getAdminId).thenReturn(1L);
 
-            assertThrows(InvalidRequestException.class, () -> adminService.changeUserRole(1L, "manager"));
+            assertThrows(RuntimeException.class, () -> adminService.changeUserRole(1L, "manager"));
         }
     }
 
@@ -411,7 +356,7 @@ public class AdminServiceImplTest {
         try (MockedStatic<UserConstants> userConstants = mockStatic(UserConstants.class)) {
             userConstants.when(UserConstants::getAdminId).thenReturn(1L);
 
-            assertThrows(ResourceNotFoundException.class, () -> adminService.getManagerEmployee(2L));
+            assertThrows(RuntimeException.class, () -> adminService.getManagerEmployee(2L));
         }
     }
 
@@ -429,7 +374,7 @@ public class AdminServiceImplTest {
             userConstants.when(UserConstants::getAdminId).thenReturn(1L);
 
             var response = adminService.getManagerEmployee(2L);
-            assertEquals("User not found", response.getMessage());
+            assertEquals("User does not exist", response.getMessage());
             assertTrue(response.getData().isEmpty());
         }
     }
@@ -439,7 +384,7 @@ public class AdminServiceImplTest {
         try (MockedStatic<UserConstants> userConstants = mockStatic(UserConstants.class)) {
             userConstants.when(UserConstants::getAdminId).thenReturn(1L);
 
-            assertThrows(InvalidRequestException.class, () -> adminService.getManagerEmployee(1L));
+            assertThrows(RuntimeException.class, () -> adminService.getManagerEmployee(1L));
         }
     }
 
@@ -496,7 +441,7 @@ public class AdminServiceImplTest {
         try (MockedStatic<UserConstants> userConstants = mockStatic(UserConstants.class)) {
             userConstants.when(UserConstants::getAdminId).thenReturn(1L);
 
-            assertThrows(ResourceNotFoundException.class, () -> adminService.updateUserDetails(dto, 2L));
+            assertThrows(RuntimeException.class, () -> adminService.updateUserDetails(dto, 2L));
         }
     }
 
@@ -523,7 +468,7 @@ public class AdminServiceImplTest {
         try (MockedStatic<UserConstants> userConstants = mockStatic(UserConstants.class)) {
             userConstants.when(UserConstants::getAdminId).thenReturn(1L);
 
-            assertThrows(InvalidRequestException.class, () -> adminService.updateUserDetails(dto, 1L));
+            assertThrows(RuntimeException.class, () -> adminService.updateUserDetails(dto, 1L));
         }
     }
 

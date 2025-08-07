@@ -65,17 +65,20 @@ class GroupServiceImplTest {
         groupInDTO.setDeadline(LocalDateTime.now().plusDays(10));
     }
 
-//    @Test
-//    void testCreateGroup_Success() {
-//        when(groupRepository.existsByGroupName(anyString())).thenReturn(false);
-//        when(userRepository.findByEmailIgnoreCase(anyString())).thenReturn(Optional.of(user));
-//        when(groupRepository.save(any(Group.class))).thenReturn(group);
-//        when(userRepository.existsById(anyLong())).thenReturn(true);
-//
-//        var result = groupService.createGroup("Test Group", "admin@example.com", List.of(2L));
-//        assertTrue(result.getStatus()=="SUCCESS");
-//        assertEquals(GroupConstants.GROUP_CREATED, result.getMessage());
-//    }
+    @Test
+    void testCreateGroup_Success() {
+        Long userId = 1L;
+
+        when(userRepository.existsById(userId)).thenReturn(true); // ✅
+        when(userRepository.findByEmailIgnoreCase(anyString())).thenReturn(Optional.of(user)); // ✅
+        when(groupRepository.existsByGroupName(anyString())).thenReturn(false); // ✅
+        when(groupRepository.save(any(Group.class))).thenReturn(group); // ✅
+
+
+        var result = groupService.createGroup("Test Group", "admin@example.com", List.of(userId));
+        assertTrue(result.getStatus()=="SUCCESS");
+        assertEquals(GroupConstants.GROUP_CREATED, result.getMessage());
+    }
 
     @Test
     void testDeleteGroup_Success() {
@@ -89,18 +92,8 @@ class GroupServiceImplTest {
         assertEquals(GroupConstants.GROUP_DELETED, response.getData().getMessage());
     }
 
-//    @Test
-//    void testAddUserToGroup_Success() {
-//        when(userRepository.findByEmailIgnoreCase("admin@example.com")).thenReturn(Optional.of(user));
-//        when(groupRepository.findById(anyLong())).thenReturn(Optional.of(group));
-//        when(userRepository.findById(anyLong())).thenReturn(Optional.of(new User()));
-//        when(userGroupRepository.findByUserIdAndGroupId(anyLong(), anyLong())).thenReturn(Optional.empty());
-//        when(courseMicroserviceClient.getAllCoursesByBundleId(anyLong())).thenReturn(ResponseEntity.ok(StandardResponseOutDTO.success(List.of(),null)));
-//
-//        var result = groupService.addUserToGroup(groupInDTO, "admin@example.com");
-//        assertTrue(result.getStatus()=="SUCCESS");
-//        assertEquals(GroupConstants.USER_ADDED_TO_GROUP, result.getMessage());
-//    }
+
+
 
     @Test
     void testUpdateGroup_Success() {

@@ -22,6 +22,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.nio.file.AccessDeniedException;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -70,7 +71,16 @@ public class UserController {
     @GetMapping("/getUserDetails")
     public ResponseEntity<StandardResponseOutDTO<UserOutDTO>> getUserIdByAuth() {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        if (authentication == null) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
+                    .body(StandardResponseOutDTO.error("No authentication found"));
+        }
+
         String username = authentication.getName();
+        if (username == null) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
+                    .body(StandardResponseOutDTO.error("No username found in authentication"));
+        }
 
         StandardResponseOutDTO<UserOutDTO> userdto = userService.getUserDetailsByEmail(username);
         return new ResponseEntity<>(userdto , HttpStatus.OK);
@@ -102,11 +112,14 @@ public class UserController {
      * @throws UnauthorizedAccessException if authentication fails or principal is not ServicePrincipal
      */
     @GetMapping("/getDeadlines")
-    public ResponseEntity<StandardResponseOutDTO<List<CourseDeadlinesDTO>>> getUserDeadlines() {
+    public ResponseEntity<StandardResponseOutDTO<List<CourseDeadlinesDTO>>> getUserDeadlines() throws AccessDeniedException {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        if (!(authentication.getPrincipal() instanceof ServicePrincipal principal)) {
-            throw new UnauthorizedAccessException("Authentication failed");
+
+        // Add null check first
+        if (authentication == null || !(authentication.getPrincipal() instanceof ServicePrincipal principal)) {
+            throw new AccessDeniedException("Authentication failed");
         }
+
         String username = principal.getUserEmail();
         StandardResponseOutDTO<List<CourseDeadlinesDTO>> deadlines = userService.deadlineCourses(username);
         return new ResponseEntity<>(deadlines, HttpStatus.OK);
@@ -120,10 +133,12 @@ public class UserController {
      * @throws UnauthorizedAccessException if authentication fails or principal is not ServicePrincipal
      */
     @GetMapping("/userCourses")
-    public ResponseEntity<StandardResponseOutDTO<List<UserCourseEnrollDetails>>> getEnrolledCoursesByUserId() {
+    public ResponseEntity<StandardResponseOutDTO<List<UserCourseEnrollDetails>>> getEnrolledCoursesByUserId() throws AccessDeniedException {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         if (!(authentication.getPrincipal() instanceof ServicePrincipal principal)) {
-            throw new UnauthorizedAccessException("Authentication failed");
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
+                    .body(StandardResponseOutDTO.error("Authentication failed"));
+
         }
         String userId = principal.getUserId();
         List<UserCourseEnrollDetails> enrolledCourses = userService.getUserEnrolledCourses(Long.parseLong(userId));

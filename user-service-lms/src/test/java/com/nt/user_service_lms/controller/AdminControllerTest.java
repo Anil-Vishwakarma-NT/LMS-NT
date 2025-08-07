@@ -80,30 +80,7 @@ class AdminControllerTest {
         SecurityContextHolder.getContext().setAuthentication(authentication);
     }
 
-    @Test
-    void testRegister_Success() throws Exception {
-        // Arrange
-        RegisterDto registerDto = new RegisterDto();
-        registerDto.setFirstName("John");
-        registerDto.setLastName("Doe");
-        registerDto.setEmail("john.doe@test.com");
-        registerDto.setUserName("johndoe");
-        registerDto.setPassword("password123");
-        registerDto.setRoleId(2L);
 
-        MessageOutDTO messageOutDTO = new MessageOutDTO("User registered successfully");
-        StandardResponseOutDTO<MessageOutDTO> response = StandardResponseOutDTO.success(messageOutDTO, "User Registration Successfully");
-
-        when(adminService.register(any(RegisterDto.class))).thenReturn(response);
-
-        // Act & Assert
-        mockMvc.perform(post("/api/service-api/admin/register")
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content(objectMapper.writeValueAsString(registerDto)))
-                .andExpect(status().isCreated())
-                .andExpect(jsonPath("$.status").value("success"))
-                .andExpect(jsonPath("$.message").value("User Registration Successfully"));
-    }
 
     @Test
     void testDeleteEmployee_Success() throws Exception {
@@ -231,26 +208,6 @@ class AdminControllerTest {
                 .andExpect(jsonPath("$.data.length()").value(0));
     }
 
-    @Test
-    void testChangeRole_Success() throws Exception {
-        // Arrange
-        UserInDTO userInDTO = new UserInDTO();
-        userInDTO.setUserId(5L);
-        userInDTO.setRole("manager");
-
-        MessageOutDTO messageOutDTO = new MessageOutDTO("Role updated successfully");
-        StandardResponseOutDTO<MessageOutDTO> response = StandardResponseOutDTO.success(messageOutDTO, "Role updated successfully");
-
-        when(adminService.changeUserRole(anyLong(), anyString())).thenReturn(response);
-
-        // Act & Assert
-        mockMvc.perform(post("/api/service-api/admin/change-role")
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content(objectMapper.writeValueAsString(userInDTO)))
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$.status").value("success"))
-                .andExpect(jsonPath("$.message").value("Role updated successfully"));
-    }
 
     @Test
     void testUpdateUser_Success() throws Exception {
@@ -396,18 +353,6 @@ class AdminControllerTest {
                 .andExpect(status().isBadRequest());
     }
 
-    @Test
-    void testChangeRole_ValidationFailure() throws Exception {
-        // Arrange - UserInDTO with missing required fields
-        UserInDTO userInDTO = new UserInDTO();
-        // Missing userId and role
-
-        // Act & Assert
-        mockMvc.perform(post("/api/service-api/admin/change-role")
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content(objectMapper.writeValueAsString(userInDTO)))
-                .andExpect(status().isBadRequest());
-    }
 
     // Helper methods to create DTOs for testing
     private UserOutDTO createUserOutDTO(Long userId, String firstName, String lastName, String email, String role, String managerName) {

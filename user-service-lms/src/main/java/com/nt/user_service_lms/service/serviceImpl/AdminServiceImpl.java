@@ -113,7 +113,7 @@ public class AdminServiceImpl implements AdminService {
         userRepository.save(user);
         log.info("User registered successfully with email: {}", registerDto.getEmail());
         MessageOutDTO messageOutDto = new MessageOutDTO(UserConstants.USER_REGISTRATION_SUCCESS);
-        return StandardResponseOutDTO.success(messageOutDto, "User Registration Successfully");
+        return StandardResponseOutDTO.success(messageOutDto, USER_REGISTRATION_SUCCESS);
     }
 
     /**
@@ -184,7 +184,7 @@ public class AdminServiceImpl implements AdminService {
                     Optional<User> optionalmanager = userRepository.findById(user.getManagerId());
 
                     if (!optionalmanager.isPresent()) {
-                        throw new ResourceNotFoundException(USER_NOT_FOUND + "Manager not found");
+                        throw new ResourceNotFoundException("Manager not found");
                     }
                    User manager = optionalmanager.get();
                     String managerName = manager.getFirstName() + " " + manager.getLastName();
