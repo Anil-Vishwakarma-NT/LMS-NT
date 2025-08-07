@@ -4207,3 +4207,328 @@ Caused by: org.postgresql.util.PSQLException: FATAL: password authentication fai
 2025-08-05 17:06:30 DEBUG o.s.w.s.m.m.a.HttpEntityMethodProcessor - Writing [ErrorResponse(status=500, message=StatementCallback; bad SQL grammar [REFRESH MATERIALIZED VIEW cour (truncated)...]
 2025-08-05 17:06:30 DEBUG o.s.w.s.m.m.a.ExceptionHandlerExceptionResolver - Resolved [org.springframework.jdbc.BadSqlGrammarException: StatementCallback; bad SQL grammar [REFRESH MATERIALIZED VIEW course_details]]
 2025-08-05 17:06:30 DEBUG o.s.web.servlet.DispatcherServlet - Completed 500 INTERNAL_SERVER_ERROR
+2025-08-06 12:27:01 INFO  o.h.validator.internal.util.Version - HV000001: Hibernate Validator 8.0.2.Final
+2025-08-06 12:27:01 INFO  c.n.u.UserServiceLmsApplication - Starting UserServiceLmsApplication using Java 17.0.12 with PID 30680 (D:\LMS\user-service-lms\build\classes\java\main started by DELL in D:\LMS)
+2025-08-06 12:27:01 INFO  c.n.u.UserServiceLmsApplication - The following 1 profile is active: "local"
+2025-08-06 12:27:04 INFO  o.s.d.r.c.RepositoryConfigurationDelegate - Bootstrapping Spring Data JPA repositories in DEFAULT mode.
+2025-08-06 12:27:04 INFO  o.s.d.r.c.RepositoryConfigurationDelegate - Finished Spring Data repository scanning in 257 ms. Found 6 JPA repository interfaces.
+2025-08-06 12:27:05 INFO  o.s.cloud.context.scope.GenericScope - BeanFactory id=699e1924-4ef0-3d8a-bdf2-eb02e263c36e
+2025-08-06 12:27:07 INFO  o.s.b.w.e.tomcat.TomcatWebServer - Tomcat initialized with port 8081 (http)
+2025-08-06 12:27:07 INFO  o.a.coyote.http11.Http11NioProtocol - Initializing ProtocolHandler ["http-nio-8081"]
+2025-08-06 12:27:07 INFO  o.a.catalina.core.StandardService - Starting service [Tomcat]
+2025-08-06 12:27:07 INFO  o.a.catalina.core.StandardEngine - Starting Servlet engine: [Apache Tomcat/10.1.39]
+2025-08-06 12:27:07 INFO  o.a.c.c.C.[Tomcat].[localhost].[/] - Initializing Spring embedded WebApplicationContext
+2025-08-06 12:27:07 INFO  o.s.b.w.s.c.ServletWebServerApplicationContext - Root WebApplicationContext: initialization completed in 6353 ms
+2025-08-06 12:27:10 DEBUG o.f.c.i.s.classpath.ClassPathScanner - Scanning for classpath resources at 'classpath:db/callback' ...
+2025-08-06 12:27:10 DEBUG o.f.c.i.s.classpath.ClassPathScanner - Determining location urls for classpath:db/callback using ClassLoader jdk.internal.loader.ClassLoaders$AppClassLoader@659e0bfd ...
+2025-08-06 12:27:10 DEBUG o.f.c.i.s.classpath.ClassPathScanner - Unable to resolve location classpath:db/callback.
+2025-08-06 12:27:10 DEBUG o.f.c.i.s.classpath.ClassPathScanner - Scanning for classpath resources at 'classpath:db/migration' ...
+2025-08-06 12:27:10 DEBUG o.f.c.i.s.classpath.ClassPathScanner - Determining location urls for classpath:db/migration using ClassLoader jdk.internal.loader.ClassLoaders$AppClassLoader@659e0bfd ...
+2025-08-06 12:27:10 DEBUG o.f.c.i.s.classpath.ClassPathScanner - Scanning URL: file:/D:/LMS/user-service-lms/build/resources/main/db/migration
+2025-08-06 12:27:10 DEBUG o.f.c.i.s.c.FileSystemClassPathLocationScanner - Scanning starting at classpath root in filesystem: D:\LMS\user-service-lms\build\resources\main\
+2025-08-06 12:27:10 DEBUG o.f.c.i.s.c.FileSystemClassPathLocationScanner - Scanning for resources in path: D:\LMS\user-service-lms\build\resources\main\db\migration (db/migration)
+2025-08-06 12:27:10 DEBUG o.f.c.i.s.classpath.ClassPathScanner - Found resource: db/migration/V1__Create_initial_schema.sql
+2025-08-06 12:27:10 DEBUG o.f.c.i.s.classpath.ClassPathScanner - Found resource: db/migration/V2__Insert_initial_data.sql
+2025-08-06 12:27:10 DEBUG o.f.c.i.s.classpath.ClassPathScanner - Found resource: db/migration/V3__Create_view.sql
+2025-08-06 12:27:10 DEBUG o.f.c.i.s.classpath.ClassPathScanner - Scanning for classes at classpath:db/migration
+2025-08-06 12:27:10 INFO  com.zaxxer.hikari.HikariDataSource - HikariPool-1 - Starting...
+2025-08-06 12:27:11 WARN  o.s.b.w.s.c.AnnotationConfigServletWebServerApplicationContext - Exception encountered during context initialization - cancelling refresh attempt: org.springframework.beans.factory.BeanCreationException: Error creating bean with name 'entityManagerFactory' defined in class path resource [org/springframework/boot/autoconfigure/orm/jpa/HibernateJpaConfiguration.class]: Failed to initialize dependency 'flywayInitializer' of LoadTimeWeaverAware bean 'entityManagerFactory': Error creating bean with name 'flywayInitializer' defined in class path resource [org/springframework/boot/autoconfigure/flyway/FlywayAutoConfiguration$FlywayConfiguration.class]: Unable to obtain connection from database: FATAL: password authentication failed for user "postgres"
+----------------------------------------------------------------------------------------------------
+SQL State  : 28P01
+Error Code : 0
+Message    : FATAL: password authentication failed for user "postgres"
+
+2025-08-06 12:27:11 INFO  o.a.catalina.core.StandardService - Stopping service [Tomcat]
+2025-08-06 12:27:11 INFO  o.s.b.a.l.ConditionEvaluationReportLogger - 
+
+Error starting ApplicationContext. To display the condition evaluation report re-run your application with 'debug' enabled.
+2025-08-06 12:27:11 ERROR o.s.boot.SpringApplication - Application run failed
+org.springframework.beans.factory.BeanCreationException: Error creating bean with name 'entityManagerFactory' defined in class path resource [org/springframework/boot/autoconfigure/orm/jpa/HibernateJpaConfiguration.class]: Failed to initialize dependency 'flywayInitializer' of LoadTimeWeaverAware bean 'entityManagerFactory': Error creating bean with name 'flywayInitializer' defined in class path resource [org/springframework/boot/autoconfigure/flyway/FlywayAutoConfiguration$FlywayConfiguration.class]: Unable to obtain connection from database: FATAL: password authentication failed for user "postgres"
+----------------------------------------------------------------------------------------------------
+SQL State  : 28P01
+Error Code : 0
+Message    : FATAL: password authentication failed for user "postgres"
+
+	at org.springframework.beans.factory.support.AbstractBeanFactory.doGetBean(AbstractBeanFactory.java:328)
+	at org.springframework.beans.factory.support.AbstractBeanFactory.getBean(AbstractBeanFactory.java:207)
+	at org.springframework.context.support.AbstractApplicationContext.finishBeanFactoryInitialization(AbstractApplicationContext.java:970)
+	at org.springframework.context.support.AbstractApplicationContext.refresh(AbstractApplicationContext.java:627)
+	at org.springframework.boot.web.servlet.context.ServletWebServerApplicationContext.refresh(ServletWebServerApplicationContext.java:146)
+	at org.springframework.boot.SpringApplication.refresh(SpringApplication.java:752)
+	at org.springframework.boot.SpringApplication.refreshContext(SpringApplication.java:439)
+	at org.springframework.boot.SpringApplication.run(SpringApplication.java:318)
+	at org.springframework.boot.SpringApplication.run(SpringApplication.java:1361)
+	at org.springframework.boot.SpringApplication.run(SpringApplication.java:1350)
+	at com.nt.user_service_lms.UserServiceLmsApplication.main(UserServiceLmsApplication.java:31)
+Caused by: org.springframework.beans.factory.BeanCreationException: Error creating bean with name 'flywayInitializer' defined in class path resource [org/springframework/boot/autoconfigure/flyway/FlywayAutoConfiguration$FlywayConfiguration.class]: Unable to obtain connection from database: FATAL: password authentication failed for user "postgres"
+----------------------------------------------------------------------------------------------------
+SQL State  : 28P01
+Error Code : 0
+Message    : FATAL: password authentication failed for user "postgres"
+
+	at org.springframework.beans.factory.support.AbstractAutowireCapableBeanFactory.initializeBean(AbstractAutowireCapableBeanFactory.java:1812)
+	at org.springframework.beans.factory.support.AbstractAutowireCapableBeanFactory.doCreateBean(AbstractAutowireCapableBeanFactory.java:601)
+	at org.springframework.beans.factory.support.AbstractAutowireCapableBeanFactory.createBean(AbstractAutowireCapableBeanFactory.java:523)
+	at org.springframework.beans.factory.support.AbstractBeanFactory.lambda$doGetBean$0(AbstractBeanFactory.java:339)
+	at org.springframework.beans.factory.support.DefaultSingletonBeanRegistry.getSingleton(DefaultSingletonBeanRegistry.java:347)
+	at org.springframework.beans.factory.support.AbstractBeanFactory.doGetBean(AbstractBeanFactory.java:337)
+	at org.springframework.beans.factory.support.AbstractBeanFactory.getBean(AbstractBeanFactory.java:202)
+	at org.springframework.beans.factory.support.AbstractBeanFactory.doGetBean(AbstractBeanFactory.java:315)
+	... 10 common frames omitted
+Caused by: org.flywaydb.core.internal.exception.FlywaySqlException: Unable to obtain connection from database: FATAL: password authentication failed for user "postgres"
+----------------------------------------------------------------------------------------------------
+SQL State  : 28P01
+Error Code : 0
+Message    : FATAL: password authentication failed for user "postgres"
+
+	at org.flywaydb.core.internal.jdbc.JdbcUtils.openConnection(JdbcUtils.java:71)
+	at org.flywaydb.core.internal.jdbc.JdbcConnectionFactory.<init>(JdbcConnectionFactory.java:76)
+	at org.flywaydb.core.FlywayExecutor.execute(FlywayExecutor.java:137)
+	at org.flywaydb.core.Flyway.migrate(Flyway.java:176)
+	at org.springframework.boot.autoconfigure.flyway.FlywayMigrationInitializer.afterPropertiesSet(FlywayMigrationInitializer.java:66)
+	at org.springframework.beans.factory.support.AbstractAutowireCapableBeanFactory.invokeInitMethods(AbstractAutowireCapableBeanFactory.java:1859)
+	at org.springframework.beans.factory.support.AbstractAutowireCapableBeanFactory.initializeBean(AbstractAutowireCapableBeanFactory.java:1808)
+	... 17 common frames omitted
+Caused by: org.postgresql.util.PSQLException: FATAL: password authentication failed for user "postgres"
+	at org.postgresql.core.v3.ConnectionFactoryImpl.doAuthentication(ConnectionFactoryImpl.java:704)
+	at org.postgresql.core.v3.ConnectionFactoryImpl.tryConnect(ConnectionFactoryImpl.java:213)
+	at org.postgresql.core.v3.ConnectionFactoryImpl.openConnectionImpl(ConnectionFactoryImpl.java:268)
+	at org.postgresql.core.ConnectionFactory.openConnection(ConnectionFactory.java:54)
+	at org.postgresql.jdbc.PgConnection.<init>(PgConnection.java:273)
+	at org.postgresql.Driver.makeConnection(Driver.java:446)
+	at org.postgresql.Driver.connect(Driver.java:298)
+	at com.zaxxer.hikari.util.DriverDataSource.getConnection(DriverDataSource.java:137)
+	at com.zaxxer.hikari.pool.PoolBase.newConnection(PoolBase.java:360)
+	at com.zaxxer.hikari.pool.PoolBase.newPoolEntry(PoolBase.java:202)
+	at com.zaxxer.hikari.pool.HikariPool.createPoolEntry(HikariPool.java:461)
+	at com.zaxxer.hikari.pool.HikariPool.checkFailFast(HikariPool.java:550)
+	at com.zaxxer.hikari.pool.HikariPool.<init>(HikariPool.java:98)
+	at com.zaxxer.hikari.HikariDataSource.getConnection(HikariDataSource.java:111)
+	at org.flywaydb.core.internal.jdbc.JdbcUtils.openConnection(JdbcUtils.java:59)
+	... 23 common frames omitted
+2025-08-06 14:40:16 INFO  o.h.validator.internal.util.Version - HV000001: Hibernate Validator 8.0.2.Final
+2025-08-06 14:40:17 INFO  c.n.u.UserServiceLmsApplication - Starting UserServiceLmsApplication using Java 17.0.12 with PID 38844 (D:\LMS\user-service-lms\build\classes\java\main started by DELL in D:\LMS)
+2025-08-06 14:40:17 INFO  c.n.u.UserServiceLmsApplication - The following 1 profile is active: "local"
+2025-08-06 14:40:18 INFO  o.s.d.r.c.RepositoryConfigurationDelegate - Bootstrapping Spring Data JPA repositories in DEFAULT mode.
+2025-08-06 14:40:19 INFO  o.s.d.r.c.RepositoryConfigurationDelegate - Finished Spring Data repository scanning in 148 ms. Found 6 JPA repository interfaces.
+2025-08-06 14:40:19 INFO  o.s.cloud.context.scope.GenericScope - BeanFactory id=699e1924-4ef0-3d8a-bdf2-eb02e263c36e
+2025-08-06 14:40:20 INFO  o.s.b.w.e.tomcat.TomcatWebServer - Tomcat initialized with port 8081 (http)
+2025-08-06 14:40:20 INFO  o.a.coyote.http11.Http11NioProtocol - Initializing ProtocolHandler ["http-nio-8081"]
+2025-08-06 14:40:20 INFO  o.a.catalina.core.StandardService - Starting service [Tomcat]
+2025-08-06 14:40:20 INFO  o.a.catalina.core.StandardEngine - Starting Servlet engine: [Apache Tomcat/10.1.39]
+2025-08-06 14:40:20 INFO  o.a.c.c.C.[Tomcat].[localhost].[/] - Initializing Spring embedded WebApplicationContext
+2025-08-06 14:40:20 INFO  o.s.b.w.s.c.ServletWebServerApplicationContext - Root WebApplicationContext: initialization completed in 3444 ms
+2025-08-06 14:40:21 DEBUG o.f.c.i.s.classpath.ClassPathScanner - Scanning for classpath resources at 'classpath:db/callback' ...
+2025-08-06 14:40:21 DEBUG o.f.c.i.s.classpath.ClassPathScanner - Determining location urls for classpath:db/callback using ClassLoader jdk.internal.loader.ClassLoaders$AppClassLoader@659e0bfd ...
+2025-08-06 14:40:21 DEBUG o.f.c.i.s.classpath.ClassPathScanner - Unable to resolve location classpath:db/callback.
+2025-08-06 14:40:21 DEBUG o.f.c.i.s.classpath.ClassPathScanner - Scanning for classpath resources at 'classpath:db/migration' ...
+2025-08-06 14:40:21 DEBUG o.f.c.i.s.classpath.ClassPathScanner - Determining location urls for classpath:db/migration using ClassLoader jdk.internal.loader.ClassLoaders$AppClassLoader@659e0bfd ...
+2025-08-06 14:40:21 DEBUG o.f.c.i.s.classpath.ClassPathScanner - Scanning URL: file:/D:/LMS/user-service-lms/build/resources/main/db/migration
+2025-08-06 14:40:21 DEBUG o.f.c.i.s.c.FileSystemClassPathLocationScanner - Scanning starting at classpath root in filesystem: D:\LMS\user-service-lms\build\resources\main\
+2025-08-06 14:40:21 DEBUG o.f.c.i.s.c.FileSystemClassPathLocationScanner - Scanning for resources in path: D:\LMS\user-service-lms\build\resources\main\db\migration (db/migration)
+2025-08-06 14:40:21 DEBUG o.f.c.i.s.classpath.ClassPathScanner - Found resource: db/migration/V1__Create_initial_schema.sql
+2025-08-06 14:40:21 DEBUG o.f.c.i.s.classpath.ClassPathScanner - Found resource: db/migration/V2__Insert_initial_data.sql
+2025-08-06 14:40:21 DEBUG o.f.c.i.s.classpath.ClassPathScanner - Found resource: db/migration/V3__Create_view.sql
+2025-08-06 14:40:21 DEBUG o.f.c.i.s.classpath.ClassPathScanner - Scanning for classes at classpath:db/migration
+2025-08-06 14:40:21 INFO  com.zaxxer.hikari.HikariDataSource - HikariPool-1 - Starting...
+2025-08-06 14:40:22 WARN  o.s.b.w.s.c.AnnotationConfigServletWebServerApplicationContext - Exception encountered during context initialization - cancelling refresh attempt: org.springframework.beans.factory.BeanCreationException: Error creating bean with name 'entityManagerFactory' defined in class path resource [org/springframework/boot/autoconfigure/orm/jpa/HibernateJpaConfiguration.class]: Failed to initialize dependency 'flywayInitializer' of LoadTimeWeaverAware bean 'entityManagerFactory': Error creating bean with name 'flywayInitializer' defined in class path resource [org/springframework/boot/autoconfigure/flyway/FlywayAutoConfiguration$FlywayConfiguration.class]: Unable to obtain connection from database: FATAL: password authentication failed for user "postgres"
+----------------------------------------------------------------------------------------------------
+SQL State  : 28P01
+Error Code : 0
+Message    : FATAL: password authentication failed for user "postgres"
+
+2025-08-06 14:40:22 INFO  o.a.catalina.core.StandardService - Stopping service [Tomcat]
+2025-08-06 14:40:22 INFO  o.s.b.a.l.ConditionEvaluationReportLogger - 
+
+Error starting ApplicationContext. To display the condition evaluation report re-run your application with 'debug' enabled.
+2025-08-06 14:40:22 ERROR o.s.boot.SpringApplication - Application run failed
+org.springframework.beans.factory.BeanCreationException: Error creating bean with name 'entityManagerFactory' defined in class path resource [org/springframework/boot/autoconfigure/orm/jpa/HibernateJpaConfiguration.class]: Failed to initialize dependency 'flywayInitializer' of LoadTimeWeaverAware bean 'entityManagerFactory': Error creating bean with name 'flywayInitializer' defined in class path resource [org/springframework/boot/autoconfigure/flyway/FlywayAutoConfiguration$FlywayConfiguration.class]: Unable to obtain connection from database: FATAL: password authentication failed for user "postgres"
+----------------------------------------------------------------------------------------------------
+SQL State  : 28P01
+Error Code : 0
+Message    : FATAL: password authentication failed for user "postgres"
+
+	at org.springframework.beans.factory.support.AbstractBeanFactory.doGetBean(AbstractBeanFactory.java:328)
+	at org.springframework.beans.factory.support.AbstractBeanFactory.getBean(AbstractBeanFactory.java:207)
+	at org.springframework.context.support.AbstractApplicationContext.finishBeanFactoryInitialization(AbstractApplicationContext.java:970)
+	at org.springframework.context.support.AbstractApplicationContext.refresh(AbstractApplicationContext.java:627)
+	at org.springframework.boot.web.servlet.context.ServletWebServerApplicationContext.refresh(ServletWebServerApplicationContext.java:146)
+	at org.springframework.boot.SpringApplication.refresh(SpringApplication.java:752)
+	at org.springframework.boot.SpringApplication.refreshContext(SpringApplication.java:439)
+	at org.springframework.boot.SpringApplication.run(SpringApplication.java:318)
+	at org.springframework.boot.SpringApplication.run(SpringApplication.java:1361)
+	at org.springframework.boot.SpringApplication.run(SpringApplication.java:1350)
+	at com.nt.user_service_lms.UserServiceLmsApplication.main(UserServiceLmsApplication.java:31)
+Caused by: org.springframework.beans.factory.BeanCreationException: Error creating bean with name 'flywayInitializer' defined in class path resource [org/springframework/boot/autoconfigure/flyway/FlywayAutoConfiguration$FlywayConfiguration.class]: Unable to obtain connection from database: FATAL: password authentication failed for user "postgres"
+----------------------------------------------------------------------------------------------------
+SQL State  : 28P01
+Error Code : 0
+Message    : FATAL: password authentication failed for user "postgres"
+
+	at org.springframework.beans.factory.support.AbstractAutowireCapableBeanFactory.initializeBean(AbstractAutowireCapableBeanFactory.java:1812)
+	at org.springframework.beans.factory.support.AbstractAutowireCapableBeanFactory.doCreateBean(AbstractAutowireCapableBeanFactory.java:601)
+	at org.springframework.beans.factory.support.AbstractAutowireCapableBeanFactory.createBean(AbstractAutowireCapableBeanFactory.java:523)
+	at org.springframework.beans.factory.support.AbstractBeanFactory.lambda$doGetBean$0(AbstractBeanFactory.java:339)
+	at org.springframework.beans.factory.support.DefaultSingletonBeanRegistry.getSingleton(DefaultSingletonBeanRegistry.java:347)
+	at org.springframework.beans.factory.support.AbstractBeanFactory.doGetBean(AbstractBeanFactory.java:337)
+	at org.springframework.beans.factory.support.AbstractBeanFactory.getBean(AbstractBeanFactory.java:202)
+	at org.springframework.beans.factory.support.AbstractBeanFactory.doGetBean(AbstractBeanFactory.java:315)
+	... 10 common frames omitted
+Caused by: org.flywaydb.core.internal.exception.FlywaySqlException: Unable to obtain connection from database: FATAL: password authentication failed for user "postgres"
+----------------------------------------------------------------------------------------------------
+SQL State  : 28P01
+Error Code : 0
+Message    : FATAL: password authentication failed for user "postgres"
+
+	at org.flywaydb.core.internal.jdbc.JdbcUtils.openConnection(JdbcUtils.java:71)
+	at org.flywaydb.core.internal.jdbc.JdbcConnectionFactory.<init>(JdbcConnectionFactory.java:76)
+	at org.flywaydb.core.FlywayExecutor.execute(FlywayExecutor.java:137)
+	at org.flywaydb.core.Flyway.migrate(Flyway.java:176)
+	at org.springframework.boot.autoconfigure.flyway.FlywayMigrationInitializer.afterPropertiesSet(FlywayMigrationInitializer.java:66)
+	at org.springframework.beans.factory.support.AbstractAutowireCapableBeanFactory.invokeInitMethods(AbstractAutowireCapableBeanFactory.java:1859)
+	at org.springframework.beans.factory.support.AbstractAutowireCapableBeanFactory.initializeBean(AbstractAutowireCapableBeanFactory.java:1808)
+	... 17 common frames omitted
+Caused by: org.postgresql.util.PSQLException: FATAL: password authentication failed for user "postgres"
+	at org.postgresql.core.v3.ConnectionFactoryImpl.doAuthentication(ConnectionFactoryImpl.java:704)
+	at org.postgresql.core.v3.ConnectionFactoryImpl.tryConnect(ConnectionFactoryImpl.java:213)
+	at org.postgresql.core.v3.ConnectionFactoryImpl.openConnectionImpl(ConnectionFactoryImpl.java:268)
+	at org.postgresql.core.ConnectionFactory.openConnection(ConnectionFactory.java:54)
+	at org.postgresql.jdbc.PgConnection.<init>(PgConnection.java:273)
+	at org.postgresql.Driver.makeConnection(Driver.java:446)
+	at org.postgresql.Driver.connect(Driver.java:298)
+	at com.zaxxer.hikari.util.DriverDataSource.getConnection(DriverDataSource.java:137)
+	at com.zaxxer.hikari.pool.PoolBase.newConnection(PoolBase.java:360)
+	at com.zaxxer.hikari.pool.PoolBase.newPoolEntry(PoolBase.java:202)
+	at com.zaxxer.hikari.pool.HikariPool.createPoolEntry(HikariPool.java:461)
+	at com.zaxxer.hikari.pool.HikariPool.checkFailFast(HikariPool.java:550)
+	at com.zaxxer.hikari.pool.HikariPool.<init>(HikariPool.java:98)
+	at com.zaxxer.hikari.HikariDataSource.getConnection(HikariDataSource.java:111)
+	at org.flywaydb.core.internal.jdbc.JdbcUtils.openConnection(JdbcUtils.java:59)
+	... 23 common frames omitted
+2025-08-06 14:40:58 INFO  o.h.validator.internal.util.Version - HV000001: Hibernate Validator 8.0.2.Final
+2025-08-06 14:40:58 INFO  c.n.u.UserServiceLmsApplication - Starting UserServiceLmsApplication using Java 17.0.12 with PID 15256 (D:\LMS\user-service-lms\build\classes\java\main started by DELL in D:\LMS)
+2025-08-06 14:40:58 INFO  c.n.u.UserServiceLmsApplication - The following 1 profile is active: "local"
+2025-08-06 14:41:00 INFO  o.s.d.r.c.RepositoryConfigurationDelegate - Bootstrapping Spring Data JPA repositories in DEFAULT mode.
+2025-08-06 14:41:00 INFO  o.s.d.r.c.RepositoryConfigurationDelegate - Finished Spring Data repository scanning in 182 ms. Found 6 JPA repository interfaces.
+2025-08-06 14:41:01 INFO  o.s.cloud.context.scope.GenericScope - BeanFactory id=699e1924-4ef0-3d8a-bdf2-eb02e263c36e
+2025-08-06 14:41:02 INFO  o.s.b.w.e.tomcat.TomcatWebServer - Tomcat initialized with port 8081 (http)
+2025-08-06 14:41:02 INFO  o.a.coyote.http11.Http11NioProtocol - Initializing ProtocolHandler ["http-nio-8081"]
+2025-08-06 14:41:02 INFO  o.a.catalina.core.StandardService - Starting service [Tomcat]
+2025-08-06 14:41:02 INFO  o.a.catalina.core.StandardEngine - Starting Servlet engine: [Apache Tomcat/10.1.39]
+2025-08-06 14:41:02 INFO  o.a.c.c.C.[Tomcat].[localhost].[/] - Initializing Spring embedded WebApplicationContext
+2025-08-06 14:41:02 INFO  o.s.b.w.s.c.ServletWebServerApplicationContext - Root WebApplicationContext: initialization completed in 3613 ms
+2025-08-06 14:41:02 DEBUG o.f.c.i.s.classpath.ClassPathScanner - Scanning for classpath resources at 'classpath:db/callback' ...
+2025-08-06 14:41:02 DEBUG o.f.c.i.s.classpath.ClassPathScanner - Determining location urls for classpath:db/callback using ClassLoader jdk.internal.loader.ClassLoaders$AppClassLoader@659e0bfd ...
+2025-08-06 14:41:02 DEBUG o.f.c.i.s.classpath.ClassPathScanner - Unable to resolve location classpath:db/callback.
+2025-08-06 14:41:02 DEBUG o.f.c.i.s.classpath.ClassPathScanner - Scanning for classpath resources at 'classpath:db/migration' ...
+2025-08-06 14:41:02 DEBUG o.f.c.i.s.classpath.ClassPathScanner - Determining location urls for classpath:db/migration using ClassLoader jdk.internal.loader.ClassLoaders$AppClassLoader@659e0bfd ...
+2025-08-06 14:41:02 DEBUG o.f.c.i.s.classpath.ClassPathScanner - Scanning URL: file:/D:/LMS/user-service-lms/build/resources/main/db/migration
+2025-08-06 14:41:02 DEBUG o.f.c.i.s.c.FileSystemClassPathLocationScanner - Scanning starting at classpath root in filesystem: D:\LMS\user-service-lms\build\resources\main\
+2025-08-06 14:41:02 DEBUG o.f.c.i.s.c.FileSystemClassPathLocationScanner - Scanning for resources in path: D:\LMS\user-service-lms\build\resources\main\db\migration (db/migration)
+2025-08-06 14:41:02 DEBUG o.f.c.i.s.classpath.ClassPathScanner - Found resource: db/migration/V1__Create_initial_schema.sql
+2025-08-06 14:41:02 DEBUG o.f.c.i.s.classpath.ClassPathScanner - Found resource: db/migration/V2__Insert_initial_data.sql
+2025-08-06 14:41:02 DEBUG o.f.c.i.s.classpath.ClassPathScanner - Found resource: db/migration/V3__Create_view.sql
+2025-08-06 14:41:02 DEBUG o.f.c.i.s.classpath.ClassPathScanner - Scanning for classes at classpath:db/migration
+2025-08-06 14:41:02 INFO  com.zaxxer.hikari.HikariDataSource - HikariPool-1 - Starting...
+2025-08-06 14:41:03 INFO  com.zaxxer.hikari.pool.HikariPool - HikariPool-1 - Added connection org.postgresql.jdbc.PgConnection@79d4ff58
+2025-08-06 14:41:03 INFO  com.zaxxer.hikari.HikariDataSource - HikariPool-1 - Start completed.
+2025-08-06 14:41:03 DEBUG o.f.c.i.r.ResourceNameValidator - Validating V2__Insert_initial_data.sql
+2025-08-06 14:41:03 DEBUG o.f.c.i.r.ResourceNameValidator - Validating V3__Create_view.sql
+2025-08-06 14:41:03 DEBUG o.f.c.i.r.ResourceNameValidator - Validating V1__Create_initial_schema.sql
+2025-08-06 14:41:03 DEBUG o.f.c.i.d.DatabaseTypeRegister - Multiple databases found that handle url 'jdbc:postgresql://localhost:5432/lms_db': CockroachDB,PostgreSQL
+2025-08-06 14:41:03 INFO  org.flywaydb.core.FlywayExecutor - Database: jdbc:postgresql://localhost:5432/lms_db (PostgreSQL 15.7)
+2025-08-06 14:41:03 DEBUG org.flywaydb.core.FlywayExecutor - Database Type: PostgreSQL
+2025-08-06 14:41:03 DEBUG org.flywaydb.core.FlywayExecutor - Driver: PostgreSQL JDBC Driver 42.7.5
+2025-08-06 14:41:03 DEBUG org.flywaydb.core.FlywayExecutor - DDL Transactions Supported: true
+2025-08-06 14:41:03 DEBUG o.f.c.i.s.SchemaHistoryFactory - Schemas: 
+2025-08-06 14:41:03 DEBUG o.f.c.i.s.SchemaHistoryFactory - Default schema: null
+2025-08-06 14:41:03 DEBUG org.flywaydb.core.FlywayExecutor - Scanning for script callbacks ...
+2025-08-06 14:41:03 DEBUG o.f.c.i.c.SqlScriptCallbackFactory - Scanning for SQL callbacks ...
+2025-08-06 14:41:03 DEBUG o.f.core.internal.command.DbValidate - Validating migrations ...
+2025-08-06 14:41:03 DEBUG o.f.c.a.c.ClassicConfiguration - CherryPickConfigurationExtension not found
+2025-08-06 14:41:03 DEBUG o.f.core.internal.scanner.Scanner - Filtering out resource: db/migration/V2__Insert_initial_data.sql (filename: V2__Insert_initial_data.sql)
+2025-08-06 14:41:03 DEBUG o.f.core.internal.scanner.Scanner - Filtering out resource: db/migration/V3__Create_view.sql (filename: V3__Create_view.sql)
+2025-08-06 14:41:03 DEBUG o.f.core.internal.scanner.Scanner - Filtering out resource: db/migration/V1__Create_initial_schema.sql (filename: V1__Create_initial_schema.sql)
+2025-08-06 14:41:03 DEBUG o.f.core.internal.scanner.Scanner - Filtering out resource: db/migration/V2__Insert_initial_data.sql (filename: V2__Insert_initial_data.sql)
+2025-08-06 14:41:03 DEBUG o.f.core.internal.scanner.Scanner - Filtering out resource: db/migration/V3__Create_view.sql (filename: V3__Create_view.sql)
+2025-08-06 14:41:03 DEBUG o.f.core.internal.scanner.Scanner - Filtering out resource: db/migration/V1__Create_initial_schema.sql (filename: V1__Create_initial_schema.sql)
+2025-08-06 14:41:03 DEBUG o.f.core.internal.scanner.Scanner - Filtering out resource: db/migration/V2__Insert_initial_data.sql (filename: V2__Insert_initial_data.sql)
+2025-08-06 14:41:03 DEBUG o.f.core.internal.scanner.Scanner - Filtering out resource: db/migration/V3__Create_view.sql (filename: V3__Create_view.sql)
+2025-08-06 14:41:03 DEBUG o.f.core.internal.scanner.Scanner - Filtering out resource: db/migration/V1__Create_initial_schema.sql (filename: V1__Create_initial_schema.sql)
+2025-08-06 14:41:03 DEBUG o.f.core.internal.scanner.Scanner - Filtering out resource: db/migration/V2__Insert_initial_data.sql (filename: V2__Insert_initial_data.sql)
+2025-08-06 14:41:03 DEBUG o.f.core.internal.scanner.Scanner - Filtering out resource: db/migration/V3__Create_view.sql (filename: V3__Create_view.sql)
+2025-08-06 14:41:03 DEBUG o.f.core.internal.scanner.Scanner - Filtering out resource: db/migration/V1__Create_initial_schema.sql (filename: V1__Create_initial_schema.sql)
+2025-08-06 14:41:03 INFO  o.f.core.internal.command.DbValidate - Successfully validated 3 migrations (execution time 00:00.109s)
+2025-08-06 14:41:03 DEBUG o.f.core.internal.command.DbSchemas - Skipping creation of existing schema: "public"
+2025-08-06 14:41:03 DEBUG o.f.c.a.c.ClassicConfiguration - CherryPickConfigurationExtension not found
+2025-08-06 14:41:03 INFO  o.f.core.internal.command.DbMigrate - Current version of schema "public": 3
+2025-08-06 14:41:03 INFO  o.f.core.internal.command.DbMigrate - Schema "public" is up to date. No migration necessary.
+2025-08-06 14:41:03 DEBUG org.flywaydb.core.FlywayExecutor - Memory usage: 69 of 108M
+2025-08-06 14:41:04 INFO  o.h.jpa.internal.util.LogHelper - HHH000204: Processing PersistenceUnitInfo [name: default]
+2025-08-06 14:41:04 INFO  org.hibernate.Version - HHH000412: Hibernate ORM core version 6.6.11.Final
+2025-08-06 14:41:04 INFO  o.h.c.i.RegionFactoryInitiator - HHH000026: Second-level cache disabled
+2025-08-06 14:41:04 INFO  o.s.o.j.p.SpringPersistenceUnitInfo - No LoadTimeWeaver setup: ignoring JPA class transformer
+2025-08-06 14:41:04 WARN  org.hibernate.orm.deprecation - HHH90000025: PostgreSQLDialect does not need to be specified explicitly using 'hibernate.dialect' (remove the property setting and it will be selected by default)
+2025-08-06 14:41:04 INFO  o.hibernate.orm.connections.pooling - HHH10001005: Database info:
+	Database JDBC URL [Connecting through datasource 'HikariDataSource (HikariPool-1)']
+	Database driver: undefined/unknown
+	Database version: 15.7
+	Autocommit mode: undefined/unknown
+	Isolation level: undefined/unknown
+	Minimum pool size: undefined/unknown
+	Maximum pool size: undefined/unknown
+2025-08-06 14:41:06 INFO  o.h.e.t.j.p.i.JtaPlatformInitiator - HHH000489: No JTA platform available (set 'hibernate.transaction.jta.platform' to enable JTA platform integration)
+2025-08-06 14:41:06 INFO  o.s.o.j.LocalContainerEntityManagerFactoryBean - Initialized JPA EntityManagerFactory for persistence unit 'default'
+2025-08-06 14:41:06 INFO  o.s.d.j.r.query.QueryEnhancerFactory - Hibernate is in classpath; If applicable, HQL parser will be used.
+2025-08-06 14:41:08 WARN  o.s.b.a.o.j.JpaBaseConfiguration$JpaWebConfiguration - spring.jpa.open-in-view is enabled by default. Therefore, database queries may be performed during view rendering. Explicitly configure spring.jpa.open-in-view to disable this warning
+2025-08-06 14:41:08 INFO  o.s.s.c.a.a.c.InitializeUserDetailsBeanManagerConfigurer$InitializeUserDetailsManagerConfigurer - Global AuthenticationManager configured with UserDetailsService bean with name userServiceImpl
+2025-08-06 14:41:08 DEBUG o.s.w.s.m.m.a.RequestMappingHandlerMapping - 57 mappings in 'requestMappingHandlerMapping'
+2025-08-06 14:41:09 DEBUG o.s.w.s.h.SimpleUrlHandlerMapping - Patterns [/webjars/**, /**] in 'resourceHandlerMapping'
+2025-08-06 14:41:09 WARN  o.s.s.c.a.w.c.AuthorizeHttpRequestsConfigurer$AuthorizationManagerRequestMatcherRegistry - One of the patterns in [api/service-api/manager/**] is missing a leading slash. This is discouraged; please include the leading slash in all your request matcher patterns. In future versions of Spring Security, leaving out the leading slash will result in an exception.
+2025-08-06 14:41:09 DEBUG o.s.w.s.m.m.a.RequestMappingHandlerAdapter - ControllerAdvice beans: 0 @ModelAttribute, 0 @InitBinder, 1 RequestBodyAdvice, 1 ResponseBodyAdvice
+2025-08-06 14:41:09 DEBUG o.s.w.s.m.m.a.ExceptionHandlerExceptionResolver - ControllerAdvice beans: 1 @ExceptionHandler, 1 ResponseBodyAdvice
+2025-08-06 14:41:09 INFO  o.a.coyote.http11.Http11NioProtocol - Starting ProtocolHandler ["http-nio-8081"]
+2025-08-06 14:41:09 INFO  o.s.b.w.e.tomcat.TomcatWebServer - Tomcat started on port 8081 (http) with context path '/'
+2025-08-06 14:41:10 INFO  c.n.u.UserServiceLmsApplication - Started UserServiceLmsApplication in 12.287 seconds (process running for 13.448)
+2025-08-06 14:41:15 INFO  o.a.c.c.C.[Tomcat].[localhost].[/] - Initializing Spring DispatcherServlet 'dispatcherServlet'
+2025-08-06 14:41:15 INFO  o.s.web.servlet.DispatcherServlet - Initializing Servlet 'dispatcherServlet'
+2025-08-06 14:41:15 DEBUG o.s.web.servlet.DispatcherServlet - Detected StandardServletMultipartResolver
+2025-08-06 14:41:15 DEBUG o.s.web.servlet.DispatcherServlet - Detected AcceptHeaderLocaleResolver
+2025-08-06 14:41:15 DEBUG o.s.web.servlet.DispatcherServlet - Detected FixedThemeResolver
+2025-08-06 14:41:15 DEBUG o.s.web.servlet.DispatcherServlet - Detected org.springframework.web.servlet.view.DefaultRequestToViewNameTranslator@34bbfd4b
+2025-08-06 14:41:15 DEBUG o.s.web.servlet.DispatcherServlet - Detected org.springframework.web.servlet.support.SessionFlashMapManager@384d40a5
+2025-08-06 14:41:15 DEBUG o.s.web.servlet.DispatcherServlet - enableLoggingRequestDetails='false': request parameters and headers will be masked to prevent unsafe logging of potentially sensitive data
+2025-08-06 14:41:15 INFO  o.s.web.servlet.DispatcherServlet - Completed initialization in 6 ms
+2025-08-06 14:41:15 DEBUG o.s.web.servlet.DispatcherServlet - GET "/api/service-api/group/count", parameters={}
+2025-08-06 14:41:15 DEBUG o.s.web.servlet.DispatcherServlet - GET "/api/service-api/admin/count", parameters={}
+2025-08-06 14:41:15 DEBUG o.s.web.servlet.DispatcherServlet - GET "/api/service-api/enrollment/statistics", parameters={}
+2025-08-06 14:41:15 DEBUG o.s.web.servlet.DispatcherServlet - GET "/api/service-api/admin/users/recent", parameters={}
+2025-08-06 14:41:15 DEBUG o.s.w.s.m.m.a.RequestMappingHandlerMapping - Mapped to com.nt.user_service_lms.controller.GroupController#getGroupCount()
+2025-08-06 14:41:15 DEBUG o.s.w.s.m.m.a.RequestMappingHandlerMapping - Mapped to com.nt.user_service_lms.controller.EnrollmentController#getEnrollmentStatistics()
+2025-08-06 14:41:15 DEBUG o.s.w.s.m.m.a.RequestMappingHandlerMapping - Mapped to com.nt.user_service_lms.controller.AdminController#getTotalUserCount()
+2025-08-06 14:41:15 DEBUG o.s.w.s.m.m.a.RequestMappingHandlerMapping - Mapped to com.nt.user_service_lms.controller.AdminController#getRecentUsers()
+2025-08-06 14:41:15 INFO  c.n.u.controller.AdminController - Fetching total user count
+2025-08-06 14:41:15 INFO  c.n.u.controller.GroupController - Received request to get total Group count.
+2025-08-06 14:41:15 INFO  c.n.u.c.EnrollmentController - Fetching enrollment statistics for dashboard
+2025-08-06 14:41:16 INFO  c.n.u.controller.GroupController - Total Group count retrieved: 7
+2025-08-06 14:41:16 INFO  c.n.u.controller.AdminController - Total user count retrieved: 12
+2025-08-06 14:41:16 DEBUG o.s.w.s.m.m.a.HttpEntityMethodProcessor - Using 'application/json', given [application/json, text/plain, */*] and supported [application/json, application/*+json]
+2025-08-06 14:41:16 DEBUG o.s.w.s.m.m.a.HttpEntityMethodProcessor - Using 'application/json', given [application/json, text/plain, */*] and supported [application/json, application/*+json]
+2025-08-06 14:41:16 DEBUG o.s.w.s.m.m.a.HttpEntityMethodProcessor - Using 'application/json', given [application/json, text/plain, */*] and supported [application/json, application/*+json]
+2025-08-06 14:41:16 DEBUG o.s.w.s.m.m.a.HttpEntityMethodProcessor - Writing [StandardResponseOutDTO{status='SUCCESS', message='Fetched User Count', data=12}]
+2025-08-06 14:41:16 DEBUG o.s.w.s.m.m.a.HttpEntityMethodProcessor - Writing [StandardResponseOutDTO{status='success', message='Group count retrieved successfully.', data=7}]
+2025-08-06 14:41:16 DEBUG o.s.w.s.m.m.a.HttpEntityMethodProcessor - Writing [StandardResponseOutDTO{status='SUCCESS', message='Fetched Recent Users', data=[UsersDetailsViewDTO(u (truncated)...]
+2025-08-06 14:41:16 DEBUG o.s.web.servlet.DispatcherServlet - Completed 200 OK
+2025-08-06 14:41:16 DEBUG o.s.web.servlet.DispatcherServlet - Completed 200 OK
+2025-08-06 14:41:16 DEBUG o.s.web.servlet.DispatcherServlet - Completed 200 OK
+2025-08-06 14:41:16 INFO  c.n.u.c.EnrollmentController - Successfully retrieved enrollment statistics
+2025-08-06 14:41:16 DEBUG o.s.w.s.m.m.a.HttpEntityMethodProcessor - Using 'application/json', given [application/json, text/plain, */*] and supported [application/json, application/*+json]
+2025-08-06 14:41:16 DEBUG o.s.w.s.m.m.a.HttpEntityMethodProcessor - Writing [StandardResponseOutDTO{status='SUCCESS', message='Fetched Enrollment Statistics', data=EnrollmentDas (truncated)...]
+2025-08-06 14:41:16 DEBUG o.s.web.servlet.DispatcherServlet - Completed 200 OK
+2025-08-06 14:41:16 DEBUG o.s.web.servlet.DispatcherServlet - GET "/api/service-api/group/recent", parameters={}
+2025-08-06 14:41:16 DEBUG o.s.w.s.m.m.a.RequestMappingHandlerMapping - Mapped to com.nt.user_service_lms.controller.GroupController#getRecentGroups()
+2025-08-06 14:41:16 DEBUG o.s.w.s.m.m.a.HttpEntityMethodProcessor - Using 'application/json', given [application/json, text/plain, */*] and supported [application/json, application/*+json]
+2025-08-06 14:41:16 DEBUG o.s.w.s.m.m.a.HttpEntityMethodProcessor - Writing [StandardResponseOutDTO{status='SUCCESS', message='Group summary fetched successfully', data=[GroupSu (truncated)...]
+2025-08-06 14:41:16 DEBUG o.s.web.servlet.DispatcherServlet - Completed 200 OK
+2025-08-06 14:45:04 WARN  com.zaxxer.hikari.pool.HikariPool - HikariPool-1 - Thread starvation or clock leap detected (housekeeper delta=1m1s326ms340µs600ns).
+2025-08-06 14:51:50 WARN  com.zaxxer.hikari.pool.HikariPool - HikariPool-1 - Thread starvation or clock leap detected (housekeeper delta=5m15s75ms176µs300ns).
