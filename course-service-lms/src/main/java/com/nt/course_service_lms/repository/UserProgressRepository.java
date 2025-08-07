@@ -80,4 +80,6 @@ public interface UserProgressRepository extends JpaRepository<UserProgress, Inte
             + "WHERE u.userId = :userId AND u.courseId = :courseId and u.contentId = :contentId ORDER BY u.progressId ASC")
     UserProgress findContentProgress(Long userId, Long courseId, Long contentId);
 
+    void deleteByContentId(Long contentId);
+
 }

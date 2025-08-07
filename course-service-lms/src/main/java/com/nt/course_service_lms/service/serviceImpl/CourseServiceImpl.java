@@ -260,13 +260,9 @@ public class CourseServiceImpl implements CourseService {
      */
     @Override
     public CourseOutDTO updateCourse(final Long courseId, final UpdateCourseInDTO updateCourseInDTO) {
-        System.out.println();
         log.info("Updating course with ID: {}", courseId);
 
         Course existingCourse = findCourseByIdOrThrow(courseId);
-
-        System.out.println(".........................................");
-
         validateNoDuplicateOnUpdate(courseId, updateCourseInDTO, existingCourse);
 
         CourseConvertors.updateCourseFromDTO(existingCourse, updateCourseInDTO);

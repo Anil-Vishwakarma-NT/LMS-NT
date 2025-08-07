@@ -20,7 +20,7 @@ aws:
   s3:
     bucket-name: your-bucket-name
   secretsmanager:
-    region: ap-south-1
+    region: us-east-1
     secretName: /dev/lms/db/credentials  # Replace with your actual secret path
 
 

@@ -42,6 +42,11 @@ public class CourseContentOutDTO {
     private String description;
 
     /**
+     * A content Type or objective of this resource.
+     */
+    private String contentType;
+
+    /**
      * A link to the content resource.
      * <p>
      * Can be a URL to a video, document, or any other learning material.
@@ -63,4 +68,13 @@ public class CourseContentOutDTO {
      * Timestamp indicating the last time this content was updated.
      */
     private LocalDateTime updatedAt;
+
+    public CourseContentOutDTO(long courseId, String title, String description, String contentType, String resourceLink, boolean active) {
+        this.courseId = courseId;
+        this.title = title;
+        this.description = description;
+        this.contentType = contentType;
+        this.resourceLink = resourceLink;
+        this.isActive = active;
+    }
 }

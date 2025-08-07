@@ -27,6 +27,11 @@ public final class CourseContentConstants {
     public static final String TITLE_NOT_BLANK = "Title cannot be blank";
 
     /**
+     * Validation message when the title field is blank.
+     */
+    public static final String CONTENT_TYPE_NOT_BLANK = "File type cannot be blank";
+
+    /**
      * Validation message when the title length exceeds the limit.
      */
     public static final String TITLE_SIZE_EXCEED = "Title cannot exceed 100 characters";

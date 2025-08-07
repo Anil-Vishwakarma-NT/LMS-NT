@@ -3,17 +3,13 @@ package com.nt.course_service_lms.dto.inDTO;
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
-import jakarta.validation.constraints.Pattern;
 import jakarta.validation.constraints.Size;
+import java.util.Objects;
+import static com.nt.course_service_lms.constants.CourseContentConstants.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import org.springframework.web.multipart.MultipartFile;
-
-import java.util.Objects;
-
-import static com.nt.course_service_lms.constants.CourseContentConstants.*;
 
 /**
  * Data Transfer Object (DTO) for transferring course content data between the
@@ -35,7 +31,8 @@ import static com.nt.course_service_lms.constants.CourseContentConstants.*;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class CourseContentInDTO {
+public class CourseContentUrlInDTO {
+
 
     /**
      * The ID of the course to which this content belongs.
@@ -72,11 +69,11 @@ public class CourseContentInDTO {
      * The optional URL to additional learning resources.
      * <p>If provided, must be a valid HTTP, HTTPS, or FTP link.</p>
      */
-    @NotNull(message = "Resource file should not be empty")
-    private MultipartFile file;
+    @NotNull(message = "Video link should not be empty")
+    private String youtubeUrl;
 
     @NotNull(message = "Is Active field is required")
-    private boolean isActive;
+    private Boolean isActive;
 
     @Override
     public boolean equals(Object o) {
@@ -86,12 +83,12 @@ public class CourseContentInDTO {
         if (o == null || getClass() != o.getClass()) {
             return false;
         }
-        CourseContentInDTO that = (CourseContentInDTO) o;
-        return courseId == that.courseId && isActive == that.isActive && Objects.equals(title, that.title) && Objects.equals(description, that.description) && Objects.equals(contentType, that.contentType) && Objects.equals(file, that.file);
+        CourseContentUrlInDTO that = (CourseContentUrlInDTO) o;
+        return courseId == that.courseId && isActive == that.isActive && Objects.equals(title, that.title) && Objects.equals(description, that.description) && Objects.equals(contentType, that.contentType) && Objects.equals(youtubeUrl, that.youtubeUrl);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(courseId, title, description,contentType, file, isActive);
+        return Objects.hash(courseId, title, description,contentType, youtubeUrl, isActive);
     }
 }

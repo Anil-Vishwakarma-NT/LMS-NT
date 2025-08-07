@@ -118,7 +118,12 @@ public class ServiceAuthenticationFilter extends OncePerRequestFilter {
 
         try {
             String path = request.getRequestURI();
-            if (path.startsWith("/video/") || path.startsWith("/pdf/")) {
+            System.out.println(path);
+            if (path.startsWith("/video/") || path.startsWith("/pdf/") || path.startsWith("/api/service-api/streaming/")) {
+                filterChain.doFilter(request, response);
+                return;
+            }
+            if (path.startsWith("/h2-console") || path.startsWith("/favicon.ico")) {
                 filterChain.doFilter(request, response);
                 return;
             }
