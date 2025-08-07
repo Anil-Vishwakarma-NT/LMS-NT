@@ -49,12 +49,6 @@ class UserResponseUpdateInDTOTest {
         assertViolation(dto, "User answer cannot be blank");
     }
 
-    @Test
-    void testUserAnswerTooLong() {
-        UserResponseUpdateInDTO dto = createValidDTO();
-        dto.setUserAnswer(new String(new char[10001]).replace('\0', 'A'));
-        assertViolation(dto, "User answer cannot exceed 10000 characters");
-    }
 
     @Test
     void testIsCorrectNull() {

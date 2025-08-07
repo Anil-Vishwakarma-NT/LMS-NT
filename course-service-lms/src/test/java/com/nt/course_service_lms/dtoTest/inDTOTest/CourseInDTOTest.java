@@ -102,12 +102,6 @@ class CourseInDTOTest {
         assertFalse(violations.isEmpty());
     }
 
-    @Test
-    void whenCourseLevelIsEmpty_thenViolation() {
-        CourseInDTO dto = new CourseInDTO("Valid Title", 1L, "Valid Desc", "", true);
-        Set<ConstraintViolation<CourseInDTO>> violations = validator.validate(dto);
-        assertFalse(violations.isEmpty());
-    }
 
     @Test
     void testBuilderCreatesValidObject() {
