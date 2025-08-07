@@ -1296,7 +1296,6 @@ public class EnrollmentServiceImpl implements EnrollmentService {
                 List<Long> courseIds = courseMicroserviceClient.findCourseIdsByBundleId(bundleId).getBody();
 
                 if (courseIds != null && !courseIds.isEmpty()) {
-                    // Check if any course in the bundle is already enrolled for this user with BUNDLE source
                     for (Long courseId : courseIds) {
                         if (enrollmentExists(userId, null, courseId, bundleId, ENROLLMENT_SOURCE_BUNDLE)) {
                             throw new ResourceAlreadyExistsException(

@@ -1,5 +1,6 @@
 package com.nt.user_service_lms.exception;
 
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.converter.HttpMessageNotReadableException;
@@ -24,6 +25,7 @@ import java.util.Map;
  * to improve the client-side handling of errors.</p>
  */
 @RestControllerAdvice
+@Slf4j
 public class GlobalExceptionHandler {
 
     /**
@@ -107,7 +109,20 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(AccessDeniedException.class)
     @ResponseStatus(HttpStatus.FORBIDDEN)
     public ResponseEntity<ErrorResponse> handleAccessDeniedException(final AccessDeniedException ex) {
+        log.error("Handling UnauthorizedAccessException: {}", ex.getMessage());
         ErrorResponse errorResponse = new ErrorResponse(HttpStatus.FORBIDDEN.value(), "Access Denied. You do not have permission to perform this action.");
+        return new ResponseEntity<>(errorResponse, HttpStatus.FORBIDDEN);
+    }
+
+    /**
+     * Handles {@link UnauthorizedAccessException} and returns a 403 Forbidden response.
+     * @param ex
+     * @return
+     */
+    @ExceptionHandler(UnauthorizedAccessException.class)
+    @ResponseStatus(HttpStatus.FORBIDDEN)
+    public ResponseEntity<ErrorResponse> handleUnauthorizedAccessException(final UnauthorizedAccessException ex) {
+        ErrorResponse errorResponse = new ErrorResponse(HttpStatus.FORBIDDEN.value(), "Authentication failed");
         return new ResponseEntity<>(errorResponse, HttpStatus.FORBIDDEN);
     }
 

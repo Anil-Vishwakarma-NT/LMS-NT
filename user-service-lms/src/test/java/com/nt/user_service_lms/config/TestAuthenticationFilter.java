@@ -67,6 +67,7 @@ import java.util.List;
 @Profile("test")
 public class TestAuthenticationFilter extends OncePerRequestFilter {
 
+
     private static final Logger log = LoggerFactory.getLogger(TestAuthenticationFilter.class);
 
     @Override
@@ -75,6 +76,27 @@ public class TestAuthenticationFilter extends OncePerRequestFilter {
                                     FilterChain filterChain) throws ServletException, IOException {
 
         log.debug("Processing test authentication for: {}", request.getRequestURI());
+
+
+
+        // Check for unauthorized test scenario
+        String testAuth = request.getHeader("X-Test-Auth");
+        if ("UNAUTHORIZED".equals(testAuth)) {
+            log.debug("Simulating unauthorized access - no authentication set");
+            filterChain.doFilter(request, response);
+            return;
+        }
+
+
+        // Check for invalid principal scenario
+        if ("INVALID_PRINCIPAL".equals(testAuth)) {
+            log.debug("Simulating invalid principal");
+            UsernamePasswordAuthenticationToken authentication =
+                    new UsernamePasswordAuthenticationToken("not-service-principal", null, List.of());
+            SecurityContextHolder.getContext().setAuthentication(authentication);
+            filterChain.doFilter(request, response);
+            return;
+        }
 
         // Check for role-specific headers to control authentication
         String testRole = request.getHeader("X-Test-Role");

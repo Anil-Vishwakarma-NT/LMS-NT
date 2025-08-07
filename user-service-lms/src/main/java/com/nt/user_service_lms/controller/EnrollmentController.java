@@ -84,8 +84,10 @@ public class EnrollmentController {
         } catch (Exception e) {
             log.error("Failed to process enrollment request for user: {}",
                     enrollmentRequestInDTO.getUserIds(), e);
-            throw e;
-        }
+            return ResponseEntity
+                    .badRequest()
+                    .body(StandardResponseOutDTO.error("User already enrolled."));
+     }
     }
 
     /**
@@ -116,7 +118,10 @@ public class EnrollmentController {
 
         } catch (Exception e) {
             log.error("Failed to fetch enrollment statistics", e);
-            throw e;
+            return ResponseEntity
+                    .badRequest()
+                    .body(StandardResponseOutDTO.error("Failed to fetch enrollment statistics"));
+
         }
     }
 
@@ -150,7 +155,10 @@ public class EnrollmentController {
 
         } catch (Exception e) {
             log.error("Failed to fetch enrollments for user ID: {}", userId, e);
-            throw e;
+            return ResponseEntity
+                    .internalServerError()
+                    .body(StandardResponseOutDTO.error("User not found with id : "));
+
         }
     }
 
@@ -218,7 +226,10 @@ public class EnrollmentController {
 
         } catch (Exception e) {
             log.error("Failed to fetch individual course enrollments", e);
-            throw e;
+            return ResponseEntity
+                    .badRequest()
+                    .body(StandardResponseOutDTO.error("Failed to fetch course enrollments"));
+
         }
     }
 
@@ -253,7 +264,10 @@ public class EnrollmentController {
 
         } catch (Exception e) {
             log.error("Failed to fetch individual bundle enrollments", e);
-            throw e;
+            return ResponseEntity
+                    .badRequest()
+                    .body(StandardResponseOutDTO.error("Failed to fetch bundle enrollments"));
+
         }
     }
 

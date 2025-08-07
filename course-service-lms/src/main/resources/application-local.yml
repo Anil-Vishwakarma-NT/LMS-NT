@@ -11,7 +11,7 @@ spring:
 
   datasource:
     url: jdbc:postgresql://localhost:5432/lms_db
-    username: postgres
+    username: LMS
     password: root
 
   jpa:
