@@ -30,9 +30,7 @@ import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 
-import static com.nt.user_service_lms.constants.UserConstants.INVALID_REQUEST;
-import static com.nt.user_service_lms.constants.UserConstants.USER_NOT_FOUND;
-import static com.nt.user_service_lms.constants.UserConstants.USER_UPDATED_SUCCESSFULLY;
+import static com.nt.user_service_lms.constants.UserConstants.*;
 
 /**
  * Service implementation for admin operations such as user registration, deletion, role management, and user retrieval.
@@ -112,7 +110,7 @@ public class AdminServiceImpl implements AdminService {
         user.setManagerId(UserConstants.getAdminId());
         userRepository.save(user);
         log.info("User registered successfully with email: {}", registerDto.getEmail());
-        MessageOutDTO messageOutDto = new MessageOutDTO(UserConstants.USER_REGISTRATION_SUCCESS);
+        MessageOutDTO messageOutDto = new MessageOutDTO(USER_REGISTRATION_SUCCESS);
         return StandardResponseOutDTO.success(messageOutDto, USER_REGISTRATION_SUCCESS);
     }
 

@@ -7,9 +7,9 @@ spring:
 
   # DataSource Configuration
   datasource:
-    url: jdbc:postgresql://localhost:5432/lms_db
-    username: LMS
-    password: root
+    url: jdbc:postgresql://localhost:5432/lms
+    username: postgres
+    password: anil@123
     driver-class-name: org.postgresql.Driver
 
   # JPA / Hibernate Configuration

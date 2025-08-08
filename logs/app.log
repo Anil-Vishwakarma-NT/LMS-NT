@@ -4532,3 +4532,825 @@ Caused by: org.postgresql.util.PSQLException: FATAL: password authentication fai
 2025-08-06 14:41:16 DEBUG o.s.web.servlet.DispatcherServlet - Completed 200 OK
 2025-08-06 14:45:04 WARN  com.zaxxer.hikari.pool.HikariPool - HikariPool-1 - Thread starvation or clock leap detected (housekeeper delta=1m1s326ms340µs600ns).
 2025-08-06 14:51:50 WARN  com.zaxxer.hikari.pool.HikariPool - HikariPool-1 - Thread starvation or clock leap detected (housekeeper delta=5m15s75ms176µs300ns).
+2025-08-08 00:18:39 INFO  o.h.validator.internal.util.Version - HV000001: Hibernate Validator 8.0.2.Final
+2025-08-08 00:18:39 INFO  c.n.u.UserServiceLmsApplication - Starting UserServiceLmsApplication using Java 17.0.12 with PID 50192 (C:\Users\DELL\Desktop\lms clone\LMS-NT\user-service-lms\build\classes\java\main started by DELL in C:\Users\DELL\Desktop\lms clone\LMS-NT)
+2025-08-08 00:18:39 INFO  c.n.u.UserServiceLmsApplication - The following 1 profile is active: "test"
+2025-08-08 00:18:40 INFO  o.s.d.r.c.RepositoryConfigurationDelegate - Bootstrapping Spring Data JPA repositories in DEFAULT mode.
+2025-08-08 00:18:41 INFO  o.s.d.r.c.RepositoryConfigurationDelegate - Finished Spring Data repository scanning in 125 ms. Found 6 JPA repository interfaces.
+2025-08-08 00:18:41 INFO  o.s.cloud.context.scope.GenericScope - BeanFactory id=26c300d4-6f04-3777-9150-f238ce71040a
+2025-08-08 00:18:42 INFO  o.s.b.w.e.tomcat.TomcatWebServer - Tomcat initialized with port 8080 (http)
+2025-08-08 00:18:42 INFO  o.a.coyote.http11.Http11NioProtocol - Initializing ProtocolHandler ["http-nio-8080"]
+2025-08-08 00:18:42 INFO  o.a.catalina.core.StandardService - Starting service [Tomcat]
+2025-08-08 00:18:42 INFO  o.a.catalina.core.StandardEngine - Starting Servlet engine: [Apache Tomcat/10.1.39]
+2025-08-08 00:18:42 INFO  o.a.c.c.C.[Tomcat].[localhost].[/] - Initializing Spring embedded WebApplicationContext
+2025-08-08 00:18:42 INFO  o.s.b.w.s.c.ServletWebServerApplicationContext - Root WebApplicationContext: initialization completed in 3312 ms
+2025-08-08 00:18:42 WARN  o.s.b.w.s.c.AnnotationConfigServletWebServerApplicationContext - Exception encountered during context initialization - cancelling refresh attempt: org.springframework.beans.factory.BeanCreationException: Error creating bean with name 'entityManagerFactory' defined in class path resource [org/springframework/boot/autoconfigure/orm/jpa/HibernateJpaConfiguration.class]: Failed to initialize dependency 'flyway' of LoadTimeWeaverAware bean 'entityManagerFactory': Error creating bean with name 'flyway' defined in class path resource [org/springframework/boot/autoconfigure/flyway/FlywayAutoConfiguration$FlywayConfiguration.class]: Failed to instantiate [org.flywaydb.core.Flyway]: Factory method 'flyway' threw exception with message: Error creating bean with name 'getDataSource' defined in class path resource [com/nt/user_service_lms/config/DatabaseConfig.class]: Failed to instantiate [javax.sql.DataSource]: Factory method 'getDataSource' threw exception with message: region must not be null.
+2025-08-08 00:18:42 INFO  o.a.catalina.core.StandardService - Stopping service [Tomcat]
+2025-08-08 00:18:42 INFO  o.s.b.a.l.ConditionEvaluationReportLogger - 
+
+Error starting ApplicationContext. To display the condition evaluation report re-run your application with 'debug' enabled.
+2025-08-08 00:18:42 ERROR o.s.boot.SpringApplication - Application run failed
+org.springframework.beans.factory.BeanCreationException: Error creating bean with name 'entityManagerFactory' defined in class path resource [org/springframework/boot/autoconfigure/orm/jpa/HibernateJpaConfiguration.class]: Failed to initialize dependency 'flyway' of LoadTimeWeaverAware bean 'entityManagerFactory': Error creating bean with name 'flyway' defined in class path resource [org/springframework/boot/autoconfigure/flyway/FlywayAutoConfiguration$FlywayConfiguration.class]: Failed to instantiate [org.flywaydb.core.Flyway]: Factory method 'flyway' threw exception with message: Error creating bean with name 'getDataSource' defined in class path resource [com/nt/user_service_lms/config/DatabaseConfig.class]: Failed to instantiate [javax.sql.DataSource]: Factory method 'getDataSource' threw exception with message: region must not be null.
+	at org.springframework.beans.factory.support.AbstractBeanFactory.doGetBean(AbstractBeanFactory.java:328)
+	at org.springframework.beans.factory.support.AbstractBeanFactory.getBean(AbstractBeanFactory.java:207)
+	at org.springframework.context.support.AbstractApplicationContext.finishBeanFactoryInitialization(AbstractApplicationContext.java:970)
+	at org.springframework.context.support.AbstractApplicationContext.refresh(AbstractApplicationContext.java:627)
+	at org.springframework.boot.web.servlet.context.ServletWebServerApplicationContext.refresh(ServletWebServerApplicationContext.java:146)
+	at org.springframework.boot.SpringApplication.refresh(SpringApplication.java:752)
+	at org.springframework.boot.SpringApplication.refreshContext(SpringApplication.java:439)
+	at org.springframework.boot.SpringApplication.run(SpringApplication.java:318)
+	at org.springframework.boot.SpringApplication.run(SpringApplication.java:1361)
+	at org.springframework.boot.SpringApplication.run(SpringApplication.java:1350)
+	at com.nt.user_service_lms.UserServiceLmsApplication.main(UserServiceLmsApplication.java:32)
+Caused by: org.springframework.beans.factory.BeanCreationException: Error creating bean with name 'flyway' defined in class path resource [org/springframework/boot/autoconfigure/flyway/FlywayAutoConfiguration$FlywayConfiguration.class]: Failed to instantiate [org.flywaydb.core.Flyway]: Factory method 'flyway' threw exception with message: Error creating bean with name 'getDataSource' defined in class path resource [com/nt/user_service_lms/config/DatabaseConfig.class]: Failed to instantiate [javax.sql.DataSource]: Factory method 'getDataSource' threw exception with message: region must not be null.
+	at org.springframework.beans.factory.support.ConstructorResolver.instantiate(ConstructorResolver.java:657)
+	at org.springframework.beans.factory.support.ConstructorResolver.instantiateUsingFactoryMethod(ConstructorResolver.java:645)
+	at org.springframework.beans.factory.support.AbstractAutowireCapableBeanFactory.instantiateUsingFactoryMethod(AbstractAutowireCapableBeanFactory.java:1361)
+	at org.springframework.beans.factory.support.AbstractAutowireCapableBeanFactory.createBeanInstance(AbstractAutowireCapableBeanFactory.java:1191)
+	at org.springframework.beans.factory.support.AbstractAutowireCapableBeanFactory.doCreateBean(AbstractAutowireCapableBeanFactory.java:563)
+	at org.springframework.beans.factory.support.AbstractAutowireCapableBeanFactory.createBean(AbstractAutowireCapableBeanFactory.java:523)
+	at org.springframework.beans.factory.support.AbstractBeanFactory.lambda$doGetBean$0(AbstractBeanFactory.java:339)
+	at org.springframework.beans.factory.support.DefaultSingletonBeanRegistry.getSingleton(DefaultSingletonBeanRegistry.java:347)
+	at org.springframework.beans.factory.support.AbstractBeanFactory.doGetBean(AbstractBeanFactory.java:337)
+	at org.springframework.beans.factory.support.AbstractBeanFactory.getBean(AbstractBeanFactory.java:202)
+	at org.springframework.beans.factory.support.AbstractBeanFactory.doGetBean(AbstractBeanFactory.java:315)
+	... 10 common frames omitted
+Caused by: org.springframework.beans.BeanInstantiationException: Failed to instantiate [org.flywaydb.core.Flyway]: Factory method 'flyway' threw exception with message: Error creating bean with name 'getDataSource' defined in class path resource [com/nt/user_service_lms/config/DatabaseConfig.class]: Failed to instantiate [javax.sql.DataSource]: Factory method 'getDataSource' threw exception with message: region must not be null.
+	at org.springframework.beans.factory.support.SimpleInstantiationStrategy.lambda$instantiate$0(SimpleInstantiationStrategy.java:199)
+	at org.springframework.beans.factory.support.SimpleInstantiationStrategy.instantiateWithFactoryMethod(SimpleInstantiationStrategy.java:88)
+	at org.springframework.beans.factory.support.SimpleInstantiationStrategy.instantiate(SimpleInstantiationStrategy.java:168)
+	at org.springframework.beans.factory.support.ConstructorResolver.instantiate(ConstructorResolver.java:653)
+	... 20 common frames omitted
+Caused by: org.springframework.beans.factory.BeanCreationException: Error creating bean with name 'getDataSource' defined in class path resource [com/nt/user_service_lms/config/DatabaseConfig.class]: Failed to instantiate [javax.sql.DataSource]: Factory method 'getDataSource' threw exception with message: region must not be null.
+	at org.springframework.beans.factory.support.ConstructorResolver.instantiate(ConstructorResolver.java:657)
+	at org.springframework.beans.factory.support.ConstructorResolver.instantiateUsingFactoryMethod(ConstructorResolver.java:489)
+	at org.springframework.beans.factory.support.AbstractAutowireCapableBeanFactory.instantiateUsingFactoryMethod(AbstractAutowireCapableBeanFactory.java:1361)
+	at org.springframework.beans.factory.support.AbstractAutowireCapableBeanFactory.createBeanInstance(AbstractAutowireCapableBeanFactory.java:1191)
+	at org.springframework.beans.factory.support.AbstractAutowireCapableBeanFactory.doCreateBean(AbstractAutowireCapableBeanFactory.java:563)
+	at org.springframework.beans.factory.support.AbstractAutowireCapableBeanFactory.createBean(AbstractAutowireCapableBeanFactory.java:523)
+	at org.springframework.beans.factory.support.AbstractBeanFactory.lambda$doGetBean$0(AbstractBeanFactory.java:339)
+	at org.springframework.beans.factory.support.DefaultSingletonBeanRegistry.getSingleton(DefaultSingletonBeanRegistry.java:347)
+	at org.springframework.beans.factory.support.AbstractBeanFactory.doGetBean(AbstractBeanFactory.java:337)
+	at org.springframework.beans.factory.support.AbstractBeanFactory.getBean(AbstractBeanFactory.java:202)
+	at org.springframework.beans.factory.config.DependencyDescriptor.resolveCandidate(DependencyDescriptor.java:254)
+	at org.springframework.beans.factory.support.DefaultListableBeanFactory.doResolveDependency(DefaultListableBeanFactory.java:1667)
+	at org.springframework.beans.factory.support.DefaultListableBeanFactory$DependencyObjectProvider.getIfUnique(DefaultListableBeanFactory.java:2497)
+	at org.springframework.boot.autoconfigure.flyway.FlywayAutoConfiguration$FlywayConfiguration.flyway(FlywayAutoConfiguration.java:172)
+	at java.base/jdk.internal.reflect.NativeMethodAccessorImpl.invoke0(Native Method)
+	at java.base/jdk.internal.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:77)
+	at java.base/jdk.internal.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:43)
+	at java.base/java.lang.reflect.Method.invoke(Method.java:568)
+	at org.springframework.beans.factory.support.SimpleInstantiationStrategy.lambda$instantiate$0(SimpleInstantiationStrategy.java:171)
+	... 23 common frames omitted
+Caused by: org.springframework.beans.BeanInstantiationException: Failed to instantiate [javax.sql.DataSource]: Factory method 'getDataSource' threw exception with message: region must not be null.
+	at org.springframework.beans.factory.support.SimpleInstantiationStrategy.lambda$instantiate$0(SimpleInstantiationStrategy.java:199)
+	at org.springframework.beans.factory.support.SimpleInstantiationStrategy.instantiateWithFactoryMethod(SimpleInstantiationStrategy.java:88)
+	at org.springframework.beans.factory.support.SimpleInstantiationStrategy.instantiate(SimpleInstantiationStrategy.java:168)
+	at org.springframework.beans.factory.support.ConstructorResolver.instantiate(ConstructorResolver.java:653)
+	... 41 common frames omitted
+Caused by: java.lang.NullPointerException: region must not be null.
+	at software.amazon.awssdk.utils.Validate.paramNotBlank(Validate.java:177)
+	at software.amazon.awssdk.regions.Region.of(Region.java:155)
+	at software.amazon.awssdk.regions.Region.of(Region.java:151)
+	at com.nt.user_service_lms.config.DatabaseConfig.getSecretDetails(DatabaseConfig.java:86)
+	at com.nt.user_service_lms.config.DatabaseConfig.getDataSource(DatabaseConfig.java:50)
+	at com.nt.user_service_lms.config.DatabaseConfig$$SpringCGLIB$$0.CGLIB$getDataSource$0(<generated>)
+	at com.nt.user_service_lms.config.DatabaseConfig$$SpringCGLIB$$FastClass$$1.invoke(<generated>)
+	at org.springframework.cglib.proxy.MethodProxy.invokeSuper(MethodProxy.java:258)
+	at org.springframework.context.annotation.ConfigurationClassEnhancer$BeanMethodInterceptor.intercept(ConfigurationClassEnhancer.java:370)
+	at com.nt.user_service_lms.config.DatabaseConfig$$SpringCGLIB$$0.getDataSource(<generated>)
+	at java.base/jdk.internal.reflect.NativeMethodAccessorImpl.invoke0(Native Method)
+	at java.base/jdk.internal.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:77)
+	at java.base/jdk.internal.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:43)
+	at java.base/java.lang.reflect.Method.invoke(Method.java:568)
+	at org.springframework.beans.factory.support.SimpleInstantiationStrategy.lambda$instantiate$0(SimpleInstantiationStrategy.java:171)
+	... 44 common frames omitted
+2025-08-08 00:19:25 INFO  o.h.validator.internal.util.Version - HV000001: Hibernate Validator 8.0.2.Final
+2025-08-08 00:19:25 INFO  c.n.u.UserServiceLmsApplication - Starting UserServiceLmsApplication using Java 17.0.12 with PID 45376 (C:\Users\DELL\Desktop\lms clone\LMS-NT\user-service-lms\build\classes\java\main started by DELL in C:\Users\DELL\Desktop\lms clone\LMS-NT)
+2025-08-08 00:19:25 INFO  c.n.u.UserServiceLmsApplication - The following 1 profile is active: "local"
+2025-08-08 00:19:26 INFO  o.s.d.r.c.RepositoryConfigurationDelegate - Bootstrapping Spring Data JPA repositories in DEFAULT mode.
+2025-08-08 00:19:27 INFO  o.s.d.r.c.RepositoryConfigurationDelegate - Finished Spring Data repository scanning in 111 ms. Found 6 JPA repository interfaces.
+2025-08-08 00:19:27 INFO  o.s.cloud.context.scope.GenericScope - BeanFactory id=699e1924-4ef0-3d8a-bdf2-eb02e263c36e
+2025-08-08 00:19:28 INFO  o.s.b.w.e.tomcat.TomcatWebServer - Tomcat initialized with port 8081 (http)
+2025-08-08 00:19:28 INFO  o.a.coyote.http11.Http11NioProtocol - Initializing ProtocolHandler ["http-nio-8081"]
+2025-08-08 00:19:28 INFO  o.a.catalina.core.StandardService - Starting service [Tomcat]
+2025-08-08 00:19:28 INFO  o.a.catalina.core.StandardEngine - Starting Servlet engine: [Apache Tomcat/10.1.39]
+2025-08-08 00:19:28 INFO  o.a.c.c.C.[Tomcat].[localhost].[/] - Initializing Spring embedded WebApplicationContext
+2025-08-08 00:19:28 INFO  o.s.b.w.s.c.ServletWebServerApplicationContext - Root WebApplicationContext: initialization completed in 2972 ms
+2025-08-08 00:19:28 DEBUG o.f.c.i.s.classpath.ClassPathScanner - Scanning for classpath resources at 'classpath:db/callback' ...
+2025-08-08 00:19:28 DEBUG o.f.c.i.s.classpath.ClassPathScanner - Determining location urls for classpath:db/callback using ClassLoader jdk.internal.loader.ClassLoaders$AppClassLoader@659e0bfd ...
+2025-08-08 00:19:28 DEBUG o.f.c.i.s.classpath.ClassPathScanner - Unable to resolve location classpath:db/callback.
+2025-08-08 00:19:28 DEBUG o.f.c.i.s.classpath.ClassPathScanner - Scanning for classpath resources at 'classpath:db/migration' ...
+2025-08-08 00:19:28 DEBUG o.f.c.i.s.classpath.ClassPathScanner - Determining location urls for classpath:db/migration using ClassLoader jdk.internal.loader.ClassLoaders$AppClassLoader@659e0bfd ...
+2025-08-08 00:19:28 DEBUG o.f.c.i.s.classpath.ClassPathScanner - Scanning URL: file:/C:/Users/DELL/Desktop/lms%20clone/LMS-NT/user-service-lms/build/resources/main/db/migration
+2025-08-08 00:19:28 DEBUG o.f.c.i.s.c.FileSystemClassPathLocationScanner - Scanning starting at classpath root in filesystem: C:\Users\DELL\Desktop\lms clone\LMS-NT\user-service-lms\build\resources\main\
+2025-08-08 00:19:28 DEBUG o.f.c.i.s.c.FileSystemClassPathLocationScanner - Scanning for resources in path: C:\Users\DELL\Desktop\lms clone\LMS-NT\user-service-lms\build\resources\main\db\migration (db/migration)
+2025-08-08 00:19:28 DEBUG o.f.c.i.s.classpath.ClassPathScanner - Found resource: db/migration/V1__Create_initial_schema.sql
+2025-08-08 00:19:28 DEBUG o.f.c.i.s.classpath.ClassPathScanner - Found resource: db/migration/V2__Insert_initial_data.sql
+2025-08-08 00:19:28 DEBUG o.f.c.i.s.classpath.ClassPathScanner - Found resource: db/migration/V3__Create_view.sql
+2025-08-08 00:19:28 DEBUG o.f.c.i.s.classpath.ClassPathScanner - Scanning for classes at classpath:db/migration
+2025-08-08 00:19:28 INFO  com.zaxxer.hikari.HikariDataSource - HikariPool-1 - Starting...
+2025-08-08 00:19:29 INFO  com.zaxxer.hikari.pool.HikariPool - HikariPool-1 - Added connection org.postgresql.jdbc.PgConnection@2dd3d39d
+2025-08-08 00:19:29 INFO  com.zaxxer.hikari.HikariDataSource - HikariPool-1 - Start completed.
+2025-08-08 00:19:29 DEBUG o.f.c.i.r.ResourceNameValidator - Validating V3__Create_view.sql
+2025-08-08 00:19:29 DEBUG o.f.c.i.r.ResourceNameValidator - Validating V1__Create_initial_schema.sql
+2025-08-08 00:19:29 DEBUG o.f.c.i.r.ResourceNameValidator - Validating V2__Insert_initial_data.sql
+2025-08-08 00:19:29 DEBUG o.f.c.i.d.DatabaseTypeRegister - Multiple databases found that handle url 'jdbc:postgresql://localhost:5432/lms': CockroachDB,PostgreSQL
+2025-08-08 00:19:29 INFO  org.flywaydb.core.FlywayExecutor - Database: jdbc:postgresql://localhost:5432/lms (PostgreSQL 16.3)
+2025-08-08 00:19:29 DEBUG org.flywaydb.core.FlywayExecutor - Database Type: PostgreSQL
+2025-08-08 00:19:29 DEBUG org.flywaydb.core.FlywayExecutor - Driver: PostgreSQL JDBC Driver 42.7.5
+2025-08-08 00:19:29 DEBUG org.flywaydb.core.FlywayExecutor - DDL Transactions Supported: true
+2025-08-08 00:19:29 DEBUG o.f.c.i.s.SchemaHistoryFactory - Schemas: 
+2025-08-08 00:19:29 DEBUG o.f.c.i.s.SchemaHistoryFactory - Default schema: null
+2025-08-08 00:19:29 DEBUG org.flywaydb.core.FlywayExecutor - Scanning for script callbacks ...
+2025-08-08 00:19:29 DEBUG o.f.c.i.c.SqlScriptCallbackFactory - Scanning for SQL callbacks ...
+2025-08-08 00:19:29 DEBUG o.f.core.internal.command.DbValidate - Validating migrations ...
+2025-08-08 00:19:29 DEBUG o.f.c.a.c.ClassicConfiguration - CherryPickConfigurationExtension not found
+2025-08-08 00:19:29 DEBUG o.f.core.internal.scanner.Scanner - Filtering out resource: db/migration/V3__Create_view.sql (filename: V3__Create_view.sql)
+2025-08-08 00:19:29 DEBUG o.f.core.internal.scanner.Scanner - Filtering out resource: db/migration/V1__Create_initial_schema.sql (filename: V1__Create_initial_schema.sql)
+2025-08-08 00:19:29 DEBUG o.f.core.internal.scanner.Scanner - Filtering out resource: db/migration/V2__Insert_initial_data.sql (filename: V2__Insert_initial_data.sql)
+2025-08-08 00:19:29 DEBUG o.f.core.internal.scanner.Scanner - Filtering out resource: db/migration/V3__Create_view.sql (filename: V3__Create_view.sql)
+2025-08-08 00:19:29 DEBUG o.f.core.internal.scanner.Scanner - Filtering out resource: db/migration/V1__Create_initial_schema.sql (filename: V1__Create_initial_schema.sql)
+2025-08-08 00:19:29 DEBUG o.f.core.internal.scanner.Scanner - Filtering out resource: db/migration/V2__Insert_initial_data.sql (filename: V2__Insert_initial_data.sql)
+2025-08-08 00:19:29 DEBUG o.f.core.internal.scanner.Scanner - Filtering out resource: db/migration/V3__Create_view.sql (filename: V3__Create_view.sql)
+2025-08-08 00:19:29 DEBUG o.f.core.internal.scanner.Scanner - Filtering out resource: db/migration/V1__Create_initial_schema.sql (filename: V1__Create_initial_schema.sql)
+2025-08-08 00:19:29 DEBUG o.f.core.internal.scanner.Scanner - Filtering out resource: db/migration/V2__Insert_initial_data.sql (filename: V2__Insert_initial_data.sql)
+2025-08-08 00:19:29 DEBUG o.f.core.internal.scanner.Scanner - Filtering out resource: db/migration/V3__Create_view.sql (filename: V3__Create_view.sql)
+2025-08-08 00:19:29 DEBUG o.f.core.internal.scanner.Scanner - Filtering out resource: db/migration/V1__Create_initial_schema.sql (filename: V1__Create_initial_schema.sql)
+2025-08-08 00:19:29 DEBUG o.f.core.internal.scanner.Scanner - Filtering out resource: db/migration/V2__Insert_initial_data.sql (filename: V2__Insert_initial_data.sql)
+2025-08-08 00:19:29 INFO  o.f.core.internal.command.DbValidate - Successfully validated 3 migrations (execution time 00:00.076s)
+2025-08-08 00:19:29 DEBUG o.f.core.internal.command.DbSchemas - Skipping creation of existing schema: "public"
+2025-08-08 00:19:29 DEBUG o.f.c.a.c.ClassicConfiguration - CherryPickConfigurationExtension not found
+2025-08-08 00:19:29 INFO  o.f.core.internal.command.DbMigrate - Current version of schema "public": 3
+2025-08-08 00:19:29 INFO  o.f.core.internal.command.DbMigrate - Schema "public" is up to date. No migration necessary.
+2025-08-08 00:19:29 DEBUG org.flywaydb.core.FlywayExecutor - Memory usage: 33 of 96M
+2025-08-08 00:19:29 INFO  o.h.jpa.internal.util.LogHelper - HHH000204: Processing PersistenceUnitInfo [name: default]
+2025-08-08 00:19:29 INFO  org.hibernate.Version - HHH000412: Hibernate ORM core version 6.6.11.Final
+2025-08-08 00:19:29 INFO  o.h.c.i.RegionFactoryInitiator - HHH000026: Second-level cache disabled
+2025-08-08 00:19:30 INFO  o.s.o.j.p.SpringPersistenceUnitInfo - No LoadTimeWeaver setup: ignoring JPA class transformer
+2025-08-08 00:19:30 WARN  org.hibernate.orm.deprecation - HHH90000025: PostgreSQLDialect does not need to be specified explicitly using 'hibernate.dialect' (remove the property setting and it will be selected by default)
+2025-08-08 00:19:30 INFO  o.hibernate.orm.connections.pooling - HHH10001005: Database info:
+	Database JDBC URL [Connecting through datasource 'HikariDataSource (HikariPool-1)']
+	Database driver: undefined/unknown
+	Database version: 16.3
+	Autocommit mode: undefined/unknown
+	Isolation level: undefined/unknown
+	Minimum pool size: undefined/unknown
+	Maximum pool size: undefined/unknown
+2025-08-08 00:19:31 INFO  o.h.e.t.j.p.i.JtaPlatformInitiator - HHH000489: No JTA platform available (set 'hibernate.transaction.jta.platform' to enable JTA platform integration)
+2025-08-08 00:19:31 INFO  o.s.o.j.LocalContainerEntityManagerFactoryBean - Initialized JPA EntityManagerFactory for persistence unit 'default'
+2025-08-08 00:19:32 INFO  o.s.d.j.r.query.QueryEnhancerFactory - Hibernate is in classpath; If applicable, HQL parser will be used.
+2025-08-08 00:19:33 WARN  o.s.b.a.o.j.JpaBaseConfiguration$JpaWebConfiguration - spring.jpa.open-in-view is enabled by default. Therefore, database queries may be performed during view rendering. Explicitly configure spring.jpa.open-in-view to disable this warning
+2025-08-08 00:19:33 INFO  o.s.s.c.a.a.c.InitializeUserDetailsBeanManagerConfigurer$InitializeUserDetailsManagerConfigurer - Global AuthenticationManager configured with UserDetailsService bean with name userServiceImpl
+2025-08-08 00:19:33 DEBUG o.s.w.s.m.m.a.RequestMappingHandlerMapping - 57 mappings in 'requestMappingHandlerMapping'
+2025-08-08 00:19:34 DEBUG o.s.w.s.h.SimpleUrlHandlerMapping - Patterns [/webjars/**, /**] in 'resourceHandlerMapping'
+2025-08-08 00:19:34 WARN  o.s.s.c.a.w.c.AuthorizeHttpRequestsConfigurer$AuthorizationManagerRequestMatcherRegistry - One of the patterns in [api/service-api/manager/**] is missing a leading slash. This is discouraged; please include the leading slash in all your request matcher patterns. In future versions of Spring Security, leaving out the leading slash will result in an exception.
+2025-08-08 00:19:34 DEBUG o.s.w.s.m.m.a.RequestMappingHandlerAdapter - ControllerAdvice beans: 0 @ModelAttribute, 0 @InitBinder, 1 RequestBodyAdvice, 1 ResponseBodyAdvice
+2025-08-08 00:19:34 DEBUG o.s.w.s.m.m.a.ExceptionHandlerExceptionResolver - ControllerAdvice beans: 1 @ExceptionHandler, 1 ResponseBodyAdvice
+2025-08-08 00:19:34 INFO  o.a.coyote.http11.Http11NioProtocol - Starting ProtocolHandler ["http-nio-8081"]
+2025-08-08 00:19:34 INFO  o.s.b.w.e.tomcat.TomcatWebServer - Tomcat started on port 8081 (http) with context path '/'
+2025-08-08 00:19:34 INFO  c.n.u.UserServiceLmsApplication - Started UserServiceLmsApplication in 10.221 seconds (process running for 11.091)
+2025-08-08 00:21:46 INFO  o.a.c.c.C.[Tomcat].[localhost].[/] - Initializing Spring DispatcherServlet 'dispatcherServlet'
+2025-08-08 00:21:46 INFO  o.s.web.servlet.DispatcherServlet - Initializing Servlet 'dispatcherServlet'
+2025-08-08 00:21:46 DEBUG o.s.web.servlet.DispatcherServlet - Detected StandardServletMultipartResolver
+2025-08-08 00:21:46 DEBUG o.s.web.servlet.DispatcherServlet - Detected AcceptHeaderLocaleResolver
+2025-08-08 00:21:46 DEBUG o.s.web.servlet.DispatcherServlet - Detected FixedThemeResolver
+2025-08-08 00:21:46 DEBUG o.s.web.servlet.DispatcherServlet - Detected org.springframework.web.servlet.view.DefaultRequestToViewNameTranslator@7784ff80
+2025-08-08 00:21:46 DEBUG o.s.web.servlet.DispatcherServlet - Detected org.springframework.web.servlet.support.SessionFlashMapManager@3fa4702d
+2025-08-08 00:21:46 DEBUG o.s.web.servlet.DispatcherServlet - enableLoggingRequestDetails='false': request parameters and headers will be masked to prevent unsafe logging of potentially sensitive data
+2025-08-08 00:21:46 INFO  o.s.web.servlet.DispatcherServlet - Completed initialization in 5 ms
+2025-08-08 00:21:46 DEBUG o.s.web.servlet.DispatcherServlet - GET "/api/service-api/admin/admin-dashboard-stats", parameters={}
+2025-08-08 00:21:46 DEBUG o.s.web.servlet.DispatcherServlet - GET "/api/service-api/admin/users/recent", parameters={}
+2025-08-08 00:21:46 DEBUG o.s.w.s.m.m.a.RequestMappingHandlerMapping - Mapped to com.nt.user_service_lms.controller.AdminController#getAdminDashboardStats()
+2025-08-08 00:21:46 DEBUG o.s.w.s.m.m.a.RequestMappingHandlerMapping - Mapped to com.nt.user_service_lms.controller.AdminController#getRecentUsers()
+2025-08-08 00:21:46 INFO  c.n.u.s.serviceImpl.AdminServiceImpl - Fetching admin dashboard statistics
+2025-08-08 00:21:46 DEBUG o.s.w.s.m.m.a.HttpEntityMethodProcessor - Using 'application/json', given [application/json, text/plain, */*] and supported [application/json, application/*+json]
+2025-08-08 00:21:46 DEBUG o.s.w.s.m.m.a.HttpEntityMethodProcessor - Using 'application/json', given [application/json, text/plain, */*] and supported [application/json, application/*+json]
+2025-08-08 00:21:46 DEBUG o.s.w.s.m.m.a.HttpEntityMethodProcessor - Writing [StandardResponseOutDTO{status='SUCCESS', message='Dashboard data fetched.', data=AdminDashboardStats (truncated)...]
+2025-08-08 00:21:46 DEBUG o.s.w.s.m.m.a.HttpEntityMethodProcessor - Writing [StandardResponseOutDTO{status='SUCCESS', message='Fetched Recent Users', data=[UsersDetailsViewDTO(u (truncated)...]
+2025-08-08 00:21:46 DEBUG o.s.web.servlet.DispatcherServlet - Completed 200 OK
+2025-08-08 00:21:46 DEBUG o.s.web.servlet.DispatcherServlet - Completed 200 OK
+2025-08-08 00:21:56 DEBUG o.s.web.servlet.DispatcherServlet - GET "/api/service-api/enrollment/statistics", parameters={}
+2025-08-08 00:21:56 DEBUG o.s.w.s.m.m.a.RequestMappingHandlerMapping - Mapped to com.nt.user_service_lms.controller.EnrollmentController#getEnrollmentStatistics()
+2025-08-08 00:21:56 DEBUG o.s.web.servlet.DispatcherServlet - GET "/api/service-api/enrollment/user-enrollments", parameters={}
+2025-08-08 00:21:56 DEBUG o.s.w.s.m.m.a.RequestMappingHandlerMapping - Mapped to com.nt.user_service_lms.controller.EnrollmentController#getUserEnrollments()
+2025-08-08 00:21:56 DEBUG o.s.web.servlet.DispatcherServlet - GET "/api/service-api/admin/active-employees", parameters={}
+2025-08-08 00:21:56 DEBUG o.s.w.s.m.m.a.RequestMappingHandlerMapping - Mapped to com.nt.user_service_lms.controller.AdminController#getAllEmployees()
+2025-08-08 00:21:56 INFO  c.n.u.controller.AdminController - Fetching all employees
+2025-08-08 00:21:56 INFO  c.n.u.s.serviceImpl.AdminServiceImpl - Fetching all users
+2025-08-08 00:21:57 INFO  c.n.u.c.EnrollmentController - Fetching enrollment statistics for dashboard
+2025-08-08 00:21:57 INFO  c.n.u.c.EnrollmentController - Fetching enrollments for all users
+2025-08-08 00:21:57 INFO  c.n.u.c.EnrollmentController - Successfully retrieved enrollment statistics
+2025-08-08 00:21:57 DEBUG o.s.w.s.m.m.a.HttpEntityMethodProcessor - Using 'application/json', given [application/json, text/plain, */*] and supported [application/json, application/*+json]
+2025-08-08 00:21:57 INFO  c.n.u.s.serviceImpl.AdminServiceImpl - Successfully fetched 16 users
+2025-08-08 00:21:57 INFO  c.n.u.controller.AdminController - Fetched 16 employees
+2025-08-08 00:21:57 DEBUG o.s.w.s.m.m.a.HttpEntityMethodProcessor - Using 'application/json', given [application/json, text/plain, */*] and supported [application/json, application/*+json]
+2025-08-08 00:21:57 DEBUG o.s.w.s.m.m.a.HttpEntityMethodProcessor - Writing [StandardResponseOutDTO{status='SUCCESS', message='User fetched Successfully', data=[UserOutDTO(userI (truncated)...]
+2025-08-08 00:21:57 DEBUG o.s.w.s.m.m.a.HttpEntityMethodProcessor - Writing [StandardResponseOutDTO{status='SUCCESS', message='Fetched Enrollment Statistics', data=EnrollmentDas (truncated)...]
+2025-08-08 00:21:57 DEBUG o.s.web.servlet.DispatcherServlet - Completed 200 OK
+2025-08-08 00:21:57 DEBUG o.s.web.servlet.DispatcherServlet - Completed 200 OK
+2025-08-08 00:21:57 DEBUG o.s.w.c.HttpMessageConverterExtractor - Reading to [java.util.List<java.lang.Long>]
+2025-08-08 00:21:57 DEBUG o.s.w.c.HttpMessageConverterExtractor - Reading to [java.lang.String] as "text/plain;charset=UTF-8"
+2025-08-08 00:21:57 DEBUG o.s.w.c.HttpMessageConverterExtractor - Reading to [java.lang.String] as "text/plain;charset=UTF-8"
+2025-08-08 00:21:57 DEBUG o.s.w.c.HttpMessageConverterExtractor - Reading to [java.lang.String] as "text/plain;charset=UTF-8"
+2025-08-08 00:21:57 DEBUG o.s.w.c.HttpMessageConverterExtractor - Reading to [java.lang.String] as "text/plain;charset=UTF-8"
+2025-08-08 00:21:57 DEBUG o.s.w.c.HttpMessageConverterExtractor - Reading to [java.lang.String] as "text/plain;charset=UTF-8"
+2025-08-08 00:21:57 DEBUG o.s.w.c.HttpMessageConverterExtractor - Reading to [java.lang.String] as "text/plain;charset=UTF-8"
+2025-08-08 00:21:57 DEBUG o.s.w.c.HttpMessageConverterExtractor - Reading to [java.lang.String] as "text/plain;charset=UTF-8"
+2025-08-08 00:21:58 DEBUG o.s.w.c.HttpMessageConverterExtractor - Reading to [java.lang.String] as "text/plain;charset=UTF-8"
+2025-08-08 00:21:58 DEBUG o.s.w.c.HttpMessageConverterExtractor - Reading to [java.lang.String] as "text/plain;charset=UTF-8"
+2025-08-08 00:21:58 DEBUG o.s.w.c.HttpMessageConverterExtractor - Reading to [java.util.List<java.lang.Long>]
+2025-08-08 00:21:58 DEBUG o.s.w.c.HttpMessageConverterExtractor - Reading to [com.nt.user_service_lms.dto.outDTO.StandardResponseOutDTO<java.lang.String>]
+2025-08-08 00:21:58 DEBUG o.s.w.c.HttpMessageConverterExtractor - Reading to [com.nt.user_service_lms.dto.outDTO.StandardResponseOutDTO<java.lang.String>]
+2025-08-08 00:21:58 DEBUG o.s.w.c.HttpMessageConverterExtractor - Reading to [com.nt.user_service_lms.dto.outDTO.StandardResponseOutDTO<java.lang.String>]
+2025-08-08 00:21:58 DEBUG o.s.w.c.HttpMessageConverterExtractor - Reading to [com.nt.user_service_lms.dto.outDTO.StandardResponseOutDTO<java.lang.String>]
+2025-08-08 00:21:58 DEBUG o.s.w.c.HttpMessageConverterExtractor - Reading to [com.nt.user_service_lms.dto.outDTO.StandardResponseOutDTO<java.lang.String>]
+2025-08-08 00:21:58 DEBUG o.s.w.c.HttpMessageConverterExtractor - Reading to [java.util.List<java.lang.Long>]
+2025-08-08 00:21:58 DEBUG o.s.w.c.HttpMessageConverterExtractor - Reading to [java.util.List<java.lang.Long>]
+2025-08-08 00:21:58 DEBUG o.s.w.c.HttpMessageConverterExtractor - Reading to [java.util.List<java.lang.Long>]
+2025-08-08 00:21:58 DEBUG o.s.w.c.HttpMessageConverterExtractor - Reading to [java.util.List<java.lang.Long>]
+2025-08-08 00:21:58 DEBUG o.s.w.c.HttpMessageConverterExtractor - Reading to [java.util.List<java.lang.Long>]
+2025-08-08 00:21:59 DEBUG o.s.w.c.HttpMessageConverterExtractor - Reading to [com.nt.user_service_lms.dto.outDTO.CourseProgressWithMetaDTO]
+2025-08-08 00:21:59 DEBUG o.s.w.c.HttpMessageConverterExtractor - Reading to [com.nt.user_service_lms.dto.outDTO.CourseProgressWithMetaDTO]
+2025-08-08 00:21:59 DEBUG o.s.w.c.HttpMessageConverterExtractor - Reading to [com.nt.user_service_lms.dto.outDTO.CourseProgressWithMetaDTO]
+2025-08-08 00:21:59 DEBUG o.s.w.c.HttpMessageConverterExtractor - Reading to [com.nt.user_service_lms.dto.outDTO.CourseProgressWithMetaDTO]
+2025-08-08 00:21:59 DEBUG o.s.w.c.HttpMessageConverterExtractor - Reading to [com.nt.user_service_lms.dto.outDTO.CourseProgressWithMetaDTO]
+2025-08-08 00:21:59 DEBUG o.s.w.c.HttpMessageConverterExtractor - Reading to [com.nt.user_service_lms.dto.outDTO.CourseProgressWithMetaDTO]
+2025-08-08 00:21:59 DEBUG o.s.w.c.HttpMessageConverterExtractor - Reading to [com.nt.user_service_lms.dto.outDTO.CourseProgressWithMetaDTO]
+2025-08-08 00:21:59 DEBUG o.s.w.c.HttpMessageConverterExtractor - Reading to [com.nt.user_service_lms.dto.outDTO.CourseProgressWithMetaDTO]
+2025-08-08 00:21:59 DEBUG o.s.w.c.HttpMessageConverterExtractor - Reading to [com.nt.user_service_lms.dto.outDTO.CourseProgressWithMetaDTO]
+2025-08-08 00:21:59 DEBUG o.s.w.c.HttpMessageConverterExtractor - Reading to [com.nt.user_service_lms.dto.outDTO.CourseProgressWithMetaDTO]
+2025-08-08 00:21:59 DEBUG o.s.w.c.HttpMessageConverterExtractor - Reading to [com.nt.user_service_lms.dto.outDTO.CourseProgressWithMetaDTO]
+2025-08-08 00:21:59 DEBUG o.s.w.c.HttpMessageConverterExtractor - Reading to [com.nt.user_service_lms.dto.outDTO.CourseProgressWithMetaDTO]
+2025-08-08 00:21:59 DEBUG o.s.w.c.HttpMessageConverterExtractor - Reading to [com.nt.user_service_lms.dto.outDTO.CourseProgressWithMetaDTO]
+2025-08-08 00:21:59 DEBUG o.s.w.c.HttpMessageConverterExtractor - Reading to [com.nt.user_service_lms.dto.outDTO.CourseProgressWithMetaDTO]
+2025-08-08 00:21:59 DEBUG o.s.w.c.HttpMessageConverterExtractor - Reading to [com.nt.user_service_lms.dto.outDTO.CourseProgressWithMetaDTO]
+2025-08-08 00:22:00 DEBUG o.s.w.c.HttpMessageConverterExtractor - Reading to [com.nt.user_service_lms.dto.outDTO.CourseProgressWithMetaDTO]
+2025-08-08 00:22:00 DEBUG o.s.w.c.HttpMessageConverterExtractor - Reading to [com.nt.user_service_lms.dto.outDTO.CourseProgressWithMetaDTO]
+2025-08-08 00:22:00 DEBUG o.s.w.c.HttpMessageConverterExtractor - Reading to [com.nt.user_service_lms.dto.outDTO.CourseProgressWithMetaDTO]
+2025-08-08 00:22:00 DEBUG o.s.w.c.HttpMessageConverterExtractor - Reading to [com.nt.user_service_lms.dto.outDTO.CourseProgressWithMetaDTO]
+2025-08-08 00:22:00 DEBUG o.s.w.c.HttpMessageConverterExtractor - Reading to [com.nt.user_service_lms.dto.outDTO.CourseProgressWithMetaDTO]
+2025-08-08 00:22:00 DEBUG o.s.w.c.HttpMessageConverterExtractor - Reading to [com.nt.user_service_lms.dto.outDTO.CourseProgressWithMetaDTO]
+2025-08-08 00:22:00 DEBUG o.s.w.c.HttpMessageConverterExtractor - Reading to [com.nt.user_service_lms.dto.outDTO.CourseProgressWithMetaDTO]
+2025-08-08 00:22:00 DEBUG o.s.w.c.HttpMessageConverterExtractor - Reading to [com.nt.user_service_lms.dto.outDTO.CourseProgressWithMetaDTO]
+2025-08-08 00:22:00 DEBUG o.s.w.c.HttpMessageConverterExtractor - Reading to [com.nt.user_service_lms.dto.outDTO.CourseProgressWithMetaDTO]
+2025-08-08 00:22:00 DEBUG o.s.w.c.HttpMessageConverterExtractor - Reading to [com.nt.user_service_lms.dto.outDTO.CourseProgressWithMetaDTO]
+2025-08-08 00:22:00 DEBUG o.s.w.c.HttpMessageConverterExtractor - Reading to [com.nt.user_service_lms.dto.outDTO.CourseProgressWithMetaDTO]
+2025-08-08 00:22:00 DEBUG o.s.w.c.HttpMessageConverterExtractor - Reading to [com.nt.user_service_lms.dto.outDTO.CourseProgressWithMetaDTO]
+2025-08-08 00:22:00 DEBUG o.s.w.c.HttpMessageConverterExtractor - Reading to [com.nt.user_service_lms.dto.outDTO.CourseProgressWithMetaDTO]
+2025-08-08 00:22:00 DEBUG o.s.w.c.HttpMessageConverterExtractor - Reading to [com.nt.user_service_lms.dto.outDTO.CourseProgressWithMetaDTO]
+2025-08-08 00:22:00 DEBUG o.s.w.c.HttpMessageConverterExtractor - Reading to [com.nt.user_service_lms.dto.outDTO.CourseProgressWithMetaDTO]
+2025-08-08 00:22:00 DEBUG o.s.w.c.HttpMessageConverterExtractor - Reading to [com.nt.user_service_lms.dto.outDTO.CourseProgressWithMetaDTO]
+2025-08-08 00:22:01 DEBUG o.s.w.c.HttpMessageConverterExtractor - Reading to [com.nt.user_service_lms.dto.outDTO.CourseProgressWithMetaDTO]
+2025-08-08 00:22:01 DEBUG o.s.w.c.HttpMessageConverterExtractor - Reading to [com.nt.user_service_lms.dto.outDTO.CourseProgressWithMetaDTO]
+2025-08-08 00:22:01 DEBUG o.s.w.c.HttpMessageConverterExtractor - Reading to [com.nt.user_service_lms.dto.outDTO.CourseProgressWithMetaDTO]
+2025-08-08 00:22:01 DEBUG o.s.w.c.HttpMessageConverterExtractor - Reading to [com.nt.user_service_lms.dto.outDTO.CourseProgressWithMetaDTO]
+2025-08-08 00:22:01 DEBUG o.s.w.c.HttpMessageConverterExtractor - Reading to [com.nt.user_service_lms.dto.outDTO.CourseProgressWithMetaDTO]
+2025-08-08 00:22:01 DEBUG o.s.w.c.HttpMessageConverterExtractor - Reading to [com.nt.user_service_lms.dto.outDTO.CourseProgressWithMetaDTO]
+2025-08-08 00:22:01 DEBUG o.s.w.c.HttpMessageConverterExtractor - Reading to [com.nt.user_service_lms.dto.outDTO.CourseProgressWithMetaDTO]
+2025-08-08 00:22:01 DEBUG o.s.w.c.HttpMessageConverterExtractor - Reading to [com.nt.user_service_lms.dto.outDTO.CourseProgressWithMetaDTO]
+2025-08-08 00:22:01 DEBUG o.s.w.c.HttpMessageConverterExtractor - Reading to [com.nt.user_service_lms.dto.outDTO.CourseProgressWithMetaDTO]
+2025-08-08 00:22:01 DEBUG o.s.w.c.HttpMessageConverterExtractor - Reading to [com.nt.user_service_lms.dto.outDTO.CourseProgressWithMetaDTO]
+2025-08-08 00:22:01 DEBUG o.s.w.c.HttpMessageConverterExtractor - Reading to [com.nt.user_service_lms.dto.outDTO.CourseProgressWithMetaDTO]
+2025-08-08 00:22:01 DEBUG o.s.w.c.HttpMessageConverterExtractor - Reading to [com.nt.user_service_lms.dto.outDTO.CourseProgressWithMetaDTO]
+2025-08-08 00:22:01 DEBUG o.s.w.c.HttpMessageConverterExtractor - Reading to [com.nt.user_service_lms.dto.outDTO.CourseProgressWithMetaDTO]
+2025-08-08 00:22:01 DEBUG o.s.w.c.HttpMessageConverterExtractor - Reading to [com.nt.user_service_lms.dto.outDTO.CourseProgressWithMetaDTO]
+2025-08-08 00:22:01 DEBUG o.s.w.c.HttpMessageConverterExtractor - Reading to [com.nt.user_service_lms.dto.outDTO.CourseProgressWithMetaDTO]
+2025-08-08 00:22:01 DEBUG o.s.w.c.HttpMessageConverterExtractor - Reading to [com.nt.user_service_lms.dto.outDTO.CourseProgressWithMetaDTO]
+2025-08-08 00:22:01 DEBUG o.s.w.c.HttpMessageConverterExtractor - Reading to [com.nt.user_service_lms.dto.outDTO.CourseProgressWithMetaDTO]
+2025-08-08 00:22:01 DEBUG o.s.w.c.HttpMessageConverterExtractor - Reading to [com.nt.user_service_lms.dto.outDTO.CourseProgressWithMetaDTO]
+2025-08-08 00:22:02 DEBUG o.s.w.c.HttpMessageConverterExtractor - Reading to [com.nt.user_service_lms.dto.outDTO.CourseProgressWithMetaDTO]
+2025-08-08 00:22:02 DEBUG o.s.w.c.HttpMessageConverterExtractor - Reading to [com.nt.user_service_lms.dto.outDTO.CourseProgressWithMetaDTO]
+2025-08-08 00:22:02 DEBUG o.s.w.c.HttpMessageConverterExtractor - Reading to [com.nt.user_service_lms.dto.outDTO.CourseProgressWithMetaDTO]
+2025-08-08 00:22:02 DEBUG o.s.w.c.HttpMessageConverterExtractor - Reading to [com.nt.user_service_lms.dto.outDTO.CourseProgressWithMetaDTO]
+2025-08-08 00:22:02 INFO  c.n.u.c.EnrollmentController - Successfully retrieved enrollments for 10 users
+2025-08-08 00:22:02 DEBUG o.s.w.s.m.m.a.HttpEntityMethodProcessor - Using 'application/json', given [application/json, text/plain, */*] and supported [application/json, application/*+json]
+2025-08-08 00:22:02 DEBUG o.s.w.s.m.m.a.HttpEntityMethodProcessor - Writing [StandardResponseOutDTO{status='SUCCESS', message='User Enrollment Fetched', data=[UserEnrollmentsOut (truncated)...]
+2025-08-08 00:22:02 DEBUG o.s.web.servlet.DispatcherServlet - Completed 200 OK
+2025-08-08 00:22:02 DEBUG o.s.web.servlet.DispatcherServlet - GET "/api/service-api/enrollment/user-enrollments", parameters={}
+2025-08-08 00:22:02 DEBUG o.s.w.s.m.m.a.RequestMappingHandlerMapping - Mapped to com.nt.user_service_lms.controller.EnrollmentController#getUserEnrollments()
+2025-08-08 00:22:02 INFO  c.n.u.c.EnrollmentController - Fetching enrollments for all users
+2025-08-08 00:22:02 DEBUG o.s.w.c.HttpMessageConverterExtractor - Reading to [java.util.List<java.lang.Long>]
+2025-08-08 00:22:02 DEBUG o.s.w.c.HttpMessageConverterExtractor - Reading to [java.lang.String] as "text/plain;charset=UTF-8"
+2025-08-08 00:22:02 DEBUG o.s.w.c.HttpMessageConverterExtractor - Reading to [java.lang.String] as "text/plain;charset=UTF-8"
+2025-08-08 00:22:02 DEBUG o.s.w.c.HttpMessageConverterExtractor - Reading to [java.lang.String] as "text/plain;charset=UTF-8"
+2025-08-08 00:22:02 DEBUG o.s.w.c.HttpMessageConverterExtractor - Reading to [java.lang.String] as "text/plain;charset=UTF-8"
+2025-08-08 00:22:02 DEBUG o.s.w.c.HttpMessageConverterExtractor - Reading to [java.lang.String] as "text/plain;charset=UTF-8"
+2025-08-08 00:22:02 DEBUG o.s.w.c.HttpMessageConverterExtractor - Reading to [java.lang.String] as "text/plain;charset=UTF-8"
+2025-08-08 00:22:02 DEBUG o.s.w.c.HttpMessageConverterExtractor - Reading to [java.lang.String] as "text/plain;charset=UTF-8"
+2025-08-08 00:22:02 DEBUG o.s.w.c.HttpMessageConverterExtractor - Reading to [java.lang.String] as "text/plain;charset=UTF-8"
+2025-08-08 00:22:02 DEBUG o.s.w.c.HttpMessageConverterExtractor - Reading to [java.lang.String] as "text/plain;charset=UTF-8"
+2025-08-08 00:22:03 DEBUG o.s.w.c.HttpMessageConverterExtractor - Reading to [java.util.List<java.lang.Long>]
+2025-08-08 00:22:03 DEBUG o.s.w.c.HttpMessageConverterExtractor - Reading to [com.nt.user_service_lms.dto.outDTO.StandardResponseOutDTO<java.lang.String>]
+2025-08-08 00:22:03 DEBUG o.s.w.c.HttpMessageConverterExtractor - Reading to [com.nt.user_service_lms.dto.outDTO.StandardResponseOutDTO<java.lang.String>]
+2025-08-08 00:22:03 DEBUG o.s.w.c.HttpMessageConverterExtractor - Reading to [com.nt.user_service_lms.dto.outDTO.StandardResponseOutDTO<java.lang.String>]
+2025-08-08 00:22:03 DEBUG o.s.w.c.HttpMessageConverterExtractor - Reading to [com.nt.user_service_lms.dto.outDTO.StandardResponseOutDTO<java.lang.String>]
+2025-08-08 00:22:03 DEBUG o.s.w.c.HttpMessageConverterExtractor - Reading to [com.nt.user_service_lms.dto.outDTO.StandardResponseOutDTO<java.lang.String>]
+2025-08-08 00:22:03 DEBUG o.s.w.c.HttpMessageConverterExtractor - Reading to [java.util.List<java.lang.Long>]
+2025-08-08 00:22:03 DEBUG o.s.w.c.HttpMessageConverterExtractor - Reading to [java.util.List<java.lang.Long>]
+2025-08-08 00:22:03 DEBUG o.s.w.c.HttpMessageConverterExtractor - Reading to [java.util.List<java.lang.Long>]
+2025-08-08 00:22:03 DEBUG o.s.w.c.HttpMessageConverterExtractor - Reading to [java.util.List<java.lang.Long>]
+2025-08-08 00:22:03 DEBUG o.s.w.c.HttpMessageConverterExtractor - Reading to [java.util.List<java.lang.Long>]
+2025-08-08 00:22:03 DEBUG o.s.w.c.HttpMessageConverterExtractor - Reading to [com.nt.user_service_lms.dto.outDTO.CourseProgressWithMetaDTO]
+2025-08-08 00:22:03 DEBUG o.s.w.c.HttpMessageConverterExtractor - Reading to [com.nt.user_service_lms.dto.outDTO.CourseProgressWithMetaDTO]
+2025-08-08 00:22:03 DEBUG o.s.w.c.HttpMessageConverterExtractor - Reading to [com.nt.user_service_lms.dto.outDTO.CourseProgressWithMetaDTO]
+2025-08-08 00:22:03 DEBUG o.s.w.c.HttpMessageConverterExtractor - Reading to [com.nt.user_service_lms.dto.outDTO.CourseProgressWithMetaDTO]
+2025-08-08 00:22:03 DEBUG o.s.w.c.HttpMessageConverterExtractor - Reading to [com.nt.user_service_lms.dto.outDTO.CourseProgressWithMetaDTO]
+2025-08-08 00:22:03 DEBUG o.s.w.c.HttpMessageConverterExtractor - Reading to [com.nt.user_service_lms.dto.outDTO.CourseProgressWithMetaDTO]
+2025-08-08 00:22:03 DEBUG o.s.w.c.HttpMessageConverterExtractor - Reading to [com.nt.user_service_lms.dto.outDTO.CourseProgressWithMetaDTO]
+2025-08-08 00:22:03 DEBUG o.s.w.c.HttpMessageConverterExtractor - Reading to [com.nt.user_service_lms.dto.outDTO.CourseProgressWithMetaDTO]
+2025-08-08 00:22:03 DEBUG o.s.w.c.HttpMessageConverterExtractor - Reading to [com.nt.user_service_lms.dto.outDTO.CourseProgressWithMetaDTO]
+2025-08-08 00:22:04 DEBUG o.s.w.c.HttpMessageConverterExtractor - Reading to [com.nt.user_service_lms.dto.outDTO.CourseProgressWithMetaDTO]
+2025-08-08 00:22:04 DEBUG o.s.w.c.HttpMessageConverterExtractor - Reading to [com.nt.user_service_lms.dto.outDTO.CourseProgressWithMetaDTO]
+2025-08-08 00:22:04 DEBUG o.s.w.c.HttpMessageConverterExtractor - Reading to [com.nt.user_service_lms.dto.outDTO.CourseProgressWithMetaDTO]
+2025-08-08 00:22:04 DEBUG o.s.web.servlet.DispatcherServlet - GET "/api/service-api/admin/active-employees", parameters={}
+2025-08-08 00:22:04 DEBUG o.s.w.s.m.m.a.RequestMappingHandlerMapping - Mapped to com.nt.user_service_lms.controller.AdminController#getAllEmployees()
+2025-08-08 00:22:04 INFO  c.n.u.controller.AdminController - Fetching all employees
+2025-08-08 00:22:04 INFO  c.n.u.s.serviceImpl.AdminServiceImpl - Fetching all users
+2025-08-08 00:22:04 DEBUG o.s.w.c.HttpMessageConverterExtractor - Reading to [com.nt.user_service_lms.dto.outDTO.CourseProgressWithMetaDTO]
+2025-08-08 00:22:04 DEBUG o.s.web.servlet.DispatcherServlet - GET "/api/service-api/group/all-active-groups", parameters={}
+2025-08-08 00:22:04 DEBUG o.s.w.s.m.m.a.RequestMappingHandlerMapping - Mapped to com.nt.user_service_lms.controller.GroupController#getAllActiveGroups()
+2025-08-08 00:22:04 INFO  c.n.u.controller.GroupController - Fetching groups 
+2025-08-08 00:22:04 INFO  c.n.u.s.serviceImpl.AdminServiceImpl - Successfully fetched 16 users
+2025-08-08 00:22:04 INFO  c.n.u.controller.AdminController - Fetched 16 employees
+2025-08-08 00:22:04 DEBUG o.s.w.s.m.m.a.HttpEntityMethodProcessor - Using 'application/json', given [application/json, text/plain, */*] and supported [application/json, application/*+json]
+2025-08-08 00:22:04 DEBUG o.s.w.s.m.m.a.HttpEntityMethodProcessor - Writing [StandardResponseOutDTO{status='SUCCESS', message='User fetched Successfully', data=[UserOutDTO(userI (truncated)...]
+2025-08-08 00:22:04 DEBUG o.s.web.servlet.DispatcherServlet - Completed 200 OK
+2025-08-08 00:22:04 INFO  c.n.u.controller.GroupController - Found 7 groups 
+2025-08-08 00:22:04 DEBUG o.s.w.s.m.m.a.HttpEntityMethodProcessor - Using 'application/json', given [application/json, text/plain, */*] and supported [application/json, application/*+json]
+2025-08-08 00:22:04 DEBUG o.s.w.s.m.m.a.HttpEntityMethodProcessor - Writing [StandardResponseOutDTO{status='SUCCESS', message='All Groups fetched successfully', data=[GroupOutDT (truncated)...]
+2025-08-08 00:22:04 DEBUG o.s.web.servlet.DispatcherServlet - Completed 200 OK
+2025-08-08 00:22:04 DEBUG o.s.w.c.HttpMessageConverterExtractor - Reading to [com.nt.user_service_lms.dto.outDTO.CourseProgressWithMetaDTO]
+2025-08-08 00:22:04 DEBUG o.s.w.c.HttpMessageConverterExtractor - Reading to [com.nt.user_service_lms.dto.outDTO.CourseProgressWithMetaDTO]
+2025-08-08 00:22:04 DEBUG o.s.w.c.HttpMessageConverterExtractor - Reading to [com.nt.user_service_lms.dto.outDTO.CourseProgressWithMetaDTO]
+2025-08-08 00:22:04 DEBUG o.s.w.c.HttpMessageConverterExtractor - Reading to [com.nt.user_service_lms.dto.outDTO.CourseProgressWithMetaDTO]
+2025-08-08 00:22:04 DEBUG o.s.w.c.HttpMessageConverterExtractor - Reading to [com.nt.user_service_lms.dto.outDTO.CourseProgressWithMetaDTO]
+2025-08-08 00:22:04 DEBUG o.s.w.c.HttpMessageConverterExtractor - Reading to [com.nt.user_service_lms.dto.outDTO.CourseProgressWithMetaDTO]
+2025-08-08 00:22:04 DEBUG o.s.w.c.HttpMessageConverterExtractor - Reading to [com.nt.user_service_lms.dto.outDTO.CourseProgressWithMetaDTO]
+2025-08-08 00:22:04 DEBUG o.s.w.c.HttpMessageConverterExtractor - Reading to [com.nt.user_service_lms.dto.outDTO.CourseProgressWithMetaDTO]
+2025-08-08 00:22:04 DEBUG o.s.w.c.HttpMessageConverterExtractor - Reading to [com.nt.user_service_lms.dto.outDTO.CourseProgressWithMetaDTO]
+2025-08-08 00:22:04 DEBUG o.s.w.c.HttpMessageConverterExtractor - Reading to [com.nt.user_service_lms.dto.outDTO.CourseProgressWithMetaDTO]
+2025-08-08 00:22:04 DEBUG o.s.w.c.HttpMessageConverterExtractor - Reading to [com.nt.user_service_lms.dto.outDTO.CourseProgressWithMetaDTO]
+2025-08-08 00:22:04 DEBUG o.s.w.c.HttpMessageConverterExtractor - Reading to [com.nt.user_service_lms.dto.outDTO.CourseProgressWithMetaDTO]
+2025-08-08 00:22:05 DEBUG o.s.w.c.HttpMessageConverterExtractor - Reading to [com.nt.user_service_lms.dto.outDTO.CourseProgressWithMetaDTO]
+2025-08-08 00:22:05 DEBUG o.s.w.c.HttpMessageConverterExtractor - Reading to [com.nt.user_service_lms.dto.outDTO.CourseProgressWithMetaDTO]
+2025-08-08 00:22:05 DEBUG o.s.w.c.HttpMessageConverterExtractor - Reading to [com.nt.user_service_lms.dto.outDTO.CourseProgressWithMetaDTO]
+2025-08-08 00:22:05 DEBUG o.s.w.c.HttpMessageConverterExtractor - Reading to [com.nt.user_service_lms.dto.outDTO.CourseProgressWithMetaDTO]
+2025-08-08 00:22:05 DEBUG o.s.w.c.HttpMessageConverterExtractor - Reading to [com.nt.user_service_lms.dto.outDTO.CourseProgressWithMetaDTO]
+2025-08-08 00:22:05 DEBUG o.s.w.c.HttpMessageConverterExtractor - Reading to [com.nt.user_service_lms.dto.outDTO.CourseProgressWithMetaDTO]
+2025-08-08 00:22:05 DEBUG o.s.w.c.HttpMessageConverterExtractor - Reading to [com.nt.user_service_lms.dto.outDTO.CourseProgressWithMetaDTO]
+2025-08-08 00:22:05 DEBUG o.s.w.c.HttpMessageConverterExtractor - Reading to [com.nt.user_service_lms.dto.outDTO.CourseProgressWithMetaDTO]
+2025-08-08 00:22:05 DEBUG o.s.w.c.HttpMessageConverterExtractor - Reading to [com.nt.user_service_lms.dto.outDTO.CourseProgressWithMetaDTO]
+2025-08-08 00:22:05 DEBUG o.s.w.c.HttpMessageConverterExtractor - Reading to [com.nt.user_service_lms.dto.outDTO.CourseProgressWithMetaDTO]
+2025-08-08 00:22:05 DEBUG o.s.w.c.HttpMessageConverterExtractor - Reading to [com.nt.user_service_lms.dto.outDTO.CourseProgressWithMetaDTO]
+2025-08-08 00:22:05 DEBUG o.s.w.c.HttpMessageConverterExtractor - Reading to [com.nt.user_service_lms.dto.outDTO.CourseProgressWithMetaDTO]
+2025-08-08 00:22:05 DEBUG o.s.w.c.HttpMessageConverterExtractor - Reading to [com.nt.user_service_lms.dto.outDTO.CourseProgressWithMetaDTO]
+2025-08-08 00:22:05 DEBUG o.s.w.c.HttpMessageConverterExtractor - Reading to [com.nt.user_service_lms.dto.outDTO.CourseProgressWithMetaDTO]
+2025-08-08 00:22:05 DEBUG o.s.w.c.HttpMessageConverterExtractor - Reading to [com.nt.user_service_lms.dto.outDTO.CourseProgressWithMetaDTO]
+2025-08-08 00:22:05 DEBUG o.s.w.c.HttpMessageConverterExtractor - Reading to [com.nt.user_service_lms.dto.outDTO.CourseProgressWithMetaDTO]
+2025-08-08 00:22:05 DEBUG o.s.w.c.HttpMessageConverterExtractor - Reading to [com.nt.user_service_lms.dto.outDTO.CourseProgressWithMetaDTO]
+2025-08-08 00:22:05 DEBUG o.s.w.c.HttpMessageConverterExtractor - Reading to [com.nt.user_service_lms.dto.outDTO.CourseProgressWithMetaDTO]
+2025-08-08 00:22:05 DEBUG o.s.w.c.HttpMessageConverterExtractor - Reading to [com.nt.user_service_lms.dto.outDTO.CourseProgressWithMetaDTO]
+2025-08-08 00:22:05 DEBUG o.s.w.c.HttpMessageConverterExtractor - Reading to [com.nt.user_service_lms.dto.outDTO.CourseProgressWithMetaDTO]
+2025-08-08 00:22:05 DEBUG o.s.w.c.HttpMessageConverterExtractor - Reading to [com.nt.user_service_lms.dto.outDTO.CourseProgressWithMetaDTO]
+2025-08-08 00:22:05 DEBUG o.s.w.c.HttpMessageConverterExtractor - Reading to [com.nt.user_service_lms.dto.outDTO.CourseProgressWithMetaDTO]
+2025-08-08 00:22:05 DEBUG o.s.w.c.HttpMessageConverterExtractor - Reading to [com.nt.user_service_lms.dto.outDTO.CourseProgressWithMetaDTO]
+2025-08-08 00:22:05 DEBUG o.s.w.c.HttpMessageConverterExtractor - Reading to [com.nt.user_service_lms.dto.outDTO.CourseProgressWithMetaDTO]
+2025-08-08 00:22:06 DEBUG o.s.w.c.HttpMessageConverterExtractor - Reading to [com.nt.user_service_lms.dto.outDTO.CourseProgressWithMetaDTO]
+2025-08-08 00:22:06 DEBUG o.s.w.c.HttpMessageConverterExtractor - Reading to [com.nt.user_service_lms.dto.outDTO.CourseProgressWithMetaDTO]
+2025-08-08 00:22:06 DEBUG o.s.w.c.HttpMessageConverterExtractor - Reading to [com.nt.user_service_lms.dto.outDTO.CourseProgressWithMetaDTO]
+2025-08-08 00:22:06 DEBUG o.s.w.c.HttpMessageConverterExtractor - Reading to [com.nt.user_service_lms.dto.outDTO.CourseProgressWithMetaDTO]
+2025-08-08 00:22:06 INFO  c.n.u.c.EnrollmentController - Successfully retrieved enrollments for 10 users
+2025-08-08 00:22:06 DEBUG o.s.w.s.m.m.a.HttpEntityMethodProcessor - Using 'application/json', given [application/json, text/plain, */*] and supported [application/json, application/*+json]
+2025-08-08 00:22:06 DEBUG o.s.w.s.m.m.a.HttpEntityMethodProcessor - Writing [StandardResponseOutDTO{status='SUCCESS', message='User Enrollment Fetched', data=[UserEnrollmentsOut (truncated)...]
+2025-08-08 00:22:06 DEBUG o.s.web.servlet.DispatcherServlet - Completed 200 OK
+2025-08-08 00:22:18 DEBUG o.s.web.servlet.DispatcherServlet - GET "/api/service-api/admin/active-employees", parameters={}
+2025-08-08 00:22:18 DEBUG o.s.w.s.m.m.a.RequestMappingHandlerMapping - Mapped to com.nt.user_service_lms.controller.AdminController#getAllEmployees()
+2025-08-08 00:22:18 INFO  c.n.u.controller.AdminController - Fetching all employees
+2025-08-08 00:22:18 INFO  c.n.u.s.serviceImpl.AdminServiceImpl - Fetching all users
+2025-08-08 00:22:18 INFO  c.n.u.s.serviceImpl.AdminServiceImpl - Successfully fetched 16 users
+2025-08-08 00:22:18 INFO  c.n.u.controller.AdminController - Fetched 16 employees
+2025-08-08 00:22:18 DEBUG o.s.w.s.m.m.a.HttpEntityMethodProcessor - Using 'application/json', given [application/json, text/plain, */*] and supported [application/json, application/*+json]
+2025-08-08 00:22:18 DEBUG o.s.w.s.m.m.a.HttpEntityMethodProcessor - Writing [StandardResponseOutDTO{status='SUCCESS', message='User fetched Successfully', data=[UserOutDTO(userI (truncated)...]
+2025-08-08 00:22:18 DEBUG o.s.web.servlet.DispatcherServlet - Completed 200 OK
+2025-08-08 00:22:37 DEBUG o.s.web.servlet.DispatcherServlet - GET "/api/service-api/admin/admin-dashboard-stats", parameters={}
+2025-08-08 00:22:37 DEBUG o.s.w.s.m.m.a.RequestMappingHandlerMapping - Mapped to com.nt.user_service_lms.controller.AdminController#getAdminDashboardStats()
+2025-08-08 00:22:37 INFO  c.n.u.s.serviceImpl.AdminServiceImpl - Fetching admin dashboard statistics
+2025-08-08 00:22:37 DEBUG o.s.web.servlet.DispatcherServlet - GET "/api/service-api/admin/users/recent", parameters={}
+2025-08-08 00:22:37 DEBUG o.s.w.s.m.m.a.HttpEntityMethodProcessor - Using 'application/json', given [application/json, text/plain, */*] and supported [application/json, application/*+json]
+2025-08-08 00:22:37 DEBUG o.s.w.s.m.m.a.HttpEntityMethodProcessor - Writing [StandardResponseOutDTO{status='SUCCESS', message='Dashboard data fetched.', data=AdminDashboardStats (truncated)...]
+2025-08-08 00:22:37 DEBUG o.s.w.s.m.m.a.RequestMappingHandlerMapping - Mapped to com.nt.user_service_lms.controller.AdminController#getRecentUsers()
+2025-08-08 00:22:37 DEBUG o.s.web.servlet.DispatcherServlet - Completed 200 OK
+2025-08-08 00:22:37 DEBUG o.s.w.s.m.m.a.HttpEntityMethodProcessor - Using 'application/json', given [application/json, text/plain, */*] and supported [application/json, application/*+json]
+2025-08-08 00:22:37 DEBUG o.s.w.s.m.m.a.HttpEntityMethodProcessor - Writing [StandardResponseOutDTO{status='SUCCESS', message='Fetched Recent Users', data=[UsersDetailsViewDTO(u (truncated)...]
+2025-08-08 00:22:37 DEBUG o.s.web.servlet.DispatcherServlet - Completed 200 OK
+2025-08-08 00:23:31 INFO  o.h.validator.internal.util.Version - HV000001: Hibernate Validator 8.0.2.Final
+2025-08-08 00:23:31 INFO  c.n.u.UserServiceLmsApplication - Starting UserServiceLmsApplication using Java 17.0.12 with PID 22228 (C:\Users\DELL\Desktop\lms clone\LMS-NT\user-service-lms\build\classes\java\main started by DELL in C:\Users\DELL\Desktop\lms clone\LMS-NT)
+2025-08-08 00:23:31 INFO  c.n.u.UserServiceLmsApplication - The following 1 profile is active: "local"
+2025-08-08 00:23:33 INFO  o.s.d.r.c.RepositoryConfigurationDelegate - Bootstrapping Spring Data JPA repositories in DEFAULT mode.
+2025-08-08 00:23:34 INFO  o.s.d.r.c.RepositoryConfigurationDelegate - Finished Spring Data repository scanning in 126 ms. Found 6 JPA repository interfaces.
+2025-08-08 00:23:34 INFO  o.s.cloud.context.scope.GenericScope - BeanFactory id=699e1924-4ef0-3d8a-bdf2-eb02e263c36e
+2025-08-08 00:23:35 INFO  o.s.b.w.e.tomcat.TomcatWebServer - Tomcat initialized with port 8081 (http)
+2025-08-08 00:23:35 INFO  o.a.coyote.http11.Http11NioProtocol - Initializing ProtocolHandler ["http-nio-8081"]
+2025-08-08 00:23:35 INFO  o.a.catalina.core.StandardService - Starting service [Tomcat]
+2025-08-08 00:23:35 INFO  o.a.catalina.core.StandardEngine - Starting Servlet engine: [Apache Tomcat/10.1.39]
+2025-08-08 00:23:35 INFO  o.a.c.c.C.[Tomcat].[localhost].[/] - Initializing Spring embedded WebApplicationContext
+2025-08-08 00:23:35 INFO  o.s.b.w.s.c.ServletWebServerApplicationContext - Root WebApplicationContext: initialization completed in 3669 ms
+2025-08-08 00:23:36 DEBUG o.f.c.i.s.classpath.ClassPathScanner - Scanning for classpath resources at 'classpath:db/callback' ...
+2025-08-08 00:23:36 DEBUG o.f.c.i.s.classpath.ClassPathScanner - Determining location urls for classpath:db/callback using ClassLoader jdk.internal.loader.ClassLoaders$AppClassLoader@659e0bfd ...
+2025-08-08 00:23:36 DEBUG o.f.c.i.s.classpath.ClassPathScanner - Unable to resolve location classpath:db/callback.
+2025-08-08 00:23:36 DEBUG o.f.c.i.s.classpath.ClassPathScanner - Scanning for classpath resources at 'classpath:db/migration' ...
+2025-08-08 00:23:36 DEBUG o.f.c.i.s.classpath.ClassPathScanner - Determining location urls for classpath:db/migration using ClassLoader jdk.internal.loader.ClassLoaders$AppClassLoader@659e0bfd ...
+2025-08-08 00:23:36 DEBUG o.f.c.i.s.classpath.ClassPathScanner - Scanning URL: file:/C:/Users/DELL/Desktop/lms%20clone/LMS-NT/user-service-lms/build/resources/main/db/migration
+2025-08-08 00:23:36 DEBUG o.f.c.i.s.c.FileSystemClassPathLocationScanner - Scanning starting at classpath root in filesystem: C:\Users\DELL\Desktop\lms clone\LMS-NT\user-service-lms\build\resources\main\
+2025-08-08 00:23:36 DEBUG o.f.c.i.s.c.FileSystemClassPathLocationScanner - Scanning for resources in path: C:\Users\DELL\Desktop\lms clone\LMS-NT\user-service-lms\build\resources\main\db\migration (db/migration)
+2025-08-08 00:23:36 DEBUG o.f.c.i.s.classpath.ClassPathScanner - Found resource: db/migration/V1__Create_initial_schema.sql
+2025-08-08 00:23:36 DEBUG o.f.c.i.s.classpath.ClassPathScanner - Found resource: db/migration/V2__Insert_initial_data.sql
+2025-08-08 00:23:36 DEBUG o.f.c.i.s.classpath.ClassPathScanner - Found resource: db/migration/V3__Create_view.sql
+2025-08-08 00:23:36 DEBUG o.f.c.i.s.classpath.ClassPathScanner - Scanning for classes at classpath:db/migration
+2025-08-08 00:23:36 INFO  com.zaxxer.hikari.HikariDataSource - HikariPool-1 - Starting...
+2025-08-08 00:23:36 INFO  com.zaxxer.hikari.pool.HikariPool - HikariPool-1 - Added connection org.postgresql.jdbc.PgConnection@ae3c140
+2025-08-08 00:23:36 INFO  com.zaxxer.hikari.HikariDataSource - HikariPool-1 - Start completed.
+2025-08-08 00:23:36 DEBUG o.f.c.i.r.ResourceNameValidator - Validating V3__Create_view.sql
+2025-08-08 00:23:36 DEBUG o.f.c.i.r.ResourceNameValidator - Validating V1__Create_initial_schema.sql
+2025-08-08 00:23:36 DEBUG o.f.c.i.r.ResourceNameValidator - Validating V2__Insert_initial_data.sql
+2025-08-08 00:23:36 DEBUG o.f.c.i.d.DatabaseTypeRegister - Multiple databases found that handle url 'jdbc:postgresql://localhost:5432/lms': CockroachDB,PostgreSQL
+2025-08-08 00:23:36 INFO  org.flywaydb.core.FlywayExecutor - Database: jdbc:postgresql://localhost:5432/lms (PostgreSQL 16.3)
+2025-08-08 00:23:36 DEBUG org.flywaydb.core.FlywayExecutor - Database Type: PostgreSQL
+2025-08-08 00:23:36 DEBUG org.flywaydb.core.FlywayExecutor - Driver: PostgreSQL JDBC Driver 42.7.5
+2025-08-08 00:23:36 DEBUG org.flywaydb.core.FlywayExecutor - DDL Transactions Supported: true
+2025-08-08 00:23:36 DEBUG o.f.c.i.s.SchemaHistoryFactory - Schemas: 
+2025-08-08 00:23:36 DEBUG o.f.c.i.s.SchemaHistoryFactory - Default schema: null
+2025-08-08 00:23:36 DEBUG org.flywaydb.core.FlywayExecutor - Scanning for script callbacks ...
+2025-08-08 00:23:36 DEBUG o.f.c.i.c.SqlScriptCallbackFactory - Scanning for SQL callbacks ...
+2025-08-08 00:23:36 DEBUG o.f.core.internal.command.DbValidate - Validating migrations ...
+2025-08-08 00:23:36 DEBUG o.f.c.a.c.ClassicConfiguration - CherryPickConfigurationExtension not found
+2025-08-08 00:23:36 DEBUG o.f.core.internal.scanner.Scanner - Filtering out resource: db/migration/V3__Create_view.sql (filename: V3__Create_view.sql)
+2025-08-08 00:23:36 DEBUG o.f.core.internal.scanner.Scanner - Filtering out resource: db/migration/V1__Create_initial_schema.sql (filename: V1__Create_initial_schema.sql)
+2025-08-08 00:23:36 DEBUG o.f.core.internal.scanner.Scanner - Filtering out resource: db/migration/V2__Insert_initial_data.sql (filename: V2__Insert_initial_data.sql)
+2025-08-08 00:23:36 DEBUG o.f.core.internal.scanner.Scanner - Filtering out resource: db/migration/V3__Create_view.sql (filename: V3__Create_view.sql)
+2025-08-08 00:23:36 DEBUG o.f.core.internal.scanner.Scanner - Filtering out resource: db/migration/V1__Create_initial_schema.sql (filename: V1__Create_initial_schema.sql)
+2025-08-08 00:23:36 DEBUG o.f.core.internal.scanner.Scanner - Filtering out resource: db/migration/V2__Insert_initial_data.sql (filename: V2__Insert_initial_data.sql)
+2025-08-08 00:23:36 DEBUG o.f.core.internal.scanner.Scanner - Filtering out resource: db/migration/V3__Create_view.sql (filename: V3__Create_view.sql)
+2025-08-08 00:23:36 DEBUG o.f.core.internal.scanner.Scanner - Filtering out resource: db/migration/V1__Create_initial_schema.sql (filename: V1__Create_initial_schema.sql)
+2025-08-08 00:23:36 DEBUG o.f.core.internal.scanner.Scanner - Filtering out resource: db/migration/V2__Insert_initial_data.sql (filename: V2__Insert_initial_data.sql)
+2025-08-08 00:23:36 DEBUG o.f.core.internal.scanner.Scanner - Filtering out resource: db/migration/V3__Create_view.sql (filename: V3__Create_view.sql)
+2025-08-08 00:23:36 DEBUG o.f.core.internal.scanner.Scanner - Filtering out resource: db/migration/V1__Create_initial_schema.sql (filename: V1__Create_initial_schema.sql)
+2025-08-08 00:23:36 DEBUG o.f.core.internal.scanner.Scanner - Filtering out resource: db/migration/V2__Insert_initial_data.sql (filename: V2__Insert_initial_data.sql)
+2025-08-08 00:23:37 INFO  o.f.core.internal.command.DbValidate - Successfully validated 3 migrations (execution time 00:00.194s)
+2025-08-08 00:23:37 DEBUG o.f.core.internal.command.DbSchemas - Skipping creation of existing schema: "public"
+2025-08-08 00:23:37 DEBUG o.f.c.a.c.ClassicConfiguration - CherryPickConfigurationExtension not found
+2025-08-08 00:23:37 INFO  o.f.core.internal.command.DbMigrate - Current version of schema "public": 3
+2025-08-08 00:23:37 INFO  o.f.core.internal.command.DbMigrate - Schema "public" is up to date. No migration necessary.
+2025-08-08 00:23:37 DEBUG org.flywaydb.core.FlywayExecutor - Memory usage: 71 of 108M
+2025-08-08 00:23:37 INFO  o.h.jpa.internal.util.LogHelper - HHH000204: Processing PersistenceUnitInfo [name: default]
+2025-08-08 00:23:37 INFO  org.hibernate.Version - HHH000412: Hibernate ORM core version 6.6.11.Final
+2025-08-08 00:23:37 INFO  o.h.c.i.RegionFactoryInitiator - HHH000026: Second-level cache disabled
+2025-08-08 00:23:38 INFO  o.s.o.j.p.SpringPersistenceUnitInfo - No LoadTimeWeaver setup: ignoring JPA class transformer
+2025-08-08 00:23:38 WARN  org.hibernate.orm.deprecation - HHH90000025: PostgreSQLDialect does not need to be specified explicitly using 'hibernate.dialect' (remove the property setting and it will be selected by default)
+2025-08-08 00:23:38 INFO  o.hibernate.orm.connections.pooling - HHH10001005: Database info:
+	Database JDBC URL [Connecting through datasource 'HikariDataSource (HikariPool-1)']
+	Database driver: undefined/unknown
+	Database version: 16.3
+	Autocommit mode: undefined/unknown
+	Isolation level: undefined/unknown
+	Minimum pool size: undefined/unknown
+	Maximum pool size: undefined/unknown
+2025-08-08 00:23:39 INFO  o.h.e.t.j.p.i.JtaPlatformInitiator - HHH000489: No JTA platform available (set 'hibernate.transaction.jta.platform' to enable JTA platform integration)
+2025-08-08 00:23:39 INFO  o.s.o.j.LocalContainerEntityManagerFactoryBean - Initialized JPA EntityManagerFactory for persistence unit 'default'
+2025-08-08 00:23:40 INFO  o.s.d.j.r.query.QueryEnhancerFactory - Hibernate is in classpath; If applicable, HQL parser will be used.
+2025-08-08 00:23:41 WARN  o.s.b.a.o.j.JpaBaseConfiguration$JpaWebConfiguration - spring.jpa.open-in-view is enabled by default. Therefore, database queries may be performed during view rendering. Explicitly configure spring.jpa.open-in-view to disable this warning
+2025-08-08 00:23:41 INFO  o.s.s.c.a.a.c.InitializeUserDetailsBeanManagerConfigurer$InitializeUserDetailsManagerConfigurer - Global AuthenticationManager configured with UserDetailsService bean with name userServiceImpl
+2025-08-08 00:23:42 DEBUG o.s.w.s.m.m.a.RequestMappingHandlerMapping - 57 mappings in 'requestMappingHandlerMapping'
+2025-08-08 00:23:42 DEBUG o.s.w.s.h.SimpleUrlHandlerMapping - Patterns [/webjars/**, /**] in 'resourceHandlerMapping'
+2025-08-08 00:23:42 WARN  o.s.s.c.a.w.c.AuthorizeHttpRequestsConfigurer$AuthorizationManagerRequestMatcherRegistry - One of the patterns in [api/service-api/manager/**] is missing a leading slash. This is discouraged; please include the leading slash in all your request matcher patterns. In future versions of Spring Security, leaving out the leading slash will result in an exception.
+2025-08-08 00:23:42 DEBUG o.s.w.s.m.m.a.RequestMappingHandlerAdapter - ControllerAdvice beans: 0 @ModelAttribute, 0 @InitBinder, 1 RequestBodyAdvice, 1 ResponseBodyAdvice
+2025-08-08 00:23:42 DEBUG o.s.w.s.m.m.a.ExceptionHandlerExceptionResolver - ControllerAdvice beans: 1 @ExceptionHandler, 1 ResponseBodyAdvice
+2025-08-08 00:23:42 INFO  o.a.coyote.http11.Http11NioProtocol - Starting ProtocolHandler ["http-nio-8081"]
+2025-08-08 00:23:43 INFO  o.s.b.w.e.tomcat.TomcatWebServer - Tomcat started on port 8081 (http) with context path '/'
+2025-08-08 00:23:43 INFO  c.n.u.UserServiceLmsApplication - Started UserServiceLmsApplication in 12.252 seconds (process running for 13.43)
+2025-08-08 10:51:32 WARN  com.zaxxer.hikari.pool.HikariPool - HikariPool-1 - Thread starvation or clock leap detected (housekeeper delta=10h16m409ms928µs400ns).
+2025-08-08 10:54:21 INFO  o.a.c.c.C.[Tomcat].[localhost].[/] - Initializing Spring DispatcherServlet 'dispatcherServlet'
+2025-08-08 10:54:22 INFO  o.s.web.servlet.DispatcherServlet - Initializing Servlet 'dispatcherServlet'
+2025-08-08 10:54:22 DEBUG o.s.web.servlet.DispatcherServlet - Detected StandardServletMultipartResolver
+2025-08-08 10:54:22 DEBUG o.s.web.servlet.DispatcherServlet - Detected AcceptHeaderLocaleResolver
+2025-08-08 10:54:22 DEBUG o.s.web.servlet.DispatcherServlet - Detected FixedThemeResolver
+2025-08-08 10:54:22 DEBUG o.s.web.servlet.DispatcherServlet - Detected org.springframework.web.servlet.view.DefaultRequestToViewNameTranslator@2432c72c
+2025-08-08 10:54:22 DEBUG o.s.web.servlet.DispatcherServlet - Detected org.springframework.web.servlet.support.SessionFlashMapManager@15a806a2
+2025-08-08 10:54:22 DEBUG o.s.web.servlet.DispatcherServlet - enableLoggingRequestDetails='false': request parameters and headers will be masked to prevent unsafe logging of potentially sensitive data
+2025-08-08 10:54:22 INFO  o.s.web.servlet.DispatcherServlet - Completed initialization in 208 ms
+2025-08-08 10:54:23 DEBUG o.s.web.servlet.DispatcherServlet - GET "/api/service-api/admin/users/recent", parameters={}
+2025-08-08 10:54:23 DEBUG o.s.web.servlet.DispatcherServlet - GET "/api/service-api/admin/admin-dashboard-stats", parameters={}
+2025-08-08 10:54:23 DEBUG o.s.w.s.m.m.a.RequestMappingHandlerMapping - Mapped to com.nt.user_service_lms.controller.AdminController#getRecentUsers()
+2025-08-08 10:54:23 DEBUG o.s.w.s.m.m.a.RequestMappingHandlerMapping - Mapped to com.nt.user_service_lms.controller.AdminController#getAdminDashboardStats()
+2025-08-08 10:54:23 INFO  c.n.u.s.serviceImpl.AdminServiceImpl - Fetching admin dashboard statistics
+2025-08-08 10:54:24 DEBUG o.s.w.s.m.m.a.HttpEntityMethodProcessor - Using 'application/json', given [application/json, text/plain, */*] and supported [application/json, application/*+json]
+2025-08-08 10:54:24 DEBUG o.s.w.s.m.m.a.HttpEntityMethodProcessor - Using 'application/json', given [application/json, text/plain, */*] and supported [application/json, application/*+json]
+2025-08-08 10:54:24 DEBUG o.s.w.s.m.m.a.HttpEntityMethodProcessor - Writing [StandardResponseOutDTO{status='SUCCESS', message='Dashboard data fetched.', data=AdminDashboardStats (truncated)...]
+2025-08-08 10:54:24 DEBUG o.s.w.s.m.m.a.HttpEntityMethodProcessor - Writing [StandardResponseOutDTO{status='SUCCESS', message='Fetched Recent Users', data=[UsersDetailsViewDTO(u (truncated)...]
+2025-08-08 10:54:24 DEBUG o.s.web.servlet.DispatcherServlet - Completed 200 OK
+2025-08-08 10:54:24 DEBUG o.s.web.servlet.DispatcherServlet - Completed 200 OK
+2025-08-08 10:54:26 DEBUG o.s.web.servlet.DispatcherServlet - GET "/api/service-api/admin/users/recent", parameters={}
+2025-08-08 10:54:26 DEBUG o.s.w.s.m.m.a.RequestMappingHandlerMapping - Mapped to com.nt.user_service_lms.controller.AdminController#getRecentUsers()
+2025-08-08 10:54:26 DEBUG o.s.web.servlet.DispatcherServlet - GET "/api/service-api/admin/admin-dashboard-stats", parameters={}
+2025-08-08 10:54:26 DEBUG o.s.w.s.m.m.a.RequestMappingHandlerMapping - Mapped to com.nt.user_service_lms.controller.AdminController#getAdminDashboardStats()
+2025-08-08 10:54:26 INFO  c.n.u.s.serviceImpl.AdminServiceImpl - Fetching admin dashboard statistics
+2025-08-08 10:54:26 DEBUG o.s.w.s.m.m.a.HttpEntityMethodProcessor - Using 'application/json', given [application/json, text/plain, */*] and supported [application/json, application/*+json]
+2025-08-08 10:54:26 DEBUG o.s.w.s.m.m.a.HttpEntityMethodProcessor - Using 'application/json', given [application/json, text/plain, */*] and supported [application/json, application/*+json]
+2025-08-08 10:54:26 DEBUG o.s.w.s.m.m.a.HttpEntityMethodProcessor - Writing [StandardResponseOutDTO{status='SUCCESS', message='Dashboard data fetched.', data=AdminDashboardStats (truncated)...]
+2025-08-08 10:54:26 DEBUG o.s.w.s.m.m.a.HttpEntityMethodProcessor - Writing [StandardResponseOutDTO{status='SUCCESS', message='Fetched Recent Users', data=[UsersDetailsViewDTO(u (truncated)...]
+2025-08-08 10:54:26 DEBUG o.s.web.servlet.DispatcherServlet - Completed 200 OK
+2025-08-08 10:54:26 DEBUG o.s.web.servlet.DispatcherServlet - Completed 200 OK
+2025-08-08 10:58:00 DEBUG o.s.web.servlet.DispatcherServlet - GET "/api/service-api/users/userCourses", parameters={}
+2025-08-08 10:58:00 DEBUG o.s.w.s.m.m.a.RequestMappingHandlerMapping - Mapped to com.nt.user_service_lms.controller.UserController#getEnrolledCoursesByUserId()
+2025-08-08 10:58:00 DEBUG o.s.w.s.m.m.a.HttpEntityMethodProcessor - Using 'application/json', given [application/json, text/plain, */*] and supported [application/json, application/*+json]
+2025-08-08 10:58:00 DEBUG o.s.w.s.m.m.a.HttpEntityMethodProcessor - Writing [StandardResponseOutDTO{status='SUCCESS', message='Fetched enrolled courses successfully', data=[]}]
+2025-08-08 10:58:00 DEBUG o.s.web.servlet.DispatcherServlet - Completed 200 OK
+2025-08-08 10:58:03 DEBUG o.s.web.servlet.DispatcherServlet - GET "/api/service-api/users/getDeadlines", parameters={}
+2025-08-08 10:58:03 DEBUG o.s.w.s.m.m.a.RequestMappingHandlerMapping - Mapped to com.nt.user_service_lms.controller.UserController#getUserDeadlines()
+2025-08-08 10:58:03 DEBUG o.s.web.servlet.DispatcherServlet - GET "/api/service-api/users/15/statistics", parameters={}
+2025-08-08 10:58:03 DEBUG o.s.w.s.m.m.a.RequestMappingHandlerMapping - Mapped to com.nt.user_service_lms.controller.UserController#getUserEnrollments(Long)
+2025-08-08 10:58:03 DEBUG o.s.w.s.m.m.a.HttpEntityMethodProcessor - Using 'application/json', given [application/json, text/plain, */*] and supported [application/json, application/*+json]
+2025-08-08 10:58:03 DEBUG o.s.w.s.m.m.a.HttpEntityMethodProcessor - Writing [StandardResponseOutDTO{status='SUCCESS', message='null', data=[]}]
+2025-08-08 10:58:03 DEBUG o.s.web.servlet.DispatcherServlet - Completed 200 OK
+2025-08-08 10:58:03 DEBUG o.s.w.s.m.m.a.HttpEntityMethodProcessor - Using 'application/json', given [application/json, text/plain, */*] and supported [application/json, application/*+json]
+2025-08-08 10:58:03 DEBUG o.s.w.s.m.m.a.HttpEntityMethodProcessor - Writing [StandardResponseOutDTO{status='SUCCESS', message='Fetched Users Enrolled', data={groups=1, enrollmen (truncated)...]
+2025-08-08 10:58:03 DEBUG o.s.web.servlet.DispatcherServlet - Completed 200 OK
+2025-08-08 10:58:03 DEBUG o.s.web.servlet.DispatcherServlet - GET "/api/service-api/users/userCourses", parameters={}
+2025-08-08 10:58:03 DEBUG o.s.w.s.m.m.a.RequestMappingHandlerMapping - Mapped to com.nt.user_service_lms.controller.UserController#getEnrolledCoursesByUserId()
+2025-08-08 10:58:03 DEBUG o.s.w.s.m.m.a.HttpEntityMethodProcessor - Using 'application/json', given [application/json, text/plain, */*] and supported [application/json, application/*+json]
+2025-08-08 10:58:03 DEBUG o.s.w.s.m.m.a.HttpEntityMethodProcessor - Writing [StandardResponseOutDTO{status='SUCCESS', message='Fetched enrolled courses successfully', data=[]}]
+2025-08-08 10:58:03 DEBUG o.s.web.servlet.DispatcherServlet - Completed 200 OK
+2025-08-08 10:58:04 DEBUG o.s.web.servlet.DispatcherServlet - GET "/api/service-api/users/userCourses", parameters={}
+2025-08-08 10:58:04 DEBUG o.s.w.s.m.m.a.RequestMappingHandlerMapping - Mapped to com.nt.user_service_lms.controller.UserController#getEnrolledCoursesByUserId()
+2025-08-08 10:58:04 DEBUG o.s.w.s.m.m.a.HttpEntityMethodProcessor - Using 'application/json', given [application/json, text/plain, */*] and supported [application/json, application/*+json]
+2025-08-08 10:58:04 DEBUG o.s.w.s.m.m.a.HttpEntityMethodProcessor - Writing [StandardResponseOutDTO{status='SUCCESS', message='Fetched enrolled courses successfully', data=[]}]
+2025-08-08 10:58:04 DEBUG o.s.web.servlet.DispatcherServlet - Completed 200 OK
+2025-08-08 10:58:19 DEBUG o.s.web.servlet.DispatcherServlet - GET "/api/service-api/users/getDeadlines", parameters={}
+2025-08-08 10:58:19 DEBUG o.s.web.servlet.DispatcherServlet - GET "/api/service-api/users/15/statistics", parameters={}
+2025-08-08 10:58:19 DEBUG o.s.w.s.m.m.a.RequestMappingHandlerMapping - Mapped to com.nt.user_service_lms.controller.UserController#getUserDeadlines()
+2025-08-08 10:58:19 DEBUG o.s.w.s.m.m.a.RequestMappingHandlerMapping - Mapped to com.nt.user_service_lms.controller.UserController#getUserEnrollments(Long)
+2025-08-08 10:58:19 DEBUG o.s.w.s.m.m.a.HttpEntityMethodProcessor - Using 'application/json', given [application/json, text/plain, */*] and supported [application/json, application/*+json]
+2025-08-08 10:58:19 DEBUG o.s.w.s.m.m.a.HttpEntityMethodProcessor - Writing [StandardResponseOutDTO{status='SUCCESS', message='Fetched Users Enrolled', data={groups=1, enrollmen (truncated)...]
+2025-08-08 10:58:19 DEBUG o.s.web.servlet.DispatcherServlet - Completed 200 OK
+2025-08-08 10:58:19 DEBUG o.s.w.s.m.m.a.HttpEntityMethodProcessor - Using 'application/json', given [application/json, text/plain, */*] and supported [application/json, application/*+json]
+2025-08-08 10:58:19 DEBUG o.s.w.s.m.m.a.HttpEntityMethodProcessor - Writing [StandardResponseOutDTO{status='SUCCESS', message='null', data=[]}]
+2025-08-08 10:58:19 DEBUG o.s.web.servlet.DispatcherServlet - Completed 200 OK
+2025-08-08 10:58:20 DEBUG o.s.web.servlet.DispatcherServlet - GET "/api/service-api/users/userCourses", parameters={}
+2025-08-08 10:58:20 DEBUG o.s.w.s.m.m.a.RequestMappingHandlerMapping - Mapped to com.nt.user_service_lms.controller.UserController#getEnrolledCoursesByUserId()
+2025-08-08 10:58:20 DEBUG o.s.w.s.m.m.a.HttpEntityMethodProcessor - Using 'application/json', given [application/json, text/plain, */*] and supported [application/json, application/*+json]
+2025-08-08 10:58:20 DEBUG o.s.w.s.m.m.a.HttpEntityMethodProcessor - Writing [StandardResponseOutDTO{status='SUCCESS', message='Fetched enrolled courses successfully', data=[User (truncated)...]
+2025-08-08 10:58:20 DEBUG o.s.web.servlet.DispatcherServlet - Completed 200 OK
+2025-08-08 10:58:21 DEBUG o.s.web.servlet.DispatcherServlet - GET "/api/service-api/users/1", parameters={}
+2025-08-08 10:58:21 DEBUG o.s.w.s.m.m.a.RequestMappingHandlerMapping - Mapped to com.nt.user_service_lms.controller.UserController#getUserNameById(long)
+2025-08-08 10:58:21 DEBUG o.s.w.s.m.m.a.HttpEntityMethodProcessor - Using 'application/json', given [application/json, text/plain, */*] and supported [application/json, application/*+json]
+2025-08-08 10:58:21 DEBUG o.s.w.s.m.m.a.HttpEntityMethodProcessor - Writing [StandardResponseOutDTO{status='SUCCESS', message='User details fetched.', data=UserOutDTO(userId=1,  (truncated)...]
+2025-08-08 10:58:21 DEBUG o.s.web.servlet.DispatcherServlet - Completed 200 OK
+2025-08-08 10:58:21 DEBUG o.s.web.servlet.DispatcherServlet - GET "/api/service-api/users/1", parameters={}
+2025-08-08 10:58:21 DEBUG o.s.w.s.m.m.a.RequestMappingHandlerMapping - Mapped to com.nt.user_service_lms.controller.UserController#getUserNameById(long)
+2025-08-08 10:58:21 DEBUG o.s.w.s.m.m.a.HttpEntityMethodProcessor - Using 'application/json', given [application/json, text/plain, */*] and supported [application/json, application/*+json]
+2025-08-08 10:58:21 DEBUG o.s.w.s.m.m.a.HttpEntityMethodProcessor - Writing [StandardResponseOutDTO{status='SUCCESS', message='User details fetched.', data=UserOutDTO(userId=1,  (truncated)...]
+2025-08-08 10:58:21 DEBUG o.s.web.servlet.DispatcherServlet - Completed 200 OK
+2025-08-08 10:58:22 DEBUG o.s.web.servlet.DispatcherServlet - GET "/api/service-api/users/1", parameters={}
+2025-08-08 10:58:22 DEBUG o.s.w.s.m.m.a.RequestMappingHandlerMapping - Mapped to com.nt.user_service_lms.controller.UserController#getUserNameById(long)
+2025-08-08 10:58:22 DEBUG o.s.w.s.m.m.a.HttpEntityMethodProcessor - Using 'application/json', given [application/json, text/plain, */*] and supported [application/json, application/*+json]
+2025-08-08 10:58:22 DEBUG o.s.w.s.m.m.a.HttpEntityMethodProcessor - Writing [StandardResponseOutDTO{status='SUCCESS', message='User details fetched.', data=UserOutDTO(userId=1,  (truncated)...]
+2025-08-08 10:58:22 DEBUG o.s.web.servlet.DispatcherServlet - Completed 200 OK
+2025-08-08 10:58:22 DEBUG o.s.web.servlet.DispatcherServlet - GET "/api/service-api/users/1", parameters={}
+2025-08-08 10:58:22 DEBUG o.s.w.s.m.m.a.RequestMappingHandlerMapping - Mapped to com.nt.user_service_lms.controller.UserController#getUserNameById(long)
+2025-08-08 10:58:22 DEBUG o.s.w.s.m.m.a.HttpEntityMethodProcessor - Using 'application/json', given [application/json, text/plain, */*] and supported [application/json, application/*+json]
+2025-08-08 10:58:22 DEBUG o.s.w.s.m.m.a.HttpEntityMethodProcessor - Writing [StandardResponseOutDTO{status='SUCCESS', message='User details fetched.', data=UserOutDTO(userId=1,  (truncated)...]
+2025-08-08 10:58:22 DEBUG o.s.web.servlet.DispatcherServlet - Completed 200 OK
+2025-08-08 10:58:23 DEBUG o.s.web.servlet.DispatcherServlet - GET "/api/service-api/users/userCourses", parameters={}
+2025-08-08 10:58:23 DEBUG o.s.w.s.m.m.a.RequestMappingHandlerMapping - Mapped to com.nt.user_service_lms.controller.UserController#getEnrolledCoursesByUserId()
+2025-08-08 10:58:24 DEBUG o.s.w.s.m.m.a.HttpEntityMethodProcessor - Using 'application/json', given [application/json, text/plain, */*] and supported [application/json, application/*+json]
+2025-08-08 10:58:24 DEBUG o.s.w.s.m.m.a.HttpEntityMethodProcessor - Writing [StandardResponseOutDTO{status='SUCCESS', message='Fetched enrolled courses successfully', data=[User (truncated)...]
+2025-08-08 10:58:24 DEBUG o.s.web.servlet.DispatcherServlet - Completed 200 OK
+2025-08-08 10:58:25 DEBUG o.s.web.servlet.DispatcherServlet - GET "/api/service-api/users/1", parameters={}
+2025-08-08 10:58:25 DEBUG o.s.w.s.m.m.a.RequestMappingHandlerMapping - Mapped to com.nt.user_service_lms.controller.UserController#getUserNameById(long)
+2025-08-08 10:58:25 DEBUG o.s.w.s.m.m.a.HttpEntityMethodProcessor - Using 'application/json', given [application/json, text/plain, */*] and supported [application/json, application/*+json]
+2025-08-08 10:58:25 DEBUG o.s.w.s.m.m.a.HttpEntityMethodProcessor - Writing [StandardResponseOutDTO{status='SUCCESS', message='User details fetched.', data=UserOutDTO(userId=1,  (truncated)...]
+2025-08-08 10:58:25 DEBUG o.s.web.servlet.DispatcherServlet - Completed 200 OK
+2025-08-08 10:58:25 DEBUG o.s.web.servlet.DispatcherServlet - GET "/api/service-api/users/1", parameters={}
+2025-08-08 10:58:25 DEBUG o.s.w.s.m.m.a.RequestMappingHandlerMapping - Mapped to com.nt.user_service_lms.controller.UserController#getUserNameById(long)
+2025-08-08 10:58:25 DEBUG o.s.w.s.m.m.a.HttpEntityMethodProcessor - Using 'application/json', given [application/json, text/plain, */*] and supported [application/json, application/*+json]
+2025-08-08 10:58:25 DEBUG o.s.w.s.m.m.a.HttpEntityMethodProcessor - Writing [StandardResponseOutDTO{status='SUCCESS', message='User details fetched.', data=UserOutDTO(userId=1,  (truncated)...]
+2025-08-08 10:58:25 DEBUG o.s.web.servlet.DispatcherServlet - Completed 200 OK
+2025-08-08 10:58:25 DEBUG o.s.web.servlet.DispatcherServlet - GET "/api/service-api/users/1", parameters={}
+2025-08-08 10:58:25 DEBUG o.s.w.s.m.m.a.RequestMappingHandlerMapping - Mapped to com.nt.user_service_lms.controller.UserController#getUserNameById(long)
+2025-08-08 10:58:25 DEBUG o.s.w.s.m.m.a.HttpEntityMethodProcessor - Using 'application/json', given [application/json, text/plain, */*] and supported [application/json, application/*+json]
+2025-08-08 10:58:25 DEBUG o.s.w.s.m.m.a.HttpEntityMethodProcessor - Writing [StandardResponseOutDTO{status='SUCCESS', message='User details fetched.', data=UserOutDTO(userId=1,  (truncated)...]
+2025-08-08 10:58:25 DEBUG o.s.web.servlet.DispatcherServlet - Completed 200 OK
+2025-08-08 10:58:25 DEBUG o.s.web.servlet.DispatcherServlet - GET "/api/service-api/users/1", parameters={}
+2025-08-08 10:58:25 DEBUG o.s.w.s.m.m.a.RequestMappingHandlerMapping - Mapped to com.nt.user_service_lms.controller.UserController#getUserNameById(long)
+2025-08-08 10:58:25 DEBUG o.s.w.s.m.m.a.HttpEntityMethodProcessor - Using 'application/json', given [application/json, text/plain, */*] and supported [application/json, application/*+json]
+2025-08-08 10:58:25 DEBUG o.s.w.s.m.m.a.HttpEntityMethodProcessor - Writing [StandardResponseOutDTO{status='SUCCESS', message='User details fetched.', data=UserOutDTO(userId=1,  (truncated)...]
+2025-08-08 10:58:25 DEBUG o.s.web.servlet.DispatcherServlet - Completed 200 OK
+2025-08-08 10:58:32 DEBUG o.s.web.servlet.DispatcherServlet - GET "/api/service-api/group/user-groups", parameters={}
+2025-08-08 10:58:32 DEBUG o.s.w.s.m.m.a.RequestMappingHandlerMapping - Mapped to com.nt.user_service_lms.controller.GroupController#getUserGroupDetails()
+2025-08-08 10:58:32 DEBUG o.s.w.c.HttpMessageConverterExtractor - Reading to [com.nt.user_service_lms.dto.outDTO.CourseProgressWithMetaDTO]
+2025-08-08 10:58:32 DEBUG o.s.w.s.m.m.a.HttpEntityMethodProcessor - Using 'application/json', given [application/json, text/plain, */*] and supported [application/json, application/*+json]
+2025-08-08 10:58:32 DEBUG o.s.w.s.m.m.a.HttpEntityMethodProcessor - Writing [StandardResponseOutDTO{status='SUCCESS', message='Successfully fetched course details.', data=[UserG (truncated)...]
+2025-08-08 10:58:32 DEBUG o.s.web.servlet.DispatcherServlet - Completed 200 OK
+2025-08-08 10:58:33 DEBUG o.s.web.servlet.DispatcherServlet - GET "/api/service-api/users/userCourses", parameters={}
+2025-08-08 10:58:33 DEBUG o.s.w.s.m.m.a.RequestMappingHandlerMapping - Mapped to com.nt.user_service_lms.controller.UserController#getEnrolledCoursesByUserId()
+2025-08-08 10:58:33 DEBUG o.s.w.s.m.m.a.HttpEntityMethodProcessor - Using 'application/json', given [application/json, text/plain, */*] and supported [application/json, application/*+json]
+2025-08-08 10:58:33 DEBUG o.s.w.s.m.m.a.HttpEntityMethodProcessor - Writing [StandardResponseOutDTO{status='SUCCESS', message='Fetched enrolled courses successfully', data=[User (truncated)...]
+2025-08-08 10:58:33 DEBUG o.s.web.servlet.DispatcherServlet - Completed 200 OK
+2025-08-08 10:58:35 DEBUG o.s.web.servlet.DispatcherServlet - GET "/api/service-api/users/1", parameters={}
+2025-08-08 10:58:35 DEBUG o.s.w.s.m.m.a.RequestMappingHandlerMapping - Mapped to com.nt.user_service_lms.controller.UserController#getUserNameById(long)
+2025-08-08 10:58:35 DEBUG o.s.w.s.m.m.a.HttpEntityMethodProcessor - Using 'application/json', given [application/json, text/plain, */*] and supported [application/json, application/*+json]
+2025-08-08 10:58:35 DEBUG o.s.w.s.m.m.a.HttpEntityMethodProcessor - Writing [StandardResponseOutDTO{status='SUCCESS', message='User details fetched.', data=UserOutDTO(userId=1,  (truncated)...]
+2025-08-08 10:58:35 DEBUG o.s.web.servlet.DispatcherServlet - Completed 200 OK
+2025-08-08 10:58:35 DEBUG o.s.web.servlet.DispatcherServlet - GET "/api/service-api/users/1", parameters={}
+2025-08-08 10:58:35 DEBUG o.s.w.s.m.m.a.RequestMappingHandlerMapping - Mapped to com.nt.user_service_lms.controller.UserController#getUserNameById(long)
+2025-08-08 10:58:35 DEBUG o.s.w.s.m.m.a.HttpEntityMethodProcessor - Using 'application/json', given [application/json, text/plain, */*] and supported [application/json, application/*+json]
+2025-08-08 10:58:35 DEBUG o.s.w.s.m.m.a.HttpEntityMethodProcessor - Writing [StandardResponseOutDTO{status='SUCCESS', message='User details fetched.', data=UserOutDTO(userId=1,  (truncated)...]
+2025-08-08 10:58:35 DEBUG o.s.web.servlet.DispatcherServlet - Completed 200 OK
+2025-08-08 10:58:35 DEBUG o.s.web.servlet.DispatcherServlet - GET "/api/service-api/users/1", parameters={}
+2025-08-08 10:58:35 DEBUG o.s.w.s.m.m.a.RequestMappingHandlerMapping - Mapped to com.nt.user_service_lms.controller.UserController#getUserNameById(long)
+2025-08-08 10:58:35 DEBUG o.s.w.s.m.m.a.HttpEntityMethodProcessor - Using 'application/json', given [application/json, text/plain, */*] and supported [application/json, application/*+json]
+2025-08-08 10:58:35 DEBUG o.s.w.s.m.m.a.HttpEntityMethodProcessor - Writing [StandardResponseOutDTO{status='SUCCESS', message='User details fetched.', data=UserOutDTO(userId=1,  (truncated)...]
+2025-08-08 10:58:35 DEBUG o.s.web.servlet.DispatcherServlet - Completed 200 OK
+2025-08-08 10:58:35 DEBUG o.s.web.servlet.DispatcherServlet - GET "/api/service-api/users/1", parameters={}
+2025-08-08 10:58:35 DEBUG o.s.w.s.m.m.a.RequestMappingHandlerMapping - Mapped to com.nt.user_service_lms.controller.UserController#getUserNameById(long)
+2025-08-08 10:58:35 DEBUG o.s.w.s.m.m.a.HttpEntityMethodProcessor - Using 'application/json', given [application/json, text/plain, */*] and supported [application/json, application/*+json]
+2025-08-08 10:58:35 DEBUG o.s.w.s.m.m.a.HttpEntityMethodProcessor - Writing [StandardResponseOutDTO{status='SUCCESS', message='User details fetched.', data=UserOutDTO(userId=1,  (truncated)...]
+2025-08-08 10:58:35 DEBUG o.s.web.servlet.DispatcherServlet - Completed 200 OK
+2025-08-08 10:59:03 DEBUG o.s.web.servlet.DispatcherServlet - GET "/api/service-api/users/userCourses", parameters={}
+2025-08-08 10:59:03 DEBUG o.s.w.s.m.m.a.RequestMappingHandlerMapping - Mapped to com.nt.user_service_lms.controller.UserController#getEnrolledCoursesByUserId()
+2025-08-08 10:59:03 DEBUG o.s.w.s.m.m.a.HttpEntityMethodProcessor - Using 'application/json', given [application/json, text/plain, */*] and supported [application/json, application/*+json]
+2025-08-08 10:59:03 DEBUG o.s.w.s.m.m.a.HttpEntityMethodProcessor - Writing [StandardResponseOutDTO{status='SUCCESS', message='Fetched enrolled courses successfully', data=[User (truncated)...]
+2025-08-08 10:59:03 DEBUG o.s.web.servlet.DispatcherServlet - Completed 200 OK
+2025-08-08 10:59:03 DEBUG o.s.web.servlet.DispatcherServlet - GET "/api/service-api/users/1", parameters={}
+2025-08-08 10:59:03 DEBUG o.s.w.s.m.m.a.RequestMappingHandlerMapping - Mapped to com.nt.user_service_lms.controller.UserController#getUserNameById(long)
+2025-08-08 10:59:04 DEBUG o.s.w.s.m.m.a.HttpEntityMethodProcessor - Using 'application/json', given [application/json, text/plain, */*] and supported [application/json, application/*+json]
+2025-08-08 10:59:04 DEBUG o.s.w.s.m.m.a.HttpEntityMethodProcessor - Writing [StandardResponseOutDTO{status='SUCCESS', message='User details fetched.', data=UserOutDTO(userId=1,  (truncated)...]
+2025-08-08 10:59:04 DEBUG o.s.web.servlet.DispatcherServlet - Completed 200 OK
+2025-08-08 10:59:04 DEBUG o.s.web.servlet.DispatcherServlet - GET "/api/service-api/users/1", parameters={}
+2025-08-08 10:59:04 DEBUG o.s.w.s.m.m.a.RequestMappingHandlerMapping - Mapped to com.nt.user_service_lms.controller.UserController#getUserNameById(long)
+2025-08-08 10:59:04 DEBUG o.s.w.s.m.m.a.HttpEntityMethodProcessor - Using 'application/json', given [application/json, text/plain, */*] and supported [application/json, application/*+json]
+2025-08-08 10:59:04 DEBUG o.s.w.s.m.m.a.HttpEntityMethodProcessor - Writing [StandardResponseOutDTO{status='SUCCESS', message='User details fetched.', data=UserOutDTO(userId=1,  (truncated)...]
+2025-08-08 10:59:04 DEBUG o.s.web.servlet.DispatcherServlet - Completed 200 OK
+2025-08-08 10:59:04 DEBUG o.s.web.servlet.DispatcherServlet - GET "/api/service-api/users/1", parameters={}
+2025-08-08 10:59:04 DEBUG o.s.w.s.m.m.a.RequestMappingHandlerMapping - Mapped to com.nt.user_service_lms.controller.UserController#getUserNameById(long)
+2025-08-08 10:59:04 DEBUG o.s.w.s.m.m.a.HttpEntityMethodProcessor - Using 'application/json', given [application/json, text/plain, */*] and supported [application/json, application/*+json]
+2025-08-08 10:59:04 DEBUG o.s.w.s.m.m.a.HttpEntityMethodProcessor - Writing [StandardResponseOutDTO{status='SUCCESS', message='User details fetched.', data=UserOutDTO(userId=1,  (truncated)...]
+2025-08-08 10:59:04 DEBUG o.s.web.servlet.DispatcherServlet - Completed 200 OK
+2025-08-08 10:59:04 DEBUG o.s.web.servlet.DispatcherServlet - GET "/api/service-api/users/1", parameters={}
+2025-08-08 10:59:04 DEBUG o.s.w.s.m.m.a.RequestMappingHandlerMapping - Mapped to com.nt.user_service_lms.controller.UserController#getUserNameById(long)
+2025-08-08 10:59:04 DEBUG o.s.w.s.m.m.a.HttpEntityMethodProcessor - Using 'application/json', given [application/json, text/plain, */*] and supported [application/json, application/*+json]
+2025-08-08 10:59:04 DEBUG o.s.w.s.m.m.a.HttpEntityMethodProcessor - Writing [StandardResponseOutDTO{status='SUCCESS', message='User details fetched.', data=UserOutDTO(userId=1,  (truncated)...]
+2025-08-08 10:59:04 DEBUG o.s.web.servlet.DispatcherServlet - Completed 200 OK
+2025-08-08 11:02:43 DEBUG o.s.web.servlet.DispatcherServlet - GET "/api/service-api/admin/users/recent", parameters={}
+2025-08-08 11:02:43 DEBUG o.s.w.s.m.m.a.RequestMappingHandlerMapping - Mapped to com.nt.user_service_lms.controller.AdminController#getRecentUsers()
+2025-08-08 11:02:43 DEBUG o.s.web.servlet.DispatcherServlet - GET "/api/service-api/admin/admin-dashboard-stats", parameters={}
+2025-08-08 11:02:43 DEBUG o.s.w.s.m.m.a.RequestMappingHandlerMapping - Mapped to com.nt.user_service_lms.controller.AdminController#getAdminDashboardStats()
+2025-08-08 11:02:43 INFO  c.n.u.s.serviceImpl.AdminServiceImpl - Fetching admin dashboard statistics
+2025-08-08 11:02:43 DEBUG o.s.w.s.m.m.a.HttpEntityMethodProcessor - Using 'application/json', given [application/json, text/plain, */*] and supported [application/json, application/*+json]
+2025-08-08 11:02:43 DEBUG o.s.w.s.m.m.a.HttpEntityMethodProcessor - Using 'application/json', given [application/json, text/plain, */*] and supported [application/json, application/*+json]
+2025-08-08 11:02:43 DEBUG o.s.w.s.m.m.a.HttpEntityMethodProcessor - Writing [StandardResponseOutDTO{status='SUCCESS', message='Dashboard data fetched.', data=AdminDashboardStats (truncated)...]
+2025-08-08 11:02:43 DEBUG o.s.w.s.m.m.a.HttpEntityMethodProcessor - Writing [StandardResponseOutDTO{status='SUCCESS', message='Fetched Recent Users', data=[UsersDetailsViewDTO(u (truncated)...]
+2025-08-08 11:02:43 DEBUG o.s.web.servlet.DispatcherServlet - Completed 200 OK
+2025-08-08 11:02:43 DEBUG o.s.web.servlet.DispatcherServlet - Completed 200 OK
+2025-08-08 11:03:23 DEBUG o.s.web.servlet.DispatcherServlet - GET "/api/service-api/users/userCourses", parameters={}
+2025-08-08 11:03:23 DEBUG o.s.w.s.m.m.a.RequestMappingHandlerMapping - Mapped to com.nt.user_service_lms.controller.UserController#getEnrolledCoursesByUserId()
+2025-08-08 11:03:23 DEBUG o.s.w.s.m.m.a.HttpEntityMethodProcessor - Using 'application/json', given [application/json, text/plain, */*] and supported [application/json, application/*+json]
+2025-08-08 11:03:23 DEBUG o.s.w.s.m.m.a.HttpEntityMethodProcessor - Writing [StandardResponseOutDTO{status='SUCCESS', message='Fetched enrolled courses successfully', data=[]}]
+2025-08-08 11:03:23 DEBUG o.s.web.servlet.DispatcherServlet - Completed 200 OK
+2025-08-08 11:03:31 DEBUG o.s.web.servlet.DispatcherServlet - GET "/api/service-api/users/getDeadlines", parameters={}
+2025-08-08 11:03:31 DEBUG o.s.w.s.m.m.a.RequestMappingHandlerMapping - Mapped to com.nt.user_service_lms.controller.UserController#getUserDeadlines()
+2025-08-08 11:03:31 DEBUG o.s.w.s.m.m.a.HttpEntityMethodProcessor - Using 'application/json', given [application/json, text/plain, */*] and supported [application/json, application/*+json]
+2025-08-08 11:03:31 DEBUG o.s.w.s.m.m.a.HttpEntityMethodProcessor - Writing [StandardResponseOutDTO{status='SUCCESS', message='null', data=[]}]
+2025-08-08 11:03:31 DEBUG o.s.web.servlet.DispatcherServlet - Completed 200 OK
+2025-08-08 11:03:31 DEBUG o.s.web.servlet.DispatcherServlet - GET "/api/service-api/users/15/statistics", parameters={}
+2025-08-08 11:03:31 DEBUG o.s.w.s.m.m.a.RequestMappingHandlerMapping - Mapped to com.nt.user_service_lms.controller.UserController#getUserEnrollments(Long)
+2025-08-08 11:03:31 DEBUG o.s.w.s.m.m.a.HttpEntityMethodProcessor - Using 'application/json', given [application/json, text/plain, */*] and supported [application/json, application/*+json]
+2025-08-08 11:03:31 DEBUG o.s.w.s.m.m.a.HttpEntityMethodProcessor - Writing [StandardResponseOutDTO{status='SUCCESS', message='Fetched Users Enrolled', data={groups=1, enrollmen (truncated)...]
+2025-08-08 11:03:31 DEBUG o.s.web.servlet.DispatcherServlet - Completed 200 OK
+2025-08-08 11:03:31 DEBUG o.s.web.servlet.DispatcherServlet - GET "/api/service-api/users/userCourses", parameters={}
+2025-08-08 11:03:31 DEBUG o.s.w.s.m.m.a.RequestMappingHandlerMapping - Mapped to com.nt.user_service_lms.controller.UserController#getEnrolledCoursesByUserId()
+2025-08-08 11:03:31 DEBUG o.s.w.s.m.m.a.HttpEntityMethodProcessor - Using 'application/json', given [application/json, text/plain, */*] and supported [application/json, application/*+json]
+2025-08-08 11:03:31 DEBUG o.s.w.s.m.m.a.HttpEntityMethodProcessor - Writing [StandardResponseOutDTO{status='SUCCESS', message='Fetched enrolled courses successfully', data=[]}]
+2025-08-08 11:03:31 DEBUG o.s.web.servlet.DispatcherServlet - Completed 200 OK
+2025-08-08 11:03:32 DEBUG o.s.web.servlet.DispatcherServlet - GET "/api/service-api/users/userCourses", parameters={}
+2025-08-08 11:03:32 DEBUG o.s.w.s.m.m.a.RequestMappingHandlerMapping - Mapped to com.nt.user_service_lms.controller.UserController#getEnrolledCoursesByUserId()
+2025-08-08 11:03:32 DEBUG o.s.w.s.m.m.a.HttpEntityMethodProcessor - Using 'application/json', given [application/json, text/plain, */*] and supported [application/json, application/*+json]
+2025-08-08 11:03:32 DEBUG o.s.w.s.m.m.a.HttpEntityMethodProcessor - Writing [StandardResponseOutDTO{status='SUCCESS', message='Fetched enrolled courses successfully', data=[]}]
+2025-08-08 11:03:32 DEBUG o.s.web.servlet.DispatcherServlet - Completed 200 OK
+2025-08-08 11:03:54 DEBUG o.s.web.servlet.DispatcherServlet - GET "/api/service-api/users/getDeadlines", parameters={}
+2025-08-08 11:03:54 DEBUG o.s.w.s.m.m.a.RequestMappingHandlerMapping - Mapped to com.nt.user_service_lms.controller.UserController#getUserDeadlines()
+2025-08-08 11:03:54 DEBUG o.s.w.s.m.m.a.HttpEntityMethodProcessor - Using 'application/json', given [application/json, text/plain, */*] and supported [application/json, application/*+json]
+2025-08-08 11:03:54 DEBUG o.s.w.s.m.m.a.HttpEntityMethodProcessor - Writing [StandardResponseOutDTO{status='SUCCESS', message='null', data=[]}]
+2025-08-08 11:03:54 DEBUG o.s.web.servlet.DispatcherServlet - Completed 200 OK
+2025-08-08 11:03:54 DEBUG o.s.web.servlet.DispatcherServlet - GET "/api/service-api/users/15/statistics", parameters={}
+2025-08-08 11:03:54 DEBUG o.s.w.s.m.m.a.RequestMappingHandlerMapping - Mapped to com.nt.user_service_lms.controller.UserController#getUserEnrollments(Long)
+2025-08-08 11:03:54 DEBUG o.s.w.s.m.m.a.HttpEntityMethodProcessor - Using 'application/json', given [application/json, text/plain, */*] and supported [application/json, application/*+json]
+2025-08-08 11:03:54 DEBUG o.s.w.s.m.m.a.HttpEntityMethodProcessor - Writing [StandardResponseOutDTO{status='SUCCESS', message='Fetched Users Enrolled', data={groups=1, enrollmen (truncated)...]
+2025-08-08 11:03:54 DEBUG o.s.web.servlet.DispatcherServlet - Completed 200 OK
+2025-08-08 11:03:55 DEBUG o.s.web.servlet.DispatcherServlet - GET "/api/service-api/users/userCourses", parameters={}
+2025-08-08 11:03:55 DEBUG o.s.w.s.m.m.a.RequestMappingHandlerMapping - Mapped to com.nt.user_service_lms.controller.UserController#getEnrolledCoursesByUserId()
+2025-08-08 11:03:55 DEBUG o.s.w.s.m.m.a.HttpEntityMethodProcessor - Using 'application/json', given [application/json, text/plain, */*] and supported [application/json, application/*+json]
+2025-08-08 11:03:55 DEBUG o.s.w.s.m.m.a.HttpEntityMethodProcessor - Writing [StandardResponseOutDTO{status='SUCCESS', message='Fetched enrolled courses successfully', data=[User (truncated)...]
+2025-08-08 11:03:55 DEBUG o.s.web.servlet.DispatcherServlet - Completed 200 OK
+2025-08-08 11:03:55 DEBUG o.s.web.servlet.DispatcherServlet - GET "/api/service-api/users/1", parameters={}
+2025-08-08 11:03:55 DEBUG o.s.w.s.m.m.a.RequestMappingHandlerMapping - Mapped to com.nt.user_service_lms.controller.UserController#getUserNameById(long)
+2025-08-08 11:03:55 DEBUG o.s.w.s.m.m.a.HttpEntityMethodProcessor - Using 'application/json', given [application/json, text/plain, */*] and supported [application/json, application/*+json]
+2025-08-08 11:03:55 DEBUG o.s.w.s.m.m.a.HttpEntityMethodProcessor - Writing [StandardResponseOutDTO{status='SUCCESS', message='User details fetched.', data=UserOutDTO(userId=1,  (truncated)...]
+2025-08-08 11:03:55 DEBUG o.s.web.servlet.DispatcherServlet - Completed 200 OK
+2025-08-08 11:03:55 DEBUG o.s.web.servlet.DispatcherServlet - GET "/api/service-api/users/1", parameters={}
+2025-08-08 11:03:55 DEBUG o.s.w.s.m.m.a.RequestMappingHandlerMapping - Mapped to com.nt.user_service_lms.controller.UserController#getUserNameById(long)
+2025-08-08 11:03:55 DEBUG o.s.w.s.m.m.a.HttpEntityMethodProcessor - Using 'application/json', given [application/json, text/plain, */*] and supported [application/json, application/*+json]
+2025-08-08 11:03:55 DEBUG o.s.w.s.m.m.a.HttpEntityMethodProcessor - Writing [StandardResponseOutDTO{status='SUCCESS', message='User details fetched.', data=UserOutDTO(userId=1,  (truncated)...]
+2025-08-08 11:03:55 DEBUG o.s.web.servlet.DispatcherServlet - Completed 200 OK
+2025-08-08 11:03:56 DEBUG o.s.web.servlet.DispatcherServlet - GET "/api/service-api/users/1", parameters={}
+2025-08-08 11:03:56 DEBUG o.s.w.s.m.m.a.RequestMappingHandlerMapping - Mapped to com.nt.user_service_lms.controller.UserController#getUserNameById(long)
+2025-08-08 11:03:56 DEBUG o.s.w.s.m.m.a.HttpEntityMethodProcessor - Using 'application/json', given [application/json, text/plain, */*] and supported [application/json, application/*+json]
+2025-08-08 11:03:56 DEBUG o.s.w.s.m.m.a.HttpEntityMethodProcessor - Writing [StandardResponseOutDTO{status='SUCCESS', message='User details fetched.', data=UserOutDTO(userId=1,  (truncated)...]
+2025-08-08 11:03:56 DEBUG o.s.web.servlet.DispatcherServlet - Completed 200 OK
+2025-08-08 11:03:56 DEBUG o.s.web.servlet.DispatcherServlet - GET "/api/service-api/users/1", parameters={}
+2025-08-08 11:03:56 DEBUG o.s.w.s.m.m.a.RequestMappingHandlerMapping - Mapped to com.nt.user_service_lms.controller.UserController#getUserNameById(long)
+2025-08-08 11:03:56 DEBUG o.s.w.s.m.m.a.HttpEntityMethodProcessor - Using 'application/json', given [application/json, text/plain, */*] and supported [application/json, application/*+json]
+2025-08-08 11:03:56 DEBUG o.s.w.s.m.m.a.HttpEntityMethodProcessor - Writing [StandardResponseOutDTO{status='SUCCESS', message='User details fetched.', data=UserOutDTO(userId=1,  (truncated)...]
+2025-08-08 11:03:56 DEBUG o.s.web.servlet.DispatcherServlet - Completed 200 OK
+2025-08-08 11:03:58 DEBUG o.s.web.servlet.DispatcherServlet - GET "/api/service-api/users/userCourses", parameters={}
+2025-08-08 11:03:58 DEBUG o.s.w.s.m.m.a.RequestMappingHandlerMapping - Mapped to com.nt.user_service_lms.controller.UserController#getEnrolledCoursesByUserId()
+2025-08-08 11:03:58 DEBUG o.s.w.s.m.m.a.HttpEntityMethodProcessor - Using 'application/json', given [application/json, text/plain, */*] and supported [application/json, application/*+json]
+2025-08-08 11:03:58 DEBUG o.s.w.s.m.m.a.HttpEntityMethodProcessor - Writing [StandardResponseOutDTO{status='SUCCESS', message='Fetched enrolled courses successfully', data=[User (truncated)...]
+2025-08-08 11:03:58 DEBUG o.s.web.servlet.DispatcherServlet - Completed 200 OK
+2025-08-08 11:03:59 DEBUG o.s.web.servlet.DispatcherServlet - GET "/api/service-api/users/1", parameters={}
+2025-08-08 11:03:59 DEBUG o.s.w.s.m.m.a.RequestMappingHandlerMapping - Mapped to com.nt.user_service_lms.controller.UserController#getUserNameById(long)
+2025-08-08 11:03:59 DEBUG o.s.w.s.m.m.a.HttpEntityMethodProcessor - Using 'application/json', given [application/json, text/plain, */*] and supported [application/json, application/*+json]
+2025-08-08 11:03:59 DEBUG o.s.w.s.m.m.a.HttpEntityMethodProcessor - Writing [StandardResponseOutDTO{status='SUCCESS', message='User details fetched.', data=UserOutDTO(userId=1,  (truncated)...]
+2025-08-08 11:03:59 DEBUG o.s.web.servlet.DispatcherServlet - Completed 200 OK
+2025-08-08 11:03:59 DEBUG o.s.web.servlet.DispatcherServlet - GET "/api/service-api/users/1", parameters={}
+2025-08-08 11:03:59 DEBUG o.s.w.s.m.m.a.RequestMappingHandlerMapping - Mapped to com.nt.user_service_lms.controller.UserController#getUserNameById(long)
+2025-08-08 11:03:59 DEBUG o.s.w.s.m.m.a.HttpEntityMethodProcessor - Using 'application/json', given [application/json, text/plain, */*] and supported [application/json, application/*+json]
+2025-08-08 11:03:59 DEBUG o.s.w.s.m.m.a.HttpEntityMethodProcessor - Writing [StandardResponseOutDTO{status='SUCCESS', message='User details fetched.', data=UserOutDTO(userId=1,  (truncated)...]
+2025-08-08 11:03:59 DEBUG o.s.web.servlet.DispatcherServlet - Completed 200 OK
+2025-08-08 11:03:59 DEBUG o.s.web.servlet.DispatcherServlet - GET "/api/service-api/users/1", parameters={}
+2025-08-08 11:03:59 DEBUG o.s.w.s.m.m.a.RequestMappingHandlerMapping - Mapped to com.nt.user_service_lms.controller.UserController#getUserNameById(long)
+2025-08-08 11:03:59 DEBUG o.s.w.s.m.m.a.HttpEntityMethodProcessor - Using 'application/json', given [application/json, text/plain, */*] and supported [application/json, application/*+json]
+2025-08-08 11:03:59 DEBUG o.s.w.s.m.m.a.HttpEntityMethodProcessor - Writing [StandardResponseOutDTO{status='SUCCESS', message='User details fetched.', data=UserOutDTO(userId=1,  (truncated)...]
+2025-08-08 11:03:59 DEBUG o.s.web.servlet.DispatcherServlet - Completed 200 OK
+2025-08-08 11:04:00 DEBUG o.s.web.servlet.DispatcherServlet - GET "/api/service-api/users/1", parameters={}
+2025-08-08 11:04:00 DEBUG o.s.w.s.m.m.a.RequestMappingHandlerMapping - Mapped to com.nt.user_service_lms.controller.UserController#getUserNameById(long)
+2025-08-08 11:04:00 DEBUG o.s.w.s.m.m.a.HttpEntityMethodProcessor - Using 'application/json', given [application/json, text/plain, */*] and supported [application/json, application/*+json]
+2025-08-08 11:04:00 DEBUG o.s.w.s.m.m.a.HttpEntityMethodProcessor - Writing [StandardResponseOutDTO{status='SUCCESS', message='User details fetched.', data=UserOutDTO(userId=1,  (truncated)...]
+2025-08-08 11:04:00 DEBUG o.s.web.servlet.DispatcherServlet - Completed 200 OK
+2025-08-08 11:04:08 DEBUG o.s.web.servlet.DispatcherServlet - GET "/api/service-api/users/userCourses", parameters={}
+2025-08-08 11:04:08 DEBUG o.s.w.s.m.m.a.RequestMappingHandlerMapping - Mapped to com.nt.user_service_lms.controller.UserController#getEnrolledCoursesByUserId()
+2025-08-08 11:04:08 DEBUG o.s.w.s.m.m.a.HttpEntityMethodProcessor - Using 'application/json', given [application/json, text/plain, */*] and supported [application/json, application/*+json]
+2025-08-08 11:04:08 DEBUG o.s.w.s.m.m.a.HttpEntityMethodProcessor - Writing [StandardResponseOutDTO{status='SUCCESS', message='Fetched enrolled courses successfully', data=[User (truncated)...]
+2025-08-08 11:04:08 DEBUG o.s.web.servlet.DispatcherServlet - Completed 200 OK
+2025-08-08 11:04:09 DEBUG o.s.web.servlet.DispatcherServlet - GET "/api/service-api/users/1", parameters={}
+2025-08-08 11:04:09 DEBUG o.s.w.s.m.m.a.RequestMappingHandlerMapping - Mapped to com.nt.user_service_lms.controller.UserController#getUserNameById(long)
+2025-08-08 11:04:09 DEBUG o.s.w.s.m.m.a.HttpEntityMethodProcessor - Using 'application/json', given [application/json, text/plain, */*] and supported [application/json, application/*+json]
+2025-08-08 11:04:09 DEBUG o.s.w.s.m.m.a.HttpEntityMethodProcessor - Writing [StandardResponseOutDTO{status='SUCCESS', message='User details fetched.', data=UserOutDTO(userId=1,  (truncated)...]
+2025-08-08 11:04:09 DEBUG o.s.web.servlet.DispatcherServlet - Completed 200 OK
+2025-08-08 11:04:09 DEBUG o.s.web.servlet.DispatcherServlet - GET "/api/service-api/users/1", parameters={}
+2025-08-08 11:04:09 DEBUG o.s.w.s.m.m.a.RequestMappingHandlerMapping - Mapped to com.nt.user_service_lms.controller.UserController#getUserNameById(long)
+2025-08-08 11:04:09 DEBUG o.s.w.s.m.m.a.HttpEntityMethodProcessor - Using 'application/json', given [application/json, text/plain, */*] and supported [application/json, application/*+json]
+2025-08-08 11:04:09 DEBUG o.s.w.s.m.m.a.HttpEntityMethodProcessor - Writing [StandardResponseOutDTO{status='SUCCESS', message='User details fetched.', data=UserOutDTO(userId=1,  (truncated)...]
+2025-08-08 11:04:09 DEBUG o.s.web.servlet.DispatcherServlet - Completed 200 OK
+2025-08-08 11:04:09 DEBUG o.s.web.servlet.DispatcherServlet - GET "/api/service-api/users/1", parameters={}
+2025-08-08 11:04:09 DEBUG o.s.w.s.m.m.a.RequestMappingHandlerMapping - Mapped to com.nt.user_service_lms.controller.UserController#getUserNameById(long)
+2025-08-08 11:04:09 DEBUG o.s.w.s.m.m.a.HttpEntityMethodProcessor - Using 'application/json', given [application/json, text/plain, */*] and supported [application/json, application/*+json]
+2025-08-08 11:04:09 DEBUG o.s.w.s.m.m.a.HttpEntityMethodProcessor - Writing [StandardResponseOutDTO{status='SUCCESS', message='User details fetched.', data=UserOutDTO(userId=1,  (truncated)...]
+2025-08-08 11:04:09 DEBUG o.s.web.servlet.DispatcherServlet - Completed 200 OK
+2025-08-08 11:04:09 DEBUG o.s.web.servlet.DispatcherServlet - GET "/api/service-api/users/1", parameters={}
+2025-08-08 11:04:09 DEBUG o.s.w.s.m.m.a.RequestMappingHandlerMapping - Mapped to com.nt.user_service_lms.controller.UserController#getUserNameById(long)
+2025-08-08 11:04:09 DEBUG o.s.w.s.m.m.a.HttpEntityMethodProcessor - Using 'application/json', given [application/json, text/plain, */*] and supported [application/json, application/*+json]
+2025-08-08 11:04:09 DEBUG o.s.w.s.m.m.a.HttpEntityMethodProcessor - Writing [StandardResponseOutDTO{status='SUCCESS', message='User details fetched.', data=UserOutDTO(userId=1,  (truncated)...]
+2025-08-08 11:04:09 DEBUG o.s.web.servlet.DispatcherServlet - Completed 200 OK
+2025-08-08 11:04:15 DEBUG o.s.web.servlet.DispatcherServlet - GET "/api/service-api/group/user-groups", parameters={}
+2025-08-08 11:04:15 DEBUG o.s.w.s.m.m.a.RequestMappingHandlerMapping - Mapped to com.nt.user_service_lms.controller.GroupController#getUserGroupDetails()
+2025-08-08 11:04:15 DEBUG o.s.w.c.HttpMessageConverterExtractor - Reading to [com.nt.user_service_lms.dto.outDTO.CourseProgressWithMetaDTO]
+2025-08-08 11:04:15 DEBUG o.s.w.s.m.m.a.HttpEntityMethodProcessor - Using 'application/json', given [application/json, text/plain, */*] and supported [application/json, application/*+json]
+2025-08-08 11:04:15 DEBUG o.s.w.s.m.m.a.HttpEntityMethodProcessor - Writing [StandardResponseOutDTO{status='SUCCESS', message='Successfully fetched course details.', data=[UserG (truncated)...]
+2025-08-08 11:04:15 DEBUG o.s.web.servlet.DispatcherServlet - Completed 200 OK
+2025-08-08 11:04:17 DEBUG o.s.web.servlet.DispatcherServlet - GET "/api/service-api/users/userCourses", parameters={}
+2025-08-08 11:04:17 DEBUG o.s.w.s.m.m.a.RequestMappingHandlerMapping - Mapped to com.nt.user_service_lms.controller.UserController#getEnrolledCoursesByUserId()
+2025-08-08 11:04:17 DEBUG o.s.w.s.m.m.a.HttpEntityMethodProcessor - Using 'application/json', given [application/json, text/plain, */*] and supported [application/json, application/*+json]
+2025-08-08 11:04:17 DEBUG o.s.w.s.m.m.a.HttpEntityMethodProcessor - Writing [StandardResponseOutDTO{status='SUCCESS', message='Fetched enrolled courses successfully', data=[User (truncated)...]
+2025-08-08 11:04:17 DEBUG o.s.web.servlet.DispatcherServlet - Completed 200 OK
+2025-08-08 11:04:18 DEBUG o.s.web.servlet.DispatcherServlet - GET "/api/service-api/users/1", parameters={}
+2025-08-08 11:04:18 DEBUG o.s.w.s.m.m.a.RequestMappingHandlerMapping - Mapped to com.nt.user_service_lms.controller.UserController#getUserNameById(long)
+2025-08-08 11:04:18 DEBUG o.s.w.s.m.m.a.HttpEntityMethodProcessor - Using 'application/json', given [application/json, text/plain, */*] and supported [application/json, application/*+json]
+2025-08-08 11:04:18 DEBUG o.s.w.s.m.m.a.HttpEntityMethodProcessor - Writing [StandardResponseOutDTO{status='SUCCESS', message='User details fetched.', data=UserOutDTO(userId=1,  (truncated)...]
+2025-08-08 11:04:18 DEBUG o.s.web.servlet.DispatcherServlet - Completed 200 OK
+2025-08-08 11:04:18 DEBUG o.s.web.servlet.DispatcherServlet - GET "/api/service-api/users/1", parameters={}
+2025-08-08 11:04:18 DEBUG o.s.w.s.m.m.a.RequestMappingHandlerMapping - Mapped to com.nt.user_service_lms.controller.UserController#getUserNameById(long)
+2025-08-08 11:04:18 DEBUG o.s.w.s.m.m.a.HttpEntityMethodProcessor - Using 'application/json', given [application/json, text/plain, */*] and supported [application/json, application/*+json]
+2025-08-08 11:04:18 DEBUG o.s.w.s.m.m.a.HttpEntityMethodProcessor - Writing [StandardResponseOutDTO{status='SUCCESS', message='User details fetched.', data=UserOutDTO(userId=1,  (truncated)...]
+2025-08-08 11:04:18 DEBUG o.s.web.servlet.DispatcherServlet - Completed 200 OK
+2025-08-08 11:04:18 DEBUG o.s.web.servlet.DispatcherServlet - GET "/api/service-api/users/1", parameters={}
+2025-08-08 11:04:18 DEBUG o.s.w.s.m.m.a.RequestMappingHandlerMapping - Mapped to com.nt.user_service_lms.controller.UserController#getUserNameById(long)
+2025-08-08 11:04:18 DEBUG o.s.w.s.m.m.a.HttpEntityMethodProcessor - Using 'application/json', given [application/json, text/plain, */*] and supported [application/json, application/*+json]
+2025-08-08 11:04:18 DEBUG o.s.w.s.m.m.a.HttpEntityMethodProcessor - Writing [StandardResponseOutDTO{status='SUCCESS', message='User details fetched.', data=UserOutDTO(userId=1,  (truncated)...]
+2025-08-08 11:04:18 DEBUG o.s.web.servlet.DispatcherServlet - Completed 200 OK
+2025-08-08 11:04:19 DEBUG o.s.web.servlet.DispatcherServlet - GET "/api/service-api/users/1", parameters={}
+2025-08-08 11:04:19 DEBUG o.s.w.s.m.m.a.RequestMappingHandlerMapping - Mapped to com.nt.user_service_lms.controller.UserController#getUserNameById(long)
+2025-08-08 11:04:19 DEBUG o.s.w.s.m.m.a.HttpEntityMethodProcessor - Using 'application/json', given [application/json, text/plain, */*] and supported [application/json, application/*+json]
+2025-08-08 11:04:19 DEBUG o.s.w.s.m.m.a.HttpEntityMethodProcessor - Writing [StandardResponseOutDTO{status='SUCCESS', message='User details fetched.', data=UserOutDTO(userId=1,  (truncated)...]
+2025-08-08 11:04:19 DEBUG o.s.web.servlet.DispatcherServlet - Completed 200 OK

@@ -1,12 +1,10 @@
 HELP.md
-.gradle/
-/build/
+.gradle
+build/
 !gradle/wrapper/gradle-wrapper.jar
 !**/src/main/**/build/
 !**/src/test/**/build/
-LMS-NT/logs/app.log
-course-service-lms/logs/app.log
-*/logs/
+
 ### STS ###
 .apt_generated
 .classpath
