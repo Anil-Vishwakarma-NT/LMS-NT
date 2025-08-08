@@ -2,33 +2,40 @@ package com.nt.user_service_lms.service.serviceImpl;
 
 import com.nt.user_service_lms.constants.UserConstants;
 import com.nt.user_service_lms.converter.UserDTOConverter;
+import com.nt.user_service_lms.dto.inDTO.BulkUserUploadInDTO;
 import com.nt.user_service_lms.dto.inDTO.RegisterDto;
 import com.nt.user_service_lms.dto.inDTO.UserInDTO;
-import com.nt.user_service_lms.dto.outDTO.AdminDashboardStatsOutDTO;
-import com.nt.user_service_lms.dto.outDTO.MessageOutDTO;
-import com.nt.user_service_lms.dto.outDTO.StandardResponseOutDTO;
-import com.nt.user_service_lms.dto.outDTO.UserOutDTO;
+import com.nt.user_service_lms.dto.outDTO.*;
 import com.nt.user_service_lms.entities.Enrollment;
 import com.nt.user_service_lms.exception.InvalidRequestException;
 import com.nt.user_service_lms.exception.ResourceNotFoundException;
 import com.nt.user_service_lms.entities.Role;
 import com.nt.user_service_lms.entities.User;
 import com.nt.user_service_lms.exception.ResourceConflictException;
+import com.nt.user_service_lms.exception.ResourceNotValidException;
 import com.nt.user_service_lms.feignClient.CourseMicroserviceClient;
 import com.nt.user_service_lms.repository.EnrollmentRepository;
 import com.nt.user_service_lms.repository.RoleRepository;
 import com.nt.user_service_lms.repository.UserRepository;
 import com.nt.user_service_lms.service.AdminService;
+import jakarta.validation.ConstraintViolation;
+import jakarta.validation.Validation;
+import jakarta.validation.Validator;
+import jakarta.validation.ValidatorFactory;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.apache.poi.ss.usermodel.*;
+import org.apache.poi.xssf.usermodel.XSSFWorkbook;
+import org.springframework.core.io.ByteArrayResource;
+import org.springframework.core.io.Resource;
+import org.springframework.web.multipart.MultipartFile;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Date;
-import java.util.List;
-import java.util.Optional;
+
+import java.io.*;
+import java.util.*;
+import java.util.stream.Collectors;
 
 import static com.nt.user_service_lms.constants.UserConstants.*;
 
@@ -430,36 +437,304 @@ public class AdminServiceImpl implements AdminService {
     }
 
 
-//    @Override
-//    public StandardResponseOutDTO<List<UserOutDTO>> getManagers(){
-//        List<User> managers = userRepository.findByRoleId(MANAGER_ROLE_ID);
-//        List<UserOutDTO> userDtos = new ArrayList<>();
-//        for (User user : managers) {
-//            if (user.isActive() && (user.getUserId() != UserConstants.getAdminId())) {
-//                Optional<User> optionalmanager = userRepository.findById(user.getManagerId());
-//
-//                if (!optionalmanager.isPresent()) {
-//                    throw new ResourceNotFoundException(USER_NOT_FOUND + "Manager not found");
-//                }
-//                User manager = optionalmanager.get();
-//                String managerName = manager.getFirstName() + " " + manager.getLastName();
-//                Role role = roleRepository.findById(user.getRoleId()).orElseThrow(
-//                        () -> {
-//                            log.error("Role with ID {} not found", user.getRoleId());
-//                            throw new ResourceNotFoundException("Role not found for the Id");
-//                        }
-//                );
-//                UserOutDTO userDto = userDTOConverter.userToOutDto(user, managerName, role.getName());
-//                userDtos.add(userDto);
-//            }
-//        }
-//
-//
-//
-//
-//    }
+    @Override
+    public StandardResponseOutDTO<BulkUploadResponseOutDTO> bulkUploadUsers(MultipartFile file) {
+        log.info("Starting bulk upload process for file: {}", file.getOriginalFilename());
 
+        String fileName = file.getOriginalFilename();
+        String fileExtension = getFileExtension(fileName);
 
+        List<BulkUserUploadInDTO> users;
+        try {
+            users = parseFile(file, fileExtension);
+        } catch (Exception e) {
+            log.error("Error parsing file: {}", e.getMessage());
+            throw new InvalidRequestException("Error parsing file: " + e.getMessage());
+        }
 
+        // Batch validation to minimize DB hits
+        validateUsersInBatch(users);
+
+        BulkUploadResponseOutDTO result = processUsersInBatch(users);
+
+        return StandardResponseOutDTO.success(result, "Bulk upload completed");
+    }
+
+    private List<BulkUserUploadInDTO> parseFile(MultipartFile file, String extension) throws IOException {
+        List<BulkUserUploadInDTO> users = new ArrayList<>();
+
+        switch (extension.toLowerCase()) {
+            case "csv":
+            case "txt":
+                users = parseCsvFile(file);
+                break;
+            case "xlsx":
+            case "xls":
+                users = parseExcelFile(file);
+                break;
+            default:
+                throw new InvalidRequestException("Unsupported file format. Only CSV, TXT, XLS, XLSX are supported");
+        }
+
+        return users;
+    }
+
+    private List<BulkUserUploadInDTO> parseCsvFile(MultipartFile file) throws IOException {
+        List<BulkUserUploadInDTO> users = new ArrayList<>();
+
+        try (BufferedReader reader = new BufferedReader(new InputStreamReader(file.getInputStream()))) {
+            String line;
+            int rowNumber = 0;
+            boolean isHeader = true;
+
+            while ((line = reader.readLine()) != null) {
+                rowNumber++;
+
+                if (isHeader) {
+                    isHeader = false;
+                    continue; // Skip header row
+                }
+
+                String[] columns = line.split(",");
+                if (columns.length != 5) {
+                    log.warn("Invalid number of columns in row {}: expected 5, got {}", rowNumber, columns.length);
+                    continue;
+                }
+
+                BulkUserUploadInDTO user = BulkUserUploadInDTO.builder()
+                        .firstName(columns[0].trim())
+                        .lastName(columns[1].trim())
+                        .email(columns[2].trim())
+                        .employeeNumber(columns[3].trim())
+                        .role(columns[4].trim())
+                        .rowNumber(rowNumber)
+                        .build();
+
+                users.add(user);
+            }
+        }
+
+        return users;
+    }
+
+    private List<BulkUserUploadInDTO> parseExcelFile(MultipartFile file) throws IOException {
+        List<BulkUserUploadInDTO> users = new ArrayList<>();
+
+        try (Workbook workbook = WorkbookFactory.create(file.getInputStream())) {
+            Sheet sheet = workbook.getSheetAt(0);
+
+            for (int i = 1; i <= sheet.getLastRowNum(); i++) { // Skip header row
+                Row row = sheet.getRow(i);
+                if (row == null) continue;
+
+                if (row.getPhysicalNumberOfCells() < 5) {
+                    log.warn("Row {} has insufficient columns", i + 1);
+                    continue;
+                }
+
+                BulkUserUploadInDTO user = BulkUserUploadInDTO.builder()
+                        .firstName(getCellValueAsString(row.getCell(0)))
+                        .lastName(getCellValueAsString(row.getCell(1)))
+                        .email(getCellValueAsString(row.getCell(2)))
+                        .employeeNumber(getCellValueAsString(row.getCell(3)))
+                        .role(getCellValueAsString(row.getCell(4)))
+                        .rowNumber(i + 1)
+                        .build();
+
+                users.add(user);
+            }
+        }
+
+        return users;
+    }
+
+    private String getCellValueAsString(Cell cell) {
+        if (cell == null) return "";
+
+        switch (cell.getCellType()) {
+            case STRING:
+                return cell.getStringCellValue().trim();
+            case NUMERIC:
+                return String.valueOf((long) cell.getNumericCellValue());
+            default:
+                return "";
+        }
+    }
+
+    private void validateUsersInBatch(List<BulkUserUploadInDTO> users) {
+        if (users.isEmpty()) {
+            throw new InvalidRequestException("No valid user records found in file");
+        }
+
+        // Extract all emails and employee numbers for batch validation
+        Set<String> emails = users.stream().map(BulkUserUploadInDTO::getEmail).collect(Collectors.toSet());
+        Set<String> employeeNumbers = users.stream().map(BulkUserUploadInDTO::getEmployeeNumber).collect(Collectors.toSet());
+
+        // Single DB query to check existing emails
+        List<String> existingEmails = userRepository.findExistingEmails(new ArrayList<>(emails));
+
+        // Single DB query to check existing employee numbers (assuming you have this method)
+        List<String> existingEmployeeNumbers = userRepository.findExistingEmployeeNumbers(new ArrayList<>(employeeNumbers));
+
+        if (!existingEmails.isEmpty()) {
+            throw new ResourceConflictException("Following emails already exist: " + String.join(", ", existingEmails));
+        }
+
+        if (!existingEmployeeNumbers.isEmpty()) {
+            throw new ResourceConflictException("Following employee numbers already exist: " + String.join(", ", existingEmployeeNumbers));
+        }
+    }
+
+    private BulkUploadResponseOutDTO processUsersInBatch(List<BulkUserUploadInDTO> users) {
+        List<String> errors = new ArrayList<>();
+        int successCount = 0;
+        int totalCount = users.size();
+
+        // Get role mappings once to avoid repeated DB calls
+        Map<String, Long> roleMap = getRoleMapping();
+
+        for (BulkUserUploadInDTO bulkUser : users) {
+            try {
+                // Generate password: FirstName@12345 (first letter capital, rest lowercase)
+                String password = generatePassword(bulkUser.getFirstName());
+
+                // Convert to RegisterDto
+                RegisterDto registerDto = RegisterDto.builder()
+                        .firstName(bulkUser.getFirstName())
+                        .lastName(bulkUser.getLastName())
+                        .userName(bulkUser.getEmployeeNumber()) // Using employee number as username
+                        .email(bulkUser.getEmail())
+                        .password(password)
+                        .roleId(roleMap.get(bulkUser.getRole().toLowerCase()))
+                        .build();
+
+                // Validate the DTO
+                validateRegisterDto(registerDto);
+
+                // Use existing register method
+                register(registerDto);
+                successCount++;
+
+            } catch (Exception e) {
+                String error = String.format("Row %d (%s %s): %s",
+                        bulkUser.getRowNumber(),
+                        bulkUser.getFirstName(),
+                        bulkUser.getLastName(),
+                        e.getMessage());
+                errors.add(error);
+                log.warn("Failed to process user at row {}: {}", bulkUser.getRowNumber(), e.getMessage());
+            }
+        }
+
+        return BulkUploadResponseOutDTO.builder()
+                .totalRecords(totalCount)
+                .successfulUploads(successCount)
+                .failedUploads(totalCount - successCount)
+                .errors(errors)
+                .message(String.format("Processed %d users: %d successful, %d failed",
+                        totalCount, successCount, totalCount - successCount))
+                .build();
+    }
+
+    private String generatePassword(String firstName) {
+        if (firstName == null || firstName.trim().isEmpty()) {
+            throw new InvalidRequestException("First name cannot be empty");
+        }
+
+        String cleanedName = firstName.trim();
+        String password = cleanedName.substring(0, 1).toUpperCase() +
+                cleanedName.substring(1).toLowerCase() + "@12345";
+        return password;
+    }
+
+    private Map<String, Long> getRoleMapping() {
+        Map<String, Long> roleMap = new HashMap<>();
+        List<Role> roles = roleRepository.findAll();
+
+        for (Role role : roles) {
+            roleMap.put(role.getName().toLowerCase(), role.getRoleId());
+        }
+
+        return roleMap;
+    }
+
+    private void validateRegisterDto(RegisterDto registerDto) {
+        ValidatorFactory factory = Validation.buildDefaultValidatorFactory();
+        Validator validator = factory.getValidator();
+        Set<ConstraintViolation<RegisterDto>> violations = validator.validate(registerDto);
+
+        if (!violations.isEmpty()) {
+            List<String> errorMessages = violations.stream()
+                    .map(ConstraintViolation::getMessage)
+                    .collect(Collectors.toList());
+            throw new ResourceNotValidException("Validation failed: " + String.join(", ", errorMessages));
+        }
+    }
+
+    private String getFileExtension(String fileName) {
+        if (fileName == null || !fileName.contains(".")) {
+            throw new InvalidRequestException("Invalid file name");
+        }
+        return fileName.substring(fileName.lastIndexOf(".") + 1);
+    }
+
+    @Override
+    public Resource generateTemplate(String format) throws IOException {
+        String[] headers = {"First Name", "Last Name", "Email", "Employee Number", "Role"};
+        String[] sampleData = {"John", "Doe", "john.doe@nucleusteq.com", "EMP001", "employee"};
+
+        if ("csv".equalsIgnoreCase(format) || "txt".equalsIgnoreCase(format)) {
+            return generateCsvTemplate(headers, sampleData);
+        } else if ("xlsx".equalsIgnoreCase(format)) {
+            return generateExcelTemplate(headers, sampleData);
+        } else {
+            throw new InvalidRequestException("Unsupported template format");
+        }
+    }
+
+    private Resource generateCsvTemplate(String[] headers, String[] sampleData) throws IOException {
+        ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
+        PrintWriter writer = new PrintWriter(outputStream);
+
+        // Write headers
+        writer.println(String.join(",", headers));
+        // Write sample data
+        writer.println(String.join(",", sampleData));
+
+        writer.flush();
+        writer.close();
+
+        return new ByteArrayResource(outputStream.toByteArray());
+    }
+
+    private Resource generateExcelTemplate(String[] headers, String[] sampleData) throws IOException {
+        Workbook workbook = new XSSFWorkbook();
+        Sheet sheet = workbook.createSheet("User Template");
+
+        // Create header row
+        Row headerRow = sheet.createRow(0);
+        for (int i = 0; i < headers.length; i++) {
+            Cell cell = headerRow.createCell(i);
+            cell.setCellValue(headers[i]);
+        }
+
+        // Create sample data row
+        Row dataRow = sheet.createRow(1);
+        for (int i = 0; i < sampleData.length; i++) {
+            Cell cell = dataRow.createCell(i);
+            cell.setCellValue(sampleData[i]);
+        }
+
+        // Auto-size columns
+        for (int i = 0; i < headers.length; i++) {
+            sheet.autoSizeColumn(i);
+        }
+
+        ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
+        workbook.write(outputStream);
+        workbook.close();
+
+        return new ByteArrayResource(outputStream.toByteArray());
+    }
 
 }

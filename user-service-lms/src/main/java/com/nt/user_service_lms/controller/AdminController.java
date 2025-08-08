@@ -1,16 +1,15 @@
 package com.nt.user_service_lms.controller;
 
 import com.nt.user_service_lms.dto.inDTO.RegisterDto;
-import com.nt.user_service_lms.dto.outDTO.AdminDashboardStatsOutDTO;
-import com.nt.user_service_lms.dto.outDTO.UsersDetailsViewDTO;
+import com.nt.user_service_lms.dto.outDTO.*;
 import com.nt.user_service_lms.dto.inDTO.UserInDTO;
-import com.nt.user_service_lms.dto.outDTO.MessageOutDTO;
-import com.nt.user_service_lms.dto.outDTO.StandardResponseOutDTO;
-import com.nt.user_service_lms.dto.outDTO.UserCourseEnrollDetails;
-import com.nt.user_service_lms.dto.outDTO.UserOutDTO;
+import com.nt.user_service_lms.exception.InvalidRequestException;
 import com.nt.user_service_lms.service.AdminService;
 import com.nt.user_service_lms.service.GroupService;
 import com.nt.user_service_lms.service.UserService;
+import org.springframework.web.multipart.MultipartFile;
+import org.springframework.core.io.Resource;
+import org.springframework.http.HttpHeaders;
 import com.nt.user_service_lms.service.serviceImpl.AdminServiceImpl;
 import com.nt.user_service_lms.service.serviceImpl.GroupServiceImpl;
 import com.nt.user_service_lms.service.serviceImpl.UserServiceImpl;
@@ -257,5 +256,33 @@ public class AdminController {
         StandardResponseOutDTO<AdminDashboardStatsOutDTO> standardResponseOutDTO = adminService.getAdminStats();
         return ResponseEntity.ok(standardResponseOutDTO);
     }
+    @PostMapping("/bulk-upload")
+    //@PreAuthorize("hasAuthority('ADMIN')")
+    public ResponseEntity<StandardResponseOutDTO<BulkUploadResponseOutDTO>> bulkUploadUsers(
+            @RequestParam("file") MultipartFile file) {
+        log.info("Received bulk upload request for file: {}", file.getOriginalFilename());
+
+        if (file.isEmpty()) {
+            throw new InvalidRequestException("File cannot be empty");
+        }
+
+        StandardResponseOutDTO<BulkUploadResponseOutDTO> response = adminService.bulkUploadUsers(file);
+        return ResponseEntity.ok(response);
+    }
+
+    @GetMapping("/bulk-upload/template")
+    //@PreAuthorize("hasAuthority('ADMIN')")
+    public ResponseEntity<Resource> downloadTemplate(@RequestParam String format) {
+        try {
+            Resource resource = adminService.generateTemplate(format);
+            return ResponseEntity.ok()
+                    .header(HttpHeaders.CONTENT_DISPOSITION,
+                            "attachment; filename=bulk_user_template." + format)
+                    .body(resource);
+        } catch (Exception e) {
+            throw new RuntimeException("Error generating template: " + e.getMessage());
+        }
+    }
+
 
 }
