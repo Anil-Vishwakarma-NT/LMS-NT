@@ -95,6 +95,12 @@ public interface UserRepository extends JpaRepository<User, Long> {
     @Query("SELECT u.userId FROM User u WHERE u.userId IN :userIds")
     List<Long> findExistingIds(@Param("userIds") List<Long> userIds);
 
+    @Query("SELECT u.email FROM User u WHERE u.email IN :emails")
+    List<String> findExistingEmails(@Param("emails") List<String> emails);
+
+    @Query("SELECT u.userName FROM User u WHERE u.userName IN :employeeNumbers")
+    List<String> findExistingEmployeeNumbers(@Param("employeeNumbers") List<String> employeeNumbers);
+
     @Query(value = "SELECT " +
             "    (SELECT COUNT(*) FROM users WHERE is_active = true) AS userCount, " +
             "    (SELECT COUNT(*) FROM groups WHERE is_active = true) AS groupCount, " +

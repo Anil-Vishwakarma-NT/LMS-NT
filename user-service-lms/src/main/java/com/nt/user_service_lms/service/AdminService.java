@@ -2,6 +2,12 @@ package com.nt.user_service_lms.service;
 
 import com.nt.user_service_lms.dto.inDTO.RegisterDto;
 import com.nt.user_service_lms.dto.inDTO.UserInDTO;
+import com.nt.user_service_lms.dto.outDTO.*;
+
+import org.springframework.core.io.Resource;
+import org.springframework.web.multipart.MultipartFile;
+
+import java.io.IOException;
 import com.nt.user_service_lms.dto.outDTO.AdminDashboardStatsOutDTO;
 import com.nt.user_service_lms.dto.outDTO.MessageOutDTO;
 import com.nt.user_service_lms.dto.outDTO.StandardResponseOutDTO;
@@ -99,5 +105,7 @@ public interface AdminService {
      * @return a standardized response containing a message DTO
      */
     StandardResponseOutDTO<MessageOutDTO> removeCourseFromBundle(Long bundleId, Long courseId);
+    StandardResponseOutDTO<BulkUploadResponseOutDTO> bulkUploadUsers(MultipartFile file);
+    Resource generateTemplate(String format) throws IOException;
 
 }
