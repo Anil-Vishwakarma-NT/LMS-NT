@@ -73,48 +73,49 @@ INSERT INTO course (owner_id, title, description, level) VALUES
 (3, 'Financial Analysis for Managers', 'Understanding financial statements and making data-driven decisions', 'ADVANCED');
 
 -- 7. Insert course content
-INSERT INTO course_content (course_id, title, description, resource_link) VALUES
+INSERT INTO course_content (course_id, title, description, resource_link, content_type) VALUES
 -- Data Science Course Content
-(1, 'Introduction to Statistics', 'Basic statistical concepts and terminology', 'https://example.com/stats-intro'),
-(1, 'Python for Data Science', 'Python programming fundamentals for data analysis', 'https://example.com/python-basics'),
-(1, 'Data Visualization', 'Creating charts and graphs to represent data', 'https://example.com/data-viz'),
-(1, 'Machine Learning Basics', 'Introduction to supervised and unsupervised learning', 'https://example.com/ml-basics'),
+(1, 'Introduction to Statistics', 'Basic statistical concepts and terminology', 'https://example.com/stats-intro', 'pdf'),
+(1, 'Python for Data Science', 'Python programming fundamentals for data analysis', 'https://example.com/python-basics', 'video'),
+(1, 'Data Visualization', 'Creating charts and graphs to represent data', 'https://example.com/data-viz', 'video'),
+(1, 'Machine Learning Basics', 'Introduction to supervised and unsupervised learning', 'https://example.com/ml-basics', 'video'),
 
 -- Web Development Course Content
-(2, 'React Fundamentals', 'Building user interfaces with React', 'https://example.com/react-basics'),
-(2, 'Node.js Backend Development', 'Creating APIs with Node.js and Express', 'https://example.com/nodejs-api'),
-(2, 'Database Integration', 'Connecting your application to databases', 'https://example.com/db-integration'),
-(2, 'Cloud Deployment', 'Deploying applications to cloud platforms', 'https://example.com/cloud-deploy'),
+(2, 'React Fundamentals', 'Building user interfaces with React', 'https://example.com/react-basics', 'video'),
+(2, 'Node.js Backend Development', 'Creating APIs with Node.js and Express', 'https://example.com/nodejs-api', 'video'),
+(2, 'Database Integration', 'Connecting your application to databases', 'https://example.com/db-integration', 'pdf'),
+(2, 'Cloud Deployment', 'Deploying applications to cloud platforms', 'https://example.com/cloud-deploy', 'video'),
 
 -- Project Management Course Content
-(3, 'Project Planning', 'Creating effective project plans and timelines', 'https://example.com/project-planning'),
-(3, 'Team Management', 'Leading and motivating project teams', 'https://example.com/team-management'),
-(3, 'Risk Management', 'Identifying and mitigating project risks', 'https://example.com/risk-management'),
+(3, 'Project Planning', 'Creating effective project plans and timelines', 'https://example.com/project-planning', 'pdf'),
+(3, 'Team Management', 'Leading and motivating project teams', 'https://example.com/team-management', 'video'),
+(3, 'Risk Management', 'Identifying and mitigating project risks', 'https://example.com/risk-management', 'pdf'),
 
 -- Digital Marketing Course Content
-(4, 'SEO Fundamentals', 'Search engine optimization basics', 'https://example.com/seo-basics'),
-(4, 'Social Media Marketing', 'Leveraging social platforms for marketing', 'https://example.com/social-media'),
-(4, 'Analytics and Reporting', 'Measuring marketing campaign effectiveness', 'https://example.com/analytics'),
+(4, 'SEO Fundamentals', 'Search engine optimization basics', 'https://example.com/seo-basics', 'pdf'),
+(4, 'Social Media Marketing', 'Leveraging social platforms for marketing', 'https://example.com/social-media', 'video'),
+(4, 'Analytics and Reporting', 'Measuring marketing campaign effectiveness', 'https://example.com/analytics', 'pdf'),
 
 -- Database Design Course Content
-(5, 'Database Normalization', 'Designing efficient database schemas', 'https://example.com/db-normalization'),
-(5, 'Query Optimization', 'Improving database query performance', 'https://example.com/query-optimization'),
-(5, 'Index Strategies', 'Using indexes effectively', 'https://example.com/index-strategies'),
+(5, 'Database Normalization', 'Designing efficient database schemas', 'https://example.com/db-normalization', 'pdf'),
+(5, 'Query Optimization', 'Improving database query performance', 'https://example.com/query-optimization', 'pdf'),
+(5, 'Index Strategies', 'Using indexes effectively', 'https://example.com/index-strategies', 'pdf'),
 
 -- Leadership Course Content
-(6, 'Communication Skills', 'Effective communication techniques', 'https://example.com/communication'),
-(6, 'Team Building', 'Building cohesive teams', 'https://example.com/team-building'),
-(6, 'Conflict Resolution', 'Managing and resolving conflicts', 'https://example.com/conflict-resolution'),
+(6, 'Communication Skills', 'Effective communication techniques', 'https://example.com/communication', 'video'),
+(6, 'Team Building', 'Building cohesive teams', 'https://example.com/team-building', 'video'),
+(6, 'Conflict Resolution', 'Managing and resolving conflicts', 'https://example.com/conflict-resolution', 'video'),
 
 -- Cybersecurity Course Content
-(7, 'Security Fundamentals', 'Basic cybersecurity concepts', 'https://example.com/security-basics'),
-(7, 'Threat Assessment', 'Identifying and evaluating threats', 'https://example.com/threat-assessment'),
-(7, 'Incident Response', 'Responding to security incidents', 'https://example.com/incident-response'),
+(7, 'Security Fundamentals', 'Basic cybersecurity concepts', 'https://example.com/security-basics', 'pdf'),
+(7, 'Threat Assessment', 'Identifying and evaluating threats', 'https://example.com/threat-assessment', 'pdf'),
+(7, 'Incident Response', 'Responding to security incidents', 'https://example.com/incident-response', 'video'),
 
 -- Financial Analysis Course Content
-(8, 'Financial Statement Analysis', 'Reading and interpreting financial statements', 'https://example.com/financial-statements'),
-(8, 'Budgeting and Forecasting', 'Creating budgets and financial forecasts', 'https://example.com/budgeting'),
-(8, 'Investment Analysis', 'Evaluating investment opportunities', 'https://example.com/investment-analysis');
+(8, 'Financial Statement Analysis', 'Reading and interpreting financial statements', 'https://example.com/financial-statements', 'pdf'),
+(8, 'Budgeting and Forecasting', 'Creating budgets and financial forecasts', 'https://example.com/budgeting', 'pdf'),
+(8, 'Investment Analysis', 'Evaluating investment opportunities', 'https://example.com/investment-analysis', 'pdf');
+
 
 -- 8. Insert bundles
 INSERT INTO bundle (bundle_name) VALUES

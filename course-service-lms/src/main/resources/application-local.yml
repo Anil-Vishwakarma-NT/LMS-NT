@@ -10,9 +10,9 @@ spring:
       location: ${java.io.tmpdir}  # Uses the system's temporary directory for uploads
 
   datasource:
-    url: jdbc:postgresql://localhost:5432/lms
+    url: jdbc:postgresql://localhost:5432/lms_db
     username: postgres
-    password: anil@123
+    password: root
 
   jpa:
     properties:
@@ -33,9 +33,9 @@ jwt:
   issuer: https://auth.nucleusteq.com
 
 aws:
-  access-key: ${AWS_ACCESS_KEY_ID
-  secret-key: ${AWS_SECRET_ACCESS_KEY}
-  region: ${aws.region}
+  access-key:
+  secret-key:
+  region:
   s3:
     bucket: nt-lms-content
 

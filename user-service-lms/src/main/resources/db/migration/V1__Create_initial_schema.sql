@@ -93,6 +93,7 @@ CREATE TABLE course_content (
     title VARCHAR(255) NOT NULL,
     description TEXT,
     resource_link VARCHAR(500),
+    content_type VARCHAR(50) NOT NULL,
     acknowledgement BOOLEAN NOT NULL DEFAULT FALSE,
     is_active BOOLEAN NOT NULL DEFAULT TRUE,
     created_at TIMESTAMP NOT NULL DEFAULT NOW(),
@@ -100,7 +101,10 @@ CREATE TABLE course_content (
 
     -- Foreign key constraint
     CONSTRAINT fk_course_content_course
-        FOREIGN KEY (course_id) REFERENCES course(course_id)
+        FOREIGN KEY (course_id) REFERENCES course(course_id),
+
+    CONSTRAINT chk_content_type
+            CHECK (content_type IN ('video', 'pdf'))
 );
 
 -- Create bundle table
