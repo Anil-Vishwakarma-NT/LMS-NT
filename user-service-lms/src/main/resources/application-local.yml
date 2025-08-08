@@ -3,9 +3,9 @@ spring:
     name: user-service
 
   datasource:
-    url: jdbc:postgresql://localhost:5432/lms_db
+    url: jdbc:postgresql://localhost:5432/lms
     username: postgres
-    password: root
+    password: anil@123
     driver-class-name: org.postgresql.Driver
 
   jpa:

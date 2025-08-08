@@ -1,11 +1,18 @@
 spring:
   application:
     name: course-service
+  servlet:
+    multipart:
+      enabled: true  # Enables multipart file upload support
+      max-file-size: -1  # Removes the individual file size limit
+      max-request-size: -1  # Removes the total request size limit
+      file-size-threshold: 1MB  # Stores files larger than 1MB to disk
+      location: ${java.io.tmpdir}  # Uses the system's temporary directory for uploads
 
   datasource:
-    url: jdbc:postgresql://localhost:5432/lms_db
+    url: jdbc:postgresql://localhost:5432/lms
     username: postgres
-    password: root
+    password: anil@123
 
   jpa:
     properties:
@@ -24,6 +31,13 @@ server:
 jwt:
   secret: bXlfc2VjcmV0X2tleV9teV9zZWNyZXRfa2V5X3Byb2R1Y3Rpb25fdXNlX3N0cm9uZ2VyX2tleV8yNTZfYml0c19sb25n
   issuer: https://auth.nucleusteq.com
+
+aws:
+  access-key: ${AWS_ACCESS_KEY_ID
+  secret-key: ${AWS_SECRET_ACCESS_KEY}
+  region: ${aws.region}
+  s3:
+    bucket: nt-lms-content
 
 gateway:
   validation:

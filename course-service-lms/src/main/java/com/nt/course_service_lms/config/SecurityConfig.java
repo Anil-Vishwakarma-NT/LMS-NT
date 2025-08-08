@@ -47,7 +47,10 @@ public class SecurityConfig {
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(authz -> authz
                         // user endpoints - require authentication
+                        .requestMatchers("/api/service-api/streaming/**").permitAll()
                         .requestMatchers("/h2-console/**").permitAll()
+                        .requestMatchers("/**").authenticated()
+
                         .anyRequest().authenticated()
                 )
                 .headers(headers -> headers

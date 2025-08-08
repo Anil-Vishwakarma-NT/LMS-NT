@@ -1,6 +1,7 @@
 package com.nt.course_service_lms.service;
 
 import com.nt.course_service_lms.dto.inDTO.CourseContentInDTO;
+import com.nt.course_service_lms.dto.inDTO.CourseContentUrlInDTO;
 import com.nt.course_service_lms.dto.inDTO.UpdateCourseContentInDTO;
 import com.nt.course_service_lms.dto.outDTO.CourseContentOutDTO;
 
@@ -19,6 +20,8 @@ public interface CourseContentService {
      * @return the created course content as DTO
      */
     CourseContentOutDTO createCourseContent(CourseContentInDTO courseContentInDTO);
+
+    CourseContentOutDTO createCourseContent(CourseContentUrlInDTO courseContentUrlInDTO);
 
     /**
      * Retrieves all course contents.
