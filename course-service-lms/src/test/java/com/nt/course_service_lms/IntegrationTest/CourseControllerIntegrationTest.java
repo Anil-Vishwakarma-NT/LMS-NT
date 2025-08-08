@@ -21,6 +21,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.context.annotation.Import;
 import org.springframework.http.MediaType;
+import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
@@ -45,6 +46,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @ExtendWith(MockitoExtension.class)
 @Import(TestSecurityConfig.class)
 @ActiveProfiles("test")
+@DirtiesContext(classMode = DirtiesContext.ClassMode.AFTER_CLASS)
 class CourseControllerIntegrationTest {
 
     @Autowired
@@ -202,7 +204,8 @@ class CourseControllerIntegrationTest {
         when(courseService.getCourseById(1L)).thenReturn(courseInfoOutDTO);
 
         // When & Then
-        mockMvc.perform(get("/api/service-api/course/1"))
+        mockMvc.perform(get("/api/service-api/course/1")
+                .header("X-Test-Role", "ADMIN"))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.status").value("SUCCESS"))
                 .andExpect(jsonPath("$.message").value("Fetched Course Details"))
@@ -220,7 +223,8 @@ class CourseControllerIntegrationTest {
         when(courseService.getCourseById(999L)).thenThrow(new ResourceNotFoundException("Course not found"));
 
         // When & Then
-        mockMvc.perform(get("/api/service-api/course/999"))
+        mockMvc.perform(get("/api/service-api/course/999")
+                .header("X-Test-Role", "ADMIN"))
                 .andExpect(status().isNotFound());
     }
 
@@ -312,7 +316,8 @@ class CourseControllerIntegrationTest {
         when(courseService.courseExistsById(1L)).thenReturn(true);
 
         // When & Then
-        mockMvc.perform(get("/api/service-api/course/1/exists"))
+        mockMvc.perform(get("/api/service-api/course/1/exists")
+                .header("X-Test-Role", "ADMIN"))
                 .andExpect(status().isOk())
                 .andExpect(content().string("true"));
     }
@@ -323,7 +328,8 @@ class CourseControllerIntegrationTest {
         when(courseService.courseExistsById(999L)).thenReturn(false);
 
         // When & Then
-        mockMvc.perform(get("/api/service-api/course/999/exists"))
+        mockMvc.perform(get("/api/service-api/course/999/exists")
+                .header("X-Test-Role", "ADMIN"))
                 .andExpect(status().isOk())
                 .andExpect(content().string("false"));
     }
@@ -403,7 +409,8 @@ class CourseControllerIntegrationTest {
         when(courseService.getCourseNameById(1L)).thenReturn("Test Course");
 
         // When & Then
-        mockMvc.perform(get("/api/service-api/course/1/name"))
+        mockMvc.perform(get("/api/service-api/course/1/name")
+                        .header("X-Test-Role", "ADMIN"))
                 .andExpect(status().isOk())
                 .andExpect(content().string("Test Course"));
     }
@@ -414,7 +421,8 @@ class CourseControllerIntegrationTest {
         when(courseService.getCourseNameById(999L)).thenThrow(new ResourceNotFoundException("Course not found"));
 
         // When & Then
-        mockMvc.perform(get("/api/service-api/course/999/name"))
+        mockMvc.perform(get("/api/service-api/course/999/name")
+                .header("X-Test-Role", "ADMIN"))
                 .andExpect(status().isNotFound());
     }
 
@@ -452,6 +460,7 @@ class CourseControllerIntegrationTest {
 
         // When & Then
         mockMvc.perform(post("/api/service-api/course/existing-ids")
+                        .header("X-Test-Role", "ADMIN")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(inputIds)))
                 .andExpect(status().isOk())
@@ -471,6 +480,7 @@ class CourseControllerIntegrationTest {
 
         // When & Then
         mockMvc.perform(post("/api/service-api/course/existing-ids")
+                        .header("X-Test-Role", "ADMIN")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(inputIds)))
                 .andExpect(status().isOk())
@@ -483,6 +493,7 @@ class CourseControllerIntegrationTest {
     void getExistingCourseIds_ShouldReturnBadRequest_WhenInvalidInput() throws Exception {
         // When & Then
         mockMvc.perform(post("/api/service-api/course/existing-ids")
+                        .header("X-Test-Role", "ADMIN")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content("invalid json"))
                 .andExpect(status().isBadRequest());
@@ -498,6 +509,7 @@ class CourseControllerIntegrationTest {
 
         // When & Then
         mockMvc.perform(post("/api/service-api/course/courses")
+                        .header("X-Test-Role", "ADMIN")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(courseIds)))
                 .andExpect(status().isOk())
@@ -511,6 +523,7 @@ class CourseControllerIntegrationTest {
     void getCoursesByIds_ShouldReturnBadRequest_WhenInvalidInput() throws Exception {
         // When & Then
         mockMvc.perform(post("/api/service-api/course/courses")
+                        .header("X-Test-Role", "ADMIN")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content("invalid json"))
                 .andExpect(status().isBadRequest());
